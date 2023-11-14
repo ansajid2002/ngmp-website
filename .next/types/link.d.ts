@@ -36,13 +36,13 @@ declare namespace __next_route_internal_types__ {
     | `/account-password`
     | `/account-savelists`
     | `/about`
-    | `/api/hello`
     | `/blog`
+    | `/api/hello`
     | `/blog-single`
     | `/cart`
     | `/checkout`
-    | `/collection`
     | `/collection-2`
+    | `/collection`
     | `/contact`
     | `/forgot-pass`
     | `/home-2`

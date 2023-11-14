@@ -9,6 +9,9 @@ import CartDropdown from "./CartDropdown";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import logo from "@/images/mainlogo.png";
+import freeshipping from "@/images/header/free-shipping.png"
+import negotiation from "@/images/header/negotiation.png"
+import mobile from "@/images/header/test.png"
 import Image from "next/image";
 import Link from "next/link";
 
@@ -18,6 +21,8 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
   const inputRef = createRef<HTMLInputElement>();
   const [showSearchForm, setShowSearchForm] = useState(false);
   const router = useRouter();
+
+  
 
   const renderMagnifyingGlassIcon = () => {
     return (
@@ -80,13 +85,13 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
         <div className="flex items-center lg:hidden flex-1">
           <MenuBar />
         </div>
-
         <div className="lg:flex-1 flex items-center">
           {/* <Logo className="flex-shrink-0" /> */}
           <Link href="/">
-            <Image src={logo} alt="website main logo" className="w-32" />
+            <Image src={logo} alt="website main logo" className=" w-32 md:w-40 xl:w-44 pb-1" />
           </Link>
         </div>
+        
 
         <div className="flex-[2] hidden lg:flex justify-center mx-4">
           {showSearchForm ? renderSearchForm() : <Navigation />}
@@ -109,9 +114,25 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
   };
 
   return (
-    <div className="nc-MainNav2Logged relative z-10 bg-white dark:bg-neutral-900 border-b border-slate-100 dark:border-slate-700">
-      <div className="container ">{renderContent()}</div>
+    <header>
+      <section className="justify-around h-14 items-center bg-[#fb7601] border hidden md:flex ">
+        <div className="flex items-center space-x-2">
+        <Image src={freeshipping} alt="website main logo" className=" w-8 lg:w-12" />
+                  <h1 className="text-[14px] lg:text-lg font-semibold">Free Shopping on all Orders</h1>
+        </div>
+        <div className="flex items-center space-x-2">
+        <Image src={negotiation} alt="website main logo" className="w-8 lg:w-12" />
+          <h1 className="text-[14px] lg:text-lg font-semibold">Negotiation Available</h1>
+        </div>
+        <div className="flex items-center space-x-2">
+        <Image src={mobile} alt="website main logo" className=" w-8 lg:w-12" />
+          <h1 className="text-[14px] lg:text-lg font-semibold">Get The Temu App</h1>
+        </div>
+      </section>
+    <div className="nc-MainNav2Logged relative z-10 md:pt-2  bg-white dark:bg-neutral-900 border-b border-slate-100 dark:border-slate-700">
+      <div className=" container ">{renderContent()}</div>
     </div>
+    </header>
   );
 };
 
