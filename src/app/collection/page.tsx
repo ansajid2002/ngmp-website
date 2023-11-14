@@ -6,16 +6,12 @@ import SectionPromo1 from "@/components/SectionPromo1";
 import ProductCard from "@/components/ProductCard";
 import { PRODUCTS } from "@/data/data";
 import TabFilters from "@/components/TabFilters";
-import {  getProducts } from "../page";
+import {  getAllProducts } from "../page";
 
 const  PageCollection = async ({}) => {
 
-  const productData = await getProducts()
-  console.log("categoryDatasajidstart");
-  console.log(PRODUCTS);
-  
-  console.log(productData);
-  console.log("categoryDatabysajid");
+  const productData = await getAllProducts()
+
   
   return (
     <div className={`nc-PageCollection`}>

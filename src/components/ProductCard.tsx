@@ -45,7 +45,7 @@ const ProductCard: FC<ProductCardProps> = ({
     numberOfReviews,
   } = data;
 
-  console.log(data);
+  // console.log(data);
 
   const [variantActive, setVariantActive] = useState(0);
   const [showModalQuickView, setShowModalQuickView] = useState(false);

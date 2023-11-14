@@ -6,6 +6,8 @@ import "rc-slider/assets/index.css";
 import Footer from "@/shared/Footer/Footer";
 import SiteHeader from "@/app/SiteHeader";
 import CommonClient from "./CommonClient";
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -31,4 +33,4 @@ export default function RootLayout({
     </html>
   );
 }
-export const AdminUrl = "http://localhost:3001";
+export const AdminUrl = "http://192.168.1.9:3001";

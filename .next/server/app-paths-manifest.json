@@ -1,7 +1,4 @@
 {
   "/page": "app/page.js",
-  "/home-2/page": "app/home-2/page.js",
-  "/collection/page": "app/collection/page.js",
-  "/collection-2/page": "app/collection-2/page.js",
-  "/product-detail/page": "app/product-detail/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js"
 }

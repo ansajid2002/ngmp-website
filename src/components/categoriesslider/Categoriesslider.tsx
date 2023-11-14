@@ -1,0 +1,135 @@
+"use client"
+import { AdminUrl } from "@/app/layout";
+import Image from "next/image";
+import React, { FC } from "react"
+import Head from "next/head";
+import Slider from "react-slick"
+
+
+export interface CategoriesSliderProps {
+    categoriesdata: any
+}
+
+const CategoriesSlider: FC<CategoriesSliderProps> = ({
+    categoriesdata
+}) => {
+
+
+    const settings = {
+        dots: false,
+        infinite: true,
+        slidesToShow: 6,
+        autoplay: true,
+        pauseOnHover: true,
+        speed: 1000,
+        autoplaySpeed: 2000,
+        swipeToSlide: true,
+        cssEase: "linear",
+        nextArrow: <SampleNextArrow />,
+        prevArrow: <SamplePrevArrow />,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 3,
+                },
+            },
+            {
+                breakpoint: 640,
+                settings: {
+                    slidesToShow: 2,
+                },
+            },
+
+        ],
+
+    };
+
+
+    function SampleNextArrow(props: any) {
+        const { className, style, onClick } = props;
+        return (
+            <div
+                className={className}
+                style={{ ...style, display: "block", background: "red", color: 'red' }}
+                onClick={onClick}
+            />
+        );
+    }
+
+    function SamplePrevArrow(props: any) {
+        const { className, style, onClick } = props;
+        return (
+            <div
+                className={className}
+                style={{ ...style, display: "block", background: "red", color: 'red' }}
+                onClick={onClick}
+            />
+        );
+    }
+
+    return (<>
+
+        <Head>
+            <link rel="stylesheet" type="text/css" charSet="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" />
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
+        </Head>
+        <div className=" ">
+            <h1 className=" mb-20 text-[36px] tracking-wide font-semibold text-center">CATEGORIES</h1>
+            <div>
+                <Slider {...settings} >
+                    {categoriesdata.slice(0, 20).map((single: any, index: any) => {
+                        return (
+                            <main className="mx-1">
+                                <div key={index} className="" >
+                                    <div className=" overflow-hidden mx-auto border w-[140px] h-[140px] rounded-full flex items-center justify-center">
+                                        <Image
+                                            width={130} height={130}
+                                            className=" object-cover rounded-md"
+                                            src={`${AdminUrl}/uploads/CatgeoryImages/${single.category_image_url}`}
+                                            alt={single.category_name} />
+                                    </div>
+                                    <h1 className="text-center mt-1 line-clamp-2 text-lg font-semibold ">{single.category_name}</h1>
+                                </div>
+
+                            </main>
+
+                        )
+                    })}
+
+
+                </Slider>
+            </div>
+            <div className="mt-12">
+                <Slider {...settings} >
+
+
+                    {categoriesdata.slice(20,).map((single: any, index: any) => {
+                        return (
+                            <main className="mx-1">
+
+                                <div key={index}>
+                                    <div className=" overflow-hidden mx-auto border w-[140px] h-[140px] rounded-full flex items-center justify-center">
+
+                                        <Image
+                                            width={130} height={130}
+                                            className=" object-cover rounded-md"
+                                            src={`${AdminUrl}/uploads/CatgeoryImages/${single.category_image_url}`}
+                                            alt={single.category_name} />
+                                    </div>
+                                    <h1 className="text-center mt-1 line-clamp-2 text-lg font-semibold">{single.category_name}</h1>
+                                </div>
+
+                            </main>
+
+                        )
+                    })}
+
+                </Slider>
+            </div>
+        </div>
+    </>
+    )
+}
+
+export default CategoriesSlider

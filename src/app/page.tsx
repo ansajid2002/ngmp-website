@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import SectionHowItWork from "@/components/SectionHowItWork/SectionHowItWork";
+import CategoriesSlider from "@/components/categoriesslider/Categoriesslider";
 import BackgroundSection from "@/components/BackgroundSection/BackgroundSection";
 import SectionPromo1 from "@/components/SectionPromo1";
 import SectionHero2 from "@/components/SectionHero/SectionHero2";
@@ -43,6 +44,20 @@ export async function getcustomerData(vendorId: any) {
     console.error("Error fetching customer data:", error);
     throw error; // Re-throw the error to handle it at a higher level if needed
   }
+}
+export async function getBannerdata() {
+  try {
+    const response = await fetch(`${AdminUrl}/api/getBanners`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch banner data: ${response.status}`);
+    }
+    const bannersData = await response.json();
+    return bannersData;
+  } catch (error) {
+    console.error("Error fetching customer data:", error);
+    throw error; // Re-throw the error to handle it at a higher level if needed
+  }
+  
 }
 
 export const fetchCategoriesAndSubcategories = async (): Promise<Category[] | null> => {
@@ -96,20 +111,15 @@ export const getAllProducts = async () => {
 
 async function PageHome() {
   const getAllProductsData = await getAllProducts()
+  const bannersData = await getBannerdata()
+ const fetchCategoriesAndSubcategoriesdata = await fetchCategoriesAndSubcategories()
 
+ 
   return (
     <div className="nc-PageHome relative overflow-hidden">
-      {/* <div className="">
-        {
-          categoryDatas?.map((d:any) => {
-            return (
-              <h1 className=" line-clamp-1 mx-4">{d.category_name}</h1>
-            )
-          })
-        }
-      </div> */}
+      
 
-      <SectionHero2 />
+      <SectionHero2 data={bannersData} />
 
       <div className="mt-24 lg:mt-32">
         <DiscoverMoreSlider />
@@ -124,6 +134,12 @@ async function PageHome() {
         <div className="py-24 lg:py-32 border-t border-b border-slate-200 dark:border-slate-700">
           <SectionHowItWork />
         </div>
+
+{/* changed by sajid adding categories slider  */}
+        
+        <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata}/>
+{/* changed by sajid adding categories slider  */}
+
         <SectionPromo1 />
 
         <div className="relative py-24 lg:py-32">
