@@ -10,8 +10,9 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import logo from "@/images/mainlogo.png";
 import Image from "next/image";
+import Link from "next/link";
 
-export interface MainNav2LoggedProps {}
+export interface MainNav2LoggedProps { }
 
 const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
   const inputRef = createRef<HTMLInputElement>();
@@ -82,7 +83,9 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
 
         <div className="lg:flex-1 flex items-center">
           {/* <Logo className="flex-shrink-0" /> */}
-          <Image src={logo} alt="website main logo" className="w-32" />
+          <Link href="/">
+            <Image src={logo} alt="website main logo" className="w-32" />
+          </Link>
         </div>
 
         <div className="flex-[2] hidden lg:flex justify-center mx-4">
@@ -99,7 +102,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
             </button>
           )}
           <AvatarDropdown />
-          <CartDropdown />
+          {/* <CartDropdown /> */}
         </div>
       </div>
     );

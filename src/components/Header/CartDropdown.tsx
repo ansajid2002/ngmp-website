@@ -8,17 +8,19 @@ import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import Image from "next/image";
 import Link from "next/link";
+import { AdminUrl } from "@/app/layout";
 
 export default function CartDropdown() {
   const renderProduct = (item: Product, index: number, close: () => void) => {
-    const { name, price, image } = item;
+
+    const { ad_title, mrp, sellingprice, images } = item;
     return (
       <div key={index} className="flex py-5 last:pb-0">
         <div className="relative h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-slate-100">
           <Image
             fill
-            src={image}
-            alt={name}
+            src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+            alt={ad_title}
             className="h-full w-full object-contain object-center"
           />
           <Link
@@ -34,7 +36,7 @@ export default function CartDropdown() {
               <div>
                 <h3 className="text-base font-medium ">
                   <Link onClick={close} href={"/product-detail"}>
-                    {name}
+                    {ad_title}
                   </Link>
                 </h3>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
@@ -43,7 +45,7 @@ export default function CartDropdown() {
                   <span>{"XL"}</span>
                 </p>
               </div>
-              <Prices price={price} className="mt-0.5" />
+              <Prices price={mrp} className="mt-0.5" />
             </div>
           </div>
           <div className="flex flex-1 items-end justify-between text-sm">

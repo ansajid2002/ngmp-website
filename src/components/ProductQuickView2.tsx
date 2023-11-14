@@ -20,28 +20,32 @@ import detail3JPG from "@/images/products/detail3.jpg";
 import NotifyAddTocart from "./NotifyAddTocart";
 import Image from "next/image";
 import Link from "next/link";
+import { AdminUrl } from "@/app/layout";
 
 export interface ProductQuickView2Props {
-  className?: string;
+  className?: string,
+  item?: any
 }
 
-const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "" }) => {
-  const { sizes, variants, status, allOfSizes } = PRODUCTS[1];
+const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item }) => {
   const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
-
+  // console.log(item, 'hey i am here');
+  const { ad_title, sellingprice, images } = item
   const [variantActive, setVariantActive] = useState(0);
-  const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
+  // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
+  const [sizeSelected, setSizeSelected] = useState("");
   const [qualitySelected, setQualitySelected] = useState(1);
 
   const notifyAddTocart = () => {
     toast.custom(
       (t) => (
         <NotifyAddTocart
-          productImage={LIST_IMAGES_DEMO[0]}
+          productImage={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
           qualitySelected={qualitySelected}
           show={t.visible}
           sizeSelected={sizeSelected}
           variantActive={variantActive}
+          itemData={item}
         />
       ),
       { position: "top-right", id: "nc-product-notify", duration: 3000 }
@@ -49,9 +53,9 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "" }) => {
   };
 
   const renderVariants = () => {
-    if (!variants || !variants.length) {
-      return null;
-    }
+    // if (!variants || !variants.length) {
+    //   return null;
+    // }
 
     return (
       <div>
@@ -59,20 +63,19 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "" }) => {
           <span className="text-sm font-medium">
             Color:
             <span className="ml-1 font-semibold">
-              {variants[variantActive].name}
+              {/* {variants[variantActive].ad_title} */}
             </span>
           </span>
         </label>
         <div className="flex mt-3">
-          {variants.map((variant, index) => (
+          {/* {variants.map((variant, index) => (
             <div
               key={index}
               onClick={() => setVariantActive(index)}
-              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${
-                variantActive === index
-                  ? "border-primary-6000 dark:border-primary-500"
-                  : "border-transparent"
-              }`}
+              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === index
+                ? "border-primary-6000 dark:border-primary-500"
+                : "border-transparent"
+                }`}
             >
               <div
                 className="absolute inset-0.5 rounded-full overflow-hidden z-0 bg-cover"
@@ -81,24 +84,24 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "" }) => {
                     // @ts-ignore
                     typeof variant.thumbnail?.src === "string"
                       ? // @ts-ignore
-                        variant.thumbnail?.src
+                      variant.thumbnail?.src
                       : typeof variant.thumbnail === "string"
-                      ? variant.thumbnail
-                      : ""
-                  })`,
+                        ? variant.thumbnail
+                        : ""
+                    })`,
                 }}
               ></div>
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
     );
   };
 
   const renderSizeList = () => {
-    if (!allOfSizes || !sizes || !sizes.length) {
-      return null;
-    }
+    // if (!allOfSizes || !sizes || !sizes.length) {
+    //   return null;
+    // }
     return (
       <div>
         <div className="flex justify-between font-medium text-sm">
@@ -118,22 +121,20 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "" }) => {
           </a>
         </div>
         <div className="grid grid-cols-5 sm:grid-cols-7 gap-2 mt-3">
-          {allOfSizes.map((size, index) => {
+          {/* {allOfSizes.map((size, index) => {
             const isActive = size === sizeSelected;
             const sizeOutStock = !sizes.includes(size);
             return (
               <div
                 key={index}
                 className={`relative h-10 sm:h-11 rounded-2xl border flex items-center justify-center 
-                text-sm sm:text-base uppercase font-semibold select-none overflow-hidden z-0 ${
-                  sizeOutStock
+                text-sm sm:text-base uppercase font-semibold select-none overflow-hidden z-0 ${sizeOutStock
                     ? "text-opacity-20 dark:text-opacity-20 cursor-not-allowed"
                     : "cursor-pointer"
-                } ${
-                  isActive
+                  } ${isActive
                     ? "bg-primary-6000 border-primary-6000 text-white hover:bg-primary-6000"
                     : "border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
-                }`}
+                  }`}
                 onClick={() => {
                   if (sizeOutStock) {
                     return;
@@ -144,7 +145,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "" }) => {
                 {size}
               </div>
             );
-          })}
+          })} */}
         </div>
       </div>
     );
@@ -197,14 +198,14 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "" }) => {
         {/* ---------- 1 HEADING ----------  */}
         <div>
           <h2 className="text-2xl 2xl:text-3xl font-semibold">
-            <Link href="/product-detail">Heavy Weight Shoes</Link>
+            <Link href="/product-detail">{ad_title}</Link>
           </h2>
 
           <div className="flex items-center mt-5 space-x-4 sm:space-x-5">
             {/* <div className="flex text-xl font-semibold">$112.00</div> */}
             <Prices
               contentClass="py-1 px-2 md:py-1.5 md:px-3 text-lg font-semibold"
-              price={112}
+              price={sellingprice}
             />
 
             <div className="h-6 border-l border-slate-300 dark:border-slate-700"></div>
@@ -281,8 +282,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "" }) => {
               <Image
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                src={LIST_IMAGES_DEMO[0]}
-                className="w-full rounded-xl object-cover"
+                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+                className="w-full rounded-xl object-contain"
                 alt="product detail 1"
               />
             </div>

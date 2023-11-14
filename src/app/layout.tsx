@@ -31,4 +31,4 @@ export default function RootLayout({
     </html>
   );
 }
-export const AdminUrl = "http://192.168.1.10:3001";
+export const AdminUrl = "http://localhost:3001";

@@ -27,14 +27,15 @@ import ModalViewAllReviews from "./ModalViewAllReviews";
 import NotifyAddTocart from "@/components/NotifyAddTocart";
 import Image from "next/image";
 import AccordionInfo from "@/components/AccordionInfo";
+import { AdminUrl } from "../layout";
 
 const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
 
 const ProductDetailPage = () => {
-  const { sizes, variants, status, allOfSizes, image } = PRODUCTS[0];
   //
   const [variantActive, setVariantActive] = useState(0);
-  const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
+  // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
+  const [sizeSelected, setSizeSelected] = useState("");
   const [qualitySelected, setQualitySelected] = useState(1);
   const [isOpenModalViewAllReviews, setIsOpenModalViewAllReviews] =
     useState(false);
@@ -44,11 +45,12 @@ const ProductDetailPage = () => {
     toast.custom(
       (t) => (
         <NotifyAddTocart
-          productImage={image}
+          productImage={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
           qualitySelected={qualitySelected}
           show={t.visible}
           sizeSelected={sizeSelected}
           variantActive={variantActive}
+          itemData={item}
         />
       ),
       { position: "top-right", id: "nc-product-notify", duration: 3000 }
@@ -56,30 +58,29 @@ const ProductDetailPage = () => {
   };
 
   const renderVariants = () => {
-    if (!variants || !variants.length) {
-      return null;
-    }
+    // if (!variants || !variants.length) {
+    //   return null;
+    // }
 
     return (
       <div>
         <label htmlFor="">
           <span className="text-sm font-medium">
             Color:
-            <span className="ml-1 font-semibold">
+            {/* <span className="ml-1 font-semibold">
               {variants[variantActive].name}
-            </span>
+            </span> */}
           </span>
         </label>
         <div className="flex mt-3">
-          {variants.map((variant, index) => (
+          {/* {variants.map((variant, index) => (
             <div
               key={index}
               onClick={() => setVariantActive(index)}
-              className={`relative flex-1 max-w-[75px] h-10 sm:h-11 rounded-full border-2 cursor-pointer ${
-                variantActive === index
+              className={`relative flex-1 max-w-[75px] h-10 sm:h-11 rounded-full border-2 cursor-pointer ${variantActive === index
                   ? "border-primary-6000 dark:border-primary-500"
                   : "border-transparent"
-              }`}
+                }`}
             >
               <div
                 className="absolute inset-0.5 rounded-full overflow-hidden z-0 object-cover bg-cover"
@@ -88,24 +89,24 @@ const ProductDetailPage = () => {
                     // @ts-ignore
                     typeof variant.thumbnail?.src === "string"
                       ? // @ts-ignore
-                        variant.thumbnail?.src
+                      variant.thumbnail?.src
                       : typeof variant.thumbnail === "string"
-                      ? variant.thumbnail
-                      : ""
-                  })`,
+                        ? variant.thumbnail
+                        : ""
+                    })`,
                 }}
               ></div>
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
     );
   };
 
   const renderSizeList = () => {
-    if (!allOfSizes || !sizes || !sizes.length) {
-      return null;
-    }
+    // if (!allOfSizes || !sizes || !sizes.length) {
+    //   return null;
+    // }
     return (
       <div>
         <div className="flex justify-between font-medium text-sm">
@@ -125,22 +126,20 @@ const ProductDetailPage = () => {
           </a>
         </div>
         <div className="grid grid-cols-5 sm:grid-cols-7 gap-2 mt-3">
-          {allOfSizes.map((size, index) => {
+          {/* {allOfSizes.map((size, index) => {
             const isActive = size === sizeSelected;
             const sizeOutStock = !sizes.includes(size);
             return (
               <div
                 key={index}
                 className={`relative h-10 sm:h-11 rounded-2xl border flex items-center justify-center 
-                text-sm sm:text-base uppercase font-semibold select-none overflow-hidden z-0 ${
-                  sizeOutStock
+                text-sm sm:text-base uppercase font-semibold select-none overflow-hidden z-0 ${sizeOutStock
                     ? "text-opacity-20 dark:text-opacity-20 cursor-not-allowed"
                     : "cursor-pointer"
-                } ${
-                  isActive
+                  } ${isActive
                     ? "bg-primary-6000 border-primary-6000 text-white hover:bg-primary-6000"
                     : "border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
-                }`}
+                  }`}
                 onClick={() => {
                   if (sizeOutStock) {
                     return;
@@ -151,7 +150,7 @@ const ProductDetailPage = () => {
                 {size}
               </div>
             );
-          })}
+          })} */}
         </div>
       </div>
     );

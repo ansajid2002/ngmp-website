@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import NcImage from "@/shared/NcImage/NcImage";
+import { AdminUrl } from "@/app/layout";
 
 export interface ProductCardProps {
   className?: string;
@@ -30,18 +31,21 @@ const ProductCard: FC<ProductCardProps> = ({
   isLiked,
 }) => {
   const {
-    name,
-    price,
+    ad_title,
+    mrp,
+    sellingprice,
     description,
     sizes,
     variants,
     variantType,
     status,
-    image,
+    images,
     rating,
     id,
     numberOfReviews,
   } = data;
+
+  console.log(data);
 
   const [variantActive, setVariantActive] = useState(0);
   const [showModalQuickView, setShowModalQuickView] = useState(false);
@@ -83,8 +87,8 @@ const ProductCard: FC<ProductCardProps> = ({
           <Image
             width={80}
             height={96}
-            src={image}
-            alt={name}
+            src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+            alt={ad_title}
             className="absolute object-cover object-center"
           />
         </div>
@@ -93,16 +97,16 @@ const ProductCard: FC<ProductCardProps> = ({
           <div>
             <div className="flex justify-between ">
               <div>
-                <h3 className="text-base font-medium ">{name}</h3>
+                <h3 className="text-base font-medium ">{ad_title}</h3>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   <span>
-                    {variants ? variants[variantActive].name : `Natural`}
+                    {variants ? variants[variantActive].ad_title : `Natural`}
                   </span>
                   <span className="mx-2 border-s border-slate-200 dark:border-slate-700 h-4"></span>
                   <span>{size || "XL"}</span>
                 </p>
               </div>
-              <Prices price={price} className="mt-0.5" />
+              <Prices price={sellingprice} className="mt-0.5" />
             </div>
           </div>
           <div className="flex flex-1 items-end justify-between text-sm">
@@ -163,12 +167,11 @@ const ProductCard: FC<ProductCardProps> = ({
             <div
               key={index}
               onClick={() => setVariantActive(index)}
-              className={`relative w-6 h-6 rounded-full overflow-hidden z-10 border cursor-pointer ${
-                variantActive === index
-                  ? getBorderClass(variant.color)
-                  : "border-transparent"
-              }`}
-              title={variant.name}
+              className={`relative w-6 h-6 rounded-full overflow-hidden z-10 border cursor-pointer ${variantActive === index
+                ? getBorderClass(variant.color)
+                : "border-transparent"
+                }`}
+              title={variant.ad_title}
             >
               <div
                 className={`absolute inset-0.5 rounded-full z-0 ${variant.color}`}
@@ -185,12 +188,11 @@ const ProductCard: FC<ProductCardProps> = ({
           <div
             key={index}
             onClick={() => setVariantActive(index)}
-            className={`relative w-11 h-6 rounded-full overflow-hidden z-10 border cursor-pointer ${
-              variantActive === index
-                ? "border-black dark:border-slate-300"
-                : "border-transparent"
-            }`}
-            title={variant.name}
+            className={`relative w-11 h-6 rounded-full overflow-hidden z-10 border cursor-pointer ${variantActive === index
+              ? "border-black dark:border-slate-300"
+              : "border-transparent"
+              }`}
+            title={variant.ad_title}
           >
             <div
               className="absolute inset-0.5 rounded-full overflow-hidden z-0 bg-cover"
@@ -199,11 +201,11 @@ const ProductCard: FC<ProductCardProps> = ({
                   // @ts-ignore
                   typeof variant.thumbnail?.src === "string"
                     ? // @ts-ignore
-                      variant.thumbnail?.src
+                    variant.thumbnail?.src
                     : typeof variant.thumbnail === "string"
-                    ? variant.thumbnail
-                    : ""
-                })`,
+                      ? variant.thumbnail
+                      : ""
+                  })`,
               }}
             ></div>
           </div>
@@ -219,12 +221,12 @@ const ProductCard: FC<ProductCardProps> = ({
           className="shadow-lg"
           fontSize="text-xs"
           sizeClass="py-2 px-4"
-            onClick={() => setShowModalQuickView(true)}
+          onClick={() => setShowModalQuickView(true)}
         >
-        <ArrowsPointingOutIcon className="w-3.5 h-3.5" />
-        <span className="ms-1 pl-1.5 text-[14px]">Quick view</span>
+          <ArrowsPointingOutIcon className="w-3.5 h-3.5" />
+          <span className="ms-1 pl-1.5 text-[14px]">Quick view</span>
         </ButtonPrimary>
-       
+
       </div>
     );
   };
@@ -262,8 +264,8 @@ const ProductCard: FC<ProductCardProps> = ({
           <Link href={"/product-detail"} className="block">
             <NcImage
               containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0"
-              src={image}
-              className="object-cover w-full h-full drop-shadow-xl"
+              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+              className="object-contain w-full h-full drop-shadow-xl"
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
               alt="product"
@@ -277,8 +279,8 @@ const ProductCard: FC<ProductCardProps> = ({
         <div className="space-y-4 px-2.5 pt-5 pb-2.5">
           {/* {renderVariants()} */}
           <div>
-            <h2 className="nc-ProductCard__title text-base font-semibold transition-colors">
-              {name}
+            <h2 className="nc-ProductCard__title text-base font-semibold transition-colors line-clamp-1">
+              {ad_title}
             </h2>
             <p className={`text-sm text-slate-500 dark:text-slate-400 mt-1 `}>
               {description}
@@ -286,7 +288,7 @@ const ProductCard: FC<ProductCardProps> = ({
           </div>
 
           <div className="flex justify-between items-end ">
-            <Prices price={price} />
+            <Prices price={mrp} />
             <div className="flex items-center mb-0.5">
               <StarIcon className="w-5 h-5 pb-[1px] text-amber-400" />
               <span className="text-sm ms-1 text-slate-500 dark:text-slate-400">
@@ -300,6 +302,7 @@ const ProductCard: FC<ProductCardProps> = ({
       {/* QUICKVIEW */}
       <ModalQuickView
         show={showModalQuickView}
+        item={data}
         onCloseModalQuickView={() => setShowModalQuickView(false)}
       />
     </>

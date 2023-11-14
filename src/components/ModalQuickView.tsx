@@ -9,15 +9,16 @@ import { usePathname } from "next/navigation";
 
 export interface ModalQuickViewProps {
   show: boolean;
+  item: any,
   onCloseModalQuickView: () => void;
 }
 
 const ModalQuickView: FC<ModalQuickViewProps> = ({
   show,
+  item,
   onCloseModalQuickView,
 }) => {
   const pathname = usePathname();
-
   return (
     <Transition appear show={show} as={Fragment}>
       <Dialog
@@ -61,7 +62,7 @@ const ModalQuickView: FC<ModalQuickViewProps> = ({
                 </span>
 
                 <div className="flex-1 overflow-y-auto rounded-xl hiddenScrollbar">
-                    <ProductQuickView2 />
+                  <ProductQuickView2 item={item} />
                 </div>
               </div>
             </div>
