@@ -26,8 +26,9 @@ export interface Product {
   images: any;
   description: string;
   category: string;
-  tags: string[];
+  label: string;
   link: "/product-detail/";
+  added_quantity: string,
   variants?: ProductVariant[];
   variantType?: "color" | "image";
   sizes?: string[];
@@ -38,10 +39,10 @@ export interface Product {
 }
 
 export interface bannerData {
-  id:number,
-  banner_url:string,
-  title:string,
-  link:string
+  id: number,
+  banner_url: string,
+  title: string,
+  link: string
 }
 
 const DEMO_VARIANTS: ProductVariant[] = [

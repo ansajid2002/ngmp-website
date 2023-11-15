@@ -1,11 +1,15 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import MainNav2Logged from "./MainNav2Logged";
 
-export interface HeaderLoggedProps {}
+export interface HeaderLoggedProps {
+  customerId: string;
+}
 
-const HeaderLogged: FC<HeaderLoggedProps> = () => {
+const HeaderLogged: FC<HeaderLoggedProps> = ({ customerId }) => {
+  
+
   return (
-    <div className="nc-HeaderLogged sticky top-0 w-full z-40 ">
+    <div className="sticky top-0 w-full z-40">
       <MainNav2Logged />
     </div>
   );

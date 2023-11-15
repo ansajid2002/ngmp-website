@@ -5,8 +5,9 @@ import React, { FC } from "react"
 import Head from "next/head";
 import Slider from "react-slick"
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import {useDispatch} from "react-redux"
+import { useDispatch } from "react-redux"
 import { login, logout } from "@/redux/features/authtutorialslice";
+import Heading from "../Heading";
 
 
 export interface CategoriesSliderProps {
@@ -46,31 +47,10 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
 
     };
 
-
-    function SampleNextArrow(props: any) {
-        const { className, style, onClick } = props;
-        return (
-            <div
-                className={className}
-                style={{ ...style, display: "block", background: "red", color: 'red' }}
-                onClick={onClick}
-            />
-        );
-    }
-
-    function SamplePrevArrow(props: any) {
-        const { className, style, onClick } = props;
-        return (
-            <div
-                className={className}
-                style={{ ...style, display: "block", background: "red", color: 'red' }}
-                onClick={onClick}
-            />
-        );
-    }
     const dispatch = useDispatch<AppDispatch>()
+
+    const { username } = useAppSelector((store) => store.authReducer.value)
     
-    const { username} = useAppSelector((store) => store.authReducer.value)
 
     return (<>
 
@@ -79,14 +59,15 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
         </Head>
         <div className=" ">
-            <h1 className=" mb-20 text-[36px] tracking-wide font-semibold text-center">CATEGORIES</h1>
-            <div className="my-24 border ">
-            <h1>SAJID IS TESTING REDUX STORE</h1>
-            <button onClick={() => dispatch(login()) }>Login</button>
-            <p>{username}</p>
-            <button onClick={() => dispatch(logout()) }>Logout</button>
+            <Heading title="CATEGORIES" />
+            {/* <h1 className=" mb-20 text-[36px] tracking-wide font-semibold text-center">CATEGORIES</h1> */}
+            {/* <div className="my-24 border ">
+                <h1>SAJID IS TESTING REDUX STORE</h1>
+                <button onClick={() => dispatch(login())}>Login</button>
+                <p>{username}</p>
+                <button onClick={() => dispatch(logout())}>Logout</button>
 
-            </div>
+            </div> */}
             <div>
                 <Slider {...settings} >
                     {categoriesdata.slice(0, 20).map((single: any, index: any) => {

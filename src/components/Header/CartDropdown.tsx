@@ -9,11 +9,48 @@ import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import Image from "next/image";
 import Link from "next/link";
 import { AdminUrl } from "@/app/layout";
+import { useAppSelector } from "@/redux/store";
+import { removeItem } from "@/redux/slices/cartSlice";
+import { useDispatch } from "react-redux";
 
 export default function CartDropdown() {
+  const { cartItems } = useAppSelector((store) => store.cart)
+  const dispatch = useDispatch()
+  const customerId = 71
   const renderProduct = (item: Product, index: number, close: () => void) => {
+    const { ad_title, mrp, sellingprice, images, label, added_quantity } = item;
 
-    const { ad_title, mrp, sellingprice, images } = item;
+    const handleRemove = async (itemId: Number, item: any) => {
+      try {
+        dispatch(removeItem(item));
+
+        if (customerId) {
+          const { category, subcategory, uniquepid, label } = item;
+          
+          const replacecategory = category.replace(/[^\w\s]/g, '').replace(/\s/g, '');
+          const replacesubcategory = subcategory.replace(/[^\w\s]/g, '').replace(/\s/g, '');
+          console.log(replacecategory, subcategory);
+
+          // Construct the URL for your backend endpoint
+          const apiUrl = `/api/DeleteCart/${replacecategory}/${replacesubcategory}/${uniquepid}/${label || 'empty'}/${customerId}`;
+          console.log(apiUrl);
+
+          // Make a DELETE request to your backend using async/await
+          const response = await fetch(apiUrl);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const data = await response.json();
+        }
+        // Handle success, update UI or perform any other action
+      } catch (error) {
+        console.error('Error removing product from cart:', error);
+        // Handle error, show a message to the user, or retry the operation
+      }
+    };
+
     return (
       <div key={index} className="flex py-5 last:pb-0">
         <div className="relative h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-slate-100">
@@ -35,25 +72,26 @@ export default function CartDropdown() {
             <div className="flex justify-between ">
               <div>
                 <h3 className="text-base font-medium ">
-                  <Link onClick={close} href={"/product-detail"}>
+                  <Link onClick={close} className="line-clamp-2" href={"/product-detail"}>
                     {ad_title}
                   </Link>
                 </h3>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  <span>{`Natural`}</span>
-                  <span className="mx-2 border-l border-slate-200 dark:border-slate-700 h-4"></span>
-                  <span>{"XL"}</span>
+                  {/* <span>{`Natural`}</span>
+                  <span className="mx-2 border-l border-slate-200 dark:border-slate-700 h-4"></span> */}
+                  <span>{label}</span>
                 </p>
               </div>
-              <Prices price={mrp} className="mt-0.5" />
+              <Prices price={mrp} sellingprice={sellingprice} className="mt-0.5" />
             </div>
           </div>
           <div className="flex flex-1 items-end justify-between text-sm">
-            <p className="text-gray-500 dark:text-slate-400">{`Qty 1`}</p>
+            <p className="text-gray-500 dark:text-slate-400">{`Qty ${added_quantity}`}</p>
 
             <div className="flex">
               <button
                 type="button"
+                onClick={() => handleRemove(item.uniquepid, item)}
                 className="font-medium text-primary-6000 dark:text-primary-500 "
               >
                 Remove
@@ -65,6 +103,19 @@ export default function CartDropdown() {
     );
   };
 
+  const calculateSubtotal = () => {
+    let subtotal = 0;
+
+    if (cartItems) {
+      cartItems.forEach((item: any) => {
+        subtotal += parseFloat(item.sellingprice) * item.added_quantity;
+      });
+    }
+
+    return subtotal;
+  };
+
+
   return (
     <Popover className="relative">
       {({ open, close }) => (
@@ -75,7 +126,7 @@ export default function CartDropdown() {
                  group w-10 h-10 sm:w-12 sm:h-12 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 relative`}
           >
             <div className="w-3.5 h-3.5 flex items-center justify-center bg-primary-500 absolute top-1.5 right-1.5 rounded-full text-[10px] leading-none text-white font-medium">
-              <span className="mt-[1px]">3</span>
+              <span className="mt-[1px]">{cartItems.length || 0}</span>
             </div>
             <svg
               className="w-6 h-6"
@@ -134,8 +185,8 @@ export default function CartDropdown() {
                   <div className="max-h-[60vh] p-5 overflow-y-auto hiddenScrollbar">
                     <h3 className="text-xl font-semibold">Shopping cart</h3>
                     <div className="divide-y divide-slate-100 dark:divide-slate-700">
-                      {[PRODUCTS[0], PRODUCTS[1], PRODUCTS[2]].map(
-                        (item, index) => renderProduct(item, index, close)
+                      {cartItems && cartItems.map(
+                        (item: any, index: number) => renderProduct(item, index, close)
                       )}
                     </div>
                   </div>
@@ -147,7 +198,7 @@ export default function CartDropdown() {
                           Shipping and taxes calculated at checkout.
                         </span>
                       </span>
-                      <span className="">$299.00</span>
+                      <span className="">${calculateSubtotal()}</span>
                     </p>
                     <div className="flex space-x-2 mt-5">
                       <ButtonSecondary

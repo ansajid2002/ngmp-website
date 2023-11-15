@@ -17,6 +17,8 @@ import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import SectionGridFeatureItems from "@/components/SectionGridFeatureItems";
 import SectionMagazine5 from "@/app/blog/SectionMagazine5";
 import { AdminUrl } from "./layout";
+import { useDispatch } from "react-redux";
+import { addCarts } from "@/redux/slices/cartSlice";
 
 
 interface Subcategory {
@@ -45,6 +47,7 @@ export async function getcustomerData(vendorId: any) {
     throw error; // Re-throw the error to handle it at a higher level if needed
   }
 }
+
 export async function getBannerdata() {
   try {
     const response = await fetch(`${AdminUrl}/api/getBanners`);
@@ -109,15 +112,13 @@ export const getAllProducts = async () => {
   }
 };
 
-
 async function PageHome() {
   const getAllProductsData = await getAllProducts()
   const bannersData = await getBannerdata()
   const fetchCategoriesAndSubcategoriesdata = await fetchCategoriesAndSubcategories()
-  
-  return (
-    <div className="nc-PageHome relative overflow-hidden">
 
+  return (
+    <div className="relative overflow-hidden">
 
       <SectionHero2 data={bannersData} />
 

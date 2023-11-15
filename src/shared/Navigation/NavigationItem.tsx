@@ -1,5 +1,5 @@
 "use client";
-
+import { useEffect } from 'react'
 import { Popover, Transition } from "@/app/headlessui";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import CardCategory3 from "@/components/CardCategories/CardCategory3";
@@ -8,6 +8,9 @@ import { Route } from "@/routers/types";
 import Link from "next/link";
 import Image from "next/image";
 import { AdminUrl } from "@/app/layout";
+import { useDispatch } from "react-redux";
+import { addCarts } from '@/redux/slices/cartSlice';
+import { revalidatePath } from 'next/cache';
 
 export interface NavItemType {
   id: string;
@@ -40,11 +43,31 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     });
   };
 
+  const dispatch = useDispatch();
+
+  const customerId = 71
+  useEffect(() => {
+    const fetchCart = async (customerId: any) => {
+      try {
+        const response = await fetch(`/api/cart/${customerId}`, {
+          method: 'PUT', // Change the request method to PUT
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+        });
+        const data = await response.json();
+        dispatch(addCarts(data?.cartData));
+      } catch (error) {
+        console.error("Error fetching cart data:", error);
+      }
+    };
+
+    fetchCart(customerId);
+  }, [customerId, dispatch]);
+
   // ===================== MENU MEGAMENU =====================
   const renderMegaMenu = (menu: NavItemType) => {
-    console.log(menu);
-
-
     return (
       <li
         className={`menu-item flex-shrink-0 menu-megamenu menu-megamenu--large`}
@@ -52,54 +75,54 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
         {renderMainItem(menu)}
 
         <div className=" invisible bg-white  sub-menu absolute top-full inset-x-0 transform z-50">
-  <div className=" bg-white flex mx-24 border h-[400px] dark:bg-neutral-900 shadow-lg">
-    <div className="w-1/3 container  overflow-y-auto ">
-      <div className="text-sm border-t border-slate-200 dark:border-slate-700">
-        <div>
-          {menu.children?.map((item, index) => (
-            <div
-              key={index}
-              className="flex items-center hover:bg-[#00000010] rounded-md my-7 py-2"
-              onMouseEnter={() =>{
-                setHoveredItem(item.subcategories)
-                setCategoryTitle(item.category_name)
-              } }
-            >
-              <Image
-              className="rounded-full mr-3"
-              width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} />
-              <p className="font-medium text-slate-900 dark:text-neutral-200 text-base ">
-                {item.category_name}
-              </p>
-              {/* Add other content for each item */}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-    {
-      hoveredItem && (
-        <div className="mt-8 w-2/3 overflow-y-scroll">
-          {categoryTitle && <h1 className="text-2xl font-semibold text-center mb-12">{categoryTitle}</h1>}
-        <div className="flex   flex-wrap ">
-          {hoveredItem?.map((singlesubcat: any) => {
-            return (
-              <div className="mx-4 w-[140px] mb-4 ">
-                <div className="mx-auto">
-                <Image
-                className="mx-auto rounded-full border border-gray-300 h-[130px] w-[130px] hover:scale-110 "
-                width={150} height={150} src={`${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`} alt={singlesubcat.subcategory_name} />
-                  </div>
-                <h1 className="font-semibold text-[14px] line-clamp-2 text-center mt-2">{singlesubcat.subcategory_name}</h1>
+          <div className=" bg-white flex mx-24 border h-[400px] dark:bg-neutral-900 shadow-lg">
+            <div className="w-1/3 container  overflow-y-auto ">
+              <div className="text-sm border-t border-slate-200 dark:border-slate-700">
+                <div>
+                  {menu.children?.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center hover:bg-[#00000010] rounded-md my-7 py-2"
+                      onMouseEnter={() => {
+                        setHoveredItem(item.subcategories)
+                        setCategoryTitle(item.category_name)
+                      }}
+                    >
+                      <Image
+                        className="rounded-full mr-3"
+                        width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} />
+                      <p className="font-medium text-slate-900 dark:text-neutral-200 text-base ">
+                        {item.category_name}
+                      </p>
+                      {/* Add other content for each item */}
+                    </div>
+                  ))}
+                </div>
               </div>
-            )
-          })}
+            </div>
+            {
+              hoveredItem && (
+                <div className="mt-8 w-2/3 overflow-y-scroll">
+                  {categoryTitle && <h1 className="text-2xl font-semibold text-center mb-12">{categoryTitle}</h1>}
+                  <div className="flex   flex-wrap ">
+                    {hoveredItem?.map((singlesubcat: any) => {
+                      return (
+                        <div className="mx-4 w-[140px] mb-4 ">
+                          <div className="mx-auto">
+                            <Image
+                              className="mx-auto rounded-full border border-gray-300 h-[130px] w-[130px] hover:scale-110 "
+                              width={150} height={150} src={`${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`} alt={singlesubcat.subcategory_name} />
+                          </div>
+                          <h1 className="font-semibold text-[14px] line-clamp-2 text-center mt-2">{singlesubcat.subcategory_name}</h1>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            }
+          </div>
         </div>
-        </div>
-      )
-    }
-  </div>
-</div>
 
       </li>
     );

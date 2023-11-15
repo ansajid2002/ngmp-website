@@ -21,6 +21,7 @@ import NotifyAddTocart from "./NotifyAddTocart";
 import Image from "next/image";
 import Link from "next/link";
 import { AdminUrl } from "@/app/layout";
+import { useAppSelector } from "@/redux/store";
 
 export interface ProductQuickView2Props {
   className?: string,
@@ -53,6 +54,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
   const [sellingPriceData, setSellingPrice] = useState<number | null>(sellingprice)
   const [discountPercentage, setDiscountPercentage] = useState<number | null>(null);
   const [singleData, setsingleData] = useState(item)
+  const [selectedImage, setSelectedImage] = useState(images?.[0])
+  
 
   useEffect(() => {
     const fetchVariants = async () => {
@@ -220,8 +223,18 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
   };
 
   const renderVariants = () => {
+    if (!variantsWithArray) {
+      // Show skeleton skimmer placeholder when variants are not available yet
+      return (
+        <>
+          <div className="h-8 w-48 bg-gray-300 animate-pulse mb-2"></div>
+          <div className="h-10 w-80 bg-gray-300 animate-pulse"></div>
+        </>
+      );
+    }
+
     return (
-      variantsWithArray && variantsWithArray.map((variant: any, index: any) => (
+      variantsWithArray.map((variant: any, index: any) => (
         <>
           <label htmlFor="">
             <span className="text-sm font-medium">
@@ -232,14 +245,13 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
             </span>
           </label>
           <div className="flex mt-3">
-
             {
               variant?.values?.map((item: any, itemvar: any) => (
                 <div
                   key={itemvar}
                   onClick={() => {
-                    handleAttributeSelect(variant.attribute, item)
-                    setVariantActive(itemvar)
+                    handleAttributeSelect(variant.attribute, item);
+                    setVariantActive(itemvar);
                   }}
                   className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
                     ? "border-black/90 dark:border-white"
@@ -249,18 +261,14 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
                   <div
                     className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && 'bg-black text-white'}`}
                   >{item}</div>
-                </div >
+                </div>
               ))
             }
-
           </div>
         </>
       ))
-
     );
   };
-
-
 
   const renderSectionContent = () => {
     return (
@@ -305,7 +313,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         </div>
 
         {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
-        <div className="">{renderVariants()}</div>
+        {isvariant === "Variant" && <div className="">{renderVariants()}</div>}
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
         <div className="flex space-x-3.5">
@@ -348,23 +356,47 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
       {/* MAIn */}
       <div className="lg:flex">
         {/* CONTENT */}
-        <div className="w-full lg:w-[50%] ">
-          {/* HEADING */}
-          <div className="relative">
-            <div className="aspect-w-1 aspect-h-1">
+        <div className="flex flex-row w-full lg:w-[50%]">
+          {/* PRODUCT GALLERY */}
+          <div className="flex flex-col p-2 lg:w-[20%] h-[calc(100% - 2rem)] overflow-y-auto mb-2">
+            {images?.map((image: string, index: number) => (
+              <div
+                key={index}
+                className="h-18 mb-2 cursor-pointer"
+                onMouseOver={() => setSelectedImage(image)}
+              >
+                <div className="aspect-w-1 aspect-h-1">
+                  <Image
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                    className={`w-full rounded-xl object-cover transition duration-300 ${selectedImage === image ? 'ring-2 ring-primary' : ''
+                      }`}
+                    alt={`Product Detail ${index + 1}`}
+                    loading="lazy" // Add the lazy loading attribute here
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* MAIN IMAGE */}
+          <div className="flex-1">
+            <div className="relative aspect-w-1 aspect-h-1">
               <Image
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || images?.[0]}`}
                 className="w-full rounded-xl object-contain"
-                alt="product detail 1"
+                alt="Main Product Image"
+                loading="lazy" // Add the lazy loading attribute here
               />
             </div>
+          </div>
 
-            {/* STATUS */}
-
-            {/* META FAVORITES */}
-            <LikeButton className="absolute right-3 top-3 " />
+          {/* LIKE BUTTON */}
+          <div className="mt-2">
+            <LikeButton />
           </div>
         </div>
 

@@ -22,8 +22,6 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
   const [showSearchForm, setShowSearchForm] = useState(false);
   const router = useRouter();
 
-  
-
   const renderMagnifyingGlassIcon = () => {
     return (
       <svg
@@ -91,7 +89,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
             <Image src={logo} alt="website main logo" className=" w-32 md:w-40 xl:w-44 pb-1" />
           </Link>
         </div>
-        
+
 
         <div className="flex-[2] hidden lg:flex justify-center mx-4">
           {showSearchForm ? renderSearchForm() : <Navigation />}
@@ -107,7 +105,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
             </button>
           )}
           <AvatarDropdown />
-          {/* <CartDropdown /> */}
+          <CartDropdown />
         </div>
       </div>
     );
@@ -115,23 +113,23 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
 
   return (
     <header>
-      <section className="justify-around h-14 items-center bg-[#fb7601] border hidden md:flex ">
+      <section className="justify-around py-2 items-center bg-[#fb7601] border hidden md:flex ">
         <div className="flex items-center space-x-2">
-        <Image src={freeshipping} alt="website main logo" className=" w-8 lg:w-12" />
-                  <h1 className="text-[14px] lg:text-lg font-semibold">Free Shopping on all Orders</h1>
+          <Image src={freeshipping} alt="website main logo" className=" w-8 lg:w-10" />
+          <h1 className="text-[12px] lg:text-[14px] font-semibold">Free Shopping on all Orders</h1>
         </div>
         <div className="flex items-center space-x-2">
-        <Image src={negotiation} alt="website main logo" className="w-8 lg:w-12" />
-          <h1 className="text-[14px] lg:text-lg font-semibold">Negotiation Available</h1>
+          <Image src={negotiation} alt="website main logo" className="w-8 lg:w-10" />
+          <h1 className="text-[12px] lg:text-[14px] font-semibold">Negotiation Available</h1>
         </div>
         <div className="flex items-center space-x-2">
-        <Image src={mobile} alt="website main logo" className=" w-8 lg:w-12" />
-          <h1 className="text-[14px] lg:text-lg font-semibold">Get The Temu App</h1>
+          <Image src={mobile} alt="website main logo" className=" w-8 lg:w-10" />
+          <h1 className="text-[12px] lg:text-[14px] font-semibold">Get The Temu App</h1>
         </div>
       </section>
-    <div className="nc-MainNav2Logged relative z-10 md:pt-2  bg-white dark:bg-neutral-900 border-b border-slate-100 dark:border-slate-700">
-      <div className=" container ">{renderContent()}</div>
-    </div>
+      <div className="nc-MainNav2Logged relative z-10 md:pt-2  bg-white dark:bg-neutral-900 border-b border-slate-100 dark:border-slate-700">
+        <div className=" container ">{renderContent()}</div>
+      </div>
     </header>
   );
 };
