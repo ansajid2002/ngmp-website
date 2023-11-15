@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, { FC } from "react"
 import Head from "next/head";
 import Slider from "react-slick"
+import Heading from "../Heading";
 
 
 export interface CategoriesSliderProps {
@@ -20,13 +21,11 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
         infinite: true,
         slidesToShow: 6,
         autoplay: true,
-        pauseOnHover: true,
+        pauseOnHover: false,
         speed: 1000,
-        autoplaySpeed: 2000,
+        autoplaySpeed: 1000,
         swipeToSlide: true,
         cssEase: "linear",
-        nextArrow: <SampleNextArrow />,
-        prevArrow: <SamplePrevArrow />,
         responsive: [
             {
                 breakpoint: 1024,
@@ -46,36 +45,14 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
     };
 
 
-    function SampleNextArrow(props: any) {
-        const { className, style, onClick } = props;
-        return (
-            <div
-                className={className}
-                style={{ ...style, display: "block", background: "red", color: 'red' }}
-                onClick={onClick}
-            />
-        );
-    }
-
-    function SamplePrevArrow(props: any) {
-        const { className, style, onClick } = props;
-        return (
-            <div
-                className={className}
-                style={{ ...style, display: "block", background: "red", color: 'red' }}
-                onClick={onClick}
-            />
-        );
-    }
-
     return (<>
 
         <Head>
             <link rel="stylesheet" type="text/css" charSet="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" />
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
         </Head>
-        <div className=" ">
-            <h1 className=" mb-20 text-[36px] tracking-wide font-semibold text-center">CATEGORIES</h1>
+        <div className="space-y-0 mt-0">
+           <Heading  title="CATEGORIES"/> 
             <div>
                 <Slider {...settings} >
                     {categoriesdata.slice(0, 20).map((single: any, index: any) => {

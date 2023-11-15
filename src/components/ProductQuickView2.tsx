@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import LikeButton from "@/components/LikeButton";
 import { StarIcon } from "@heroicons/react/24/solid";
@@ -25,16 +25,181 @@ import { AdminUrl } from "@/app/layout";
 export interface ProductQuickView2Props {
   className?: string,
   item?: any
+
 }
 
+interface SingleData {
+  label: string;
+  mrp: number; // Assuming 'mrp' is a number, update the type accordingly
+  sellingprice: number; // Assuming 'sellingprice' is a number, update the type accordingly
+  // Add other properties as needed
+}
+
+
 const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item }) => {
-  const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
+  // const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
   // console.log(item, 'hey i am here');
-  const { ad_title, sellingprice, images } = item
+  const { ad_title, sellingprice, images, mrp, uniquepid, isvariant, slug_subcat, slug_cat } = item
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
   const [sizeSelected, setSizeSelected] = useState("");
   const [qualitySelected, setQualitySelected] = useState(1);
+  const [variantsWithArray, setVariantsWithArray] = useState(null);
+  const [variantsData, setVariantsData] = useState(null);
+
+  const [selectedAttributes, setSelectedAttributes] = useState<null>(null); // Replace 'YourAttributeType' with the actual type
+  const [selectLabel, setSelectLabel] = useState<string | null>(item?.label)
+  const [mrpData, setMrp] = useState<number | null>(mrp)
+  const [sellingPriceData, setSellingPrice] = useState<number | null>(sellingprice)
+  const [discountPercentage, setDiscountPercentage] = useState<number | null>(null);
+  const [singleData, setsingleData] = useState(item)
+
+  useEffect(() => {
+    const fetchVariants = async () => {
+      try {
+        const response = await fetch(`/api/variants/${slug_cat}/${slug_subcat}/${uniquepid}`);
+        const data = await response.json();
+        setVariantsData(data?.variant)
+      } catch (error) {
+        console.error('Error fetching variants:', error);
+      }
+    };
+
+
+    isvariant === 'Variant' && fetchVariants();
+  }, []);
+
+  useEffect(() => {
+    // Create a new variants object
+    if (!variantsWithArray) {
+      const newVariantsWithArray = variantsData?.reduce((acc, variant) => {
+        const variantsvaluesObj = variant?.variantsvalues
+          ? JSON.parse(variant.variantsvalues)
+          : {};
+
+        // Initialize the accumulator if it doesn't exist
+        if (!acc.variantsvalues) {
+          acc.variantsvalues = {};
+        }
+
+        // Iterate over the attributes in variantsvaluesObj
+        for (const attribute in variantsvaluesObj) {
+          if (acc.variantsvalues.hasOwnProperty(attribute)) {
+            // If the attribute already exists in the accumulator, push the value to the array
+            acc.variantsvalues[attribute].push(variantsvaluesObj[attribute]);
+          } else {
+            // If the attribute doesn't exist in the accumulator, create a new array with the value
+            acc.variantsvalues[attribute] = [variantsvaluesObj[attribute]];
+          }
+        }
+
+        return acc;
+      }, {}) || {};
+
+      for (const attribute in newVariantsWithArray?.variantsvalues) {
+        const valuesArray = newVariantsWithArray?.variantsvalues[attribute];
+        newVariantsWithArray.variantsvalues[attribute] = [...new Set(valuesArray)];
+      }
+
+      // Check if newVariantsWithArray is not empty, null, or undefined before setting the state
+      if (Object.keys(newVariantsWithArray).length > 0) {
+        // Convert newVariantsWithArray.variantsvalues to an array of objects
+        const variantsArray = Object.keys(newVariantsWithArray?.variantsvalues).map((attribute) => ({
+          attribute,
+          values: newVariantsWithArray.variantsvalues[attribute],
+        }));
+
+        console.log(variantsArray);
+
+        setVariantsWithArray(variantsArray);
+      }
+    }
+
+  }, [variantsWithArray, variantsData]);
+
+  useEffect(() => {
+    if (variantsWithArray && variantsWithArray.length > 0) {
+      // Initialize selectedAttributes with the first set of attribute values
+      const initialSelectedAttributes = {};
+      variantsWithArray.forEach((variant) => {
+        initialSelectedAttributes[variant.attribute] = variant.values[0];
+      });
+
+      // Combine the selected attribute values into a single string
+      const formattedSelection = Object.keys(initialSelectedAttributes)
+        .map((attribute) => `${initialSelectedAttributes[attribute]}`)
+        .join('/');
+
+      // Find the variant with the matching label
+      const selectedVariant = variantsData.find((variant) => variant.label === formattedSelection);
+      if (selectedVariant) {
+        // Set the mrp and sellingprice based on the selected variant
+
+        setMrp(selectedVariant.variant_mrp);
+        setSellingPrice(selectedVariant.variant_sellingprice);
+        setSelectLabel(selectedVariant?.label)
+        setSizeSelected(selectedVariant.label)
+        setsingleData({ ...singleData, mrp: selectedVariant.variant_mrp, sellingprice: selectedVariant.variant_sellingprice, label: selectedVariant?.label })
+        const discountPercentage = ((selectedVariant.variant_mrp - selectedVariant.variant_sellingprice) / selectedVariant.variant_mrp) * 100;
+        setDiscountPercentage(discountPercentage?.toFixed(0)); // Rounded to 2 decimal places
+      }
+      setSelectedAttributes(initialSelectedAttributes);
+    }
+  }, [variantsWithArray]);
+
+  const handleAttributeSelect = (attribute: any, value: any) => {
+    // Create a copy of the selectedAttributes
+    let updatedSelectedAttributes = { ...selectedAttributes };
+    if (Array.isArray(updatedSelectedAttributes)) {
+      // If selectedAttributes is an array, find the index of the attribute and update its value
+      const index = updatedSelectedAttributes.findIndex((attr) => attr === attribute);
+
+      if (index !== -1) {
+        updatedSelectedAttributes[index + 1] = value; // Update the value at the next index
+      } else {
+        // If the attribute doesn't exist in the array, add it with the new value
+        updatedSelectedAttributes.push(attribute, value);
+      }
+    } else {
+      // If selectedAttributes is an object, update or add the attribute-value pair
+      updatedSelectedAttributes[attribute] = value;
+    }
+
+    // Convert updatedSelectedAttributes to the desired format
+    let formattedSelection = '';
+
+    if (Array.isArray(updatedSelectedAttributes)) {
+      formattedSelection = updatedSelectedAttributes
+        .map((item, index) => (index % 2 === 0 ? `${item}/` : item))
+        .join('');
+    } else {
+      formattedSelection = Object.keys(updatedSelectedAttributes)
+        .map((key) => `${updatedSelectedAttributes[key]}`)
+        .join('/');
+    }
+
+    // Set the updated selected attributes in the state
+    setSelectedAttributes(updatedSelectedAttributes);
+    // Compare formattedSelection with label in variantsData
+    const selectedVariant = variantsData.find((variant) => variant.label === formattedSelection);
+
+    if (selectedVariant) {
+      // Retrieve mrp and sellingprice from the selected variant
+      const { variant_mrp, variant_sellingprice, label } = selectedVariant;
+      setMrp(variant_mrp);
+      // singleData = {...singleData, mrp: variant_mrp}
+      setSellingPrice(variant_sellingprice);
+      setSelectLabel(label)
+      setSizeSelected(label)
+
+      setsingleData({ ...singleData, mrp: variant_mrp, sellingprice: variant_sellingprice, label: label })
+
+      // Calculate the discount percentage
+      const discountPercentage = ((variant_mrp - variant_sellingprice) / variant_mrp) * 100;
+      setDiscountPercentage(discountPercentage?.toFixed(2)); // Rounded to 2 decimal places
+    } else {
+    }
+  };
 
   const notifyAddTocart = () => {
     toast.custom(
@@ -46,6 +211,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
           sizeSelected={sizeSelected}
           variantActive={variantActive}
           itemData={item}
+          mrp={mrpData}
+          sellingPrice={sellingPriceData}
         />
       ),
       { position: "top-right", id: "nc-product-notify", duration: 3000 }
@@ -53,144 +220,47 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
   };
 
   const renderVariants = () => {
-    // if (!variants || !variants.length) {
-    //   return null;
-    // }
-
     return (
-      <div>
-        <label htmlFor="">
-          <span className="text-sm font-medium">
-            Color:
-            <span className="ml-1 font-semibold">
-              {/* {variants[variantActive].ad_title} */}
-            </span>
-          </span>
-        </label>
-        <div className="flex mt-3">
-          {/* {variants.map((variant, index) => (
-            <div
-              key={index}
-              onClick={() => setVariantActive(index)}
-              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === index
-                ? "border-primary-6000 dark:border-primary-500"
-                : "border-transparent"
-                }`}
-            >
-              <div
-                className="absolute inset-0.5 rounded-full overflow-hidden z-0 bg-cover"
-                style={{
-                  backgroundImage: `url(${
-                    // @ts-ignore
-                    typeof variant.thumbnail?.src === "string"
-                      ? // @ts-ignore
-                      variant.thumbnail?.src
-                      : typeof variant.thumbnail === "string"
-                        ? variant.thumbnail
-                        : ""
-                    })`,
-                }}
-              ></div>
-            </div>
-          ))} */}
-        </div>
-      </div>
-    );
-  };
-
-  const renderSizeList = () => {
-    // if (!allOfSizes || !sizes || !sizes.length) {
-    //   return null;
-    // }
-    return (
-      <div>
-        <div className="flex justify-between font-medium text-sm">
+      variantsWithArray && variantsWithArray.map((variant: any, index: any) => (
+        <>
           <label htmlFor="">
-            <span className="">
-              Size:
-              <span className="ml-1 font-semibold">{sizeSelected}</span>
+            <span className="text-sm font-medium">
+              {variant.attribute}:
+              <span className="ml-1 font-semibold">
+                {selectedAttributes?.[variant?.attribute]}
+              </span>
             </span>
           </label>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="##"
-            className="text-primary-6000 hover:text-primary-500"
-          >
-            See sizing chart
-          </a>
-        </div>
-        <div className="grid grid-cols-5 sm:grid-cols-7 gap-2 mt-3">
-          {/* {allOfSizes.map((size, index) => {
-            const isActive = size === sizeSelected;
-            const sizeOutStock = !sizes.includes(size);
-            return (
-              <div
-                key={index}
-                className={`relative h-10 sm:h-11 rounded-2xl border flex items-center justify-center 
-                text-sm sm:text-base uppercase font-semibold select-none overflow-hidden z-0 ${sizeOutStock
-                    ? "text-opacity-20 dark:text-opacity-20 cursor-not-allowed"
-                    : "cursor-pointer"
-                  } ${isActive
-                    ? "bg-primary-6000 border-primary-6000 text-white hover:bg-primary-6000"
-                    : "border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
-                  }`}
-                onClick={() => {
-                  if (sizeOutStock) {
-                    return;
-                  }
-                  setSizeSelected(size);
-                }}
-              >
-                {size}
-              </div>
-            );
-          })} */}
-        </div>
-      </div>
+          <div className="flex mt-3">
+
+            {
+              variant?.values?.map((item: any, itemvar: any) => (
+                <div
+                  key={itemvar}
+                  onClick={() => {
+                    handleAttributeSelect(variant.attribute, item)
+                    setVariantActive(itemvar)
+                  }}
+                  className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
+                    ? "border-black/90 dark:border-white"
+                    : "border-transparent"
+                    }`}
+                >
+                  <div
+                    className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && 'bg-black text-white'}`}
+                  >{item}</div>
+                </div >
+              ))
+            }
+
+          </div>
+        </>
+      ))
+
     );
   };
 
-  const renderStatus = () => {
-    if (!status) {
-      return null;
-    }
-    const CLASSES =
-      "absolute top-3 left-3 px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 nc-shadow-lg rounded-full flex items-center justify-center text-slate-700 text-slate-900 dark:text-slate-300";
-    if (status === "New in") {
-      return (
-        <div className={CLASSES}>
-          <SparklesIcon className="w-3.5 h-3.5" />
-          <span className="ml-1 leading-none">{status}</span>
-        </div>
-      );
-    }
-    if (status === "50% Discount") {
-      return (
-        <div className={CLASSES}>
-          <IconDiscount className="w-3.5 h-3.5" />
-          <span className="ml-1 leading-none">{status}</span>
-        </div>
-      );
-    }
-    if (status === "Sold Out") {
-      return (
-        <div className={CLASSES}>
-          <NoSymbolIcon className="w-3.5 h-3.5" />
-          <span className="ml-1 leading-none">{status}</span>
-        </div>
-      );
-    }
-    if (status === "limited edition") {
-      return (
-        <div className={CLASSES}>
-          <ClockIcon className="w-3.5 h-3.5" />
-          <span className="ml-1 leading-none">{status}</span>
-        </div>
-      );
-    }
-    return null;
-  };
+
 
   const renderSectionContent = () => {
     return (
@@ -205,7 +275,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
             {/* <div className="flex text-xl font-semibold">$112.00</div> */}
             <Prices
               contentClass="py-1 px-2 md:py-1.5 md:px-3 text-lg font-semibold"
-              price={sellingprice}
+              price={mrpData}
+              sellingprice={sellingPriceData}
             />
 
             <div className="h-6 border-l border-slate-300 dark:border-slate-700"></div>
@@ -235,7 +306,6 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
 
         {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
         <div className="">{renderVariants()}</div>
-        <div className="">{renderSizeList()}</div>
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
         <div className="flex space-x-3.5">
@@ -261,7 +331,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         <div className="text-center">
           <Link
             className="text-primary-6000 hover:text-primary-500 font-medium"
-            href="/product-detail"
+            href={{
+              pathname: '/product-detail',
+              query: { ad_title }
+            }}
           >
             View full details
           </Link>
@@ -289,7 +362,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
             </div>
 
             {/* STATUS */}
-            {renderStatus()}
+
             {/* META FAVORITES */}
             <LikeButton className="absolute right-3 top-3 " />
           </div>

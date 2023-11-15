@@ -28,11 +28,15 @@ import NotifyAddTocart from "@/components/NotifyAddTocart";
 import Image from "next/image";
 import AccordionInfo from "@/components/AccordionInfo";
 import { AdminUrl } from "../layout";
+import { useRouter } from "next/navigation";
 
 const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
 
 const ProductDetailPage = () => {
-  //
+
+  const router = useRouter()
+  console.log(router);
+
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
   const [sizeSelected, setSizeSelected] = useState("");

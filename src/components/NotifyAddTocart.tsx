@@ -10,7 +10,9 @@ interface Props {
   variantActive: number;
   sizeSelected: string;
   qualitySelected: number;
-  itemData: any
+  itemData: any,
+  mrp: number,
+  sellingPrice: number
 }
 
 const NotifyAddTocart: FC<Props> = ({
@@ -19,9 +21,11 @@ const NotifyAddTocart: FC<Props> = ({
   variantActive,
   qualitySelected,
   sizeSelected,
-  itemData
+  itemData,
+  mrp,
+  sellingPrice
 }) => {
-  const { ad_title, sellingprice } = itemData
+  const { ad_title } = itemData
 
   const renderProductCartOnNotify = () => {
     return (
@@ -40,7 +44,7 @@ const NotifyAddTocart: FC<Props> = ({
           <div>
             <div className="flex justify-between ">
               <div>
-                <h3 className="text-base font-medium ">{ad_title}</h3>
+                <h3 className="text-base font-medium line-clamp-2">{ad_title}</h3>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   <span>
                     {/* {variants ? variants[variantActive].name : `Natural`} */}
@@ -49,7 +53,7 @@ const NotifyAddTocart: FC<Props> = ({
                   <span>{sizeSelected || "XL"}</span>
                 </p>
               </div>
-              <Prices price={sellingprice} className="mt-0.5" />
+              <Prices price={mrp} sellingprice={sellingPrice} className="mt-0.5" />
             </div>
           </div>
           <div className="flex flex-1 items-end justify-between text-sm">

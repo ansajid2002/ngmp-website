@@ -57,7 +57,7 @@ export async function getBannerdata() {
     console.error("Error fetching customer data:", error);
     throw error; // Re-throw the error to handle it at a higher level if needed
   }
-  
+
 }
 
 export const fetchCategoriesAndSubcategories = async (): Promise<Category[] | null> => {
@@ -109,15 +109,15 @@ export const getAllProducts = async () => {
   }
 };
 
+
 async function PageHome() {
   const getAllProductsData = await getAllProducts()
   const bannersData = await getBannerdata()
- const fetchCategoriesAndSubcategoriesdata = await fetchCategoriesAndSubcategories()
-
- 
+  const fetchCategoriesAndSubcategoriesdata = await fetchCategoriesAndSubcategories()
+  
   return (
     <div className="nc-PageHome relative overflow-hidden">
-      
+
 
       <SectionHero2 data={bannersData} />
 
@@ -131,18 +131,19 @@ async function PageHome() {
           data={getAllProductsData}
         />
 
-        <div className="py-24 lg:py-32 border-t border-b border-slate-200 dark:border-slate-700">
+        <div className="py-4 border-t border-b border-slate-200 dark:border-slate-700">
           <SectionHowItWork />
         </div>
 
-{/* changed by sajid adding categories slider  */}
-        
-        <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata}/>
-{/* changed by sajid adding categories slider  */}
+        {/* changed by sajid adding categories slider  */}
+        <div className="space-y-10 mt-4">
+          <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata} />
+        </div>
+        {/* changed by sajid adding categories slider  */}
 
-        <SectionPromo1 />
+        {/* <SectionPromo1 /> */}
 
-        <div className="relative py-24 lg:py-32">
+        <div className="relative py-24 lg:py-24">
           <BackgroundSection />
           <SectionGridMoreExplore />
         </div>
@@ -152,13 +153,13 @@ async function PageHome() {
           subHeading="Best selling of the month"
         />
 
-        <SectionPromo2 />
+        {/* <SectionPromo2 /> */}
 
         <SectionSliderLargeProduct cardStyle="style2" />
 
         <SectionSliderCategories />
 
-        <SectionPromo3 />
+        {/* <SectionPromo3 /> */}
 
         <SectionGridFeatureItems />
 
