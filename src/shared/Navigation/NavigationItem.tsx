@@ -1,16 +1,17 @@
 "use client";
 import { useEffect } from 'react'
 import { Popover, Transition } from "@/app/headlessui";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import CardCategory3 from "@/components/CardCategories/CardCategory3";
 import React, { FC, Fragment, useState } from "react";
 import { Route } from "@/routers/types";
 import Link from "next/link";
 import Image from "next/image";
 import { AdminUrl } from "@/app/layout";
+import { AppDispatch, useAppSelector } from "@/redux/store";
+import { setLanguage } from "@/redux/features/languageslice";
 import { useDispatch } from "react-redux";
 import { addCarts } from '@/redux/slices/cartSlice';
-import { revalidatePath } from 'next/cache';
 
 export interface NavItemType {
   id: string;
@@ -30,6 +31,8 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
   const [menuCurrentHovers, setMenuCurrentHovers] = useState<string[]>([]);
   const [hoveredItem, setHoveredItem] = useState([]);
   const [categoryTitle, setCategoryTitle] = useState([]);
+  const { languageCode } = useAppSelector((store) => store.languagesReducer)
+  const dispatch = useDispatch<AppDispatch>()
 
   const onMouseEnterMenu = (id: string) => {
     setMenuCurrentHovers((state) => [...state, id]);
@@ -43,7 +46,6 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     });
   };
 
-  const dispatch = useDispatch();
 
   const customerId = 71
   useEffect(() => {
@@ -243,22 +245,17 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     );
   };
 
-  const renderDropdownMenuNavlink = (item: NavItemType) => {
+  const renderDropdownMenuNavlink = (item: any) => {
     return (
-      <Link
+      <section
         className="flex items-center font-normal text-neutral-6000 dark:text-neutral-400 py-2 px-4 rounded-md hover:text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-        href={{
-          pathname: item.href || undefined,
-        }}
+        onClick={() => { dispatch(setLanguage({ newlanguageCode: item.langCode, newlanguageName: item.langName })) }}
       >
-        {item.name}
-        {item.type && (
-          <ChevronDownIcon
-            className="ml-2 h-4 w-4 text-neutral-500"
-            aria-hidden="true"
-          />
-        )}
-      </Link>
+        <h1 className="tracking-wider" >
+          {`${item.langName} (${item.langCode})`}
+        </h1>
+        {(item.langCode === languageCode) && <ChevronRightIcon className=" ml-4 w-5 h-5 text-neutral-500" />}
+      </section>
     );
   };
 

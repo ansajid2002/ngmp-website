@@ -1,7 +1,6 @@
 {
   "/page": "app/page.js",
   "/cart/page": "app/cart/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/cart/[customer_id]/route": "app/api/cart/[customer_id]/route.js",
-  "/api/DeleteCart/[category]/[subcatgeory]/[uniquepid]/[label]/[customerId]/route": "app/api/DeleteCart/[category]/[subcatgeory]/[uniquepid]/[label]/[customerId]/route.js"
+  "/not-found": "app/not-found.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js"
 }
