@@ -8,7 +8,7 @@ import SiteHeader from "@/app/SiteHeader";
 import CommonClient from "./CommonClient";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import type { Metadata } from 'next';
+import { ReduxProvider } from "@/redux/Provider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,12 +26,16 @@ export default function RootLayout({
   return (
     <html lang="en" dir="" className={poppins.className}>
       <body className="bg-white text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
+        <ReduxProvider>
+
         <SiteHeader />
         {children}
         <CommonClient />
         <Footer />
+        </ReduxProvider>
       </body>
     </html>
   );
 }
 export const AdminUrl = "http://192.168.0.102:3001";
+// export const AdminUrl = "https://nileadmin.websitetest.info";

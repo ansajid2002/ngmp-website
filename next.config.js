@@ -5,7 +5,7 @@ const nextConfig = {
     typedRoutes: true,
   },
   images: {
-    domains: ['localhost', '192.168.0.102'], // Add the IP address to the list of allowed domains
+    domains: ['localhost', '192.168.0.102','nileadmin.websitetest.info'], // Add the IP address to the list of allowed domains
     remotePatterns: [
       {
         protocol: "https",
@@ -16,6 +16,12 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "https://nileadmin.websitetest.info",
         port: "",
         pathname: "/**",
       },
