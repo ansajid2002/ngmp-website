@@ -4,6 +4,9 @@ import Image from "next/image";
 import React, { FC } from "react"
 import Head from "next/head";
 import Slider from "react-slick"
+import { AppDispatch, useAppSelector } from "@/redux/store";
+import {useDispatch} from "react-redux"
+import { login, logout } from "@/redux/features/authtutorialslice";
 
 
 export interface CategoriesSliderProps {
@@ -67,6 +70,9 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
             />
         );
     }
+    const dispatch = useDispatch<AppDispatch>()
+    
+    const { username} = useAppSelector((store) => store.authReducer.value)
 
     return (<>
 
@@ -76,6 +82,13 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
         </Head>
         <div className=" ">
             <h1 className=" mb-20 text-[36px] tracking-wide font-semibold text-center">CATEGORIES</h1>
+            <div className="my-24 border ">
+            <h1>SAJID IS TESTING REDUX STORE</h1>
+            <button onClick={() => dispatch(login()) }>Login</button>
+            <p>{username}</p>
+            <button onClick={() => dispatch(logout()) }>Logout</button>
+
+            </div>
             <div>
                 <Slider {...settings} >
                     {categoriesdata.slice(0, 20).map((single: any, index: any) => {
