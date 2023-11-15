@@ -35,8 +35,8 @@ declare namespace __next_route_internal_types__ {
     | `/account-order`
     | `/account-password`
     | `/account-savelists`
-    | `/about`
     | `/api/variants`
+    | `/about`
     | `/blog`
     | `/blog-single`
     | `/cart`
@@ -48,9 +48,9 @@ declare namespace __next_route_internal_types__ {
     | `/home-2`
     | `/login`
     | `/product-detail`
+    | `/search`
     | `/product-detail-2`
     | `/signup`
-    | `/search`
     | `/subscription`
   type DynamicRoutes<T extends string = string> = 
     | `/api/variants/${SafeSlug<T>}/${SafeSlug<T>}/${SafeSlug<T>}`

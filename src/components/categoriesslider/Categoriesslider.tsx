@@ -23,7 +23,7 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
         infinite: true,
         slidesToShow: 6,
         autoplay: true,
-        pauseOnHover: false,
+        pauseOnHover: true,
         speed: 1000,
         autoplaySpeed: 1000,
         swipeToSlide: true,

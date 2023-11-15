@@ -1,3 +1,7 @@
 {
-  "/api/variants/[category]/[subcategory]/[uniqueId]/route": "app/api/variants/[category]/[subcategory]/[uniqueId]/route.js"
+  "/page": "app/page.js",
+  "/product-detail/page": "app/product-detail/page.js",
+  "/collection/page": "app/collection/page.js",
+  "/login/page": "app/login/page.js",
+  "/(accounts)/account/page": "app/(accounts)/account/page.js"
 }

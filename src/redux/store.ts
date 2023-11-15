@@ -1,10 +1,12 @@
 import {configureStore} from "@reduxjs/toolkit"
-import authReducer from "./features/authtutorialslice"  
+import authReducer from "./features/authtutorialslice" 
+import languagesReducer from "./features/languageslice" 
 import {TypedUseSelectorHook,useSelector} from "react-redux"
 
 export const store = configureStore({
     reducer:{
-        authReducer
+        authReducer,
+        languagesReducer
     }
 })
 
