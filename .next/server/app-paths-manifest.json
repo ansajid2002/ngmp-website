@@ -1,6 +1,7 @@
 {
+  "/cart/page": "app/cart/page.js",
   "/page": "app/page.js",
-  "/collection/page": "app/collection/page.js",
-  "/search/page": "app/search/page.js",
-  "/api/variants/[category]/[subcategory]/[uniqueId]/route": "app/api/variants/[category]/[subcategory]/[uniqueId]/route.js"
+  "/checkout/page": "app/checkout/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/api/cart/addCarts/route": "app/api/cart/addCarts/route.js"
 }

@@ -119,7 +119,7 @@ async function PageHome() {
         <DiscoverMoreSlider />
       </div>
 
-      <div className="container relative space-y-24 my-24 lg:space-y-32 lg:my-32">
+      <div className="px-10 relative space-y-24 my-24 lg:space-y-32 lg:my-32">
         <SectionSliderProductCard
           heading="Recommended"
           data={getAllProductsData}
@@ -150,7 +150,7 @@ async function PageHome() {
 
         {/* <SectionPromo2 /> */}
 
-        <SectionSliderLargeProduct cardStyle="style2" />
+        {/* <SectionSliderLargeProduct cardStyle="style2" /> */}
 
         <SectionSliderCategories />
 

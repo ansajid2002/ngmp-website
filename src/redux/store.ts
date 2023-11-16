@@ -1,14 +1,16 @@
-import {configureStore} from "@reduxjs/toolkit"
-import authReducer from "./features/authtutorialslice" 
-import languagesReducer from "./features/languageslice" 
-import {TypedUseSelectorHook,useSelector} from "react-redux"
+import { configureStore } from "@reduxjs/toolkit"
+import authReducer from "./features/authtutorialslice"
+import languagesReducer from "./features/languageslice"
+import { TypedUseSelectorHook, useSelector } from "react-redux"
 import cartSlice from "./slices/cartSlice"
+import wishlistSlice from "./slices/wishlistSlice"
 
 export const store = configureStore({
-    reducer:{
+    reducer: {
         authReducer,
         languagesReducer,
-        cart: cartSlice
+        cart: cartSlice,
+        wishlist: wishlistSlice
     }
 })
 

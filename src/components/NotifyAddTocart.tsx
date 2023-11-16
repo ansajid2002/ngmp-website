@@ -1,8 +1,8 @@
 import React, { FC } from "react";
 import { Transition } from "@/app/headlessui";
 import Prices from "@/components/Prices";
-import { PRODUCTS } from "@/data/data";
 import Image, { StaticImageData } from "next/image";
+import { useRouter } from "next/navigation";
 
 interface Props {
   show: boolean;
@@ -25,7 +25,8 @@ const NotifyAddTocart: FC<Props> = ({
   mrp,
   sellingPrice
 }) => {
-  const { ad_title } = itemData
+  const { ad_title, label } = itemData
+  const { push } = useRouter()
 
   const renderProductCartOnNotify = () => {
     return (
@@ -46,11 +47,7 @@ const NotifyAddTocart: FC<Props> = ({
               <div>
                 <h3 className="text-base font-medium line-clamp-2">{ad_title}</h3>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  <span>
-                    {/* {variants ? variants[variantActive].name : `Natural`} */}
-                  </span>
-                  <span className="mx-2 border-l border-slate-200 dark:border-slate-700 h-4"></span>
-                  <span>{sizeSelected || "XL"}</span>
+                  <span>{label}</span>
                 </p>
               </div>
               <Prices price={mrp} sellingprice={sellingPrice} className="mt-0.5" />
@@ -62,6 +59,7 @@ const NotifyAddTocart: FC<Props> = ({
             <div className="flex">
               <button
                 type="button"
+                onClick={() => push("/cart")}
                 className="font-medium text-primary-6000 dark:text-primary-500 "
               >
                 View cart

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import LikeButton from "./LikeButton";
 import Prices from "./Prices";
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
@@ -14,10 +14,10 @@ import { Transition } from "@/app/headlessui";
 import ModalQuickView from "./ModalQuickView";
 import ProductStatus from "./ProductStatus";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import NcImage from "@/shared/NcImage/NcImage";
 import { AdminUrl } from "@/app/layout";
+import { useAppSelector } from "@/redux/store";
 
 export interface ProductCardProps {
   className?: string;
@@ -35,10 +35,28 @@ const ProductCard: FC<ProductCardProps> = ({
     mrp,
     sellingprice,
     images,
+    uniquepid
   } = data;
+  const [inFavorite, setinFavorite] = useState(false);
+  const { wishlistItems } = useAppSelector((store) => store.wishlist)
+
+  const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
+
+
+  useEffect(() => {
+    // Check if there's an item in wishlistItems with a matching uniquepid
+    const isFavorite = wishlistItems.some(wish => wish.uniquepid.toString() === uniquepid.toString());
+
+    // Set the result in inFavorite state
+    setinFavorite(isFavorite);
+
+  }, [wishlistItems]);
+
+
 
 
   const [showModalQuickView, setShowModalQuickView] = useState(false);
+
   const router = useRouter();
 
   // const notifyAddTocart = ({ size }: { size?: string }) => {
@@ -144,7 +162,7 @@ const ProductCard: FC<ProductCardProps> = ({
           <Link href={"/product-detail"} title={`Visit ${ad_title}`} className="block overflow-hidden group">
             <div className="relative group-hover:scale-110 transition-transform duration-300">
               <NcImage
-                containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0"
+                containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
                 src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
                 className="object-contain w-full h-full drop-shadow-xl"
                 fill
@@ -153,13 +171,13 @@ const ProductCard: FC<ProductCardProps> = ({
               />
             </div>
           </Link>
-          <ProductStatus status={'Discount'} value={'50% Off'} />
-          <LikeButton liked={isLiked} className="absolute top-3 end-3 z-10" />
+          {discountPercentage > 50 && <ProductStatus status={'Discount'} value={`${discountPercentage.toFixed(2)} Off`} />}
+          {/* <LikeButton liked={inFavorite} className="absolute top-3 end-3 z-10" /> */}
           {/* {renderSizeList()} */}
           {renderGroupButtons()}
         </div>
 
-        <div className="space-y-4 px-2.5 pt-3 pb-2.5">
+        <div className="space-y-4 pt-3 pb-2.5">
           {/* {renderVariants()} */}
           {/* <div> */}
           {/* <h2 className="nc-ProductCard__title text-base font-semibold transition-colors line-clamp-1">
@@ -170,7 +188,7 @@ const ProductCard: FC<ProductCardProps> = ({
             </p> */}
           {/* </div> */}
 
-          <div className="flex justify-between items-end ">
+          <div className="  px-0">
             <Prices price={mrp} sellingprice={sellingprice} />
             <div className="flex items-center mb-0.5">
 

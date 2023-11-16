@@ -8,6 +8,7 @@ import CollectionCard from "./CollectionCard";
 import CollectionCard2 from "./CollectionCard2";
 import { DEMO_LARGE_PRODUCTS } from "./SectionSliderLargeProduct2";
 import Link from "next/link";
+import { useAppSelector } from "@/redux/store";
 
 export interface SectionSliderLargeProductProps {
   className?: string;
@@ -60,6 +61,7 @@ const SectionSliderLargeProduct: FC<SectionSliderLargeProductProps> = ({
 
   const MyCollectionCard =
     cardStyle === "style1" ? CollectionCard : CollectionCard2;
+  const { cartItems } = useAppSelector((store) => store.cart)
 
   return (
     <div className={`nc-SectionSliderLargeProduct ${className}`}>
@@ -69,13 +71,13 @@ const SectionSliderLargeProduct: FC<SectionSliderLargeProductProps> = ({
         </Heading>
         <div className="glide__track" data-glide-el="track">
           <ul className="glide__slides">
-            {DEMO_LARGE_PRODUCTS.map((product, index) => (
+            {cartItems && cartItems.map((product, index) => (
               <li className={`glide__slide`} key={index}>
                 <MyCollectionCard
-                  name={product.name}
-                  price={product.price}
-                  imgs={product.images}
-                  description={product.desc}
+                  name={product.ad_title}
+                  price={product.sellingprice}
+                  imgs={product?.images || ''}
+                  description={product.additionaldescription}
                 />
               </li>
             ))}

@@ -6,6 +6,7 @@ import Heading from "@/components/Heading/Heading";
 import Glide from "@glidejs/glide/dist/glide.esm";
 import ProductCard from "./ProductCard";
 import { Product, PRODUCTS } from "@/data/data";
+import { useAppSelector } from "@/redux/store";
 
 export interface SectionSliderProductCardProps {
   className?: string;
@@ -67,7 +68,6 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
       slider.destroy();
     };
   }, [sliderRef]);
-  console.log(data);
 
 
   return (

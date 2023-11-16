@@ -26,14 +26,12 @@ export default function CartDropdown() {
 
         if (customerId) {
           const { category, subcategory, uniquepid, label } = item;
-          
+
           const replacecategory = category.replace(/[^\w\s]/g, '').replace(/\s/g, '');
           const replacesubcategory = subcategory.replace(/[^\w\s]/g, '').replace(/\s/g, '');
-          console.log(replacecategory, subcategory);
 
           // Construct the URL for your backend endpoint
           const apiUrl = `/api/DeleteCart/${replacecategory}/${replacesubcategory}/${uniquepid}/${label || 'empty'}/${customerId}`;
-          console.log(apiUrl);
 
           // Make a DELETE request to your backend using async/await
           const response = await fetch(apiUrl);

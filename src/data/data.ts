@@ -20,6 +20,7 @@ export interface ProductVariant {
 
 export interface Product {
   id: number;
+  uniquepid: number,
   ad_title: string;
   mrp: string;
   sellingprice: string;

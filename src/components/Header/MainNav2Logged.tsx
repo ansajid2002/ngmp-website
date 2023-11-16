@@ -86,7 +86,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
         <div className="lg:flex-1 flex items-center">
           {/* <Logo className="flex-shrink-0" /> */}
           <Link href="/">
-            <Image src={logo} alt="website main logo" className=" w-32 md:w-40 xl:w-44 pb-1" />
+            <Image src={logo} alt="website main logo" className=" w-32 md:w-32 xl:w-32 pb-1" />
           </Link>
         </div>
 
@@ -128,7 +128,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
         </div>
       </section>
       <div className="nc-MainNav2Logged relative z-10 md:pt-2  bg-white dark:bg-neutral-900 border-b border-slate-100 dark:border-slate-700">
-        <div className=" container ">{renderContent()}</div>
+        <div className="px-10">{renderContent()}</div>
       </div>
     </header>
   );

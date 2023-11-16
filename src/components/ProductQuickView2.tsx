@@ -22,6 +22,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
+import { useDispatch } from "react-redux";
+import { addItem } from "@/redux/slices/cartSlice";
 
 export interface ProductQuickView2Props {
   className?: string,
@@ -39,7 +41,17 @@ interface SingleData {
 
 const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item }) => {
   // const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
-  // console.log(item, 'hey i am here');
+
+  const [inFavorite, setinFavorite] = useState(false);
+  const { wishlistItems } = useAppSelector((store) => store.wishlist)
+
+  useEffect(() => {
+    // Check if there's an item in wishlistItems with a matching uniquepid
+    const isFavorite = wishlistItems.some(wish => wish.uniquepid.toString() === item.uniquepid.toString());
+    // Set the result in inFavorite state
+    setinFavorite(isFavorite);
+  }, [wishlistItems]);
+
   const { ad_title, sellingprice, images, mrp, uniquepid, isvariant, slug_subcat, slug_cat } = item
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
@@ -52,10 +64,11 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
   const [selectLabel, setSelectLabel] = useState<string | null>(item?.label)
   const [mrpData, setMrp] = useState<number | null>(mrp)
   const [sellingPriceData, setSellingPrice] = useState<number | null>(sellingprice)
-  const [discountPercentage, setDiscountPercentage] = useState<number | null>(null);
+  const [discountPercentage, setDiscountPercentage] = useState<number | null>(((mrp - sellingprice) / mrp) * 100);
   const [singleData, setsingleData] = useState(item)
   const [selectedImage, setSelectedImage] = useState(images?.[0])
-  
+  const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(null);
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchVariants = async () => {
@@ -112,7 +125,6 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
           values: newVariantsWithArray.variantsvalues[attribute],
         }));
 
-        console.log(variantsArray);
 
         setVariantsWithArray(variantsArray);
       }
@@ -144,7 +156,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         setSizeSelected(selectedVariant.label)
         setsingleData({ ...singleData, mrp: selectedVariant.variant_mrp, sellingprice: selectedVariant.variant_sellingprice, label: selectedVariant?.label })
         const discountPercentage = ((selectedVariant.variant_mrp - selectedVariant.variant_sellingprice) / selectedVariant.variant_mrp) * 100;
-        setDiscountPercentage(discountPercentage?.toFixed(0)); // Rounded to 2 decimal places
+        setDiscountPercentage(discountPercentage); // Rounded to 2 decimal places
       }
       setSelectedAttributes(initialSelectedAttributes);
     }
@@ -199,12 +211,65 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
 
       // Calculate the discount percentage
       const discountPercentage = ((variant_mrp - variant_sellingprice) / variant_mrp) * 100;
-      setDiscountPercentage(discountPercentage?.toFixed(2)); // Rounded to 2 decimal places
+      setDiscountPercentage(discountPercentage); // Rounded to 2 decimal places
     } else {
     }
   };
 
-  const notifyAddTocart = () => {
+  const customerId = 71
+  const notifyAddTocart = async () => {
+    const updatedSingleData = {
+      ...singleData,
+      added_quantity: qualitySelected, // This adds the productToAdd object as a property of singleData
+      mrp: mrpData, // Set the mrp value here
+      sellingprice: sellingPriceData, // Set the sellingprice value here
+      label: selectLabel, // Set the sellingprice value here
+    };
+
+    const { category, subcategory, uniquepid, vendorid } = singleData;
+    const replacecategory = category
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s/g, "");
+    const replacesubcategory = subcategory
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s/g, "");
+
+    if (customerId) {
+      try {
+        const requestData = {
+          customer_id: customerId,
+          vendor_id: vendorid,
+          product_uniqueid: uniquepid,
+          category: replacecategory,
+          subcategory: replacesubcategory,
+          variantlabel: selectLabel,
+          mrp: mrpData,
+          sellingprice: sellingPriceData,
+          quantity: qualitySelected,
+        };
+
+        const response = await fetch(`/api/cart/addCarts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        dispatch(addItem(updatedSingleData));
+        setisUniquepidMatched(true);
+      } catch (error) {
+        console.error('Error updating cart:', error);
+      }
+    } else {
+      dispatch(addItem(updatedSingleData));
+    }
+
     toast.custom(
       (t) => (
         <NotifyAddTocart
@@ -281,15 +346,16 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
 
           <div className="flex items-center mt-5 space-x-4 sm:space-x-5">
             {/* <div className="flex text-xl font-semibold">$112.00</div> */}
+            {discountPercentage && discountPercentage > 0 && <p className="text-green-600  ">{discountPercentage?.toFixed(2)}% off</p>}
             <Prices
-              contentClass="py-1 px-2 md:py-1.5 md:px-3 text-lg font-semibold"
+              contentClass="py-1 md:py-1.5 text-lg font-semibold"
               price={mrpData}
               sellingprice={sellingPriceData}
             />
 
-            <div className="h-6 border-l border-slate-300 dark:border-slate-700"></div>
+            {/* <div className="h-6 border-l border-slate-300 dark:border-slate-700"></div> */}
 
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <a
                 href="#reviews"
                 className="flex items-center text-sm font-medium"
@@ -308,7 +374,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
                 <SparklesIcon className="w-3.5 h-3.5" />
                 <span className="ml-1 leading-none">{status}</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -396,7 +462,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
 
           {/* LIKE BUTTON */}
           <div className="mt-2">
-            <LikeButton />
+            <LikeButton liked={inFavorite} data="hey" />
           </div>
         </div>
 

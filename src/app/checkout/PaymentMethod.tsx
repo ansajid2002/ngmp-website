@@ -19,31 +19,30 @@ const PaymentMethod: FC<Props> = ({
   onOpenActive,
 }) => {
   const [mothodActive, setMethodActive] = useState<
-    "Credit-Card" | "Internet-banking" | "Wallet"
-  >("Credit-Card");
+    "Stripe" | "Internet-banking" | "Wallet"
+  >("Stripe");
 
-  const renderDebitCredit = () => {
-    const active = mothodActive === "Credit-Card";
+  const renderStripe = () => {
+    const active = mothodActive === "Stripe";
     return (
       <div className="flex items-start space-x-4 sm:space-x-6">
         <Radio
           className="pt-3.5"
           name="payment-method"
-          id="Credit-Card"
+          id="Stripe"
           defaultChecked={active}
           onChange={(e) => setMethodActive(e as any)}
         />
         <div className="flex-1">
           <label
-            htmlFor="Credit-Card"
+            htmlFor="Stripe"
             className="flex items-center space-x-4 sm:space-x-6"
           >
             <div
-              className={`p-2.5 rounded-xl border-2 ${
-                active
-                  ? "border-slate-600 dark:border-slate-300"
-                  : "border-gray-200 dark:border-slate-600"
-              }`}
+              className={`p-2.5 rounded-xl border-2 ${active
+                ? "border-slate-600 dark:border-slate-300"
+                : "border-gray-200 dark:border-slate-600"
+                }`}
             >
               <svg
                 className="w-6 h-6 sm:w-7 sm:h-7"
@@ -90,13 +89,12 @@ const PaymentMethod: FC<Props> = ({
                 />
               </svg>
             </div>
-            <p className="font-medium">Debit / Credit Card</p>
+            <p className="font-medium">Pay with Stripe</p>
           </label>
 
-          <div
-            className={`mt-6 mb-4 space-y-3 sm:space-y-5 ${
-              active ? "block" : "hidden"
-            }`}
+          {/* <div
+            className={`mt-6 mb-4 space-y-3 sm:space-y-5 ${active ? "block" : "hidden"
+              }`}
           >
             <div className="max-w-lg">
               <Label className="text-sm">Card number</Label>
@@ -124,7 +122,7 @@ const PaymentMethod: FC<Props> = ({
                 />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     );
@@ -147,11 +145,10 @@ const PaymentMethod: FC<Props> = ({
             className="flex items-center space-x-4 sm:space-x-6"
           >
             <div
-              className={`p-2.5 rounded-xl border-2 ${
-                active
-                  ? "border-slate-600 dark:border-slate-300"
-                  : "border-gray-200 dark:border-slate-600"
-              }`}
+              className={`p-2.5 rounded-xl border-2 ${active
+                ? "border-slate-600 dark:border-slate-300"
+                : "border-gray-200 dark:border-slate-600"
+                }`}
             >
               <svg
                 className="w-6 h-6 sm:w-7 sm:h-7"
@@ -267,11 +264,10 @@ const PaymentMethod: FC<Props> = ({
             className="flex items-center space-x-4 sm:space-x-6 "
           >
             <div
-              className={`p-2.5 rounded-xl border-2 ${
-                active
-                  ? "border-slate-600 dark:border-slate-300"
-                  : "border-gray-200 dark:border-slate-600"
-              }`}
+              className={`p-2.5 rounded-xl border-2 ${active
+                ? "border-slate-600 dark:border-slate-300"
+                : "border-gray-200 dark:border-slate-600"
+                }`}
             >
               <svg
                 className="w-6 h-6 sm:w-7 sm:h-7"
@@ -393,8 +389,7 @@ const PaymentMethod: FC<Props> = ({
               </svg>
             </h3>
             <div className="font-semibold mt-1 text-sm">
-              <span className="">Google / Apple Wallet</span>
-              <span className="ml-3">xxx-xxx-xx55</span>
+              <span className="">Pay with Stripe</span>
             </div>
           </div>
           <button
@@ -406,18 +401,17 @@ const PaymentMethod: FC<Props> = ({
         </div>
 
         <div
-          className={`border-t border-slate-200 dark:border-slate-700 px-6 py-7 space-y-6 ${
-            isActive ? "block" : "hidden"
-          }`}
+          className={`border-t border-slate-200 dark:border-slate-700 px-6 py-7 space-y-6 ${isActive ? "block" : "hidden"
+            }`}
         >
           {/* ==================== */}
-          <div>{renderDebitCredit()}</div>
+          <div>{renderStripe()}</div>
 
           {/* ==================== */}
-          <div>{renderInterNetBanking()}</div>
+          {/* <div>{renderInterNetBanking()}</div> */}
 
           {/* ==================== */}
-          <div>{renderWallet()}</div>
+          {/* <div>{renderWallet()}</div> */}
 
           <div className="flex pt-6">
             <ButtonPrimary

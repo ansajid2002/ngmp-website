@@ -1,7 +1,7 @@
 "use client"
 import { AdminUrl } from "@/app/layout";
 import Image from "next/image";
-import React, { FC } from "react"
+import React, { FC, useRef, useState } from "react"
 import Head from "next/head";
 import Slider from "react-slick"
 import { AppDispatch, useAppSelector } from "@/redux/store";
@@ -18,6 +18,31 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
     categoriesdata
 }) => {
 
+    const [isHovered, setIsHovered] = useState(false);
+    const slider1 = useRef(null);
+    const slider2 = useRef(null);
+
+    const handleHover = () => {
+        setIsHovered(true);
+
+    };
+
+    const handleMouseOut = () => {
+        setIsHovered(false);
+
+    };
+
+    const handleSlider1AfterChange = (currentSlide: any) => {
+        if (isHovered) {
+            slider2 && slider2?.current?.slickGoTo(currentSlide);
+        }
+    };
+
+    const handleSlider2AfterChange = (currentSlide: any) => {
+        if (isHovered) {
+            slider1 && slider1?.current?.slickGoTo(currentSlide);
+        }
+    };
 
     const settings = {
         dots: false,
@@ -25,9 +50,9 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
         slidesToShow: 6,
         autoplay: true,
         pauseOnHover: true,
-        speed: 1000,
-        autoplaySpeed: 1000,
-        swipeToSlide: true,
+        speed: 3000,
+        autoplaySpeed: 3000,
+        swipeToSlide: false,
         cssEase: "linear",
         responsive: [
             {
@@ -47,10 +72,10 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
 
     };
 
-    const dispatch = useDispatch<AppDispatch>()
+    // const dispatch = useDispatch<AppDispatch>()
 
-    const { username } = useAppSelector((store) => store.authReducer.value)
-    
+    // const { username } = useAppSelector((store) => store.authReducer.value)
+
 
     return (<>
 
@@ -68,8 +93,8 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
                 <button onClick={() => dispatch(logout())}>Logout</button>
 
             </div> */}
-            <div>
-                <Slider {...settings} >
+            <div onMouseEnter={handleHover} onMouseLeave={handleMouseOut}>
+                <Slider ref={slider1} {...settings} afterChange={handleSlider1AfterChange}>
                     {categoriesdata.slice(0, 20).map((single: any, index: any) => {
                         return (
                             <main className="mx-1">
@@ -81,7 +106,7 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
                                             src={`${AdminUrl}/uploads/CatgeoryImages/${single.category_image_url}`}
                                             alt={single.category_name} />
                                     </div>
-                                    <h1 className="text-center mt-1 line-clamp-2 text-lg font-semibold ">{single.category_name}</h1>
+                                    <h1 className="text-center mt-1 line-clamp-2 text-lg font-medium ">{single.category_name}</h1>
                                 </div>
 
                             </main>
@@ -92,10 +117,8 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
 
                 </Slider>
             </div>
-            <div className="mt-12">
-                <Slider {...settings} >
-
-
+            <div onMouseEnter={handleHover} onMouseLeave={handleMouseOut} className="mt-12">
+                <Slider ref={slider2} {...settings} afterChange={handleSlider2AfterChange} >
                     {categoriesdata.slice(20,).map((single: any, index: any) => {
                         return (
                             <main className="mx-1">
