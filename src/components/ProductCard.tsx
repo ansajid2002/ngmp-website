@@ -45,7 +45,7 @@ const ProductCard: FC<ProductCardProps> = ({
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
-    const isFavorite = wishlistItems.some(wish => wish.uniquepid.toString() === uniquepid.toString());
+    const isFavorite = wishlistItems && wishlistItems?.some(wish => wish.uniquepid.toString() === uniquepid.toString());
 
     // Set the result in inFavorite state
     setinFavorite(isFavorite);

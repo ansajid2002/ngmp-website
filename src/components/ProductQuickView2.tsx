@@ -47,7 +47,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
-    const isFavorite = wishlistItems.some(wish => wish.uniquepid.toString() === item.uniquepid.toString());
+    const isFavorite = wishlistItems && wishlistItems?.some(wish => wish.uniquepid.toString() === item.uniquepid.toString());
     // Set the result in inFavorite state
     setinFavorite(isFavorite);
   }, [wishlistItems]);

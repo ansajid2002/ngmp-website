@@ -40,5 +40,5 @@ export default function RootLayout({
     </html>
   );
 }
-export const AdminUrl = "http://192.168.1.9:3001";
-// export const AdminUrl = "https://nileadmin.websitetest.info";
+// export const AdminUrl = "http://192.168.1.9:3001";
+export const AdminUrl = "https://nileadmin.websitetest.info";
