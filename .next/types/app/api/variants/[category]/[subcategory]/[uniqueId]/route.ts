@@ -1,4 +1,4 @@
-// File: E:\cisecogit\ciseco\src\app\api\variants\[category]\[subcategory]\[uniqueId]\route.tsx
+// File: C:\Users\Office\Documents\Shadab-Builds\ciseco\src\app\api\variants\[category]\[subcategory]\[uniqueId]\route.tsx
 import * as entry from '../../../../../../../../src/app/api/variants/[category]/[subcategory]/[uniqueId]/route.js'
 import type { NextRequest } from 'next/server.js'
 

@@ -29,14 +29,14 @@ export default function RootLayout({
       <body className="bg-white text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
         <ReduxProvider>
 
-        <SiteHeader />
-        {children}
-        <CommonClient />
-        <Footer />
+          <SiteHeader />
+          {children}
+          <CommonClient />
+          <Footer />
         </ReduxProvider>
       </body>
     </html>
   );
 }
-// export const AdminUrl = "http://192.168.0.102:3001";
-export const AdminUrl = "https://nileadmin.websitetest.info";
+export const AdminUrl = "http://192.168.1.9:3001";
+// export const AdminUrl = "https://nileadmin.websitetest.info";

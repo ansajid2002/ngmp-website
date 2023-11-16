@@ -10,10 +10,12 @@ import IconDiscount from "./IconDiscount";
 interface Props {
   status: Product["status"];
   className?: string;
+  value?: string;
 }
 
 const ProductStatus: FC<Props> = ({
   status,
+  value,
   className = "absolute top-3 start-3 px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300",
 }) => {
   const renderStatus = () => {
@@ -21,19 +23,19 @@ const ProductStatus: FC<Props> = ({
       return null;
     }
     const CLASSES = `nc-shadow-lg rounded-full flex items-center justify-center ${className}`;
-    if (status === "New in" || status === "ST best") {
+    if (status === "New in" || status === "") {
       return (
         <div className={CLASSES}>
           <SparklesIcon className="w-3.5 h-3.5" />
-          <span className="ms-1 leading-none">{status}</span>
+          <span className="ms-1 leading-none">{value}</span>
         </div>
       );
     }
-    if (status === "50% Discount") {
+    if (status === "Discount") {
       return (
         <div className={CLASSES}>
-          <IconDiscount className="w-3.5 h-3.5"/>
-          <span className="ms-1 leading-none">{status}</span>
+          <IconDiscount className="w-3.5 h-3.5" />
+          <span className="ms-1 leading-none">{value}</span>
         </div>
       );
     }
@@ -41,7 +43,7 @@ const ProductStatus: FC<Props> = ({
       return (
         <div className={CLASSES}>
           <NoSymbolIcon className="w-3.5 h-3.5" />
-          <span className="ms-1 leading-none">{status}</span>
+          <span className="ms-1 leading-none">{value}</span>
         </div>
       );
     }
@@ -49,7 +51,7 @@ const ProductStatus: FC<Props> = ({
       return (
         <div className={CLASSES}>
           <ClockIcon className="w-3.5 h-3.5" />
-          <span className="ms-1 leading-none">{status}</span>
+          <span className="ms-1 leading-none">{value}</span>
         </div>
       );
     }

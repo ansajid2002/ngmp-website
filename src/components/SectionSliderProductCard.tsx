@@ -67,6 +67,8 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
       slider.destroy();
     };
   }, [sliderRef]);
+  console.log(data);
+
 
   return (
     <div className={`nc-SectionSliderProductCard ${className}`}>

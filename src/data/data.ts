@@ -33,7 +33,7 @@ export interface Product {
   variantType?: "color" | "image";
   sizes?: string[];
   allOfSizes?: string[];
-  status?: "New in" | "limited edition" | "Sold Out" | "50% Discount" | "ST best";
+  status?: string;
   rating?: string;
   numberOfReviews?: number;
 }

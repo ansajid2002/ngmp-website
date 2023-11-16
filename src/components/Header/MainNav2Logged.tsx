@@ -115,15 +115,15 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
     <header>
       <section className="justify-around py-2 items-center bg-[#fb7601] border hidden md:flex ">
         <div className="flex items-center space-x-2">
-        <Image src={freeshipping} alt="website main logo" className=" w-8 lg:w-10" />
-                  <h1 className="text-[14px] lg:text-base font-semibold">Free Shopping on all Orders</h1>
+          <Image src={freeshipping} alt="website main logo" className=" w-8 lg:w-10" />
+          <h1 className="text-[14px] lg:text-base font-semibold">Free Shopping on all Orders</h1>
         </div>
         <div className="flex items-center space-x-2">
-        <Image src={negotiation} alt="website main logo" className="w-8 lg:w-10" />
+          <Image src={negotiation} alt="website main logo" className="w-8 lg:w-10" />
           <h1 className="text-[14px] lg:text-base font-semibold">Negotiation Available</h1>
         </div>
         <div className="flex items-center space-x-2">
-        <Image src={mobile} alt="website main logo" className=" w-8 lg:w-10" />
+          <Image src={mobile} alt="website main logo" className=" w-8 lg:w-10" />
           <h1 className="text-[14px] lg:text-base font-semibold">Get The Temu App</h1>
         </div>
       </section>

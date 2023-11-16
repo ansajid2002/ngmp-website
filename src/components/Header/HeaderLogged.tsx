@@ -6,7 +6,7 @@ export interface HeaderLoggedProps {
 }
 
 const HeaderLogged: FC<HeaderLoggedProps> = ({ customerId }) => {
-  
+
 
   return (
     <div className="sticky top-0 w-full z-40">

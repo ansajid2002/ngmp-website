@@ -309,7 +309,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     href: "/collection-2",
     name: "New Arrivals",
   },
-  
+
   {
     id: ncNanoId(),
     href: "/collection",
@@ -319,7 +319,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
   },
   {
     id: ncNanoId(),
-    href: "/search",
+    href: "/",
     name: "Language",
     type: "dropdown",
     children: OTHER_PAGE_CHILD,

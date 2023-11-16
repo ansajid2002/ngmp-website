@@ -8,18 +8,11 @@ import SectionSliderLargeProduct from "@/components/SectionSliderLargeProduct";
 import SectionSliderProductCard from "@/components/SectionSliderProductCard";
 import DiscoverMoreSlider from "@/components/DiscoverMoreSlider";
 import SectionGridMoreExplore from "@/components/SectionGridMoreExplore/SectionGridMoreExplore";
-import SectionPromo2 from "@/components/SectionPromo2";
 import SectionSliderCategories from "@/components/SectionSliderCategories/SectionSliderCategories";
-import SectionPromo3 from "@/components/SectionPromo3";
 import SectionClientSay from "@/components/SectionClientSay/SectionClientSay";
-import Heading from "@/components/Heading/Heading";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import SectionGridFeatureItems from "@/components/SectionGridFeatureItems";
-import SectionMagazine5 from "@/app/blog/SectionMagazine5";
 import { AdminUrl } from "./layout";
-import { useDispatch } from "react-redux";
-import { addCarts } from "@/redux/slices/cartSlice";
-
 
 interface Subcategory {
   subcategory_id: number;
@@ -152,6 +145,7 @@ async function PageHome() {
         <SectionSliderProductCard
           heading="Best Sellers"
           subHeading="Best selling of the month"
+          data={getAllProductsData}
         />
 
         {/* <SectionPromo2 /> */}
@@ -164,7 +158,7 @@ async function PageHome() {
 
         <SectionGridFeatureItems />
 
-        <div className="relative py-24 lg:py-32">
+        {/* <div className="relative py-24 lg:py-32">
           <BackgroundSection />
           <div>
             <Heading rightDescText="From the Ciseco blog">
@@ -175,7 +169,7 @@ async function PageHome() {
               <ButtonSecondary>Show all blog articles</ButtonSecondary>
             </div>
           </div>
-        </div>
+        </div> */}
         <SectionClientSay />
       </div>
     </div>

@@ -30,8 +30,8 @@ declare namespace __next_route_internal_types__ {
 
   type StaticRoutes = 
     | `/`
-    | `/account-billing`
     | `/account`
+    | `/account-billing`
     | `/account-order`
     | `/account-password`
     | `/account-savelists`

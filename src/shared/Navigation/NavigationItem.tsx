@@ -30,7 +30,7 @@ export interface NavigationItemProps {
 const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
   const [menuCurrentHovers, setMenuCurrentHovers] = useState<string[]>([]);
   const [hoveredItem, setHoveredItem] = useState([]);
-  const [categoryTitle, setCategoryTitle] = useState([]);
+  const [categoryTitle, setCategoryTitle] = useState(null);
   const { languageCode } = useAppSelector((store) => store.languagesReducer)
   const dispatch = useDispatch<AppDispatch>()
 
@@ -71,31 +71,56 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
   // ===================== MENU MEGAMENU =====================
   const renderMegaMenu = (menu: NavItemType) => {
     return (
+
       <li
         className={`menu-item flex-shrink-0 menu-megamenu menu-megamenu--large`}
       >
         {renderMainItem(menu)}
 
-        <div className=" invisible bg-white  sub-menu absolute top-full inset-x-0 transform z-50">
-          <div className=" bg-white flex mx-24 border h-[400px] dark:bg-neutral-900 shadow-lg">
-            <div className="w-1/3 container  overflow-y-auto ">
-              <div className="text-sm border-t border-slate-200 dark:border-slate-700">
+        <div className="flex justify-center invisible bg-black/80 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50">
+          <div className=" bg-white flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
+            <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto scrollbar-hidden">
+              <div className="text-sm border-none border-slate-200 dark:border-slate-700">
                 <div>
+                  <div
+                    key={999}
+                    className="flex items-center justify-between hover:bg-[#00000010] py-2 rounded-md cursor-pointer px-4 w-full"
+                    onMouseEnter={() => {
+                      setHoveredItem([])
+                      setCategoryTitle('Featured Category')
+                    }}
+                  >
+                    {/* <Image
+                        className="rounded-full mr-3"
+                        width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} /> */}
+                    <p className="font-medium text-black/70 dark:text-neutral-200 text-base ">
+                      Featured
+                    </p>
+                    <ChevronRightIcon
+                      className="ml-1 -mr-1 h-4 w-4 text-slate-400"
+                      aria-hidden="true"
+                    />
+                    {/* Add other content for each item */}
+                  </div>
                   {menu.children?.map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center hover:bg-[#00000010] rounded-md my-7 py-2"
+                      className="flex items-center justify-between hover:bg-[#00000010] py-2 rounded-md cursor-pointer px-4 w-full"
                       onMouseEnter={() => {
                         setHoveredItem(item.subcategories)
                         setCategoryTitle(item.category_name)
                       }}
                     >
-                      <Image
+                      {/* <Image
                         className="rounded-full mr-3"
-                        width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} />
-                      <p className="font-medium text-slate-900 dark:text-neutral-200 text-base ">
+                        width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} /> */}
+                      <p className="font-medium text-black/70 dark:text-neutral-200 text-base ">
                         {item.category_name}
                       </p>
+                      <ChevronRightIcon
+                        className="ml-1 -mr-1 h-4 w-4 text-slate-400"
+                        aria-hidden="true"
+                      />
                       {/* Add other content for each item */}
                     </div>
                   ))}
@@ -104,18 +129,20 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
             </div>
             {
               hoveredItem && (
-                <div className="mt-8 w-2/3 overflow-y-scroll">
+                <div className="mt-8 w-2/3 overflow-y-scroll scrollbar-hidden">
                   {categoryTitle && <h1 className="text-2xl font-semibold text-center mb-12">{categoryTitle}</h1>}
                   <div className="flex   flex-wrap ">
-                    {hoveredItem?.map((singlesubcat: any) => {
+                    {hoveredItem && hoveredItem?.map((singlesubcat: any) => {
                       return (
                         <div className="mx-4 w-[140px] mb-4 ">
-                          <div className="mx-auto">
-                            <Image
-                              className="mx-auto rounded-full border border-gray-300 h-[130px] w-[130px] hover:scale-110 "
-                              width={150} height={150} src={`${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`} alt={singlesubcat.subcategory_name} />
-                          </div>
-                          <h1 className="font-semibold text-[14px] line-clamp-2 text-center mt-2">{singlesubcat.subcategory_name}</h1>
+                          <a href={`/${categoryTitle && categoryTitle?.replace(/[^\w\s]/g, '').replace(/\s/g, '')}/${singlesubcat.subcategory_name.replace(/[^\w\s]/g, '').replace(/\s/g, '')}`}>
+                            <div className="mx-auto">
+                              <Image
+                                className="mx-auto rounded-full border border-gray-300 h-[130px] w-[130px] transition hover:scale-105"
+                                width={150} height={150} src={`${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`} alt={singlesubcat.subcategory_name} />
+                            </div>
+                            <h1 className="font-semibold text-[14px] line-clamp-2 text-center mt-2">{singlesubcat.subcategory_name}</h1>
+                          </a>
                         </div>
                       )
                     })}

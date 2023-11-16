@@ -5,6 +5,8 @@ export interface PricesProps {
   price?: any;
   sellingprice?: any;
   contentClass?: string;
+  mrpClasses?: string;
+  sellingClasses?: string
 }
 
 const Prices: FC<PricesProps> = ({
@@ -12,12 +14,14 @@ const Prices: FC<PricesProps> = ({
   price = 0,
   sellingprice = 0,
   contentClass = "py-1 px-2 md:py-1.5 md:px-2.5 text-sm font-medium",
+  mrpClasses = "",
+  sellingClasses = ""
 }) => {
   return (
     <div className={`${className}`}>
       <div className={`flex items-center ${contentClass}`}>
-        <span className="text-black/90 dark:text-white/90 text-lg font-bold !leading-none">${String(sellingprice)}</span>
-        <del className="mx-2 text-sm text-gray-400">${String(price)}</del>
+        <span className={`text-black/90 dark:text-white/90 text-lg font-bold !leading-none ${mrpClasses}`}>${String(sellingprice)}</span>
+        <del className={`mx-2 text-sm text-gray-400 ${sellingClasses}`}>${String(price)}</del>
       </div>
     </div>
   );
