@@ -77,7 +77,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
       >
         {renderMainItem(menu)}
 
-        <div className="flex justify-center invisible bg-black/80 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50">
+        <div className="flex justify-center invisible bg-black/50 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50">
           <div className=" bg-white flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
             <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto scrollbar-hidden">
               <div className="text-sm border-none border-slate-200 dark:border-slate-700">
@@ -207,7 +207,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                       return renderDropdownMenuNavlinkHasChild(i);
                     } else {
                       return (
-                        <li key={i.id} className="px-2">
+                        <li key={i.id} className=" px-2">
                           {renderDropdownMenuNavlink(i)}
                         </li>
                       );
@@ -291,7 +291,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     return (
       <div className="h-20 flex-shrink-0 flex items-center">
         <Link
-          className="inline-flex items-center text-sm lg:text-[15px] font-medium text-slate-700 dark:text-slate-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+          className="inline-flex items-center group text-sm lg:text-[15px] font-medium text-slate-700 dark:text-slate-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200"
           href={{
             pathname: item.href || undefined,
           }}
@@ -299,7 +299,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
           {item.name}
           {item.type && (
             <ChevronDownIcon
-              className="ml-1 -mr-1 h-4 w-4 text-slate-400"
+              className="ml-1 -mr-1 h-4 w-4 transition-all group-hover:rotate-180 text-slate-400"
               aria-hidden="true"
             />
           )}

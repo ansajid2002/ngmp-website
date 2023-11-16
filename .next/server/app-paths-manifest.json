@@ -1,6 +1,6 @@
 {
   "/page": "app/page.js",
-  "/collection/page": "app/collection/page.js",
-  "/search/page": "app/search/page.js",
-  "/api/variants/[category]/[subcategory]/[uniqueId]/route": "app/api/variants/[category]/[subcategory]/[uniqueId]/route.js"
+  "/api/DeleteCart/[category]/[subcatgeory]/[uniquepid]/[label]/[customerId]/route": "app/api/DeleteCart/[category]/[subcatgeory]/[uniquepid]/[label]/[customerId]/route.js",
+  "/cart/page": "app/cart/page.js",
+  "/checkout/page": "app/checkout/page.js"
 }
