@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 async function getVariantsOfCatSubcat(category: string, subcategory: string, uniquepid: number) {
     try {
         const apiUrl = `${AdminUrl}/api/getvariantsofcatsubcat?category=${category}&subcategory=${subcategory}&uniquepid=${uniquepid}`;
-        
+
 
         const response = await fetch(apiUrl, {
             method: 'GET',

@@ -29,7 +29,7 @@ interface Category {
 
 export async function getcustomerData(vendorId: any) {
   try {
-    const response = await fetch(`${AdminUrl}/api/getCouponsByVendorId?vendorId=${vendorId}`);
+    const response = await fetch(`${AdminUrl}/api/getCouponsByVendorId?vendorId=${vendorId}`, { next: { revalidate: 30 } });
     if (!response.ok) {
       throw new Error(`Failed to fetch customer data: ${response.status}`);
     }
@@ -43,7 +43,7 @@ export async function getcustomerData(vendorId: any) {
 
 export async function getBannerdata() {
   try {
-    const response = await fetch(`${AdminUrl}/api/getBanners`);
+    const response = await fetch(`${AdminUrl}/api/getBanners`, { next: { revalidate: 30 } });
     if (!response.ok) {
       throw new Error(`Failed to fetch banner data: ${response.status}`);
     }
@@ -58,8 +58,8 @@ export async function getBannerdata() {
 
 export const fetchCategoriesAndSubcategories = async (): Promise<Category[] | null> => {
   try {
-    const categoryResponse = await fetch(`${AdminUrl}/api/getAllProductCatgeory`);
-    const subcategoryResponse = await fetch(`${AdminUrl}/api/getAllSubcategories`);
+    const categoryResponse = await fetch(`${AdminUrl}/api/getAllProductCatgeory`, { next: { revalidate: 30 } });
+    const subcategoryResponse = await fetch(`${AdminUrl}/api/getAllSubcategories`, { next: { revalidate: 30 } });
 
     if (categoryResponse.ok && subcategoryResponse.ok) {
       const categoryData: Category[] = await categoryResponse.json();
@@ -90,7 +90,7 @@ export const fetchCategoriesAndSubcategories = async (): Promise<Category[] | nu
 
 export const getAllProducts = async () => {
   try {
-    const response = await fetch(`${AdminUrl}/api/AllProductsVendors?currency=USD}`);
+    const response = await fetch(`${AdminUrl}/api/AllProductsVendors?currency=USD}`, { next: { revalidate: 30 } });
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);

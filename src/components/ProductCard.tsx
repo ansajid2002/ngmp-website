@@ -52,9 +52,6 @@ const ProductCard: FC<ProductCardProps> = ({
 
   }, [wishlistItems]);
 
-
-
-
   const [showModalQuickView, setShowModalQuickView] = useState(false);
 
   const router = useRouter();

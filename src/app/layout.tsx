@@ -17,7 +17,6 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-
 export default function RootLayout({
   children,
   params,
@@ -40,5 +39,4 @@ export default function RootLayout({
     </html>
   );
 }
-// export const AdminUrl = "http://192.168.1.9:3001";
-export const AdminUrl = "https://nileadmin.websitetest.info";
+export const AdminUrl = "https://admin.nilegmp.com";

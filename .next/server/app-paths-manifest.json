@@ -1,9 +1,1 @@
-{
-  "/page": "app/page.js",
-  "/api/cart/[customer_id]/route": "app/api/cart/[customer_id]/route.js",
-  "/api/wishlist/[customer_id]/route": "app/api/wishlist/[customer_id]/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/cart/addCarts/route": "app/api/cart/addCarts/route.js",
-  "/api/variants/[category]/[subcategory]/[uniqueId]/route": "app/api/variants/[category]/[subcategory]/[uniqueId]/route.js",
-  "/cart/page": "app/cart/page.js"
-}
+{}
