@@ -3,9 +3,14 @@ import Link from "next/link";
 import { AdminUrl, HomeUrl } from "../layout";
 import CartProducts from "@/components/CartProducts";
 import FetchCartPrice from "@/components/FetchCartPrice";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 
 const CartPage = async () => {
+  const session = await getServerSession(authOptions)
+  console.log(session);
+
   return (
     <div className="nc-CartPage">
       <main className="container py-16 lg:pb-28 lg:pt-20 ">

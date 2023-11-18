@@ -16,6 +16,7 @@ const CartProducts = ({ removeData = true }) => {
     const dispatch = useDispatch()
     const customerId = 71
 
+
     const renderProduct = (item: Product, index: number) => {
         const { ad_title, mrp, sellingprice, images, label, added_quantity, prod_slug, uniquepid } = item;
 

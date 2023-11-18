@@ -111,6 +111,7 @@ async function PageHome() {
   const bannersData = await getBannerdata()
   const fetchCategoriesAndSubcategoriesdata = await fetchCategoriesAndSubcategories()
 
+
   return (
     <div className="relative overflow-hidden">
 
@@ -174,9 +175,9 @@ async function PageHome() {
         <SectionClientSay />
       </div>
 
-        <div>
-          <Category />
-        </div>
+      <div>
+        <Category />
+      </div>
 
     </div>
   );
