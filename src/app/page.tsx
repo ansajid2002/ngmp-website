@@ -13,6 +13,7 @@ import SectionClientSay from "@/components/SectionClientSay/SectionClientSay";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import SectionGridFeatureItems from "@/components/SectionGridFeatureItems";
 import { AdminUrl } from "./layout";
+import Category from "@/components/Category";
 
 interface Subcategory {
   subcategory_id: number;
@@ -172,6 +173,11 @@ async function PageHome() {
         </div> */}
         <SectionClientSay />
       </div>
+
+        <div>
+          <Category />
+        </div>
+
     </div>
   );
 }

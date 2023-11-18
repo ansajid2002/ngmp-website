@@ -40,3 +40,4 @@ export default function RootLayout({
   );
 }
 export const AdminUrl = "https://admin.nilegmp.com";
+// export const AdminUrl = "http://192.168.1.9:3001";

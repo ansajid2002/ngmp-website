@@ -12,3 +12,12 @@
     scrollbar-width: none;
     /* Firefox */
 }
+.slick-prev:before, .slick-next:before {
+    font-family: 'slick';
+    font-size: 25px !important;
+    line-height: 1 !important;
+    opacity: 1;
+    color: #fb7601 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
