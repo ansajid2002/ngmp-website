@@ -6,20 +6,20 @@ import Link from "next/link";
 const DEMO_PAGINATION: CustomLink[] = [
   {
     label: "1",
-    href: "/",
+    href: ${ HomeUrl },
   },
-  {
-    label: "2",
-    href: "/",
-  },
-  {
-    label: "3",
-    href: "/",
-  },
-  {
-    label: "4",
-    href: "/",
-  },
+{
+  label: "2",
+    href: ${ HomeUrl },
+},
+{
+  label: "3",
+    href: ${ HomeUrl },
+},
+{
+  label: "4",
+    href: ${ HomeUrl },
+},
 ];
 
 export interface PaginationProps {

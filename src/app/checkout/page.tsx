@@ -81,7 +81,7 @@ const CheckoutPage = () => {
             Checkout
           </h2>
           <div className="block mt-3 sm:mt-5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-400">
-            <Link href={"/"} className="">
+            <Link href={{`${HomeUrl}`}} className="">
               Home
             </Link>
             <span className="text-xs mx-1 sm:mx-1.5">/</span>
@@ -169,8 +169,8 @@ const CheckoutPage = () => {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 };
 

@@ -14,40 +14,40 @@ const widgetMenus: WidgetFooterMenu[] = [
     id: "5",
     title: "Getting started",
     menus: [
-      { href: "/", label: "Release Notes" },
-      { href: "/", label: "Upgrade Guide" },
-      { href: "/", label: "Browser Support" },
-      { href: "/", label: "Dark Mode" },
+      { href: ${ HomeUrl }, label: "Release Notes" },
+  { href: ${ HomeUrl }, label: "Upgrade Guide" },
+{ href: ${ HomeUrl }, label: "Browser Support" },
+{ href: ${ HomeUrl }, label: "Dark Mode" },
     ],
   },
-  {
-    id: "1",
+{
+  id: "1",
     title: "Explore",
-    menus: [
-      { href: "/", label: "Prototyping" },
-      { href: "/", label: "Design systems" },
-      { href: "/", label: "Pricing" },
-      { href: "/", label: "Security" },
+      menus: [
+        { href: ${ HomeUrl }, label: "Prototyping" },
+{ href: ${ HomeUrl }, label: "Design systems" },
+{ href: ${ HomeUrl }, label: "Pricing" },
+{ href: ${ HomeUrl }, label: "Security" },
     ],
   },
-  {
-    id: "2",
+{
+  id: "2",
     title: "Resources",
-    menus: [
-      { href: "/", label: "Best practices" },
-      { href: "/", label: "Support" },
-      { href: "/", label: "Developers" },
-      { href: "/", label: "Learn design" },
+      menus: [
+        { href: ${ HomeUrl }, label: "Best practices" },
+{ href: ${ HomeUrl }, label: "Support" },
+{ href: ${ HomeUrl }, label: "Developers" },
+{ href: ${ HomeUrl }, label: "Learn design" },
     ],
   },
-  {
-    id: "4",
+{
+  id: "4",
     title: "Community",
-    menus: [
-      { href: "/", label: "Discussion Forums" },
-      { href: "/", label: "Code of Conduct" },
-      { href: "/", label: "Contributing" },
-      { href: "/", label: "API Reference" },
+      menus: [
+        { href: ${ HomeUrl }, label: "Discussion Forums" },
+{ href: ${ HomeUrl }, label: "Code of Conduct" },
+{ href: ${ HomeUrl }, label: "Contributing" },
+{ href: ${ HomeUrl }, label: "API Reference" },
     ],
   },
 ];

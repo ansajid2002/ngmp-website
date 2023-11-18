@@ -1,3 +1,4 @@
+import { HomeUrl } from "@/app/layout";
 import { NavItemType } from "@/shared/Navigation/NavigationItem";
 import ncNanoId from "@/utils/ncNanoId";
 
@@ -7,11 +8,11 @@ export const MEGAMENU_TEMPLATES: NavItemType[] = [
   //   href: "/#",
   //   name: "Categories",
   //   children: [
-  //     { id: ncNanoId(), href: "/", name: "Home  1" },
+  //     { id: ncNanoId(), href: {`${HomeUrl}`}, name: "Home  1" },
   //     { id: ncNanoId(), href: "/home-2", name: "Home  2", isNew: true },
-  //     { id: ncNanoId(), href: "/", name: "Header  1" },
+  //     { id: ncNanoId(), href: {`${HomeUrl}`}, name: "Header  1" },
   //     { id: ncNanoId(), href: "/home-2", name: "Header  2", isNew: true },
-  //     { id: ncNanoId(), href: "/", name: "Coming Soon" },
+  //     { id: ncNanoId(), href: {`${HomeUrl}`}, name: "Coming Soon" },
   //   ],
   // },
   // {
@@ -59,7 +60,7 @@ export const MEGAMENU_TEMPLATES: NavItemType[] = [
 // const OTHER_PAGE_CHILD: NavItemType[] = [
 //   {
 //     id: ncNanoId(),
-//     href: "/",
+//     href: {`${HomeUrl}`},
 //     name: "Home Demo 1",
 //   },
 //   {
@@ -180,7 +181,7 @@ export const MEGAMENU_TEMPLATES: NavItemType[] = [
 const OTHER_PAGE_CHILD: NavItemType[] = [
   {
     id: ncNanoId(),
-    href: "/",
+    href: `${HomeUrl}`,
     name: "Home Demo 1",
   },
   {
@@ -319,7 +320,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
   },
   {
     id: ncNanoId(),
-    href: "/",
+    href: `${HomeUrl}`,
     name: "Language",
     type: "dropdown",
     children: OTHER_PAGE_CHILD,

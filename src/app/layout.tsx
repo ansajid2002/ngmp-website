@@ -9,7 +9,8 @@ import SiteHeader from "@/app/SiteHeader";
 import CommonClient from "./CommonClient";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { ReduxProvider } from "@/redux/Provider";
+import { ReduxProvider } from "@/redux/provider";
+import NextTopLoader from 'nextjs-toploader';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,10 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en" dir="" className={poppins.className}>
       <body className="bg-white text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
+        <NextTopLoader color="red" />
         <ReduxProvider>
 
           <SiteHeader />
-          {children}
+          <div className="relative top-32">
+            {children}
+          </div>
           <CommonClient />
           {/* <Footer /> */}
           <NewFooter />
@@ -39,4 +43,6 @@ export default function RootLayout({
     </html>
   );
 }
-export const AdminUrl = "https://admin.nilegmp.com";
+export const AdminUrl = "http://192.168.1.8:3001";
+export const HomeUrl = "http://localhost:3000";
+// export const AdminUrl = "https://admin.nilegmp.com";

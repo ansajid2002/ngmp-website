@@ -4,6 +4,7 @@ import Applestore from "@/shared/applestore.png";
 import { CustomLink } from "@/data/types";
 import React from "react";
 import Image from "next/image";
+import { HomeUrl } from "@/app/layout";
 
 export interface WidgetFooterMenu {
   id: string;
@@ -11,56 +12,59 @@ export interface WidgetFooterMenu {
   menus: CustomLink[];
 }
 
-const widgetMenus: WidgetFooterMenu[] = [
-  {
-    id: "5",
-    title: "Company info",
-    menus: [
-      { href: "/", label: "About Nile" },
-      { href: "/", label: "Temu - Team Up, Price Down!" },
-      { href: "/", label: "Affiliate & influencer Program" },
-      { href: "/", label: "Campus ambassador" },
-      { href: "/", label: "Contact us" },
-      { href: "/", label: "Careers" },
-      { href: "/", label: "Press" },
-    ],
-  },
-  {
-    id: "1",
-    title: "Customer service",
-    menus: [
-      { href: "/", label: "Return and refund policy" },
-      { href: "/", label: "Intellectual property policy" },
-      { href: "/", label: "Shipping info" },
-      { href: "/", label: "Student discount" },
-      { href: "/", label: "Your Recalls and Product Safety Alerts" },
-    ],
-  },
-  {
-    id: "2",
-    title: "Help",
-    menus: [
-      { href: "/", label: "Support center & FAQ" },
-      { href: "/", label: "Temu purchase protection" },
-      { href: "/", label: "Sitemap" },
-      { href: "/", label: "How to order" },
-      { href: "/", label: "How to track" },
-      { href: "/", label: "Sell on Nile" },
-    ],
-  },
-  //   {
-  //     id: "4",
-  //     title: "Community",
-  //     menus: [
-  //       { href: "/", label: "Discussion Forums" },
-  //       { href: "/", label: "Code of Conduct" },
-  //       { href: "/", label: "Contributing" },
-  //       { href: "/", label: "API Reference" },
-  //     ],
-  //   },
-];
 
 const Footer: React.FC = () => {
+
+
+  const widgetMenus: WidgetFooterMenu[] = [
+    {
+      id: "5",
+      title: "Company info",
+      menus: [
+        { href: `${HomeUrl}`, label: "About Nile" },
+        { href: `${HomeUrl}`, label: "Temu - Team Up, Price Down!" },
+        { href: `${HomeUrl}`, label: "Affiliate & influencer Program" },
+        { href: `${HomeUrl}`, label: "Campus ambassador" },
+        { href: `${HomeUrl}`, label: "Contact us" },
+        { href: `${HomeUrl}`, label: "Careers" },
+        { href: `${HomeUrl}`, label: "Press" },
+      ],
+    },
+    {
+      id: "1",
+      title: "Customer service",
+      menus: [
+        { href: `${HomeUrl}`, label: "Return and refund policy" },
+        { href: `${HomeUrl}`, label: "Intellectual property policy" },
+        { href: `${HomeUrl}`, label: "Shipping info" },
+        { href: `${HomeUrl}`, label: "Student discount" },
+        { href: `${HomeUrl}`, label: "Your Recalls and Product Safety Alerts" },
+      ],
+    },
+    {
+      id: "2",
+      title: "Help",
+      menus: [
+        { href: `${HomeUrl}`, label: "Support center & FAQ" },
+        { href: `${HomeUrl}`, label: "Temu purchase protection" },
+        { href: `${HomeUrl}`, label: "Sitemap" },
+        { href: `${HomeUrl}`, label: "How to order" },
+        { href: `${HomeUrl}`, label: "How to track" },
+        { href: `${HomeUrl}`, label: "Sell on Nile" },
+      ],
+    },
+    //   {
+    //     id: "4",
+    //     title: "Community",
+    //     menus: [
+    //       { href: {`${HomeUrl}`}, label: "Discussion Forums" },
+    //       { href: {`${HomeUrl}`}, label: "Code of Conduct" },
+    //       { href: {`${HomeUrl}`}, label: "Contributing" },
+    //       { href: {`${HomeUrl}`}, label: "API Reference" },
+    //     ],
+    //   },
+  ];
+
   const renderWidgetMenuItem = (menu: WidgetFooterMenu, index: number) => {
     return (
       <div key={index} className="text-sm">
@@ -88,7 +92,7 @@ const Footer: React.FC = () => {
 
   return (
     <>
-      <div className="nc-Footer relative px-2 py-10 lg:pt-20 lg:pb-5 border-t border-neutral-200 dark:border-neutral-700">
+      <div className="nc-Footer relative px-2 py-10 lg:pt-20 mt-20 lg:pb-5 border-t border-neutral-200 dark:border-neutral-700">
         <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-10 ">
           {/* <div className="grid grid-cols-4 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
           <div className="col-span-2 md:col-span-1">

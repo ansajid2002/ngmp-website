@@ -18,11 +18,12 @@ export default function CartDropdown() {
   const dispatch = useDispatch()
   const customerId = 71
   const renderProduct = (item: Product, index: number, close: () => void) => {
-    const { ad_title, mrp, sellingprice, images, label, added_quantity } = item;
+    const { ad_title, mrp, sellingprice, images, label, added_quantity, prod_slug, uniquepid } = item;
 
-    const handleRemove = async (itemId: Number, item: any) => {
+    const handleRemove = async (item: any) => {
       try {
         dispatch(removeItem(item));
+        console.log(item);
 
         if (customerId) {
           const { category, subcategory, uniquepid, label } = item;
@@ -31,18 +32,33 @@ export default function CartDropdown() {
           const replacesubcategory = subcategory.replace(/[^\w\s]/g, '').replace(/\s/g, '');
 
           // Construct the URL for your backend endpoint
-          const apiUrl = `/api/DeleteCart/${replacecategory}/${replacesubcategory}/${uniquepid}/${label || 'empty'}/${customerId}`;
+          const apiUrl = '/api/DeleteCart';
 
-          // Make a DELETE request to your backend using async/await
-          const response = await fetch(apiUrl);
+          // Create the payload to send in the POST request
+          const payload = {
+            category: replacecategory,
+            subcategory: replacesubcategory,
+            product_uniqueid: uniquepid,
+            customer_id: customerId,
+            label: label || 'empty',
+          };
+
+          // Make a POST request to your backend using async/await
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          });
 
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
 
           const data = await response.json();
+          // Handle success, update UI or perform any other action based on the response data
         }
-        // Handle success, update UI or perform any other action
       } catch (error) {
         console.error('Error removing product from cart:', error);
         // Handle error, show a message to the user, or retry the operation
@@ -61,7 +77,7 @@ export default function CartDropdown() {
           <Link
             onClick={close}
             className="absolute inset-0"
-            href={"/product-detail"}
+            href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
           />
         </div>
 
@@ -70,7 +86,7 @@ export default function CartDropdown() {
             <div className="flex justify-between ">
               <div>
                 <h3 className="text-base font-medium ">
-                  <Link onClick={close} className="line-clamp-2" href={"/product-detail"}>
+                  <Link onClick={close} className="line-clamp-2" href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}>
                     {ad_title}
                   </Link>
                 </h3>
@@ -89,7 +105,7 @@ export default function CartDropdown() {
             <div className="flex">
               <button
                 type="button"
-                onClick={() => handleRemove(item.uniquepid, item)}
+                onClick={() => handleRemove(item)}
                 className="font-medium text-primary-6000 dark:text-primary-500 "
               >
                 Remove

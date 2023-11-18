@@ -9,7 +9,7 @@ function forceDownload(blobUrl: string, filename: string) {
 
 export default function downloadPhoto(url: string, filename: string) {
   if (!filename) {
-    filename = url.split("\\").pop()?.split("/").pop() || "";
+    filename = url.split("\\").pop()?.split(${ HomeUrl }).pop() || "";
   }
   fetch(url, {
     headers: new Headers({

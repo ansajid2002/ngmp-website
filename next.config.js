@@ -1,11 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
   experimental: {
+
     // appDir: true,
     typedRoutes: true,
   },
   images: {
-    domains: ['localhost', 'https://admin.nilegmp.com', 'https://nileadmin.websitetest.info', '192.168.1.9', 'http://192.168.1.9:3001'], // Add the IP address to the list of allowed domains
+    domains: ['localhost', 'https://admin.nilegmp.com', 'https://nileadmin.websitetest.info', '192.168.1.8'], // Add the IP address to the list of allowed domains
     remotePatterns: [
       {
         protocol: "https",

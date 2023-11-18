@@ -189,7 +189,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
         {data.map(_renderItem)}
       </ul>
       {/* <div className="flex items-center justify-between py-6 px-5 space-x-2">
-        <ButtonPrimary href={"/"} className="!px-10">
+        <ButtonPrimary href={{`${HomeUrl}`}} className="!px-10">
           Buy this template
         </ButtonPrimary>
       </div> */}

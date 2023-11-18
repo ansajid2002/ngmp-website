@@ -31,13 +31,16 @@ export interface NavigationItemProps {
 const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
   const [menuCurrentHovers, setMenuCurrentHovers] = useState<string[]>([]);
   const [hoveredItem, setHoveredItem] = useState([]);
-  const [categoryTitle, setCategoryTitle] = useState(null);
+  const [categoryTitle, setCategoryTitle] = useState('Featured Category');
   const { languageCode } = useAppSelector((store) => store.languagesReducer)
   const dispatch = useDispatch<AppDispatch>()
 
   const onMouseEnterMenu = (id: string) => {
+    console.log(id);
+
     setMenuCurrentHovers((state) => [...state, id]);
   };
+
 
   const onMouseLeaveMenu = (id: string) => {
     setMenuCurrentHovers((state) => {
@@ -57,7 +60,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-
+          next: { revalidate: 3 }
         });
         const data = await response.json();
         dispatch(addCarts(data?.cartData));
@@ -95,20 +98,19 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
   // ===================== MENU MEGAMENU =====================
   const renderMegaMenu = (menu: NavItemType) => {
     return (
-
       <li
-        className={`menu-item flex-shrink-0 menu-megamenu menu-megamenu--large`}
+        className={`menu-item flex-shrink-0 menu-megamenu menu-megamenu--large `}
+        onMouseLeave={() => onMouseLeaveMenu(menu.id)}
       >
         {renderMainItem(menu)}
-
-        <div className="flex justify-center invisible bg-black/50 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50">
+        <div className={`flex justify-center invisible bg-black/50 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50`}>
           <div className=" bg-white flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
             <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto scrollbar-hidden">
-              <div className="text-sm border-none border-slate-200 dark:border-slate-700">
+              <div className="text-sm border-none border-slate-200 dark:border-slate-700" >
                 <div>
                   <div
                     key={999}
-                    className="flex items-center justify-between hover:bg-[#00000010] py-2 rounded-md cursor-pointer px-4 w-full"
+                    className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === 'Featured Category' && 'bg-[#00000010]'}`}
                     onMouseEnter={() => {
                       setHoveredItem([])
                       setCategoryTitle('Featured Category')
@@ -129,7 +131,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                   {menu.children?.map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between hover:bg-[#00000010] py-2 rounded-md cursor-pointer px-4 w-full"
+                      className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === item.category_name && 'bg-[#00000010]'}`}
                       onMouseEnter={() => {
                         setHoveredItem(item.subcategories)
                         setCategoryTitle(item.category_name)
@@ -177,21 +179,6 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
           </div>
         </div>
 
-      </li>
-    );
-  };
-
-  const renderMegaMenuNavlink = (item: NavItemType) => {
-    return (
-      <li key={item.id} className={`${item.isNew ? "menuIsNew" : ""}`}>
-        <Link
-          className="font-normal text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white "
-          href={{
-            pathname: item.href || undefined,
-          }}
-        >
-          {item.name}
-        </Link>
       </li>
     );
   };
@@ -312,18 +299,20 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
 
   // ===================== MENU MAIN MENU =====================
   const renderMainItem = (item: NavItemType) => {
+
     return (
       <div className="h-20 flex-shrink-0 group flex items-center">
         <Link
-          className="inline-flex items-center group text-sm lg:text-[15px] font-medium text-slate-700 dark:text-slate-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+          className={`inline-flex items-center group text-sm lg:text-[15px] font-medium text-slate-700 dark:text-slate-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-slate-900 transition-colors duration-300 ease-in-out hover:bg-slate-100  ${menuCurrentHovers[0] == item.id && item.type && 'bg-slate-100 dark:bg-slate-800 dark:text-slate-200'} `}
           href={{
             pathname: item.href || undefined,
           }}
+          onMouseOver={() => onMouseEnterMenu(item.id)}
         >
           {item.name}
           {item.type && (
             <ChevronDownIcon
-              className="ml-1 -mr-1 h-4 w-4 transition-all group-hover:rotate-180 text-slate-400"
+              className={`ml-1 -mr-1 h-4 w-4 transition-all  ${menuCurrentHovers[0] == item.id && 'rotate-180 text-slate-400'}`}
               aria-hidden="true"
             />
           )}

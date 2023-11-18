@@ -6,6 +6,7 @@ import { Fragment } from "react";
 import Avatar from "@/shared/Avatar/Avatar";
 import SwitchDarkMode2 from "@/shared/SwitchDarkMode/SwitchDarkMode2";
 import Link from "next/link";
+import { HomeUrl } from "@/app/layout";
 
 export default function AvatarDropdown() {
   return (
@@ -220,7 +221,7 @@ export default function AvatarDropdown() {
 
                     {/* ------------------ 2 --------------------- */}
                     <Link
-                      href={"/"}
+                      href={`${HomeUrl}`}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
                     >
@@ -329,6 +330,6 @@ export default function AvatarDropdown() {
           </>
         )}
       </Popover>
-    </div>
+    </div >
   );
 }

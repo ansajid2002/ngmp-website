@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import LikeButton from "@/components/LikeButton";
 import { StarIcon } from "@heroicons/react/24/solid";
@@ -29,191 +29,315 @@ import Image from "next/image";
 import AccordionInfo from "@/components/AccordionInfo";
 import { AdminUrl } from "../layout";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/redux/store";
+import { addItem } from "@/redux/slices/cartSlice";
+import { useDispatch } from "react-redux";
+import Link from "next/link";
 
 const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
 
-const ProductDetailPage = () => {
-
+const ProductDetailPage = ({ searchParams }) => {
   const router = useRouter()
-
+  const customerId = 71
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
   const [sizeSelected, setSizeSelected] = useState("");
   const [qualitySelected, setQualitySelected] = useState(1);
-  const [isOpenModalViewAllReviews, setIsOpenModalViewAllReviews] =
-    useState(false);
+  const [variantsWithArray, setVariantsWithArray] = useState(null);
+  const [isOpenModalViewAllReviews, setIsOpenModalViewAllReviews] = useState(false);
+  const [variantsData, setVariantsData] = useState(null);
+  const [responseData, setResponseData] = useState(null);
+  const [singleData, setsingleData] = useState(responseData)
+  const [selectedAttributes, setSelectedAttributes] = useState<null>(null); // Replace 'YourAttributeType' with the actual type
+  const [selectLabel, setSelectLabel] = useState<string | null>(null)
+  const [mrpData, setMrp] = useState<number | null>(null)
+  const [sellingPriceData, setSellingPrice] = useState<number | null>(null)
+  const [discountPercentage, setDiscountPercentage] = useState<number | null>(null);
+  const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(null);
+  const [IsMatchedCartProduct, setIsMatchedCartProduct] = useState(null);
+  const [inFavorite, setinFavorite] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null)
 
-  //
-  const notifyAddTocart = () => {
-    toast.custom(
-      (t) => (
-        <NotifyAddTocart
-          productImage={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
-          qualitySelected={qualitySelected}
-          show={t.visible}
-          sizeSelected={sizeSelected}
-          variantActive={variantActive}
-          itemData={item}
-        />
-      ),
-      { position: "top-right", id: "nc-product-notify", duration: 3000 }
-    );
+  const cartItems = useAppSelector((state) => state.cart.cartItems);
+  const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const handlePutRequest = async () => {
+      try {
+
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(searchParams),
+        };
+
+        const response = await fetch('/api/getproducts', requestOptions);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+
+        setResponseData(responseData?.product);
+      } catch (error) {
+        console.error('Error processing request:', error);
+        // Handle error gracefully
+      }
+    };
+
+    handlePutRequest()
+  }, [searchParams])
+
+  useEffect(() => {
+    // Check if there's an item in wishlistItems with a matching uniquepid
+    const isFavorite = wishlistItems.some(wish => wish.uniquepid === responseData?.uniquepid);
+    setinFavorite(isFavorite);
+  }, [wishlistItems]);
+
+
+  useEffect(() => {
+    const fetchVariants = async () => {
+      try {
+        const response = await fetch(`/api/variants/${responseData?.slug_cat}/${responseData?.slug_subcat}/${responseData?.uniquepid}`);
+        const data = await response.json();
+
+        setVariantsData(data?.variant)
+      } catch (error) {
+        console.error('Error fetching variants:', error);
+      }
+    };
+
+
+    responseData?.isvariant === 'Variant' && fetchVariants();
+  }, [responseData]);
+
+
+  useEffect(() => {
+    // Create a new variants object
+    if (!variantsWithArray) {
+      const newVariantsWithArray = variantsData?.reduce((acc, variant) => {
+        const variantsvaluesObj = variant?.variantsvalues
+          ? JSON.parse(variant.variantsvalues)
+          : {};
+
+        // Initialize the accumulator if it doesn't exist
+        if (!acc.variantsvalues) {
+          acc.variantsvalues = {};
+        }
+
+        // Iterate over the attributes in variantsvaluesObj
+        for (const attribute in variantsvaluesObj) {
+          if (acc.variantsvalues.hasOwnProperty(attribute)) {
+            // If the attribute already exists in the accumulator, push the value to the array
+            acc.variantsvalues[attribute].push(variantsvaluesObj[attribute]);
+          } else {
+            // If the attribute doesn't exist in the accumulator, create a new array with the value
+            acc.variantsvalues[attribute] = [variantsvaluesObj[attribute]];
+          }
+        }
+
+        return acc;
+      }, {}) || {};
+
+      for (const attribute in newVariantsWithArray?.variantsvalues) {
+        const valuesArray = newVariantsWithArray?.variantsvalues[attribute];
+        newVariantsWithArray.variantsvalues[attribute] = [...new Set(valuesArray)];
+      }
+
+      // Check if newVariantsWithArray is not empty, null, or undefined before setting the state
+      if (Object.keys(newVariantsWithArray).length > 0) {
+        // Convert newVariantsWithArray.variantsvalues to an array of objects
+        const variantsArray = Object.keys(newVariantsWithArray?.variantsvalues).map((attribute) => ({
+          attribute,
+          values: newVariantsWithArray.variantsvalues[attribute],
+        }));
+
+
+        setVariantsWithArray(variantsArray);
+      }
+    }
+
+  }, [variantsWithArray, variantsData]);
+
+  useEffect(() => {
+    if (variantsWithArray && variantsWithArray.length > 0) {
+      // Initialize selectedAttributes with the first set of attribute values
+      const initialSelectedAttributes = {};
+      variantsWithArray.forEach((variant) => {
+        initialSelectedAttributes[variant.attribute] = variant.values[0];
+      });
+
+      // Combine the selected attribute values into a single string
+      const formattedSelection = Object.keys(initialSelectedAttributes)
+        .map((attribute) => `${initialSelectedAttributes[attribute]}`)
+        .join('/');
+
+      // Find the variant with the matching label
+      const selectedVariant = variantsData.find((variant) => variant.label === formattedSelection);
+      if (selectedVariant) {
+        // Set the mrp and sellingprice based on the selected variant
+
+        setMrp(selectedVariant.variant_mrp);
+        setSellingPrice(selectedVariant.variant_sellingprice);
+        setSelectLabel(selectedVariant?.label)
+        setSizeSelected(selectedVariant.label)
+        setsingleData({ ...singleData, mrp: selectedVariant.variant_mrp, sellingprice: selectedVariant.variant_sellingprice, label: selectedVariant?.label })
+        const discountPercentage = ((selectedVariant.variant_mrp - selectedVariant.variant_sellingprice) / selectedVariant.variant_mrp) * 100;
+        setDiscountPercentage(discountPercentage); // Rounded to 2 decimal places
+      }
+      setSelectedAttributes(initialSelectedAttributes);
+    }
+  }, [variantsWithArray]);
+
+  useEffect(() => {
+    const isUniquepidMatched = cartItems.some((cartItem) => {
+      return cartItem.uniquepid === responseData?.uniquepid;
+    });
+
+    const matchedCartProduct = cartItems.find((cartItem) => {
+      if (cartItem.uniquepid === responseData?.uniquepid) {
+        if (cartItem?.label != null && cartItem?.label != undefined) {
+          return cartItem?.uniquepid === responseData?.uniquepid && cartItem?.label === responseData?.label;
+        }
+        return cartItem?.uniquepid === responseData?.uniquepid;
+      }
+    });
+
+    setisUniquepidMatched(isUniquepidMatched)
+    setIsMatchedCartProduct(matchedCartProduct);
+
+  }, [isUniquepidMatched, cartItems, responseData])
+
+
+  const handleAttributeSelect = (attribute: any, value: any) => {
+    // Create a copy of the selectedAttributes
+    let updatedSelectedAttributes = { ...selectedAttributes };
+    if (Array.isArray(updatedSelectedAttributes)) {
+      // If selectedAttributes is an array, find the index of the attribute and update its value
+      const index = updatedSelectedAttributes.findIndex((attr) => attr === attribute);
+
+      if (index !== -1) {
+        updatedSelectedAttributes[index + 1] = value; // Update the value at the next index
+      } else {
+        // If the attribute doesn't exist in the array, add it with the new value
+        updatedSelectedAttributes.push(attribute, value);
+      }
+    } else {
+      // If selectedAttributes is an object, update or add the attribute-value pair
+      updatedSelectedAttributes[attribute] = value;
+    }
+
+    // Convert updatedSelectedAttributes to the desired format
+    let formattedSelection = '';
+
+    if (Array.isArray(updatedSelectedAttributes)) {
+      formattedSelection = updatedSelectedAttributes
+        .map((item, index) => (index % 2 === 0 ? `${item}/` : item))
+        .join('');
+    } else {
+      formattedSelection = Object.keys(updatedSelectedAttributes)
+        .map((key) => `${updatedSelectedAttributes[key]}`)
+        .join('/');
+    }
+
+    // Set the updated selected attributes in the state
+    setSelectedAttributes(updatedSelectedAttributes);
+    // Compare formattedSelection with label in variantsData
+    const selectedVariant = variantsData && variantsData.find((variant) => variant.label === formattedSelection);
+
+    if (selectedVariant) {
+      // Retrieve mrp and sellingprice from the selected variant
+      const { variant_mrp, variant_sellingprice, label } = selectedVariant;
+      setMrp(variant_mrp);
+      // singleData = {...singleData, mrp: variant_mrp}
+      setSellingPrice(variant_sellingprice);
+      setSelectLabel(label)
+      setSizeSelected(label)
+
+      setsingleData({ ...singleData, mrp: variant_mrp, sellingprice: variant_sellingprice, label: label })
+
+      // Calculate the discount percentage
+      const discountPercentage = ((variant_mrp - variant_sellingprice) / variant_mrp) * 100;
+      setDiscountPercentage(discountPercentage); // Rounded to 2 decimal places
+    } else {
+    }
   };
 
   const renderVariants = () => {
-    // if (!variants || !variants.length) {
-    //   return null;
-    // }
+    if (!variantsWithArray) {
+      // Show skeleton skimmer placeholder when variants are not available yet
+      return (
+        <>
+          <div className="h-8 w-48 bg-gray-300 animate-pulse mb-2"></div>
+          <div className="h-10 w-80 bg-gray-300 animate-pulse"></div>
+        </>
+      );
+    }
 
     return (
-      <div>
-        <label htmlFor="">
-          <span className="text-sm font-medium">
-            Color:
-            {/* <span className="ml-1 font-semibold">
-              {variants[variantActive].name}
-            </span> */}
-          </span>
-        </label>
-        <div className="flex mt-3">
-          {/* {variants.map((variant, index) => (
-            <div
-              key={index}
-              onClick={() => setVariantActive(index)}
-              className={`relative flex-1 max-w-[75px] h-10 sm:h-11 rounded-full border-2 cursor-pointer ${variantActive === index
-                  ? "border-primary-6000 dark:border-primary-500"
-                  : "border-transparent"
-                }`}
-            >
-              <div
-                className="absolute inset-0.5 rounded-full overflow-hidden z-0 object-cover bg-cover"
-                style={{
-                  backgroundImage: `url(${
-                    // @ts-ignore
-                    typeof variant.thumbnail?.src === "string"
-                      ? // @ts-ignore
-                      variant.thumbnail?.src
-                      : typeof variant.thumbnail === "string"
-                        ? variant.thumbnail
-                        : ""
-                    })`,
-                }}
-              ></div>
-            </div>
-          ))} */}
-        </div>
-      </div>
-    );
-  };
-
-  const renderSizeList = () => {
-    // if (!allOfSizes || !sizes || !sizes.length) {
-    //   return null;
-    // }
-    return (
-      <div>
-        <div className="flex justify-between font-medium text-sm">
+      variantsWithArray.map((variant: any, index: any) => (
+        <>
           <label htmlFor="">
-            <span className="">
-              Size:
-              <span className="ml-1 font-semibold">{sizeSelected}</span>
+            <span className="text-sm font-medium">
+              {variant.attribute}:
+              <span className="ml-1 font-semibold">
+                {selectedAttributes?.[variant?.attribute]}
+              </span>
             </span>
           </label>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="##"
-            className="text-primary-6000 hover:text-primary-500"
-          >
-            See sizing chart
-          </a>
-        </div>
-        <div className="grid grid-cols-5 sm:grid-cols-7 gap-2 mt-3">
-          {/* {allOfSizes.map((size, index) => {
-            const isActive = size === sizeSelected;
-            const sizeOutStock = !sizes.includes(size);
-            return (
-              <div
-                key={index}
-                className={`relative h-10 sm:h-11 rounded-2xl border flex items-center justify-center 
-                text-sm sm:text-base uppercase font-semibold select-none overflow-hidden z-0 ${sizeOutStock
-                    ? "text-opacity-20 dark:text-opacity-20 cursor-not-allowed"
-                    : "cursor-pointer"
-                  } ${isActive
-                    ? "bg-primary-6000 border-primary-6000 text-white hover:bg-primary-6000"
-                    : "border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
-                  }`}
-                onClick={() => {
-                  if (sizeOutStock) {
-                    return;
-                  }
-                  setSizeSelected(size);
-                }}
-              >
-                {size}
-              </div>
-            );
-          })} */}
-        </div>
-      </div>
+          <div className="flex mt-3">
+            {
+              variant?.values?.map((item: any, itemvar: any) => (
+                <div
+                  key={itemvar}
+                  onClick={() => {
+                    handleAttributeSelect(variant.attribute, item);
+                    setVariantActive(itemvar);
+                  }}
+                  className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
+                    ? "border-black/90 dark:border-white"
+                    : "border-transparent"
+                    }`}
+                >
+                  <div
+                    className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && 'bg-black text-white'}`}
+                  >{item}</div>
+                </div>
+              ))
+            }
+          </div>
+        </>
+      ))
     );
-  };
-
-  const renderStatus = () => {
-    if (!status) {
-      return null;
-    }
-    const CLASSES =
-      "absolute top-3 left-3 px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 nc-shadow-lg rounded-full flex items-center justify-center text-slate-700 text-slate-900 dark:text-slate-300";
-    if (status === "New in") {
-      return (
-        <div className={CLASSES}>
-          <SparklesIcon className="w-3.5 h-3.5" />
-          <span className="ml-1 leading-none">{status}</span>
-        </div>
-      );
-    }
-    if (status === "50% Discount") {
-      return (
-        <div className={CLASSES}>
-          <IconDiscount className="w-3.5 h-3.5" />
-          <span className="ml-1 leading-none">{status}</span>
-        </div>
-      );
-    }
-    if (status === "Sold Out") {
-      return (
-        <div className={CLASSES}>
-          <NoSymbolIcon className="w-3.5 h-3.5" />
-          <span className="ml-1 leading-none">{status}</span>
-        </div>
-      );
-    }
-    if (status === "limited edition") {
-      return (
-        <div className={CLASSES}>
-          <ClockIcon className="w-3.5 h-3.5" />
-          <span className="ml-1 leading-none">{status}</span>
-        </div>
-      );
-    }
-    return null;
   };
 
   const renderSectionContent = () => {
+    if (!responseData) {
+      return <>
+        <div className="h-2 w-full bg-gray-200 animate-pulse"></div>
+        <div className="h-2 w-1/2 mt-2 bg-gray-200 animate-pulse"></div>
+        <div className="h-full w-full mt-2 bg-gray-200 animate-pulse"></div>
+
+      </>
+    }
     return (
       <div className="space-y-7 2xl:space-y-8">
         {/* ---------- 1 HEADING ----------  */}
         <div>
           <h2 className="text-2xl sm:text-3xl font-semibold">
-            Heavy Weight Shoes
+            {responseData?.ad_title}
           </h2>
 
           <div className="flex items-center mt-5 space-x-4 sm:space-x-5">
             {/* <div className="flex text-xl font-semibold">$112.00</div> */}
             <Prices
               contentClass="py-1 px-2 md:py-1.5 md:px-3 text-lg font-semibold"
-              price={112}
+              price={mrpData || responseData?.mrp}
+              sellingprice={sellingPriceData || responseData?.sellingprice}
             />
 
             <div className="h-7 border-l border-slate-300 dark:border-slate-700"></div>
@@ -235,32 +359,53 @@ const ProductDetailPage = () => {
               <span className="hidden sm:block mx-2.5">·</span>
               <div className="hidden sm:flex items-center text-sm">
                 <SparklesIcon className="w-3.5 h-3.5" />
-                <span className="ml-1 leading-none">{status}</span>
+                {/* <span className="ml-1 leading-none">{status}</span> */}
               </div>
             </div>
           </div>
         </div>
 
         {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
-        <div className="">{renderVariants()}</div>
-        <div className="">{renderSizeList()}</div>
+        {responseData?.isvariant === "Variant" && <div className="">{renderVariants()}</div>}
+
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
-        <div className="flex space-x-3.5">
-          <div className="flex items-center justify-center bg-slate-100/70 dark:bg-slate-800/70 px-2 py-3 sm:p-3.5 rounded-full">
-            <NcInputNumber
-              defaultValue={qualitySelected}
-              onChange={setQualitySelected}
-            />
-          </div>
-          <ButtonPrimary
-            className="flex-1 flex-shrink-0"
-            onClick={notifyAddTocart}
-          >
-            <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-            <span className="ml-3">Add to cart</span>
-          </ButtonPrimary>
-        </div>
+
+        {
+          isUniquepidMatched ?
+            <div className="flex space-x-3.5">
+              <div className="flex items-center justify-center bg-slate-100/70 dark:bg-slate-800/70 px-2 py-3 sm:p-3.5 rounded-full">
+                <NcInputNumber
+                  defaultValue={IsMatchedCartProduct && IsMatchedCartProduct.added_quantity}
+                  onChange={setQualitySelected}
+                />
+              </div>
+              <ButtonPrimary
+                className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500"
+              >
+                <Link href={"/cart"}>
+                  <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+                  <span className="ml-3">View Cart</span>
+                </Link>
+              </ButtonPrimary>
+            </div>
+            :
+            <div className="flex space-x-3.5">
+              <div className="flex items-center justify-center bg-slate-100/70 dark:bg-slate-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
+                <NcInputNumber
+                  defaultValue={qualitySelected}
+                  onChange={setQualitySelected}
+                />
+              </div>
+              <ButtonPrimary
+                className="flex-1 flex-shrink-0 transition-all duration-300"
+                onClick={notifyAddTocart}
+              >
+                <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+                <span className="ml-3">Add to Cart</span>
+              </ButtonPrimary>
+            </div>
+        }
 
         {/*  */}
         <hr className=" 2xl:!my-10 border-slate-200 dark:border-slate-700"></hr>
@@ -273,7 +418,7 @@ const ProductDetailPage = () => {
         <div className="hidden xl:block">
           <Policy />
         </div>
-      </div>
+      </div >
     );
   };
 
@@ -360,46 +505,138 @@ const ProductDetailPage = () => {
     );
   };
 
+  const notifyAddTocart = async () => {
+    const updatedSingleData = {
+      ...responseData,
+      added_quantity: qualitySelected, // This adds the productToAdd object as a property of singleData
+      mrp: mrpData || responseData?.mrp,
+      sellingprice: sellingPriceData || responseData?.sellingprice,
+      label: selectLabel, // Set the sellingprice value here
+    };
+
+    const replacecategory = responseData?.category
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s/g, "");
+    const replacesubcategory = responseData?.subcategory
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s/g, "");
+
+    if (customerId) {
+      try {
+        const requestData = {
+          customer_id: customerId,
+          vendor_id: responseData?.vendorid,
+          product_uniqueid: responseData?.uniquepid,
+          category: replacecategory,
+          subcategory: replacesubcategory,
+          variantlabel: selectLabel,
+          mrp: mrpData || responseData?.mrp,
+          sellingprice: sellingPriceData || responseData?.sellingprice,
+          quantity: qualitySelected,
+        };
+
+        const response = await fetch(`/api/cart/addCarts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const responseDataResponse = await response.json();
+        dispatch(addItem(updatedSingleData));
+        setisUniquepidMatched(true);
+      } catch (error) {
+        console.error('Error updating cart:', error);
+      }
+    } else {
+      dispatch(addItem(updatedSingleData));
+    }
+
+    toast.custom(
+      (t) => (
+        <NotifyAddTocart
+          productImage={`${AdminUrl}/uploads/UploadedProductsFromVendors/${responseData?.images?.[0]}`}
+          qualitySelected={qualitySelected}
+          show={t.visible}
+          sizeSelected={sizeSelected}
+          variantActive={variantActive}
+          itemData={responseData}
+          mrp={mrpData || responseData?.mrp}
+          sellingPrice={sellingPriceData || responseData?.sellingprice}
+        />
+      ),
+      { position: "bottom-right", id: "nc-product-notify", duration: 3000 }
+    );
+  };
+
+  const ImageGallery = () => {
+    if (!responseData) {
+      return <>
+        <div className="p-2">
+          <div className="w-12 h-12 bg-gray-200 animate-pulse"> </div>
+          <div className="w-12 h-12 mt-3 bg-gray-200 animate-pulse"> </div>
+          <div className="w-12 h-12 mt-3 bg-gray-200 animate-pulse"> </div>
+        </div>
+        <div className="w-full h-[70vh] bg-gray-200 animate-pulse"></div>
+      </>
+    }
+    return <>
+      {/* PRODUCT GALLERY */}
+      <div className="flex flex-col p-2 lg:w-[10%] h-[50vh] scrollbar-hidden  overflow-y-auto mb-2">
+        {responseData?.images?.map((image: string, index: number) => (
+          <div
+            key={index}
+            className="h-18 mb-2 cursor-pointer"
+            onMouseOver={() => setSelectedImage(image)}
+          >
+            <div className="aspect-w-1 aspect-h-1">
+              <Image
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? 'ring-2 ring-primary' : ''
+                  }`}
+                alt={`Product Detail ${index + 1}`}
+                loading="lazy" // Add the lazy loading attribute here
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* MAIN IMAGE */}
+      <div className="flex-1">
+        <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
+          <Image
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || responseData?.images?.[0]}`}
+            className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
+            alt="Main Product Image"
+            loading="lazy"
+          />
+        </div>
+      </div>
+
+      {/* LIKE BUTTON */}
+      <div className="mt-2">
+        <LikeButton liked={inFavorite} data="hey" />
+      </div>
+    </>
+  }
   return (
     <div className={`nc-ProductDetailPage `}>
       {/* MAIn */}
-      <main className="container mt-5 lg:mt-11">
+      <main className="px-10 mt-5 lg:mt-11">
         <div className="lg:flex">
           {/* CONTENT */}
-          <div className="w-full lg:w-[55%] ">
-            {/* HEADING */}
-            <div className="relative">
-              <div className="aspect-w-16 aspect-h-16 relative">
-                <Image
-                  fill
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                  src={LIST_IMAGES_DEMO[0]}
-                  className="w-full rounded-2xl object-cover"
-                  alt="product detail 1"
-                />
-              </div>
-              {renderStatus()}
-              {/* META FAVORITES */}
-              <LikeButton className="absolute right-3 top-3 " />
-            </div>
-            <div className="grid grid-cols-2 gap-3 mt-3 sm:gap-6 sm:mt-6 xl:gap-8 xl:mt-8">
-              {[LIST_IMAGES_DEMO[1], LIST_IMAGES_DEMO[2]].map((item, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="aspect-w-11 xl:aspect-w-10 2xl:aspect-w-11 aspect-h-16 relative"
-                  >
-                    <Image
-                      sizes="(max-width: 640px) 100vw, 33vw"
-                      fill
-                      src={item}
-                      className="w-full rounded-2xl object-cover"
-                      alt="product detail 1"
-                    />
-                  </div>
-                );
-              })}
-            </div>
+          <div className="flex flex-row w-full lg:w-[50%]">
+            {ImageGallery()}
           </div>
 
           {/* SIDEBAR */}
@@ -427,13 +664,13 @@ const ProductDetailPage = () => {
             heading="Customers also purchased"
             subHeading=""
             headingFontClassName="text-2xl font-semibold"
-            headingClassName="mb-10 text-neutral-900 dark:text-neutral-50"
+            headingClassName="mb-40 text-neutral-900 dark:text-neutral-50"
           />
 
-          {/* SECTION */}
+          {/* SECTION
           <div className="pb-20 xl:pb-28 lg:pt-14">
             <SectionPromo2 />
-          </div>
+          </div> */}
         </div>
       </main>
 

@@ -2,6 +2,7 @@ import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import React from "react";
 import I404Png from "@/images/404.png";
 import NcImage from "@/shared/NcImage/NcImage";
+import { HomeUrl } from "./layout";
 
 const Page404 = () => (
   <div className="nc-Page404">
@@ -13,7 +14,7 @@ const Page404 = () => (
           {`THE PAGE YOU WERE LOOKING FOR DOESN'T EXIST.`}{" "}
         </span>
         <div className="pt-8">
-          <ButtonPrimary href="/">Return Home Page</ButtonPrimary>
+          <ButtonPrimary href={`${HomeUrl}`}>Return Home Page</ButtonPrimary>
         </div>
       </header>
     </div>

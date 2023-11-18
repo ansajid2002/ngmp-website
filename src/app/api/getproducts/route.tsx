@@ -1,25 +1,24 @@
 import { AdminUrl } from "@/app/layout";
 
-export async function POST(request: Request) {
+export async function PUT(request: Request) {
     try {
         const requestData = await request.json();
 
         const requestOptions = {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(requestData),
         };
 
-        const response = await fetch(`${AdminUrl}/api/addProductcart`, requestOptions);
+        const response = await fetch(`${AdminUrl}/api/getSingleProduct`, requestOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const responseData = await response.json();
-        console.log(responseData);
 
         return new Response(JSON.stringify(responseData), {
             headers: { 'Content-Type': 'application/json' },

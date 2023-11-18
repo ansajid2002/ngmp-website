@@ -52,7 +52,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
     setinFavorite(isFavorite);
   }, [wishlistItems]);
 
-  const { ad_title, sellingprice, images, mrp, uniquepid, isvariant, slug_subcat, slug_cat } = item
+  const { ad_title, sellingprice, images, mrp, uniquepid, isvariant, prod_slug, slug_subcat, slug_cat } = item
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
   const [sizeSelected, setSizeSelected] = useState("");
@@ -69,6 +69,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
   const [selectedImage, setSelectedImage] = useState(images?.[0])
   const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(null);
   const dispatch = useDispatch()
+
+  console.log(isUniquepidMatched);
 
   useEffect(() => {
     const fetchVariants = async () => {
@@ -341,7 +343,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         {/* ---------- 1 HEADING ----------  */}
         <div>
           <h2 className="text-2xl 2xl:text-3xl font-semibold">
-            <Link href="/product-detail">{ad_title}</Link>
+            <Link href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}>{ad_title}</Link>
           </h2>
 
           <div className="flex items-center mt-5 space-x-4 sm:space-x-5">

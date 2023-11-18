@@ -6,21 +6,21 @@ import imageRightPng3 from "@/images/hero-right-3.png";
 
 interface Hero2DataType {
   image: StaticImageData | string;
- 
+
   btnLink: Route;
 }
 
 export const HERO2_DEMO_DATA: Hero2DataType[] = [
   {
     image: imageRightPng2,
-    btnLink: "/",
+    btnLink: ${ HomeUrl },
   },
-  {
-    image: imageRightPng3,
-    btnLink: "/",
-  },
-  {
-    image: imageRightPng,
-    btnLink: "/",
-  },
+{
+  image: imageRightPng3,
+    btnLink: ${ HomeUrl },
+},
+{
+  image: imageRightPng,
+    btnLink: ${ HomeUrl },
+},
 ];

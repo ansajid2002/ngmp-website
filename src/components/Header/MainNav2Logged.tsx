@@ -14,6 +14,7 @@ import negotiation from "@/images/header/negotiation.png"
 import mobile from "@/images/header/test.png"
 import Image from "next/image";
 import Link from "next/link";
+import { HomeUrl } from "@/app/layout";
 
 export interface MainNav2LoggedProps { }
 
@@ -21,6 +22,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
   const inputRef = createRef<HTMLInputElement>();
   const [showSearchForm, setShowSearchForm] = useState(false);
   const router = useRouter();
+
 
   const renderMagnifyingGlassIcon = () => {
     return (
@@ -85,7 +87,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
         </div>
         <div className="lg:flex-1 flex items-center">
           {/* <Logo className="flex-shrink-0" /> */}
-          <Link href="/">
+          <Link href={`${HomeUrl}`}>
             <Image src={logo} alt="website main logo" className=" w-32 md:w-32 xl:w-32 pb-1" />
           </Link>
         </div>
@@ -107,28 +109,33 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
           <AvatarDropdown />
           <CartDropdown />
         </div>
-      </div>
+      </div >
     );
   };
 
   return (
     <header>
-      <section className="justify-around py-2 items-center bg-[#fb7601] border hidden md:flex ">
+      <section className="justify-between px-4 md:px-10 py-2 items-center bg-black/90 border flex ">
         <div className="flex items-center space-x-2">
-          <Image src={freeshipping} alt="website main logo" className=" w-8 lg:w-10" />
-          <h1 className="text-[14px] lg:text-base font-semibold">Free Shopping on all Orders</h1>
+          <Image
+            src={freeshipping}
+            alt="website main logo"
+            className="md:w-8 md:h-8 w-7 h-7 brightness-200"
+          />
+          <h1 className="text-[12px] md:text-[14px] text-green-400 font-semibold">Free Shipping on all Orders</h1>
+        </div>
+
+        <div className="hidden md:flex items-center space-x-2" >
+          <Image src={negotiation} alt="website main logo" className="md:w-8 md:h-8 w-7 h-7 brightness-200  invert" />
+          <h1 className="text-[14px] text-[#FFF7A7] font-semibold">Negotiation Available</h1>
         </div>
         <div className="flex items-center space-x-2">
-          <Image src={negotiation} alt="website main logo" className="w-8 lg:w-10" />
-          <h1 className="text-[14px] lg:text-base font-semibold">Negotiation Available</h1>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Image src={mobile} alt="website main logo" className=" w-8 lg:w-10" />
-          <h1 className="text-[14px] lg:text-base font-semibold">Get The Temu App</h1>
+          <Image src={mobile} alt="website main logo" className=" md:w-8 md:h-8 w-7 h-7 brightness-200  invert" />
+          <h1 className="text-[12px] md:text-[14px] text-[#FFF7A7] font-semibold">Get The Nile App</h1>
         </div>
       </section>
       <div className="nc-MainNav2Logged relative z-10 md:pt-2  bg-white dark:bg-neutral-900 border-b border-slate-100 dark:border-slate-700">
-        <div className="px-10">{renderContent()}</div>
+        <div className="md:px-10 px-4">{renderContent()}</div>
       </div>
     </header>
   );

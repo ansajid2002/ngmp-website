@@ -17,7 +17,7 @@ const CartProducts = ({ removeData = true }) => {
     const customerId = 71
 
     const renderProduct = (item: Product, index: number) => {
-        const { ad_title, mrp, sellingprice, images, label, added_quantity } = item;
+        const { ad_title, mrp, sellingprice, images, label, added_quantity, prod_slug, uniquepid } = item;
 
         const handleRemove = async (item: any) => {
             try {
@@ -185,10 +185,7 @@ const CartProducts = ({ removeData = true }) => {
                         <div className="flex justify-between ">
                             <div className="flex-[1.5] ">
                                 <h3 className="text-base font-semibold line-clamp-2 w-11/12">
-                                    <Link href={{
-                                        pathname: '/product-detail',
-                                        query: { ad_title }
-                                    }}>{ad_title}</Link>
+                                    <Link href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}>{ad_title}</Link>
                                 </h3>
                                 <div className="mt-1.5 sm:mt-2.5 flex flex-col text-sm text-slate-600 dark:text-slate-300">
 
@@ -250,7 +247,7 @@ const CartProducts = ({ removeData = true }) => {
                         </div>
                     }
                 </div>
-            </div>
+            </div >
         );
     };
 

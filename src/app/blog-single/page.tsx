@@ -11,13 +11,14 @@ import { _getImgRd, _getPersonNameRd, _getTitleRd } from "@/contains/fakeData";
 import Tag from "@/shared/Tag/Tag";
 import Image from "next/image";
 import Link from "next/link";
+import { HomeUrl } from "../layout";
 
 const BlogSingle = () => {
   const renderHeader = () => {
     return (
       <header className="container rounded-xl">
         <div className="max-w-screen-md mx-auto space-y-5">
-          <Badge href="/" color="purple" name="Traveler" />
+          <Badge href={`${HomeUrl}`} color="purple" name="Traveler" />
           <h1
             className=" text-neutral-900 font-semibold text-3xl md:text-4xl md:!leading-[120%] lg:text-4xl dark:text-neutral-100 max-w-4xl "
             title="Quiet ingenuity: 120,000 lunches and counting"
