@@ -1,7 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/api/cart/[customer_id]/route": "app/api/cart/[customer_id]/route.js",
-  "/product-detail/page": "app/product-detail/page.js",
-  "/api/getproducts/route": "app/api/getproducts/route.js",
-  "/api/wishlist/[customer_id]/route": "app/api/wishlist/[customer_id]/route.js"
-}

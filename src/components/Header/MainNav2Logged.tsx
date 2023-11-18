@@ -115,7 +115,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
 
   return (
     <header>
-      <section className="justify-between px-4 md:px-10 py-2 items-center bg-black/90 border flex ">
+      <section className="justify-between px-4 md:px-10 py-2 items-center bg-black/90 border-b border-gray-100 dark:border-gray-600 flex ">
         <div className="flex items-center space-x-2">
           <Image
             src={freeshipping}

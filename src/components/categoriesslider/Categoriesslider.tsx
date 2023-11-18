@@ -72,11 +72,6 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
 
     };
 
-    // const dispatch = useDispatch<AppDispatch>()
-
-    // const { username } = useAppSelector((store) => store.authReducer.value)
-
-
     return (<>
 
         <Head>
