@@ -1,3 +1,5 @@
+import { HomeUrl } from "@/app/layout";
+
 function forceDownload(blobUrl: string, filename: string) {
   let a: any = document.createElement("a");
   a.download = filename;
@@ -9,7 +11,7 @@ function forceDownload(blobUrl: string, filename: string) {
 
 export default function downloadPhoto(url: string, filename: string) {
   if (!filename) {
-    filename = url.split("\\").pop()?.split(${ HomeUrl }).pop() || "";
+    filename = url.split("\\").pop()?.split(`${HomeUrl}`).pop() || "";
   }
   fetch(url, {
     headers: new Headers({

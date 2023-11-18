@@ -2,6 +2,7 @@ import Logo from "@/shared/Logo/Logo";
 import SocialsList1 from "@/shared/SocialsList1/SocialsList1";
 import { CustomLink } from "@/data/types";
 import React from "react";
+import { HomeUrl } from "@/app/layout";
 
 export interface WidgetFooterMenu {
   id: string;
@@ -14,40 +15,40 @@ const widgetMenus: WidgetFooterMenu[] = [
     id: "5",
     title: "Getting started",
     menus: [
-      { href: ${ HomeUrl }, label: "Release Notes" },
-  { href: ${ HomeUrl }, label: "Upgrade Guide" },
-{ href: ${ HomeUrl }, label: "Browser Support" },
-{ href: ${ HomeUrl }, label: "Dark Mode" },
+      { href: `${HomeUrl}`, label: "Release Notes" },
+      { href: `${HomeUrl}`, label: "Upgrade Guide" },
+      { href: `${HomeUrl}`, label: "Browser Support" },
+      { href: `${HomeUrl}`, label: "Dark Mode" },
     ],
   },
-{
-  id: "1",
+  {
+    id: "1",
     title: "Explore",
-      menus: [
-        { href: ${ HomeUrl }, label: "Prototyping" },
-{ href: ${ HomeUrl }, label: "Design systems" },
-{ href: ${ HomeUrl }, label: "Pricing" },
-{ href: ${ HomeUrl }, label: "Security" },
+    menus: [
+      { href: `${HomeUrl}`, label: "Prototyping" },
+      { href: `${HomeUrl}`, label: "Design systems" },
+      { href: `${HomeUrl}`, label: "Pricing" },
+      { href: `${HomeUrl}`, label: "Security" },
     ],
   },
-{
-  id: "2",
+  {
+    id: "2",
     title: "Resources",
-      menus: [
-        { href: ${ HomeUrl }, label: "Best practices" },
-{ href: ${ HomeUrl }, label: "Support" },
-{ href: ${ HomeUrl }, label: "Developers" },
-{ href: ${ HomeUrl }, label: "Learn design" },
+    menus: [
+      { href: `${HomeUrl}`, label: "Best practices" },
+      { href: `${HomeUrl}`, label: "Support" },
+      { href: `${HomeUrl}`, label: "Developers" },
+      { href: `${HomeUrl}`, label: "Learn design" },
     ],
   },
-{
-  id: "4",
+  {
+    id: "4",
     title: "Community",
-      menus: [
-        { href: ${ HomeUrl }, label: "Discussion Forums" },
-{ href: ${ HomeUrl }, label: "Code of Conduct" },
-{ href: ${ HomeUrl }, label: "Contributing" },
-{ href: ${ HomeUrl }, label: "API Reference" },
+    menus: [
+      { href: `${HomeUrl}`, label: "Discussion Forums" },
+      { href: `${HomeUrl}`, label: "Code of Conduct" },
+      { href: `${HomeUrl}`, label: "Contributing" },
+      { href: `${HomeUrl}`, label: "API Reference" },
     ],
   },
 ];

@@ -2,24 +2,25 @@ import { CustomLink } from "@/data/types";
 import React, { FC } from "react";
 import twFocusClass from "@/utils/twFocusClass";
 import Link from "next/link";
+import { HomeUrl } from "@/app/layout";
 
 const DEMO_PAGINATION: CustomLink[] = [
   {
     label: "1",
-    href: ${ HomeUrl },
+    href: `${HomeUrl}`,
   },
-{
-  label: "2",
-    href: ${ HomeUrl },
-},
-{
-  label: "3",
-    href: ${ HomeUrl },
-},
-{
-  label: "4",
-    href: ${ HomeUrl },
-},
+  {
+    label: "2",
+    href: `${HomeUrl}`,
+  },
+  {
+    label: "3",
+    href: `${HomeUrl}`,
+  },
+  {
+    label: "4",
+    href: `${HomeUrl}`,
+  },
 ];
 
 export interface PaginationProps {

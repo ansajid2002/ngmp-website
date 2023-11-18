@@ -25,6 +25,7 @@
     "framer-motion": "^10.15.1",
     "lru-cache": "^10.0.2",
     "next": "^13.4.13",
+    "next-auth": "^4.24.5",
     "nextjs-toploader": "^1.6.4",
     "rc-slider": "^10.2.1",
     "react": "18.2.0",
