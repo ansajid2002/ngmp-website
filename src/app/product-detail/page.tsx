@@ -33,6 +33,8 @@ import { useAppSelector } from "@/redux/store";
 import { addItem } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
 import Link from "next/link";
+import AddToCartButton from "@/components/AddtoCart";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
 
@@ -318,10 +320,19 @@ const ProductDetailPage = ({ searchParams }) => {
   const renderSectionContent = () => {
     if (!responseData) {
       return <>
-        <div className="h-2 w-full bg-gray-200 animate-pulse"></div>
+        {/* <div className="h-2 w-full bg-gray-200 animate-pulse"></div>
         <div className="h-2 w-1/2 mt-2 bg-gray-200 animate-pulse"></div>
-        <div className="h-full w-full mt-2 bg-gray-200 animate-pulse"></div>
+        <div className="h-full w-full mt-2 bg-gray-200 animate-pulse"></div> */}
+        <div>
+          <Skeleton className="w-full h-[32px] bg-gray-300 rounded-md" />
+          <Skeleton className="w-[300px] mt-4 h-[32px] bg-gray-300 rounded-md" />
+          <div className="flex justify-between">
+            <Skeleton className="w-[130px] mt-4 h-[40px] bg-gray-300 rounded-full" />
+            <Skeleton className="flex-1 ml-2 mt-4 h-[40px] bg-gray-300 rounded-full" />
+          </div>
+          <Skeleton className="w-full mt-4 h-[20vh] bg-gray-300 rounded-md" />
 
+        </div>
       </>
     }
     return (
@@ -404,8 +415,11 @@ const ProductDetailPage = ({ searchParams }) => {
                 <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
                 <span className="ml-3">Add to Cart</span>
               </ButtonPrimary>
+
             </div>
+
         }
+
 
         {/*  */}
         <hr className=" 2xl:!my-10 border-slate-200 dark:border-slate-700"></hr>
@@ -577,12 +591,16 @@ const ProductDetailPage = ({ searchParams }) => {
   const ImageGallery = () => {
     if (!responseData) {
       return <>
-        <div className="p-2">
-          <div className="w-12 h-12 bg-gray-200 animate-pulse"> </div>
-          <div className="w-12 h-12 mt-3 bg-gray-200 animate-pulse"> </div>
-          <div className="w-12 h-12 mt-3 bg-gray-200 animate-pulse"> </div>
+        <div className="flex gap-4 relative w-full">
+          <div className="gap-2 flex flex-col w-[10%]">
+            <Skeleton className="w-[50px] h-[50px] bg-gray-300 rounded-md" />
+            <Skeleton className="w-[50px] h-[50px] bg-gray-300 rounded-md" />
+            <Skeleton className="w-[50px] h-[50px] bg-gray-300 rounded-md" />
+          </div>
+          <div className="flex-1">
+            <Skeleton className="w-full h-full bg-gray-300 rounded-md" />
+          </div>
         </div>
-        <div className="w-full h-[70vh] bg-gray-200 animate-pulse"></div>
       </>
     }
     return <>

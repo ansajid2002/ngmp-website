@@ -302,18 +302,18 @@ const OTHER_PAGE_CHILD: NavItemType[] = [
 export const NAVIGATION_DEMO_2: NavItemType[] = [
   {
     id: ncNanoId(),
-    href: "/collection",
+    href: "/",
     name: "Best Sellers",
   },
   {
     id: ncNanoId(),
-    href: "/collection-2",
+    href: "/",
     name: "New Arrivals",
   },
 
   {
     id: ncNanoId(),
-    href: "/collection",
+    href: "#",
     name: "Categories",
     type: "megaMenu",
     children: MEGAMENU_TEMPLATES,

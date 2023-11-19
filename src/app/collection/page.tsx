@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import Pagination from "@/shared/Pagination/Pagination";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import SectionSliderCollections from "@/components/SectionSliderLargeProduct";
-import SectionPromo1 from "@/components/SectionPromo1";
+
 import ProductCard from "@/components/ProductCard";
 import { PRODUCTS } from "@/data/data";
 import TabFilters from "@/components/TabFilters";
@@ -42,9 +42,9 @@ const  PageCollection = async ({}) => {
 
             {/* LOOP ITEMS */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-              {PRODUCTS.map((item, index) => (
+              {/* {PRODUCTS.map((item, index) => (
                 <ProductCard data={item} key={index} />
-              ))}
+              ))} */}
             </div>
 
             {/* PAGINATION */}
@@ -58,11 +58,9 @@ const  PageCollection = async ({}) => {
         {/* === SECTION 5 === */}
         <hr className="border-slate-200 dark:border-slate-700" />
 
-        <SectionSliderCollections />
+        {/* <SectionSliderCollections /> */}
         <hr className="border-slate-200 dark:border-slate-700" />
 
-        {/* SUBCRIBES */}
-        <SectionPromo1 />
       </div>
     </div>
   );

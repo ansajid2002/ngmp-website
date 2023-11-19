@@ -160,14 +160,14 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                     {hoveredItem && hoveredItem?.map((singlesubcat: any) => {
                       return (
                         <div className="mx-4 w-[140px] mb-4 ">
-                          <a href={`/${categoryTitle && categoryTitle?.replace(/[^\w\s]/g, '').replace(/\s/g, '')}/${singlesubcat.subcategory_name.replace(/[^\w\s]/g, '').replace(/\s/g, '')}`}>
+                          <Link href={`/category/${categoryTitle && categoryTitle?.replace(/[^\w\s]/g, '').replace(/\s/g, '')}/${singlesubcat.subcategory_name.replace(/[^\w\s]/g, '').replace(/\s/g, '')}`}>
                             <div className="mx-auto">
                               <Image
                                 className="mx-auto rounded-full border border-gray-300 h-[130px] w-[130px] transition hover:scale-105"
                                 width={150} height={150} src={`${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`} alt={singlesubcat.subcategory_name} />
                             </div>
                             <h1 className="font-semibold text-[14px] line-clamp-2 text-center mt-2">{singlesubcat.subcategory_name}</h1>
-                          </a>
+                          </Link>
                         </div>
                       )
                     })}

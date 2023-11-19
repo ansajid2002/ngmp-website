@@ -34,12 +34,12 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
   useEffect(() => {
     const OPTIONS: Partial<Glide.Options> = {
       // direction: document.querySelector("html")?.getAttribute("dir") || "ltr",
-      perView: 4,
+      perView: 6,
       gap: 32,
       bound: true,
       breakpoints: {
         1280: {
-          perView: 4 - 1,
+          perView: 5 - 1,
         },
         1024: {
           gap: 20,
@@ -51,11 +51,11 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
         },
         640: {
           gap: 20,
-          perView: 1.5,
+          perView: 1.2,
         },
         500: {
           gap: 20,
-          perView: 1.3,
+          perView: 1,
         },
       },
     };

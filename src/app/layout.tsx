@@ -14,11 +14,14 @@ import AuthProvider from "@/components/AuthProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 
-const poppins = Poppins({
+
+const poppins = {
+  fontFamily: '"miui", system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", Helvetica, Arial, sans-serif',
   subsets: ["latin"],
   display: "swap",
   weight: ["300", "400", "500", "600", "700"],
-});
+};
+
 
 export default async function RootLayout({
   children,
@@ -28,12 +31,12 @@ export default async function RootLayout({
   params: any;
 }) {
   const session = await getServerSession(authOptions)
-  console.log(session, 'das');
+  console.log(session);
+
 
   return (
-
-    <html lang="en" dir="" className={poppins.className} >
-      <body className="bg-white text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
+    <html lang="en" dir="" className={`${poppins.className} font-miui`}>
+      <body className="bg-white overflow-x-hidden text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
         <NextTopLoader color="red" />
         <ReduxProvider>
 
@@ -49,6 +52,6 @@ export default async function RootLayout({
     </html>
   );
 }
-export const AdminUrl = "http://192.168.1.8:3001";
+export const AdminUrl = "http://192.168.0.102:3001";
 export const HomeUrl = "http://localhost:3000";
 // export const AdminUrl = "https://admin.nilegmp.com";

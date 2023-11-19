@@ -13,7 +13,9 @@ import SectionClientSay from "@/components/SectionClientSay/SectionClientSay";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import SectionGridFeatureItems from "@/components/SectionGridFeatureItems";
 import { AdminUrl } from "./layout";
-import Category from "@/components/Category";
+import Category from "@/components/CategoryPageSlick";
+import TabsCategory from "@/components/TabsInterest/TabsCategory";
+import Heading from "@/components/Heading";
 
 interface Subcategory {
   subcategory_id: number;
@@ -117,9 +119,10 @@ async function PageHome() {
 
       <SectionHero2 data={bannersData} />
 
-      <div className="mt-24 lg:mt-32">
+      {/* <div className="mt-24 lg:mt-32">
         <DiscoverMoreSlider />
-      </div>
+      </div> */}
+
 
       <div className="px-10 relative space-y-24 my-24 lg:space-y-32 lg:my-32">
         <SectionSliderProductCard
@@ -131,17 +134,8 @@ async function PageHome() {
           <SectionHowItWork />
         </div>
 
-        {/* changed by sajid adding categories slider  */}
         <div className="space-y-10 mt-4">
           <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata} />
-        </div>
-        {/* changed by sajid adding categories slider  */}
-
-        {/* <SectionPromo1 /> */}
-
-        <div className="relative py-24 lg:py-24">
-          <BackgroundSection />
-          <SectionGridMoreExplore />
         </div>
 
         <SectionSliderProductCard
@@ -150,15 +144,29 @@ async function PageHome() {
           data={getAllProductsData}
         />
 
+        <div className="px-10 my-24 lg:my-32">
+          <Heading title="EXPLORE YOUR INTEREST" />
+
+          <TabsCategory categoriesdata={fetchCategoriesAndSubcategoriesdata} />
+        </div>
+
+
+        {/* <SectionPromo1 /> */}
+
+        {/* <div className="relative py-24 lg:py-24">
+          <BackgroundSection />
+          <SectionGridMoreExplore />
+        </div> */}
+
         {/* <SectionPromo2 /> */}
 
         {/* <SectionSliderLargeProduct cardStyle="style2" /> */}
 
-        <SectionSliderCategories />
+        {/* <SectionSliderCategories /> */}
 
         {/* <SectionPromo3 /> */}
 
-        <SectionGridFeatureItems />
+        {/* <SectionGridFeatureItems /> */}
 
         {/* <div className="relative py-24 lg:py-32">
           <BackgroundSection />
@@ -176,7 +184,7 @@ async function PageHome() {
       </div>
 
       <div>
-        <Category />
+        {/* <Category /> */}
       </div>
 
     </div>

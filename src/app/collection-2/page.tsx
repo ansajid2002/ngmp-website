@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import SectionSliderCollections from "@/components/SectionSliderLargeProduct";
 import SectionPromo1 from "@/components/SectionPromo1";
 import ProductCard from "@/components/ProductCard";
-import { PRODUCTS } from "@/data/data";
+
 import SidebarFilters from "@/components/SidebarFilters";
 
 const PageCollection2 = ({}) => {
@@ -31,9 +31,9 @@ const PageCollection2 = ({}) => {
               <div className="flex-shrink-0 mb-10 lg:mb-0 lg:mx-4 border-t lg:border-t-0"></div>
               <div className="flex-1 ">
                 <div className="flex-1 grid sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-10 ">
-                  {PRODUCTS.map((item, index) => (
+                  {/* {PRODUCTS.map((item, index) => (
                     <ProductCard data={item} key={index} />
-                  ))}
+                  ))} */}
                 </div>
               </div>
             </div>
@@ -43,11 +43,11 @@ const PageCollection2 = ({}) => {
         {/* === SECTION 5 === */}
         <hr className="border-slate-200 dark:border-slate-700" />
 
-        <SectionSliderCollections />
+        {/* <SectionSliderCollections /> */}
         <hr className="border-slate-200 dark:border-slate-700" />
 
         {/* SUBCRIBES */}
-        <SectionPromo1 />
+        {/* <SectionPromo1 /> */}
       </div>
     </div>
   );

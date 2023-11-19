@@ -4,7 +4,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const Category = () => {
+const CategoryPageSlick = () => {
   const catData = [
     {
       id: 1,
@@ -151,4 +151,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default CategoryPageSlick;

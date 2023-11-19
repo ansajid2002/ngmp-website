@@ -22,13 +22,13 @@ import { useAppSelector } from "@/redux/store";
 export interface ProductCardProps {
   className?: string;
   data?: Product;
-  isLiked?: boolean;
+  showTitle?: boolean;
 }
 
 const ProductCard: FC<ProductCardProps> = ({
   className = "",
   data = PRODUCTS[0],
-  isLiked,
+  showTitle = true
 }) => {
   const {
     ad_title,
@@ -177,9 +177,11 @@ const ProductCard: FC<ProductCardProps> = ({
         <div className="space-y-4 pt-3 pb-2.5">
           {/* {renderVariants()} */}
           {/* <div> */}
-          {/* <h2 className="nc-ProductCard__title text-base font-semibold transition-colors line-clamp-1">
+          {
+            showTitle && <h2 className="nc-ProductCard__title text-base font-semibold transition-colors line-clamp-1">
               {ad_title}
-            </h2> */}
+            </h2>
+          }
           {/* <p className={`text-sm text-slate-500 dark:text-slate-400 mt-1 `}>
               {additionaldescription}
             </p> */}

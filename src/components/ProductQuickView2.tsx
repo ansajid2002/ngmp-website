@@ -25,19 +25,12 @@ import { useAppSelector } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { addItem } from "@/redux/slices/cartSlice";
 
+
 export interface ProductQuickView2Props {
   className?: string,
   item?: any
 
 }
-
-interface SingleData {
-  label: string;
-  mrp: number; // Assuming 'mrp' is a number, update the type accordingly
-  sellingprice: number; // Assuming 'sellingprice' is a number, update the type accordingly
-  // Add other properties as needed
-}
-
 
 const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item }) => {
   // const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
@@ -398,6 +391,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
             <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
             <span className="ml-3">Add to cart</span>
           </ButtonPrimary>
+
         </div>
 
         {/*  */}
@@ -409,7 +403,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
             className="text-primary-6000 hover:text-primary-500 font-medium"
             href={{
               pathname: '/product-detail',
-              query: { ad_title }
+              query: { product: prod_slug, uniqueid: uniquepid }
             }}
           >
             View full details
@@ -438,7 +432,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
-                    className={`w-full rounded-xl object-cover transition duration-300 ${selectedImage === image ? 'ring-2 ring-primary' : ''
+                    className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? 'ring-2 ring-primary' : ''
                       }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here

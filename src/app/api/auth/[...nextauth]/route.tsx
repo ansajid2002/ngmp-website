@@ -2,8 +2,10 @@ import NextAuth, { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
+import { AdminUrl } from "@/app/layout";
 
 export const authOptions: NextAuthOptions = {
+
     providers: [
         CredentialsProvider({
             name: 'cred',
@@ -13,11 +15,26 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials, req) {
                 // Add logic here to look up the user from the credentials supplied
-                const user = { id: "1", name: "J Smith", email: "jsmith@example.com" }
+                console.log(credentials);
 
-                if (user) {
+                const requestBody = {
+                    email: credentials?.email,
+                    password: credentials?.password,
+                };
+
+                const response = await fetch(`${AdminUrl}/api/customerLoginEmail`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody),
+                });
+
+                const data = await response.json();
+
+                if (data) {
                     // Any object returned will be saved in `user` property of the JWT
-                    return user
+                    return data
                 } else {
                     // If you return null then an error will be displayed advising the user to check their details.
                     return null
@@ -36,16 +53,6 @@ export const authOptions: NextAuthOptions = {
                     response_type: "code"
                 }
             },
-            async profile(profile) {
-                return {
-                    id: profile.sub,
-                    name: profile.name,
-                    firstname: profile.given_name,
-                    lastname: profile.family_name,
-                    email: profile.email,
-                    image: profile.picture,
-                }
-            },
         }),
         FacebookProvider({
             clientId: process.env.FACEBOOK_CLIENT_ID,
@@ -54,7 +61,6 @@ export const authOptions: NextAuthOptions = {
     ],
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-
         async signIn({ account, profile }) {
             console.log(account);
 
