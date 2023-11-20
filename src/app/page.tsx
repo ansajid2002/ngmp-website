@@ -113,7 +113,6 @@ async function PageHome() {
   const bannersData = await getBannerdata()
   const fetchCategoriesAndSubcategoriesdata = await fetchCategoriesAndSubcategories()
 
-
   return (
     <div className="relative overflow-hidden">
 
@@ -124,7 +123,7 @@ async function PageHome() {
       </div> */}
 
 
-      <div className="px-10 relative space-y-24 my-24 lg:space-y-32 lg:my-32">
+      <div className="px-10 relative space-y-24 my-16">
         <SectionSliderProductCard
           heading="Recommended"
           data={getAllProductsData}

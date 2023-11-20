@@ -148,6 +148,8 @@ const ProductCard: FC<ProductCardProps> = ({
     );
   };
 
+  console.log(process.env.BASEURL);
+
   return (
     <>
       <div

@@ -31,8 +31,6 @@ export default async function RootLayout({
   params: any;
 }) {
   const session = await getServerSession(authOptions)
-  console.log(session);
-
 
   return (
     <html lang="en" dir="" className={`${poppins.className} font-miui`}>
@@ -52,6 +50,6 @@ export default async function RootLayout({
     </html>
   );
 }
-export const AdminUrl = "http://192.168.0.102:3001";
-export const HomeUrl = "http://localhost:3000";
+export const AdminUrl = process.env.BASEURL;
+export const HomeUrl = process.env.HOMEURL;
 // export const AdminUrl = "https://admin.nilegmp.com";

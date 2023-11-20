@@ -1,8 +1,6 @@
 "use client";
-
+// @ts-ignore 
 import React, { FC, useState } from "react";
-import backgroundLineSvg from "@/images/Moon.svg";
-import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import Next from "@/shared/NextPrev/Next";
 import Prev from "@/shared/NextPrev/Prev";
 import useInterval from "react-use/lib/useInterval";
@@ -24,7 +22,7 @@ const SectionHero2: FC<SectionHero2Props> = ({ className = "", data }) => {
     return null; // Or render a loading state or default content when data is not available
   }
   // ================= 
-  const [indexActive, setIndexActive] = useState(0);
+  const [indexActive, setIndexActive] = useState<number | null>(0);
   const [isRunning, toggleIsRunning] = useBoolean(true);
 
   useInterval(
@@ -83,7 +81,7 @@ const SectionHero2: FC<SectionHero2Props> = ({ className = "", data }) => {
     }
     return (
       <div
-        className={`  bg-gray-200 nc-SectionHero2Item nc-SectionHero2Item--animation flex flex-col-reverse lg:flex-col relative overflow-hidden ${className}`}
+        className={`bg-gray-200 nc-SectionHero2Item nc-SectionHero2Item--animation flex flex-col-reverse lg:flex-col relative overflow-hidden ${className}`}
         key={index}
       >
         <div className="absolute bottom-4 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 z-20 flex justify-center">
@@ -134,12 +132,12 @@ const SectionHero2: FC<SectionHero2Props> = ({ className = "", data }) => {
           >
 
           </div>
-          <div className="h-[250px]">
+          <div className="h-[20vh]">
             <a href={item.link} target="_blank" rel="noopener noreferrer">
               <Image
                 fill
                 // sizes="(max-width: 768px) 100vw, 50vw"
-                className="w-full h-full object-cover nc-SectionHero2Item__image"
+                className="w-full h-full object-contain nc-SectionHero2Item__image"
                 src={`${AdminUrl}/uploads/Banners${item.banner_url.startsWith('/') ? '' : '/'}${item.banner_url}`}
                 alt="home banner"
                 priority

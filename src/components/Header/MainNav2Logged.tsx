@@ -16,13 +16,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { HomeUrl } from "@/app/layout";
 
-export interface MainNav2LoggedProps { }
+export interface MainNav2LoggedProps {
+  customerId: number;
+  customerData: any[]
+}
 
-const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
+const MainNav2Logged: FC<MainNav2LoggedProps> = ({ customerId, customerData }) => {
   const inputRef = createRef<HTMLInputElement>();
   const [showSearchForm, setShowSearchForm] = useState(false);
   const router = useRouter();
 
+  console.log(customerData);
 
   const renderMagnifyingGlassIcon = () => {
     return (
