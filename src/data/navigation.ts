@@ -318,11 +318,11 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     type: "megaMenu",
     children: MEGAMENU_TEMPLATES,
   },
-  {
-    id: ncNanoId(),
-    href: `${HomeUrl}`,
-    name: "Language",
-    type: "dropdown",
-    children: OTHER_PAGE_CHILD,
-  },
+  // {
+  //   id: ncNanoId(),
+  //   href: `${HomeUrl}`,
+  //   name: "Language",
+  //   type: "dropdown",
+  //   children: OTHER_PAGE_CHILD,
+  // },
 ];

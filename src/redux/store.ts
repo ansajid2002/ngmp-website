@@ -4,13 +4,15 @@ import languagesReducer from "./features/languageslice"
 import { TypedUseSelectorHook, useSelector } from "react-redux"
 import cartSlice from "./slices/cartSlice"
 import wishlistSlice from "./slices/wishlistSlice"
+import { customerDataSlice } from "./slices/customerData"
 
 export const store = configureStore({
     reducer: {
         authReducer,
         languagesReducer,
         cart: cartSlice,
-        wishlist: wishlistSlice
+        wishlist: wishlistSlice,
+        customerData: customerDataSlice
     }
 })
 

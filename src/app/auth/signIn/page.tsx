@@ -1,20 +1,61 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Formik } from 'formik'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import Swal from 'sweetalert2'
+import { updateCustomerData } from '@/redux/slices/customerData'
+import { useDispatch } from 'react-redux'
+import { HomeUrl } from '@/app/layout'
 
 interface LoginFormInterface {
     email: string,
     password: string
 }
 function SignIn() {
+    const { data, status } = useSession()
+    const dispatch = useDispatch()
     const [error, setError] = useState(false)
     const router = useRouter()
+
+    useEffect(() => {
+        const userData = data?.user?.name
+        if (userData?.status === 401) {
+            setError(true)
+            error && Swal.fire({
+                title: 'Error!',
+                text: userData?.message,
+                icon: 'error',
+            })
+        }
+        else if (userData?.status === 301) {
+            setError(true)
+
+            error && Swal.fire({
+                title: 'Verify Account!',
+                text: userData?.message,
+                icon: 'info',
+            })
+        }
+        else if (userData?.status === 200) {
+            setError(true)
+            error && Swal.fire({
+                title: 'Authenticated',
+                text: userData?.message,
+                icon: 'success',
+            })
+            dispatch(updateCustomerData(userData?.customerData))
+            console.log('dispatched');
+
+
+            router.push(`${HomeUrl}`)
+        }
+
+    }, [data, dispatch])
 
     const handleLogin = async (data: LoginFormInterface,
         { setSubmitting }: { setSubmitting: (value: boolean) => void }) => {
@@ -25,17 +66,7 @@ function SignIn() {
             redirect: false,
             callbackUrl: '/'
         })
-
         setSubmitting(false)
-
-        console.log(response);
-
-        if (!response?.ok) {
-            setError(true)
-        } else {
-            //const data = await response.url
-            router.replace(response.url!)
-        }
     }
 
     return (
@@ -44,8 +75,8 @@ function SignIn() {
                 <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
                     {
                         error &&
-                        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                            <p>Invalid Credentials</p>
+                        <div className={`p-4 mb-4 text-sm rounded-lg  ${data?.user?.name?.status !== 200 ? 'text-red-800 dark:text-red-400 bg-red-50 dark:bg-gray-800' : 'text-green-800 dark:text-green-400 bg-green-50 dark:bg-gray-800'}`} role="alert">
+                            <p>{data?.user?.name?.message}</p>
                         </div>
                     }
                     <Formik

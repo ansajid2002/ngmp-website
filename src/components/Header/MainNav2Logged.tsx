@@ -9,21 +9,33 @@ import CartDropdown from "./CartDropdown";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import logo from "@/images/mainlogo.png";
-import freeshipping from "@/images/header/free-shipping.png"
-import negotiation from "@/images/header/negotiation.png"
-import mobile from "@/images/header/test.png"
+import freeshipping from "@/images/header/free-shipping.png";
+import negotiation from "@/images/header/negotiation.png";
+import mobile from "@/images/header/test.png";
 import Image from "next/image";
 import Link from "next/link";
 import { HomeUrl } from "@/app/layout";
+import Language from "./Language";
 
-export interface MainNav2LoggedProps { }
+<<<<<<< HEAD
+export interface MainNav2LoggedProps {}
+=======
+export interface MainNav2LoggedProps {
+  customerId: number;
+  customerData: any[]
+}
+>>>>>>> 44003ea7556397d0285e3f73b17751420187e6c0
 
-const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
+const MainNav2Logged: FC<MainNav2LoggedProps> = ({ customerId, customerData }) => {
   const inputRef = createRef<HTMLInputElement>();
   const [showSearchForm, setShowSearchForm] = useState(false);
   const router = useRouter();
 
+<<<<<<< HEAD
+=======
+  console.log(customerData);
 
+>>>>>>> 44003ea7556397d0285e3f73b17751420187e6c0
   const renderMagnifyingGlassIcon = () => {
     return (
       <svg
@@ -88,10 +100,13 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
         <div className="lg:flex-1 flex items-center">
           {/* <Logo className="flex-shrink-0" /> */}
           <Link href={`${HomeUrl}`}>
-            <Image src={logo} alt="website main logo" className=" w-32 md:w-32 xl:w-32 pb-1" />
+            <Image
+              src={logo}
+              alt="website main logo"
+              className=" w-32 md:w-32 xl:w-32 pb-1"
+            />
           </Link>
         </div>
-
 
         <div className="flex-[2] hidden lg:flex justify-center mx-4">
           {showSearchForm ? renderSearchForm() : <Navigation />}
@@ -106,10 +121,11 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
               {renderMagnifyingGlassIcon()}
             </button>
           )}
+          <Language />
           <AvatarDropdown />
           <CartDropdown />
         </div>
-      </div >
+      </div>
     );
   };
 
@@ -122,16 +138,30 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
             alt="website main logo"
             className="md:w-8 md:h-8 w-7 h-7 brightness-200"
           />
-          <h1 className="text-[12px] md:text-[14px] text-green-400 font-semibold">Free Shipping on all Orders</h1>
+          <h1 className="text-[12px] md:text-[14px] text-green-400 font-semibold">
+            Free Shipping on all Orders
+          </h1>
         </div>
 
-        <div className="hidden md:flex items-center space-x-2" >
-          <Image src={negotiation} alt="website main logo" className="md:w-8 md:h-8 w-7 h-7 brightness-200  invert" />
-          <h1 className="text-[14px] text-[#FFF7A7] font-semibold">Negotiation Available</h1>
+        <div className="hidden md:flex items-center space-x-2">
+          <Image
+            src={negotiation}
+            alt="website main logo"
+            className="md:w-8 md:h-8 w-7 h-7 brightness-200  invert"
+          />
+          <h1 className="text-[14px] text-[#FFF7A7] font-semibold">
+            Negotiation Available
+          </h1>
         </div>
         <div className="flex items-center space-x-2">
-          <Image src={mobile} alt="website main logo" className=" md:w-8 md:h-8 w-7 h-7 brightness-200  invert" />
-          <h1 className="text-[12px] md:text-[14px] text-[#FFF7A7] font-semibold">Get The Nile App</h1>
+          <Image
+            src={mobile}
+            alt="website main logo"
+            className=" md:w-8 md:h-8 w-7 h-7 brightness-200  invert"
+          />
+          <h1 className="text-[12px] md:text-[14px] text-[#FFF7A7] font-semibold">
+            Get The Nile App
+          </h1>
         </div>
       </section>
       <div className="nc-MainNav2Logged relative z-10 md:pt-2  bg-white dark:bg-neutral-900 border-b border-slate-100 dark:border-slate-700">

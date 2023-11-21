@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { fetchCategoriesAndSubcategories } from "@/app/page";
 
 const CategoryPageSlick = () => {
   const catData = [
@@ -86,15 +87,79 @@ const CategoryPageSlick = () => {
       img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
       label: "Women's Dresses",
     },
+    {
+      id: 17,
+      img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
+      label: "Women's Dresses",
+    },
+    {
+      id: 18,
+      img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
+      label: "Women's Dresses",
+    },
+    {
+      id: 19,
+      img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
+      label: "Women's Dresses",
+    },
+    {
+      id: 20,
+      img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
+      label: "Women's Dresses",
+    },
+    {
+      id: 16,
+      img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
+      label: "Women's Dresses",
+    },
+    {
+      id: 17,
+      img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
+      label: "Women's Dresses",
+    },
+    {
+      id: 18,
+      img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
+      label: "Women's Dresses",
+    },
+    {
+      id: 19,
+      img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
+      label: "Women's Dresses",
+    },
+    {
+      id: 20,
+      img: "https://img.kwcdn.com/product/1e14dde0136/b7d80419-f356-420a-b469-ee9303bb75bb_213x213.png?imageView2/2/w/172/q/70/format/webp",
+      label: "Women's Dresses",
+    },
   ];
+
+  // const [data, setData] = useState();
+
+  let dataa = [];
+  const CategoryPageFetch = async () => {
+    const response = await fetchCategoriesAndSubcategories();
+    // console.log(dataa);
+    dataa.push(response);
+    // setData(response);
+    // console.log(data);
+  };
+
+  // console.log(dataa);
+
+  useEffect(() => {
+    CategoryPageFetch();
+  }, []);
 
   const [settings] = useState({
     dots: false,
     infinite: false,
-    speed: 1500,
+    speed: 500,
     arrows: true,
     slidesToShow: 8,
     slidesToScroll: 8,
+    rows: 2,
+    // slidesPerRow: 5,
     responsive: [
       {
         breakpoint: 1024,
@@ -123,8 +188,8 @@ const CategoryPageSlick = () => {
   });
 
   return (
-    <div className="p-10 ">
-      <Slider {...settings} className="p-2">
+    <div className="p-10">
+      <Slider {...settings} className="pb-5">
         {catData?.map((item) => {
           return (
             <div>

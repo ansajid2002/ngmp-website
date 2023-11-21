@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from 'react'
+import { useEffect } from "react";
 import { Popover, Transition } from "@/app/headlessui";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import CardCategory3 from "@/components/CardCategories/CardCategory3";
@@ -11,8 +11,8 @@ import { AdminUrl } from "@/app/layout";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { setLanguage } from "@/redux/features/languageslice";
 import { useDispatch } from "react-redux";
-import { addCarts } from '@/redux/slices/cartSlice';
-import { updateproductsListwishlist } from '@/redux/slices/wishlistSlice';
+import { addCarts } from "@/redux/slices/cartSlice";
+import { updateproductsListwishlist } from "@/redux/slices/wishlistSlice";
 
 export interface NavItemType {
   id: string;
@@ -31,15 +31,13 @@ export interface NavigationItemProps {
 const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
   const [menuCurrentHovers, setMenuCurrentHovers] = useState<string[]>([]);
   const [hoveredItem, setHoveredItem] = useState([]);
-  const [categoryTitle, setCategoryTitle] = useState('Featured Category');
-  const { languageCode } = useAppSelector((store) => store.languagesReducer)
-  const dispatch = useDispatch<AppDispatch>()
+  const [categoryTitle, setCategoryTitle] = useState("Featured Category");
+  const { languageCode } = useAppSelector((store) => store.languagesReducer);
+  const dispatch = useDispatch<AppDispatch>();
 
   const onMouseEnterMenu = (id: string) => {
-
     setMenuCurrentHovers((state) => [...state, id]);
   };
-
 
   const onMouseLeaveMenu = (id: string) => {
     setMenuCurrentHovers((state) => {
@@ -49,17 +47,16 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     });
   };
 
-
-  const customerId = 71
+  const customerId = 71;
   useEffect(() => {
     const fetchCart = async (customerId: any) => {
       try {
         const response = await fetch(`/api/cart/${customerId}`, {
-          method: 'PUT', // Change the request method to PUT
+          method: "PUT", // Change the request method to PUT
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          next: { revalidate: 3 }
+          next: { revalidate: 3 },
         });
         const data = await response.json();
         dispatch(addCarts(data?.cartData));
@@ -71,20 +68,17 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     fetchCart(customerId);
   }, [customerId, dispatch]);
 
-
   useEffect(() => {
     const fetchWishlist = async (customerId: any) => {
       try {
         const response = await fetch(`/api/wishlist/${customerId}`, {
-          method: 'PUT', // Change the request method to PUT
+          method: "PUT", // Change the request method to PUT
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-
         });
         const data = await response.json();
-        dispatch(updateproductsListwishlist(data?.wishlistData))
-
+        dispatch(updateproductsListwishlist(data?.wishlistData));
       } catch (error) {
         console.error("Error fetching cart data:", error);
       }
@@ -92,7 +86,6 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
 
     fetchWishlist(customerId);
   }, [customerId, dispatch]);
-
 
   // ===================== MENU MEGAMENU =====================
   const renderMegaMenu = (menu: NavItemType) => {
@@ -105,14 +98,16 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
         <div className="flex justify-center invisible bg-black/50 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50">
           <div className=" bg-white flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
             <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto scrollbar-hidden">
-              <div className="text-sm border-none border-slate-200 dark:border-slate-700" >
+              <div className="text-sm border-none border-slate-200 dark:border-slate-700">
                 <div>
                   <div
                     key={999}
-                    className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === 'Featured Category' && 'bg-[#00000010]'}`}
+                    className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${
+                      categoryTitle === "Featured Category" && "bg-[#00000010]"
+                    }`}
                     onMouseEnter={() => {
-                      setHoveredItem([])
-                      setCategoryTitle('Featured Category')
+                      setHoveredItem([]);
+                      setCategoryTitle("Featured Category");
                     }}
                   >
                     {/* <Image
@@ -130,10 +125,12 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                   {menu.children?.map((item, index) => (
                     <div
                       key={index}
-                      className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === item.category_name && 'bg-[#00000010]'}`}
+                      className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${
+                        categoryTitle === item.category_name && "bg-[#00000010]"
+                      }`}
                       onMouseEnter={() => {
-                        setHoveredItem(item.subcategories)
-                        setCategoryTitle(item.category_name)
+                        setHoveredItem(item.subcategories);
+                        setCategoryTitle(item.category_name);
                       }}
                     >
                       {/* <Image
@@ -152,32 +149,49 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                 </div>
               </div>
             </div>
-            {
-              hoveredItem && (
-                <div className="mt-8 w-2/3 overflow-y-scroll scrollbar-hidden">
-                  {categoryTitle && <h1 className="text-2xl font-semibold text-center mb-12">{categoryTitle}</h1>}
-                  <div className="flex   flex-wrap ">
-                    {hoveredItem && hoveredItem?.map((singlesubcat: any) => {
+            {hoveredItem && (
+              <div className="mt-8 w-2/3 overflow-y-scroll scrollbar-hidden">
+                {categoryTitle && (
+                  <h1 className="text-2xl font-semibold text-center mb-12">
+                    {categoryTitle}
+                  </h1>
+                )}
+                <div className="flex   flex-wrap ">
+                  {hoveredItem &&
+                    hoveredItem?.map((singlesubcat: any) => {
                       return (
                         <div className="mx-4 w-[140px] mb-4 ">
-                          <Link href={`/category/${categoryTitle && categoryTitle?.replace(/[^\w\s]/g, '').replace(/\s/g, '')}/${singlesubcat.subcategory_name.replace(/[^\w\s]/g, '').replace(/\s/g, '')}`}>
+                          <Link
+                            href={`/category/${
+                              categoryTitle &&
+                              categoryTitle
+                                ?.replace(/[^\w\s]/g, "")
+                                .replace(/\s/g, "")
+                            }/${singlesubcat.subcategory_name
+                              .replace(/[^\w\s]/g, "")
+                              .replace(/\s/g, "")}`}
+                          >
                             <div className="mx-auto">
                               <Image
                                 className="mx-auto rounded-full border border-gray-300 h-[130px] w-[130px] transition hover:scale-105"
-                                width={150} height={150} src={`${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`} alt={singlesubcat.subcategory_name} />
+                                width={150}
+                                height={150}
+                                src={`${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`}
+                                alt={singlesubcat.subcategory_name}
+                              />
                             </div>
-                            <h1 className="font-semibold text-[14px] line-clamp-2 text-center mt-2">{singlesubcat.subcategory_name}</h1>
+                            <h1 className="font-semibold text-[14px] line-clamp-2 text-center mt-2">
+                              {singlesubcat.subcategory_name}
+                            </h1>
                           </Link>
                         </div>
-                      )
+                      );
                     })}
-                  </div>
                 </div>
-              )
-            }
+              </div>
+            )}
           </div>
         </div>
-
       </li>
     );
   };
@@ -286,23 +300,35 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     return (
       <section
         className="flex items-center font-normal text-neutral-6000 dark:text-neutral-400 py-2 px-4 rounded-md hover:text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-        onClick={() => { dispatch(setLanguage({ newlanguageCode: item.langCode, newlanguageName: item.langName })) }}
+        onClick={() => {
+          dispatch(
+            setLanguage({
+              newlanguageCode: item.langCode,
+              newlanguageName: item.langName,
+            })
+          );
+        }}
       >
-        <h1 className="tracking-wider" >
+        <h1 className="tracking-wider">
           {`${item.langName} (${item.langCode})`}
         </h1>
-        {(item.langCode === languageCode) && <ChevronRightIcon className=" ml-4 w-5 h-5 text-neutral-500" />}
+        {item.langCode === languageCode && (
+          <ChevronRightIcon className=" ml-4 w-5 h-5 text-neutral-500" />
+        )}
       </section>
     );
   };
 
   // ===================== MENU MAIN MENU =====================
   const renderMainItem = (item: NavItemType) => {
-
     return (
       <div className="h-20 flex-shrink-0 group flex items-center">
         <Link
-          className={`inline-flex items-center group text-sm lg:text-[15px] font-medium text-slate-700 dark:text-slate-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-slate-900 transition-colors duration-300 ease-in-out hover:bg-slate-100  ${menuCurrentHovers[0] == item.id && item.type && 'bg-slate-100 dark:bg-slate-800 dark:text-slate-200'} `}
+          className={`inline-flex items-center group text-sm lg:text-[15px] font-medium text-slate-700 dark:text-slate-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-slate-900 transition-colors duration-300 ease-in-out hover:bg-slate-100  ${
+            menuCurrentHovers[0] == item.id &&
+            item.type &&
+            "bg-slate-100 dark:bg-slate-800 dark:text-slate-200"
+          } `}
           href={{
             pathname: item.href || undefined,
           }}
@@ -311,7 +337,9 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
           {item.name}
           {item.type && (
             <ChevronDownIcon
-              className={`ml-1 -mr-1 h-4 w-4 transition-all  ${menuCurrentHovers[0] == item.id && 'rotate-180 text-slate-400'}`}
+              className={`ml-1 -mr-1 h-4 w-4 transition-all  ${
+                menuCurrentHovers[0] == item.id && "rotate-180 text-slate-400"
+              }`}
               aria-hidden="true"
             />
           )}

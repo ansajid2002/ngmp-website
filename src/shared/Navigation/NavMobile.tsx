@@ -5,6 +5,8 @@ import ButtonClose from "@/shared/ButtonClose/ButtonClose";
 import Logo from "@/shared/Logo/Logo";
 import { Disclosure } from "@/app/headlessui";
 import { NavItemType } from "./NavigationItem";
+import logo from "@/images/mainlogo.png";
+import Image from "next/image";
 import { NAVIGATION_DEMO_2 } from "@/data/navigation";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import SocialsList from "@/shared/SocialsList/SocialsList";
@@ -165,12 +167,17 @@ const NavMobile: React.FC<NavMobileProps> = ({
   return (
     <div className="overflow-y-auto w-full h-screen py-2 transition transform shadow-lg ring-1 dark:ring-neutral-700 bg-white dark:bg-neutral-900 divide-y-2 divide-neutral-100 dark:divide-neutral-800">
       <div className="py-6 px-5">
-        <Logo />
+        {/* <Logo /> */}
+        <Image
+          src={logo}
+          alt="website main logo"
+          className=" w-32 md:w-32 xl:w-32 pb-1"
+        />
         <div className="flex flex-col mt-5 text-slate-600 dark:text-slate-300 text-sm">
-          <span>
+          {/* <span>
             Discover the most outstanding articles on all topics of life. Write
             your stories and share them
-          </span>
+          </span> */}
 
           <div className="flex justify-between items-center mt-4">
             <SocialsList itemClass="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xl" />
