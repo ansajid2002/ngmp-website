@@ -313,7 +313,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
 
   {
     id: ncNanoId(),
-    href: "#",
+    href: "/",
     name: "Categories",
     type: "megaMenu",
     children: MEGAMENU_TEMPLATES,

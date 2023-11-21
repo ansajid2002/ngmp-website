@@ -12,10 +12,7 @@ export interface WidgetFooterMenu {
   menus: CustomLink[];
 }
 
-
 const Footer: React.FC = () => {
-
-
   const widgetMenus: WidgetFooterMenu[] = [
     {
       id: "5",
@@ -132,14 +129,14 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-center text-center pb-5">
+      {/* <div className="flex items-center justify-center text-center pb-5">
         <Image
           src="/powered.png"
           width={200}
           height={200}
           alt="Powere By Stripe"
         />
-      </div>
+      </div> */}
       <div className="border-t p-5 text-[13px] font-semibold flex flex-wrap gap-3 items-center justify-center">
         <a href="" className="hover:text-[#5c5c5c]">
           <span>© 2023 WhaleCo Inc.</span>

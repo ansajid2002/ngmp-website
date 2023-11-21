@@ -110,7 +110,9 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
               {renderMagnifyingGlassIcon()}
             </button>
           )}
-          <Language />
+          <div className="hidden lg:block">
+            <Language />
+          </div>
           <AvatarDropdown />
           <CartDropdown />
         </div>

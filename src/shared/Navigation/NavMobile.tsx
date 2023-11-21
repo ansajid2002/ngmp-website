@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ButtonClose from "@/shared/ButtonClose/ButtonClose";
 import Logo from "@/shared/Logo/Logo";
 import { Disclosure } from "@/app/headlessui";
 import { NavItemType } from "./NavigationItem";
+import Language from "@/components/Header/Language";
 import logo from "@/images/mainlogo.png";
 import Image from "next/image";
 import { NAVIGATION_DEMO_2 } from "@/data/navigation";
@@ -13,6 +14,7 @@ import SocialsList from "@/shared/SocialsList/SocialsList";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import SwitchDarkMode from "@/shared/SwitchDarkMode/SwitchDarkMode";
 import Link from "next/link";
+import { fetchCategoriesAndSubcategories } from "@/app/page";
 
 export interface NavMobileProps {
   data?: NavItemType[];
@@ -23,6 +25,48 @@ const NavMobile: React.FC<NavMobileProps> = ({
   data = NAVIGATION_DEMO_2,
   onClickClose,
 }) => {
+  const [categoryDaata, setCategoryDaata] = useState<any[] | null>(null);
+
+  const catm = async () => {
+    const cat = await fetchCategoriesAndSubcategories();
+    // console.log(cat);
+    setCategoryDaata(cat);
+  };
+
+  useEffect(() => {
+    catm();
+  }, []);
+
+  console.log(categoryDaata, "set");
+
+  const [isOpen, setIsOpen] = useState(false);
+  // const [selectedOption, setSelectedOption] = useState(null);
+
+  const options = [
+    "Option 1",
+    "Option 2",
+    "Option 3",
+    "Option 4",
+    "Option 2",
+    "Option 3",
+    "Option 4",
+    "Option 2",
+    "Option 3",
+    "Option 4",
+    "Option 2",
+    "Option 3",
+    "Option 4",
+  ];
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  // const handleOptionClick = (option) => {
+  //   setSelectedOption(option);
+  //   setIsOpen(false);
+  // };
+
   const _renderMenuChild = (
     item: NavItemType,
     itemClass = " pl-3 text-neutral-900 dark:text-neutral-200 font-medium "
@@ -165,23 +209,27 @@ const NavMobile: React.FC<NavMobileProps> = ({
   };
 
   return (
-    <div className="overflow-y-auto w-full h-screen py-2 transition transform shadow-lg ring-1 dark:ring-neutral-700 bg-white dark:bg-neutral-900 divide-y-2 divide-neutral-100 dark:divide-neutral-800">
+    <div className=" w-full h-screen py-2 transition transform shadow-lg ring-1 dark:ring-neutral-700 bg-white dark:bg-neutral-900 divide-y-2 divide-neutral-100 dark:divide-neutral-800">
       <div className="py-6 px-5">
         {/* <Logo /> */}
-        <Image
-          src={logo}
-          alt="website main logo"
-          className=" w-32 md:w-32 xl:w-32 pb-1"
-        />
+
         <div className="flex flex-col mt-5 text-slate-600 dark:text-slate-300 text-sm">
           {/* <span>
             Discover the most outstanding articles on all topics of life. Write
             your stories and share them
           </span> */}
 
-          <div className="flex justify-between items-center mt-4">
-            <SocialsList itemClass="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xl" />
-            <span className="block">
+          <div className="flex justify-between gap-2 items-center mt-4">
+            <Link href={"/"}>
+              <Image
+                src={logo}
+                alt="website main logo"
+                className=" w-32 md:w-32 xl:w-32 pb-1"
+              />
+            </Link>
+            {/* <SocialsList itemClass="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xl" /> */}
+            <span className="flex items-center justify-center gap-2">
+              <Language />
               <SwitchDarkMode className="bg-neutral-100 dark:bg-neutral-800" />
             </span>
           </div>
@@ -192,14 +240,58 @@ const NavMobile: React.FC<NavMobileProps> = ({
 
         <div className="mt-5">{renderSearchForm()}</div>
       </div>
-      <ul className="flex flex-col py-6 px-2 space-y-1">
-        {data.map(_renderItem)}
-      </ul>
+      {/* <ul className="flex flex-col py-6 px-2 space-y-1"> */}
+      {/* {data.map(_renderItem)} */}
+      {/* {categoryDaata?.map((item) => (
+          <h1>{item.category_name}</h1>
+        ))} */}
+      {/* </ul> */}
       {/* <div className="flex items-center justify-between py-6 px-5 space-x-2">
         <ButtonPrimary href={{`${HomeUrl}`}} className="!px-10">
           Buy this template
         </ButtonPrimary>
       </div> */}
+      <div className="relative h-auto p-5">
+        <ul className="text-[1.2rem] font-medium space-y-3">
+          <li>Home</li>
+          <li>About</li>
+          <li
+            onClick={toggleDropdown}
+            className="flex items-center justify-between"
+          >
+            <span>Category</span>
+            <ChevronDownIcon
+              className="ml-2 mt-2 h-5 w-5 text-neutral-500"
+              aria-hidden="true"
+            />
+          </li>
+        </ul>
+
+        {isOpen && (
+          <ul className="h-screen overflow-y-auto bg-slate-100 text-[1.2rem] font-medium text-left w-full px-5  m-0 absolute top-full left-0 border z-10">
+            {categoryDaata?.map((option, index) => (
+              <Link
+                href={`/category/${option.category_name
+                  .replace(/[^\w\s]/g, "")
+                  .replace(
+                    /\s/g,
+                    ""
+                  )}/${option.subcategories[0].subcategory_name
+                  .replace(/[^\w\s]/g, "")
+                  .replace(/\s/g, "")}`}
+              >
+                <li
+                  className="cursor-pointer py-2 border-b-2"
+                  // key={index}
+                  // onClick={() => handleOptionClick()}
+                >
+                  {option.category_name}
+                </li>
+              </Link>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };

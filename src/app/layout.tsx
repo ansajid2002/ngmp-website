@@ -49,6 +49,6 @@ export default async function RootLayout({
   );
 }
 
-export const AdminUrl = "http://192.168.1.6:3001";
-export const HomeUrl = "http://localhost:3000";
+export const AdminUrl = process.env.BASEURL;
+export const HomeUrl = process.env.HOMEURL;
 // export const AdminUrl = "https://admin.nilegmp.com";
