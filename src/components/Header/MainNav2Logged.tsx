@@ -17,25 +17,14 @@ import Link from "next/link";
 import { HomeUrl } from "@/app/layout";
 import Language from "./Language";
 
-<<<<<<< HEAD
-export interface MainNav2LoggedProps {}
-=======
-export interface MainNav2LoggedProps {
-  customerId: number;
-  customerData: any[]
-}
->>>>>>> 44003ea7556397d0285e3f73b17751420187e6c0
-
-const MainNav2Logged: FC<MainNav2LoggedProps> = ({ customerId, customerData }) => {
+const MainNav2Logged: FC<MainNav2LoggedProps> = ({
+  customerId,
+  customerData,
+}) => {
   const inputRef = createRef<HTMLInputElement>();
   const [showSearchForm, setShowSearchForm] = useState(false);
   const router = useRouter();
 
-<<<<<<< HEAD
-=======
-  console.log(customerData);
-
->>>>>>> 44003ea7556397d0285e3f73b17751420187e6c0
   const renderMagnifyingGlassIcon = () => {
     return (
       <svg
