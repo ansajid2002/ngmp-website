@@ -79,7 +79,7 @@ export default function AvatarDropdown() {
                 />
               </svg> */}
 
-              <img className="" src={lcode} alt="language" />
+              <img className="md:w-8 md:h-8" src={lcode} alt="language" />
               {/* <span>{lcode}</span> */}
             </Popover.Button>
             <Transition

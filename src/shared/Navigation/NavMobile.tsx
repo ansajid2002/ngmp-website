@@ -29,7 +29,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
 
   const catm = async () => {
     const cat = await fetchCategoriesAndSubcategories();
-    // console.log(cat);
+    // console.log(cat)
     setCategoryDaata(cat);
   };
 
@@ -37,26 +37,10 @@ const NavMobile: React.FC<NavMobileProps> = ({
     catm();
   }, []);
 
-  console.log(categoryDaata, "set");
+  // console.log(categoryDaata, "set");
 
   const [isOpen, setIsOpen] = useState(false);
   // const [selectedOption, setSelectedOption] = useState(null);
-
-  const options = [
-    "Option 1",
-    "Option 2",
-    "Option 3",
-    "Option 4",
-    "Option 2",
-    "Option 3",
-    "Option 4",
-    "Option 2",
-    "Option 3",
-    "Option 4",
-    "Option 2",
-    "Option 3",
-    "Option 4",
-  ];
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -271,6 +255,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
           <ul className="h-screen overflow-y-auto bg-slate-100 text-[1.2rem] font-medium text-left w-full px-5  m-0 absolute top-full left-0 border z-10">
             {categoryDaata?.map((option, index) => (
               <Link
+                key={index}
                 href={`/category/${option.category_name
                   .replace(/[^\w\s]/g, "")
                   .replace(

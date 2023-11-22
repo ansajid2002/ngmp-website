@@ -12,6 +12,7 @@ import { ReduxProvider } from "@/redux/provider";
 import NextTopLoader from "nextjs-toploader";
 import AuthProvider from "@/components/AuthProvider";
 import { getServerSession } from "next-auth";
+import Footer from "@/shared/Footer/Footer";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 
 const poppins = {
@@ -37,7 +38,7 @@ export default async function RootLayout({
         <NextTopLoader color="red" />
         <ReduxProvider>
           <SiteHeader session={session} />
-          <div className="relative top-32">
+          <div className="relative top-36">
             <AuthProvider session={session}>{children}</AuthProvider>
           </div>
           <CommonClient />

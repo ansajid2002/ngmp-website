@@ -1,5 +1,5 @@
-import { HomeUrl } from "@/app/layout";
 import { NavItemType } from "@/shared/Navigation/NavigationItem";
+import { HomeUrl } from "@/app/layout";
 import ncNanoId from "@/utils/ncNanoId";
 
 export const MEGAMENU_TEMPLATES: NavItemType[] = [
@@ -181,7 +181,7 @@ export const MEGAMENU_TEMPLATES: NavItemType[] = [
 const OTHER_PAGE_CHILD: NavItemType[] = [
   {
     id: ncNanoId(),
-    href: `${HomeUrl}`,
+    href: "/",
     name: "Home Demo 1",
   },
   {
