@@ -21,7 +21,7 @@ export interface SectionSliderProductCardProps {
 const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
   className = "",
   itemClassName = "",
-  headingFontClassName,
+  headingFontClassName = " text-[1.5rem] md:lg:text-[2.3rem] font-semibold",
   headingClassName,
   heading,
   subHeading = "",
@@ -51,11 +51,11 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
         },
         640: {
           gap: 20,
-          perView: 1.2,
+          perView: 2,
         },
         500: {
           gap: 20,
-          perView: 1,
+          perView: 2,
         },
       },
     };
@@ -69,7 +69,6 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
     };
   }, [sliderRef]);
 
-
   return (
     <div className={`nc-SectionSliderProductCard ${className}`}>
       <div ref={sliderRef} className={`flow-root ${isShow ? "" : "invisible"}`}>
@@ -81,13 +80,15 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
         >
           {heading || `New Arrivals`}
         </Heading>
+
         <div className="glide__track" data-glide-el="track">
           <ul className="glide__slides">
-            {data && data.map((item, index) => (
-              <li key={index} className={`glide__slide ${itemClassName}`}>
-                <ProductCard data={item} />
-              </li>
-            ))}
+            {data &&
+              data.map((item, index) => (
+                <li key={index} className={`glide__slide ${itemClassName}`}>
+                  <ProductCard data={item} />
+                </li>
+              ))}
           </ul>
         </div>
       </div>

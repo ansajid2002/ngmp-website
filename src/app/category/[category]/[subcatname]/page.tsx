@@ -1,8 +1,11 @@
+import CategoryPageSlick from '@/components/CategoryPageSlick'
 import React from 'react'
 
 const Caregory = () => {
     return (
-        <div>Caregory</div>
+        <div>
+            <CategoryPageSlick />
+        </div>
     )
 }
 

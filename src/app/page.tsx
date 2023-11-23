@@ -16,6 +16,7 @@ import { AdminUrl } from "./layout";
 import Category from "@/components/CategoryPageSlick";
 import TabsCategory from "@/components/TabsInterest/TabsCategory";
 import Heading from "@/components/Heading";
+import NewCategorySlider from "../components/categoriesslider/NewCategorySlider";
 
 interface Subcategory {
   subcategory_id: number;
@@ -29,10 +30,12 @@ interface Category {
   subcategories: Subcategory[];
 }
 
-
 export async function getcustomerData(vendorId: any) {
   try {
-    const response = await fetch(`${AdminUrl}/api/getCouponsByVendorId?vendorId=${vendorId}`, { next: { revalidate: 30 } });
+    const response = await fetch(
+      `${AdminUrl}/api/getCouponsByVendorId?vendorId=${vendorId}`,
+      { next: { revalidate: 30 } }
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch customer data: ${response.status}`);
     }
@@ -46,7 +49,9 @@ export async function getcustomerData(vendorId: any) {
 
 export async function getBannerdata() {
   try {
-    const response = await fetch(`${AdminUrl}/api/getBanners`, { next: { revalidate: 30 } });
+    const response = await fetch(`${AdminUrl}/api/getBanners`, {
+      next: { revalidate: 30 },
+    });
     if (!response.ok) {
       throw new Error(`Failed to fetch banner data: ${response.status}`);
     }
@@ -56,32 +61,48 @@ export async function getBannerdata() {
     console.error("Error fetching customer data:", error);
     throw error; // Re-throw the error to handle it at a higher level if needed
   }
-
 }
 
-export const fetchCategoriesAndSubcategories = async (): Promise<Category[] | null> => {
+export const fetchCategoriesAndSubcategories = async (): Promise<
+  Category[] | null
+> => {
   try {
-    const categoryResponse = await fetch(`${AdminUrl}/api/getAllProductCatgeory`, { next: { revalidate: 30 } });
-    const subcategoryResponse = await fetch(`${AdminUrl}/api/getAllSubcategories`, { next: { revalidate: 30 } });
+    const categoryResponse = await fetch(
+      `${AdminUrl}/api/getAllProductCatgeory`,
+      { next: { revalidate: 30 } }
+    );
+    const subcategoryResponse = await fetch(
+      `${AdminUrl}/api/getAllSubcategories`,
+      { next: { revalidate: 30 } }
+    );
 
     if (categoryResponse.ok && subcategoryResponse.ok) {
       const categoryData: Category[] = await categoryResponse.json();
       const subcategoryData: Subcategory[] = await subcategoryResponse.json();
 
       // Map each category to add a 'subcategories' array containing its associated subcategories
-      const categoriesWithSubcategories: Category[] = categoryData.map((cat) => ({
-        ...cat,
-        subcategories: subcategoryData.filter((subcat) => subcat.parent_category_id === cat.category_id),
-      }));
+      const categoriesWithSubcategories: Category[] = categoryData.map(
+        (cat) => ({
+          ...cat,
+          subcategories: subcategoryData.filter(
+            (subcat) => subcat.parent_category_id === cat.category_id
+          ),
+        })
+      );
 
       // Sort the categories by their 'category_id' before updating the state
-      const sortedCategories = categoriesWithSubcategories.sort((a, b) => a.category_id - b.category_id);
+      const sortedCategories = categoriesWithSubcategories.sort(
+        (a, b) => a.category_id - b.category_id
+      );
 
       return sortedCategories;
     } else {
       // Handle error responses
       console.error("Error fetching categories:", categoryResponse.statusText);
-      console.error("Error fetching subcategories:", subcategoryResponse.statusText);
+      console.error(
+        "Error fetching subcategories:",
+        subcategoryResponse.statusText
+      );
     }
   } catch (error) {
     // Handle error
@@ -93,7 +114,10 @@ export const fetchCategoriesAndSubcategories = async (): Promise<Category[] | nu
 
 export const getAllProducts = async () => {
   try {
-    const response = await fetch(`${AdminUrl}/api/AllProductsVendors?currency=USD}`, { next: { revalidate: 30 } });
+    const response = await fetch(
+      `${AdminUrl}/api/AllProductsVendors?currency=USD}`,
+      { next: { revalidate: 30 } }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -101,40 +125,46 @@ export const getAllProducts = async () => {
 
     const data = await response.json();
 
-    return data
+    return data;
     // Log the data
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
   }
 };
 
 async function PageHome() {
-  const getAllProductsData = await getAllProducts()
-  const bannersData = await getBannerdata()
-  const fetchCategoriesAndSubcategoriesdata = await fetchCategoriesAndSubcategories()
+  const getAllProductsData = await getAllProducts();
+  const bannersData = await getBannerdata();
+  const fetchCategoriesAndSubcategoriesdata =
+    await fetchCategoriesAndSubcategories();
 
   return (
     <div className="relative overflow-hidden">
-
       <SectionHero2 data={bannersData} />
 
       {/* <div className="mt-24 lg:mt-32">
         <DiscoverMoreSlider />
       </div> */}
 
-
-      <div className="px-10 relative space-y-24 my-16">
+      <div className=" px-5 md:px-10 relative space-y-24 my-8 md:my-16">
         <SectionSliderProductCard
-          heading="Recommended"
+          heading="Recommended For You!!"
           data={getAllProductsData}
         />
 
-        <div className="py-4 border-t border-b border-slate-200 dark:border-slate-700">
+        <div className="hidden md:block py-4 border-t border-b border-slate-200 dark:border-slate-700">
           <SectionHowItWork />
         </div>
 
-        <div className="space-y-10 mt-4">
+        {/* <div className="space-y-10 mt-4">
           <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata} />
+        </div> */}
+
+        <div className="space-y-10 px-5 mt-4">
+          {/* <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata} /> */}
+          <NewCategorySlider
+            newcategoriesdata={fetchCategoriesAndSubcategoriesdata}
+          />
         </div>
 
         <SectionSliderProductCard
@@ -143,12 +173,10 @@ async function PageHome() {
           data={getAllProductsData}
         />
 
-        <div className="px-10 my-24 lg:my-32">
+        <div className=" my-5 lg:my-32">
           <Heading title="EXPLORE YOUR INTEREST" />
-
           <TabsCategory categoriesdata={fetchCategoriesAndSubcategoriesdata} />
         </div>
-
 
         {/* <SectionPromo1 /> */}
 
@@ -182,10 +210,7 @@ async function PageHome() {
         <SectionClientSay />
       </div>
 
-      <div>
-        {/* <Category /> */}
-      </div>
-
+      <div>{/* <Category /> */}</div>
     </div>
   );
 }

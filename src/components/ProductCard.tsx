@@ -28,28 +28,24 @@ export interface ProductCardProps {
 const ProductCard: FC<ProductCardProps> = ({
   className = "",
   data = PRODUCTS[0],
-  showTitle = true
+  showTitle = true,
 }) => {
-  const {
-    ad_title,
-    mrp,
-    sellingprice,
-    images,
-    uniquepid,
-    prod_slug
-  } = data;
+  const { ad_title, mrp, sellingprice, images, uniquepid, prod_slug } = data;
   const [inFavorite, setinFavorite] = useState(false);
-  const { wishlistItems } = useAppSelector((store) => store.wishlist)
+  const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
-    const isFavorite = wishlistItems && wishlistItems?.some(wish => wish.uniquepid.toString() === uniquepid.toString());
+    const isFavorite =
+      wishlistItems &&
+      wishlistItems?.some(
+        (wish) => wish.uniquepid.toString() === uniquepid.toString()
+      );
 
     // Set the result in inFavorite state
     setinFavorite(isFavorite);
-
   }, [wishlistItems]);
 
   const [showModalQuickView, setShowModalQuickView] = useState(false);
@@ -143,12 +139,11 @@ const ProductCard: FC<ProductCardProps> = ({
           <ArrowsPointingOutIcon className="w-3.5 h-3.5" />
           <span className="ms-1 pl-1.5 text-[14px]">Quick view</span>
         </ButtonPrimary>
-
       </div>
     );
   };
 
-  console.log(process.env.BASEURL);
+  // console.log(process.env.BASEURL);
 
   return (
     <>
@@ -158,7 +153,11 @@ const ProductCard: FC<ProductCardProps> = ({
         <Link href={"/product-detail"} className="absolute inset-0"></Link>
 
         <div className="relative flex-shrink-0 bg-slate-50 dark:bg-slate-300 rounded-md overflow-hidden z-1 group">
-          <Link href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`} title={`${ad_title}`} className="block overflow-hidden group">
+          <Link
+            href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
+            title={`${ad_title}`}
+            className="block overflow-hidden group"
+          >
             <div className="relative group-hover:scale-110 transition-transform duration-300">
               <NcImage
                 containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
@@ -170,8 +169,16 @@ const ProductCard: FC<ProductCardProps> = ({
               />
             </div>
           </Link>
-          {discountPercentage > 50 && <ProductStatus status={'Discount'} value={`${discountPercentage.toFixed(2)} Off`} />}
-          <LikeButton liked={inFavorite} className="absolute top-3 end-3 z-10" />
+          {discountPercentage > 50 && (
+            <ProductStatus
+              status={"Discount"}
+              value={`${discountPercentage.toFixed(2)} Off`}
+            />
+          )}
+          <LikeButton
+            liked={inFavorite}
+            className="absolute top-3 end-3 z-10"
+          />
           {/* {renderSizeList()} */}
           {renderGroupButtons()}
         </div>
@@ -179,11 +186,11 @@ const ProductCard: FC<ProductCardProps> = ({
         <div className="space-y-4 pt-3 pb-2.5">
           {/* {renderVariants()} */}
           {/* <div> */}
-          {
-            showTitle && <h2 className="nc-ProductCard__title text-base font-semibold transition-colors line-clamp-1">
+          {showTitle && (
+            <h2 className="nc-ProductCard__title text-base font-semibold transition-colors line-clamp-1">
               {ad_title}
             </h2>
-          }
+          )}
           {/* <p className={`text-sm text-slate-500 dark:text-slate-400 mt-1 `}>
               {additionaldescription}
             </p> */}
@@ -191,9 +198,7 @@ const ProductCard: FC<ProductCardProps> = ({
 
           <div className="  px-0">
             <Prices price={mrp} sellingprice={sellingprice} />
-            <div className="flex items-center mb-0.5">
-
-            </div>
+            <div className="flex items-center mb-0.5"></div>
           </div>
         </div>
       </div>

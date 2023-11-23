@@ -50,10 +50,11 @@ const CategoriesSlider: FC<CategoriesSliderProps> = ({
         slidesToShow: 6,
         autoplay: true,
         pauseOnHover: true,
-        speed: 3000,
+        speed: 500,
         autoplaySpeed: 3000,
         swipeToSlide: false,
         cssEase: "linear",
+        slidesToShow: 6,
         responsive: [
             {
                 breakpoint: 1024,
