@@ -79,13 +79,14 @@ const SectionHero2: FC<SectionHero2Props> = ({ className = "", data }) => {
     if (!isActive) {
       return null;
     }
+
     return (
       <div
         className={`bg-gray-200 nc-SectionHero2Item nc-SectionHero2Item--animation flex flex-col-reverse lg:flex-col relative overflow-hidden ${className}`}
         key={index}
       >
         <div className="absolute bottom-4 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 z-20 flex justify-center">
-          {data.map((_, index) => {
+          {data.length > 1 && data.map((_, index) => {
             const isActive = indexActive === index;
             return (
               <div
@@ -110,34 +111,32 @@ const SectionHero2: FC<SectionHero2Props> = ({ className = "", data }) => {
             );
           })}
         </div>
-
-        <Prev
-          className="absolute start-1 sm:start-5 top-3/4 sm:top-1/2 sm:-translate-y-1/2 z-10 !text-slate-900  rounded-md"
-          btnClassName="w-14 h-14 hover:border-slate-400 dark:hover:border-slate-400 bg-[#fb7701]"
-          svgSize="w-8 h-8"
-          onClickPrev={handleClickPrev}
-        />
-        <Next
-          className="absolute end-1 sm:end-5 top-3/4 sm:top-1/2 sm:-translate-y-1/2 z-10 !text-slate-900 rounded-md"
-          btnClassName="w-14 h-14 hover:border-slate-400 dark:hover:border-slate-400 bg-[#fb7701] "
-          svgSize="w-8 h-8"
-          onClickNext={handleClickNext}
-        />
+        {
+          data?.length > 1 && <>
+            <Prev
+              className="absolute start-1 sm:start-5 top-3/4 sm:top-1/2 sm:-translate-y-1/2 z-10 !text-slate-900  rounded-md"
+              btnClassName="w-14 h-14 hover:border-slate-400 dark:hover:border-slate-400 bg-[#fb7701]"
+              svgSize="w-8 h-8"
+              onClickPrev={handleClickPrev}
+            />
+            <Next
+              className="absolute end-1 sm:end-5 top-3/4 sm:top-1/2 sm:-translate-y-1/2 z-10 !text-slate-900 rounded-md"
+              btnClassName="w-14 h-14 hover:border-slate-400 dark:hover:border-slate-400 bg-[#fb7701] "
+              svgSize="w-8 h-8"
+              onClickNext={handleClickNext}
+            />
+          </>
+        }
 
         {/* BG */}
-
-        <div className="relative pb-0 pt-14 sm:pt-20 lg:py-44">
-          <div
-            className={`relative z-[1] w-full max-w-3xl space-y-8 sm:space-y-14 nc-SectionHero2Item__left`}
-          >
-
-          </div>
-          <div className="h-[20vh]">
+        <div className="relative pb-0 pt-0 sm:pt-0 ">
+          <div className="md:h-[300px]">
             <a href={item.link} target="_blank" rel="noopener noreferrer">
               <Image
-                fill
-                // sizes="(max-width: 768px) 100vw, 50vw"
-                className="w-full h-full object-contain nc-SectionHero2Item__image"
+                layout="fill"
+                objectFit="contain"
+                objectPosition="center"
+                className="w-full h-[216px] nc-SectionHero2Item__image"
                 src={`${AdminUrl}/uploads/Banners${item.banner_url.startsWith('/') ? '' : '/'}${item.banner_url}`}
                 alt="home banner"
                 priority
@@ -145,6 +144,7 @@ const SectionHero2: FC<SectionHero2Props> = ({ className = "", data }) => {
             </a>
           </div>
         </div>
+
       </div>
     );
   };

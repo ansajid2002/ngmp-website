@@ -37,21 +37,21 @@ export const authOptions: NextAuthOptions = {
                 const data = await response.json();
 
                 // Extend NextAuthUser with your additional properties
-                const user: User = { ...data, name: data.name };
+                const user: User = { ...data, name: data };
 
                 return user;
             },
         }),
         GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            authorization: {
-                params: {
-                    prompt: "consent",
-                    access_type: "offline",
-                    response_type: "code"
-                }
-            },
+            clientId: process.env.GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+            authorization:
+                'https://accounts.google.com/o/oauth2/v2/auth?' +
+                new URLSearchParams({
+                    prompt: 'consent',
+                    access_type: 'offline',
+                    response_type: 'code'
+                })
         }),
         FacebookProvider({
             clientId: process.env.FACEBOOK_CLIENT_ID,
@@ -59,16 +59,7 @@ export const authOptions: NextAuthOptions = {
         })
     ],
     secret: process.env.NEXTAUTH_SECRET,
-    callbacks: {
-        async signIn({ account, profile, user }) {
-            if (account && account.provider === "google") {
-                return profile && profile?.email_verified && profile?.email.endsWith("@gmail.com");
-            } else if (account && account.provider === "credentials") {
-                return user;
-            }
-            return true;
-        },
-    }
+
 };
 
 const handler = NextAuth(authOptions);

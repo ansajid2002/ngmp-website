@@ -2,8 +2,8 @@ import React, { FC, useEffect, useState } from "react";
 import MainNav2Logged from "./MainNav2Logged";
 
 export interface HeaderLoggedProps {
-  customerId: number;
-  customerData: any[];
+  customerId: string | any;
+  customerData: any | null;
 }
 
 const HeaderLogged: FC<HeaderLoggedProps> = ({ customerId, customerData }) => {
@@ -28,9 +28,8 @@ const HeaderLogged: FC<HeaderLoggedProps> = ({ customerId, customerData }) => {
 
   return (
     <div
-      className={`fixed top-0 w-full z-40 transition-all duration-300 ${
-        visible ? "top-0" : "-top-40"
-      }`}
+      className={`fixed top-0 w-full z-40 transition-all duration-300 ${visible ? "top-0" : "-top-40"
+        }`}
     >
       <MainNav2Logged customerId={customerId} customerData={customerData} />
     </div>

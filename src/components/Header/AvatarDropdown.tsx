@@ -6,15 +6,28 @@ import { Fragment } from "react";
 import Avatar from "@/shared/Avatar/Avatar";
 import SwitchDarkMode2 from "@/shared/SwitchDarkMode/SwitchDarkMode2";
 import Link from "next/link";
-import { HomeUrl } from "@/app/layout";
+import { AdminUrl, HomeUrl } from "@/app/layout";
+import { useAppSelector } from "@/redux/store";
+import { signIn, useSession } from "next-auth/react";
 
 export default function AvatarDropdown() {
+  const customerData = useAppSelector((state) => state.customerData)
+  const {
+    given_name = '',
+    family_name = '',
+    state = '',
+    country = '',
+    picture = '',
+  } = customerData?.customerData || {};
+
+
   return (
-    <div className="AvatarDropdown ">
+    <div className="AvatarDropdown">
       <Popover className="relative">
         {({ open, close }) => (
           <>
             <Popover.Button
+
               className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none flex items-center justify-center`}
             >
               <svg
@@ -52,11 +65,11 @@ export default function AvatarDropdown() {
                 <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative grid grid-cols-1 gap-6 bg-white dark:bg-neutral-800 py-7 px-6">
                     <div className="flex items-center space-x-3">
-                      <Avatar imgUrl={avatarImgs[0]} sizeClass="w-12 h-12" />
+                      <Avatar imgUrl={`${AdminUrl}/uploads/customerProfileImages/${picture}`} sizeClass="w-12 h-12" />
 
                       <div className="flex-grow">
-                        <h4 className="font-semibold">Nile Market-place</h4>
-                        <p className="text-xs mt-0.5">Los Angeles, CA</p>
+                        <h4 className="font-semibold">{`${given_name} ${family_name}`}</h4>
+                        <p className="text-xs mt-0.5">{`${state && state?.trim() != '' ? state + ',' : ''} ${country && country?.trim() != '' ? country : ''} `}</p>
                       </div>
                     </div>
 
@@ -320,7 +333,11 @@ export default function AvatarDropdown() {
                         </svg>
                       </div>
                       <div className="ml-4">
-                        <p className="text-sm font-medium ">{"Log out"}</p>
+                        <p className="text-sm font-medium ">
+                          <Link href={'/api/auth/signout'}>
+                            {"Log out"}
+                          </Link>
+                        </p>
                       </div>
                     </Link>
                   </div>

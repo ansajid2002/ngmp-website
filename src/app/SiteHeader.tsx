@@ -1,34 +1,23 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import React, { useEffect } from "react";
 import HeaderLogged from "@/components/Header/HeaderLogged";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { useAppSelector } from "@/redux/store";
-import customerData, { updateCustomerData } from "@/redux/slices/customerData";
 import { useDispatch } from "react-redux";
+import { updateCustomerData } from "@/redux/slices/customerData";
 
 const SiteHeader = ({ session }) => {
   useThemeMode();
-  const dispatch = useDispatch()
   const customerData = useAppSelector((state) => state.customerData)
-  console.log(customerData);
-
-  const userData = session?.user?.name
-  const [customerId, setCustomerId] = useState<number | null>(null)
-  const [customerDatas, setCustomerData] = useState<any[] | null>(null)
+  const updateCustomer = session?.user.name.customerData
+  const dispatch = useDispatch()
   useEffect(() => {
-    if (userData?.status === 200) {
-      setCustomerId(userData?.customerData?.customer_id)
-      setCustomerData(userData?.customerData)
-      dispatch(updateCustomerData(userData?.customerData))
-    }
-  }, [session])
+    dispatch(updateCustomerData(updateCustomer))
+  }, [dispatch])
 
 
-  let pathname = usePathname();
-
-  return <HeaderLogged customerId={customerId} customerData={customerDatas} />;
+  return <HeaderLogged customerId={customerData?.customerData?.customer_id || null} customerData={customerData?.customerData} />;
 };
 
 export default SiteHeader;

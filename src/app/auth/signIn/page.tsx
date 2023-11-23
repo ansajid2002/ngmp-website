@@ -11,6 +11,7 @@ import Swal from 'sweetalert2'
 import { updateCustomerData } from '@/redux/slices/customerData'
 import { useDispatch } from 'react-redux'
 import { HomeUrl } from '@/app/layout'
+import { useAppSelector } from '@/redux/store'
 
 interface LoginFormInterface {
     email: string,
@@ -20,10 +21,13 @@ function SignIn() {
     const { data, status } = useSession()
     const dispatch = useDispatch()
     const [error, setError] = useState(false)
+    const customerData = useAppSelector((state) => state.customerData)
     const router = useRouter()
+
 
     useEffect(() => {
         const userData = data?.user?.name
+
         if (userData?.status === 401) {
             setError(true)
             error && Swal.fire({
@@ -49,13 +53,10 @@ function SignIn() {
                 icon: 'success',
             })
             dispatch(updateCustomerData(userData?.customerData))
-            console.log('dispatched');
-
-
             router.push(`${HomeUrl}`)
         }
-
     }, [data, dispatch])
+
 
     const handleLogin = async (data: LoginFormInterface,
         { setSubmitting }: { setSubmitting: (value: boolean) => void }) => {
@@ -67,6 +68,7 @@ function SignIn() {
             callbackUrl: '/'
         })
         setSubmitting(false)
+
     }
 
     return (

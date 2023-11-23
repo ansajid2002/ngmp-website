@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppSelector } from "@/redux/store";
 import { Route } from "@/routers/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,31 +15,34 @@ const pages: {
   name: string;
   link: Route;
 }[] = [
-  {
-    name: "Account info",
-    link: "/account",
-  },
-  {
-    name: "Save lists",
-    link: "/account-savelists",
-  },
-  {
-    name: " My order",
-    link: "/account-order",
-  },
-  {
-    name: "Change password",
-    link: "/account-password",
-  },
-  {
-    name: "Change Billing",
-    link: "/account-billing",
-  },
-];
+    {
+      name: "Account info",
+      link: "/account",
+    },
+    {
+      name: "Save lists",
+      link: "/account-savelists",
+    },
+    {
+      name: " My order",
+      link: "/account-order",
+    },
+    {
+      name: "Change password",
+      link: "/account-password",
+    },
+    {
+      name: "Change Billing",
+      link: "/account-billing",
+    },
+  ];
 
 const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
   const pathname = usePathname();
+  const customerData = useAppSelector((state) => state.customerData)
+  console.log(customerData);
 
+  const { given_name, family_name, state, country, picture } = customerData?.customerData;
   return (
     <div className="nc-AccountCommonLayout container">
       <div className="mt-14 sm:mt-20">
@@ -47,7 +51,7 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
             <h2 className="text-3xl xl:text-4xl font-semibold">Account</h2>
             <span className="block mt-4 text-neutral-500 dark:text-neutral-400 text-base sm:text-lg">
               <span className="text-slate-900 dark:text-slate-200 font-semibold">
-                Enrico Cole,
+                {given_name || ''} {family_name || ''}
               </span>{" "}
               ciseco@gmail.com · Los Angeles, CA
             </span>
@@ -60,11 +64,10 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
                 <Link
                   key={index}
                   href={item.link}
-                  className={`block py-5 md:py-8 border-b-2 flex-shrink-0 text-sm sm:text-base ${
-                    pathname === item.link
-                      ? "border-primary-500 font-medium text-slate-900 dark:text-slate-200"
-                      : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
-                  }`}
+                  className={`block py-5 md:py-8 border-b-2 flex-shrink-0 text-sm sm:text-base ${pathname === item.link
+                    ? "border-primary-500 font-medium text-slate-900 dark:text-slate-200"
+                    : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                    }`}
                 >
                   {item.name}
                 </Link>
