@@ -1,12 +1,35 @@
 import React from "react";
 import {
   Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+  AccordionHeader,
+  AccordionBody,
+} from "@material-tailwind/react";
 
+function Icon({ id, open }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+      className={`${
+        id === open ? "rotate-180" : ""
+      } h-5 w-5 transition-transform`}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+      />
+    </svg>
+  );
+}
 const Delivery = () => {
+  const [open, setOpen] = React.useState(0);
+
+  const handleOpen = (value) => setOpen(open === value ? 0 : value);
+
   const data = [
     {
       id: 1,
@@ -49,18 +72,18 @@ const Delivery = () => {
   ];
   return (
     <div>
-      <Accordion type="single" collapsible className="w-full">
-        {data?.map((item, inidex) => (
-          <AccordionItem value={item.value}>
-            <AccordionTrigger className="text-[1rem] font-medium hover:bg-slate-100 px-3 rounded-xl">
-              <span>{item.title}</span>
-            </AccordionTrigger>
-            <AccordionContent className="text-[0.9rem] text-slate-700 p-3">
-              {item.content}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      {data?.map((item, index) => (
+        <Accordion
+          key={index}
+          open={open === item.id}
+          icon={<Icon id={item.id} open={open} />}
+        >
+          <AccordionHeader onClick={() => handleOpen(item.id)}>
+            <span className="text-[1rem] font-medium">{item.title}</span>
+          </AccordionHeader>
+          <AccordionBody>{item.content}</AccordionBody>
+        </Accordion>
+      ))}
     </div>
   );
 };

@@ -21,13 +21,13 @@ const Card13: FC<Card13Props> = ({ className = "" }) => {
             {_getTitleRd()}
           </Link>
         </h2>
-        <span className="hidden sm:block my-3 text-slate-500 dark:text-slate-400 ">
+        <span className="hidden sm:block my-3 text-gray-500 dark:text-gray-400 ">
           <span className="line-clamp-2">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
             dolorem voluptatibus numquam ut pariatur officiis?
           </span>
         </span>
-        <span className="mt-4 block sm:hidden text-sm text-slate-500 ">
+        <span className="mt-4 block sm:hidden text-sm text-gray-500 ">
           May 20, 2021 · 2 min read
         </span>
         <div className="mt-auto hidden sm:block">

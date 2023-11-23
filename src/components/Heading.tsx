@@ -10,7 +10,7 @@ const Heading: React.FC<HeadingProps> = ({ title, style }) => {
     <div className="text-center mb-5">
       <h1 className=" text-[2rem] tracking-wide leading-none font-bold relative inline-block  pb-2">
         {title}
-        <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 h-2 w-24 bg-gradient-to-r from-orange-500 to-blue-20 rounded-full"></div>
+        <div className="absolute -bottom-1 left-1/2 transform -trangray-x-1/2 h-2 w-24 bg-gradient-to-r from-orange-500 to-blue-20 rounded-full"></div>
       </h1>
     </div>
   );

@@ -22,7 +22,7 @@ const SwitchDarkMode2: React.FC<SwitchDarkMode2Props> = ({
         <span className="sr-only">Enable dark mode</span>
         <span
           aria-hidden="true"
-          className={`${isDarkMode ? "translate-x-5" : "translate-x-0"}
+          className={`${isDarkMode ? "trangray-x-5" : "trangray-x-0"}
             pointer-events-none inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
         />
       </Switch>

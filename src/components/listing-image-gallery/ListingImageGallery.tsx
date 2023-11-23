@@ -126,11 +126,11 @@ const ListingImageGallery: FC<Props> = ({ images, onClose, isShowModal }) => {
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
-                enterFrom="opacity-0 translate-y-5"
-                enterTo="opacity-100 translate-y-0"
+                enterFrom="opacity-0 trangray-y-5"
+                enterTo="opacity-100 trangray-y-0"
                 leave="ease-in duration-200"
-                leaveFrom="opacity-100 translate-y-0"
-                leaveTo="opacity-0 translate-y-5"
+                leaveFrom="opacity-100 trangray-y-0"
+                leaveTo="opacity-0 trangray-y-5"
               >
                 <Dialog.Panel className="w-full max-w-screen-lg mx-auto transform p-4 pt-0 text-left transition-all ">
                   {renderContent()}

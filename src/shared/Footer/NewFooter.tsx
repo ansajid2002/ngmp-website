@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
       title: "Company info",
       menus: [
         { href: `${HomeUrl}`, label: "About Nile" },
-        { href: `${HomeUrl}`, label: "Temu - Team Up, Price Down!" },
+        { href: `${HomeUrl}`, label: "Nile Market-place - Team Up, Price Down!" },
         { href: `${HomeUrl}`, label: "Affiliate & influencer Program" },
         { href: `${HomeUrl}`, label: "Campus ambassador" },
         { href: `${HomeUrl}`, label: "Contact us" },
@@ -43,7 +43,7 @@ const Footer: React.FC = () => {
       title: "Help",
       menus: [
         { href: `${HomeUrl}`, label: "Support center & FAQ" },
-        { href: `${HomeUrl}`, label: "Temu purchase protection" },
+        { href: `${HomeUrl}`, label: "Nile Market-place purchase protection" },
         { href: `${HomeUrl}`, label: "Sitemap" },
         { href: `${HomeUrl}`, label: "How to order" },
         { href: `${HomeUrl}`, label: "How to track" },

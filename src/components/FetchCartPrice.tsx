@@ -23,26 +23,26 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true }) => {
         <div className="flex-1">
             <div className="sticky top-28">
                 {showTitle && <h3 className="text-lg font-semibold ">Order Summary</h3>}
-                <div className="mt-7 text-sm text-slate-500 dark:text-slate-400 divide-y divide-slate-200/70 dark:divide-slate-700/80">
+                <div className="mt-7 text-sm text-gray-500 dark:text-gray-400 divide-y divide-gray-200/70 dark:divide-gray-700/80">
                     <div className="flex justify-between pb-4">
                         <span>Subtotal</span>
-                        <span className="font-semibold text-slate-900 dark:text-slate-200">
+                        <span className="font-semibold text-gray-900 dark:text-gray-200">
                             ${calculateSubtotal()}
                         </span>
                     </div>
                     <div className="flex justify-between py-4">
                         <span>Shpping estimate</span>
-                        <span className="font-semibold text-slate-900 dark:text-slate-200">
+                        <span className="font-semibold text-gray-900 dark:text-gray-200">
                             0
                         </span>
                     </div>
                     <div className="flex justify-between py-4">
                         <span>Tax estimate</span>
-                        <span className="font-semibold text-slate-900 dark:text-slate-200">
+                        <span className="font-semibold text-gray-900 dark:text-gray-200">
                             0
                         </span>
                     </div>
-                    <div className="flex justify-between font-semibold text-slate-900 dark:text-slate-200 text-base pt-4">
+                    <div className="flex justify-between font-semibold text-gray-900 dark:text-gray-200 text-base pt-4">
                         <span>Order total</span>
                         <span>${calculateSubtotal()}</span>
                     </div>
@@ -52,7 +52,7 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true }) => {
                         <ButtonPrimary href="/checkout" className="mt-8 w-full">
                             Checkout
                         </ButtonPrimary>
-                        <div className="mt-5 text-sm text-slate-500 dark:text-slate-400 flex items-center justify-center">
+                        <div className="mt-5 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center">
                             <p className="block relative pl-5">
                                 <svg
                                     className="w-4 h-4 absolute -left-1 top-0.5"
@@ -86,7 +86,7 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true }) => {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     href="##"
-                                    className="text-slate-900 dark:text-slate-200 underline font-medium"
+                                    className="text-gray-900 dark:text-gray-200 underline font-medium"
                                 >
                                     Taxes
                                 </a>
@@ -97,7 +97,7 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true }) => {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     href="##"
-                                    className="text-slate-900 dark:text-slate-200 underline font-medium"
+                                    className="text-gray-900 dark:text-gray-200 underline font-medium"
                                 >
                                     Shipping
                                 </a>

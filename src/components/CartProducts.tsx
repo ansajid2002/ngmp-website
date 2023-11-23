@@ -167,7 +167,7 @@ const CartProducts = ({ removeData = true }) => {
                 key={index}
                 className="relative flex py-8 sm:py-10 xl:py-12 first:pt-0 last:pb-0"
             >
-                <div className="relative h-36 w-24 sm:w-32 flex-shrink-0 overflow-hidden rounded-xl bg-slate-100">
+                <div className="relative h-36 w-24 sm:w-32 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
                     <Image
                         fill
                         src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
@@ -188,9 +188,9 @@ const CartProducts = ({ removeData = true }) => {
                                 <h3 className="text-base font-semibold line-clamp-2 w-11/12">
                                     <Link href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}>{ad_title}</Link>
                                 </h3>
-                                <div className="mt-1.5 sm:mt-2.5 flex flex-col text-sm text-slate-600 dark:text-slate-300">
+                                <div className="mt-1.5 sm:mt-2.5 flex flex-col text-sm text-gray-600 dark:text-gray-300">
 
-                                    {/* <span className="mx-4 border-l border-slate-200 dark:border-slate-700 "></span> */}
+                                    {/* <span className="mx-4 border-l border-gray-200 dark:border-gray-700 "></span> */}
                                     {
                                         label && <div className="flex mr-4 items-center space-x-1.5">
                                             <span>{label} </span>
@@ -207,7 +207,7 @@ const CartProducts = ({ removeData = true }) => {
                                     <select
                                         name="qty"
                                         id="qty"
-                                        className="form-select text-sm rounded-md py-1 border-slate-200 dark:border-slate-700 relative z-10 dark:bg-slate-800 "
+                                        className="form-select text-sm rounded-md py-1 border-gray-200 dark:border-gray-700 relative z-10 dark:bg-gray-800 "
                                         value={added_quantity}
                                     >
                                         <option value="1">1</option>

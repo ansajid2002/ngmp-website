@@ -81,7 +81,7 @@ const CheckoutPage = () => {
           <h2 className="block text-2xl sm:text-3xl lg:text-4xl font-semibold ">
             Checkout
           </h2>
-          <div className="block mt-3 sm:mt-5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-400">
+          <div className="block mt-3 sm:mt-5 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-400">
             <Link href={`${HomeUrl}`} className="">
               Home
             </Link>
@@ -94,15 +94,15 @@ const CheckoutPage = () => {
         <div className="flex flex-col lg:flex-row">
           <div className="flex-1">{renderLeft()}</div>
 
-          <div className="flex-shrink-0 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-700 my-10 lg:my-0 lg:mx-10 xl:lg:mx-14 2xl:mx-16 "></div>
+          <div className="flex-shrink-0 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 my-10 lg:my-0 lg:mx-10 xl:lg:mx-14 2xl:mx-16 "></div>
 
           <div className="w-full lg:w-[36%] ">
             <h3 className="text-lg font-semibold">Order summary</h3>
-            <div className="mt-8 divide-y divide-slate-200/70 dark:divide-slate-700 ">
+            <div className="mt-8 divide-y divide-gray-200/70 dark:divide-gray-700 ">
               <CartProducts removeData={false} />
             </div>
 
-            <div className="mt-10 pt-6 text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200/70 dark:border-slate-700 ">
+            <div className="mt-10 pt-6 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200/70 dark:border-gray-700 ">
               <div>
                 <Label className="text-sm">Discount code</Label>
                 <div className="flex mt-1.5">
@@ -116,7 +116,7 @@ const CheckoutPage = () => {
               <FetchCartPrice showTitle={false} showCheckout={false} />
             </div>
             <ButtonPrimary className="mt-8 w-full">Confirm order</ButtonPrimary>
-            <div className="mt-5 text-sm text-slate-500 dark:text-slate-400 flex items-center justify-center">
+            <div className="mt-5 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center">
               <p className="block relative pl-5">
                 <svg
                   className="w-4 h-4 absolute -left-1 top-0.5"
@@ -150,7 +150,7 @@ const CheckoutPage = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   href="##"
-                  className="text-slate-900 dark:text-slate-200 underline font-medium"
+                  className="text-gray-900 dark:text-gray-200 underline font-medium"
                 >
                   Taxes
                 </a>
@@ -161,7 +161,7 @@ const CheckoutPage = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   href="##"
-                  className="text-slate-900 dark:text-slate-200 underline font-medium"
+                  className="text-gray-900 dark:text-gray-200 underline font-medium"
                 >
                   Shipping
                 </a>

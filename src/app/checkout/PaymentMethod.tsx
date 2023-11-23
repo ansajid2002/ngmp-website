@@ -40,8 +40,8 @@ const PaymentMethod: FC<Props> = ({
           >
             <div
               className={`p-2.5 rounded-xl border-2 ${active
-                ? "border-slate-600 dark:border-slate-300"
-                : "border-gray-200 dark:border-slate-600"
+                ? "border-gray-600 dark:border-gray-300"
+                : "border-gray-200 dark:border-gray-600"
                 }`}
             >
               <svg
@@ -146,8 +146,8 @@ const PaymentMethod: FC<Props> = ({
           >
             <div
               className={`p-2.5 rounded-xl border-2 ${active
-                ? "border-slate-600 dark:border-slate-300"
-                : "border-gray-200 dark:border-slate-600"
+                ? "border-gray-600 dark:border-gray-300"
+                : "border-gray-200 dark:border-gray-600"
                 }`}
             >
               <svg
@@ -196,47 +196,47 @@ const PaymentMethod: FC<Props> = ({
             <p className="font-medium">Internet banking</p>
           </label>
           <div className={`mt-6 mb-4 ${active ? "block" : "hidden"}`}>
-            <p className="text-sm dark:text-slate-300">
+            <p className="text-sm dark:text-gray-300">
               Your order will be delivered to you after you transfer to:
             </p>
-            <ul className="mt-3.5 text-sm text-slate-500 dark:text-slate-400 space-y-2">
+            <ul className="mt-3.5 text-sm text-gray-500 dark:text-gray-400 space-y-2">
               <li>
-                <h3 className="text-base text-slate-800 dark:text-slate-200 font-semibold mb-1">
+                <h3 className="text-base text-gray-800 dark:text-gray-200 font-semibold mb-1">
                   ChisNghiax
                 </h3>
               </li>
               <li>
                 {" "}
                 Bank name:{" "}
-                <span className="text-slate-900 dark:text-slate-200 font-medium">
+                <span className="text-gray-900 dark:text-gray-200 font-medium">
                   Example Bank Name
                 </span>
               </li>
               <li>
                 {" "}
                 Account number:{" "}
-                <span className="text-slate-900 dark:text-slate-200 font-medium">
+                <span className="text-gray-900 dark:text-gray-200 font-medium">
                   555 888 777
                 </span>
               </li>
               <li>
                 {" "}
                 Sort code:{" "}
-                <span className="text-slate-900 dark:text-slate-200 font-medium">
+                <span className="text-gray-900 dark:text-gray-200 font-medium">
                   999
                 </span>
               </li>
               <li>
                 {" "}
                 IBAN:{" "}
-                <span className="text-slate-900 dark:text-slate-200 font-medium">
+                <span className="text-gray-900 dark:text-gray-200 font-medium">
                   IBAN
                 </span>
               </li>
               <li>
                 {" "}
                 BIC:{" "}
-                <span className="text-slate-900 dark:text-slate-200 font-medium">
+                <span className="text-gray-900 dark:text-gray-200 font-medium">
                   BIC/Swift
                 </span>
               </li>
@@ -265,8 +265,8 @@ const PaymentMethod: FC<Props> = ({
           >
             <div
               className={`p-2.5 rounded-xl border-2 ${active
-                ? "border-slate-600 dark:border-slate-300"
-                : "border-gray-200 dark:border-slate-600"
+                ? "border-gray-600 dark:border-gray-300"
+                : "border-gray-200 dark:border-gray-600"
                 }`}
             >
               <svg
@@ -322,11 +322,11 @@ const PaymentMethod: FC<Props> = ({
 
   const renderPaymentMethod = () => {
     return (
-      <div className="border border-slate-200 dark:border-slate-700 rounded-xl ">
+      <div className="border border-gray-200 dark:border-gray-700 rounded-xl ">
         <div className="p-6 flex flex-col sm:flex-row items-start">
           <span className="hidden sm:block">
             <svg
-              className="w-6 h-6 text-slate-700 dark:text-slate-400 mt-0.5"
+              className="w-6 h-6 text-gray-700 dark:text-gray-400 mt-0.5"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -372,14 +372,14 @@ const PaymentMethod: FC<Props> = ({
             </svg>
           </span>
           <div className="sm:ml-8">
-            <h3 className=" text-slate-700 dark:text-slate-400 flex ">
+            <h3 className=" text-gray-700 dark:text-gray-400 flex ">
               <span className="uppercase tracking-tight">PAYMENT METHOD</span>
               <svg
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="2.5"
                 stroke="currentColor"
-                className="w-5 h-5 ml-3 text-slate-900"
+                className="w-5 h-5 ml-3 text-gray-900"
               >
                 <path
                   strokeLinecap="round"
@@ -393,7 +393,7 @@ const PaymentMethod: FC<Props> = ({
             </div>
           </div>
           <button
-            className="py-2 px-4 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 mt-5 sm:mt-0 sm:ml-auto text-sm font-medium rounded-lg"
+            className="py-2 px-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 mt-5 sm:mt-0 sm:ml-auto text-sm font-medium rounded-lg"
             onClick={onOpenActive}
           >
             Change
@@ -401,7 +401,7 @@ const PaymentMethod: FC<Props> = ({
         </div>
 
         <div
-          className={`border-t border-slate-200 dark:border-slate-700 px-6 py-7 space-y-6 ${isActive ? "block" : "hidden"
+          className={`border-t border-gray-200 dark:border-gray-700 px-6 py-7 space-y-6 ${isActive ? "block" : "hidden"
             }`}
         >
           {/* ==================== */}

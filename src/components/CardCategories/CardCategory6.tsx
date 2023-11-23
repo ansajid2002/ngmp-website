@@ -42,7 +42,7 @@ const CardCategory6: FC<CardCategory6Props> = ({
 
           <div className="text-center">
             <span
-              className={`block mb-1 text-sm text-slate-500 dark:text-slate-400`}
+              className={`block mb-1 text-sm text-gray-500 dark:text-gray-400`}
             >
               {desc}
             </span>

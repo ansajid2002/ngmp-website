@@ -78,7 +78,7 @@ const ModalViewAllReviews: FC<ModalViewAllReviewsProps> = ({
                     ]}
                   />
                 </div>
-                <div className="px-8 py-8 border-t border-slate-200 dark:border-slate-700 overflow-auto grid grid-cols-1 md:grid-cols-2 gap-x-14 gap-y-10">
+                <div className="px-8 py-8 border-t border-gray-200 dark:border-gray-700 overflow-auto grid grid-cols-1 md:grid-cols-2 gap-x-14 gap-y-10">
                   <ReviewItem />
                   <ReviewItem />
                   <ReviewItem />

@@ -12,7 +12,6 @@ import { ReduxProvider } from "@/redux/provider";
 import NextTopLoader from "nextjs-toploader";
 import AuthProvider from "@/components/AuthProvider";
 import { getServerSession } from "next-auth";
-import Footer from "@/shared/Footer/Footer";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 
 const poppins = {
@@ -32,7 +31,6 @@ export default async function RootLayout({
 }) {
   const session = await getServerSession(authOptions);
 
-  console.log(session);
 
   return (
     <html lang="en" dir="" className={`${poppins.className} font-miui`}>
@@ -40,7 +38,7 @@ export default async function RootLayout({
         <NextTopLoader color="red" />
         <ReduxProvider>
           <SiteHeader session={session} />
-          <div className="relative top-[126px] md:top-[138px]">
+          <div className="relative top-32 md:top-36">
             <AuthProvider session={session}>{children}</AuthProvider>
           </div>
           <CommonClient />

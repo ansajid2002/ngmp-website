@@ -46,7 +46,7 @@ const LIST_IMAGES_GALLERY_DEMO: (string | StaticImageData)[] = [
 ];
 const PRICE = 108;
 
-const ProductDetailPage2 = ({}) => {
+const ProductDetailPage2 = ({ }) => {
   const { sizes, variants, status, allOfSizes, image } = PRODUCTS[0];
   //
   const router = useRouter();
@@ -91,11 +91,10 @@ const ProductDetailPage2 = ({}) => {
             <div
               key={index}
               onClick={() => setVariantActive(index)}
-              className={`relative flex-1 max-w-[75px] h-10 sm:h-11 rounded-full border-2 cursor-pointer ${
-                variantActive === index
-                  ? "border-primary-6000 dark:border-primary-500"
-                  : "border-transparent"
-              }`}
+              className={`relative flex-1 max-w-[75px] h-10 sm:h-11 rounded-full border-2 cursor-pointer ${variantActive === index
+                ? "border-primary-6000 dark:border-primary-500"
+                : "border-transparent"
+                }`}
             >
               <div
                 className="absolute inset-0.5 rounded-full overflow-hidden z-0 bg-cover"
@@ -104,11 +103,11 @@ const ProductDetailPage2 = ({}) => {
                     // @ts-ignore
                     typeof variant.thumbnail?.src === "string"
                       ? // @ts-ignore
-                        variant.thumbnail?.src
+                      variant.thumbnail?.src
                       : typeof variant.thumbnail === "string"
-                      ? variant.thumbnail
-                      : ""
-                  })`,
+                        ? variant.thumbnail
+                        : ""
+                    })`,
                 }}
               ></div>
             </div>
@@ -163,15 +162,13 @@ const ProductDetailPage2 = ({}) => {
               <div
                 key={index}
                 className={`relative h-10 sm:h-11 rounded-2xl border flex items-center justify-center 
-                text-sm sm:text-base uppercase font-semibold select-none overflow-hidden z-0 ${
-                  sizeOutStock
+                text-sm sm:text-base uppercase font-semibold select-none overflow-hidden z-0 ${sizeOutStock
                     ? "text-opacity-20 dark:text-opacity-20 cursor-not-allowed"
                     : "cursor-pointer"
-                } ${
-                  isActive
+                  } ${isActive
                     ? "bg-primary-6000 border-primary-6000 text-white hover:bg-primary-6000"
-                    : "border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
-                }`}
+                    : "border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                  }`}
                 onClick={() => {
                   if (sizeOutStock) {
                     return;
@@ -193,7 +190,7 @@ const ProductDetailPage2 = ({}) => {
       return null;
     }
     const CLASSES =
-      "text-sm flex items-center text-slate-700 text-slate-900 dark:text-slate-300";
+      "text-sm flex items-center text-gray-700 text-gray-900 dark:text-gray-300";
     if (status === "New in") {
       return (
         <div className={CLASSES}>
@@ -251,7 +248,7 @@ const ProductDetailPage2 = ({}) => {
                 <span className="ml-1.5 flex">
                   <span>4.9 </span>
                   <span className="mx-1.5">·</span>
-                  <span className="text-slate-700 dark:text-slate-400 underline">
+                  <span className="text-gray-700 dark:text-gray-400 underline">
                     142 reviews
                   </span>
                 </span>
@@ -266,7 +263,7 @@ const ProductDetailPage2 = ({}) => {
           </div>
           {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
           <div className="flex space-x-3.5">
-            <div className="flex items-center justify-center bg-slate-100/70 dark:bg-slate-800/70 px-2 py-3 sm:p-3.5 rounded-full">
+            <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
               <NcInputNumber
                 defaultValue={qualitySelected}
                 onChange={setQualitySelected}
@@ -284,7 +281,7 @@ const ProductDetailPage2 = ({}) => {
           {/* SUM */}
           <div className="hidden sm:flex flex-col space-y-4 ">
             <div className="space-y-2.5">
-              <div className="flex justify-between text-slate-600 dark:text-slate-300">
+              <div className="flex justify-between text-gray-600 dark:text-gray-300">
                 <span className="flex">
                   <span>{`$${PRICE.toFixed(2)}  `}</span>
                   <span className="mx-2">x</span>
@@ -293,12 +290,12 @@ const ProductDetailPage2 = ({}) => {
 
                 <span>{`$${(PRICE * qualitySelected).toFixed(2)}`}</span>
               </div>
-              <div className="flex justify-between text-slate-600 dark:text-slate-300">
+              <div className="flex justify-between text-gray-600 dark:text-gray-300">
                 <span>Tax estimate</span>
                 <span>$0</span>
               </div>
             </div>
-            <div className="border-b border-slate-200 dark:border-slate-700"></div>
+            <div className="border-b border-gray-200 dark:border-gray-700"></div>
             <div className="flex justify-between font-semibold">
               <span>Total</span>
               <span>{`$${(PRICE * qualitySelected).toFixed(2)}`}</span>
@@ -322,12 +319,12 @@ const ProductDetailPage2 = ({}) => {
               className="hidden sm:flex items-center text-sm font-medium "
             >
               <div className="">
-                <StarIcon className="w-5 h-5 pb-[1px] text-slate-800 dark:text-slate-200" />
+                <StarIcon className="w-5 h-5 pb-[1px] text-gray-800 dark:text-gray-200" />
               </div>
               <span className="ml-1.5">
                 <span>4.9</span>
                 <span className="mx-1.5">·</span>
-                <span className="text-slate-700 dark:text-slate-400 underline">
+                <span className="text-gray-700 dark:text-gray-400 underline">
                   142 reviews
                 </span>
               </span>
@@ -346,7 +343,7 @@ const ProductDetailPage2 = ({}) => {
         {/*  */}
         <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
         {/*  */}
-        <AccordionInfo panelClassName="p-4 pt-3.5 text-slate-600 text-base dark:text-slate-300 leading-7" />
+        <AccordionInfo panelClassName="p-4 pt-3.5 text-gray-600 text-base dark:text-gray-300 leading-7" />
       </div>
     );
   };
@@ -428,7 +425,7 @@ const ProductDetailPage2 = ({}) => {
 
           <ButtonSecondary
             onClick={() => setIsOpenModalViewAllReviews(true)}
-            className="mt-10 border border-slate-300 dark:border-slate-700 "
+            className="mt-10 border border-gray-300 dark:border-gray-700 "
           >
             Show me all 142 reviews
           </ButtonSecondary>
@@ -480,9 +477,8 @@ const ProductDetailPage2 = ({}) => {
                 (item, index) => (
                   <div
                     key={index}
-                    className={`relative rounded-md sm:rounded-xl overflow-hidden z-0 ${
-                      index >= 2 ? "block" : ""
-                    }`}
+                    className={`relative rounded-md sm:rounded-xl overflow-hidden z-0 ${index >= 2 ? "block" : ""
+                      }`}
                   >
                     <NcImage
                       alt=""
@@ -495,7 +491,7 @@ const ProductDetailPage2 = ({}) => {
 
                     {/* OVERLAY */}
                     <div
-                      className="absolute inset-0 bg-slate-900/20 opacity-0 hover:opacity-60 transition-opacity cursor-pointer"
+                      className="absolute inset-0 bg-gray-900/20 opacity-0 hover:opacity-60 transition-opacity cursor-pointer"
                       onClick={handleOpenModalImageGallery}
                     />
                   </div>
@@ -503,7 +499,7 @@ const ProductDetailPage2 = ({}) => {
               )}
             </div>
             <div
-              className="absolute hidden md:flex md:items-center md:justify-center left-3 bottom-3 px-4 py-2 rounded-xl bg-white text-slate-500 cursor-pointer hover:bg-slate-200 z-10"
+              className="absolute hidden md:flex md:items-center md:justify-center left-3 bottom-3 px-4 py-2 rounded-xl bg-white text-gray-500 cursor-pointer hover:bg-gray-200 z-10"
               onClick={handleOpenModalImageGallery}
             >
               <svg
@@ -546,11 +542,11 @@ const ProductDetailPage2 = ({}) => {
 
       {/* OTHER SECTION */}
       <div className="container pb-24 lg:pb-28 pt-14 space-y-14">
-        <hr className="border-slate-200 dark:border-slate-700" />
+        <hr className="border-gray-200 dark:border-gray-700" />
 
         {renderReviews()}
 
-        <hr className="border-slate-200 dark:border-slate-700" />
+        <hr className="border-gray-200 dark:border-gray-700" />
 
         <SectionSliderProductCard
           heading="Customers also purchased"

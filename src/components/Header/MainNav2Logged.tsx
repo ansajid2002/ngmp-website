@@ -8,7 +8,7 @@ import Navigation from "@/shared/Navigation/Navigation";
 import CartDropdown from "./CartDropdown";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import logo from "@/images/mainlogo.png";
+import logo from "@/images/mainlogo.svg";
 import freeshipping from "@/images/header/free-shipping.png";
 import negotiation from "@/images/header/negotiation.png";
 import mobile from "@/images/header/test.png";
@@ -16,6 +16,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { HomeUrl } from "@/app/layout";
 import Language from "./Language";
+import {
+  GitCommitVertical,
+  MessagesSquare,
+  PackageCheck,
+  Pointer,
+  Smartphone,
+  Truck,
+} from "lucide-react";
 
 const MainNav2Logged: FC<MainNav2LoggedProps> = ({
   customerId,
@@ -55,14 +63,14 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
   const renderSearchForm = () => {
     return (
       <form
-        className="flex-1 py-2 text-slate-900 dark:text-slate-100"
+        className="flex-1 py-2 text-gray-900 dark:text-gray-100"
         onSubmit={(e) => {
           e.preventDefault();
           router.push("/search");
           inputRef.current?.blur();
         }}
       >
-        <div className="bg-slate-50 dark:bg-slate-800 flex items-center space-x-1.5 px-5 h-full rounded">
+        <div className="bg-gray-50 dark:bg-gray-800 flex items-center space-x-1.5 px-5 h-full rounded">
           {renderMagnifyingGlassIcon()}
           <input
             ref={inputRef}
@@ -101,19 +109,29 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
           {showSearchForm ? renderSearchForm() : <Navigation />}
         </div>
 
-        <div className="flex-1 flex items-center justify-end text-slate-700 dark:text-slate-100">
+        <div className="flex-1 flex items-center justify-end text-gray-700 dark:text-gray-100">
           {!showSearchForm && (
             <button
-              className="hidden lg:flex w-10 h-10 sm:w-12 sm:h-12 rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none items-center justify-center"
+              className="hidden lg:flex w-10 h-10 sm:w-12 sm:h-12 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none items-center justify-center"
               onClick={() => setShowSearchForm(!showSearchForm)}
             >
               {renderMagnifyingGlassIcon()}
             </button>
           )}
-          <div className="hidden lg:block">
+
+          <AvatarDropdown />
+          <div className=" hidden md:block px-3">
+            <Link href={"/SupportCenter?query=BuyingOnNile"}>
+              <MessagesSquare
+                strokeWidth={1}
+                size={28}
+                className="transition-all hover:scale-105"
+              />
+            </Link>
+          </div>
+          <div className="hidden md:block">
             <Language />
           </div>
-          <AvatarDropdown />
           <CartDropdown />
         </div>
       </div>
@@ -122,40 +140,55 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
 
   return (
     <header>
-      <section className="justify-between px-4 md:px-10 py-2 items-center bg-black/90 border-b border-gray-100 dark:border-gray-600 flex ">
-        <div className="flex items-center space-x-2">
-          <Image
+      <section className="justify-between px-4 md:px-10 py-2 items-center bg-black border-b border-gray-100 dark:border-gray-600 flex ">
+        <div className="flex w-full md:w-auto items-center justify-center md:justify-start space-x-2">
+          {/* <Image
             src={freeshipping}
             alt="website main logo"
             className="md:w-8 md:h-8 w-7 h-7 brightness-200"
-          />
-          <h1 className="text-[12px] md:text-[14px] text-green-400 font-semibold">
+          /> */}
+          <Truck strokeWidth={1} className="text-[#ADFFA2]" size={35} />
+          <h1 className="text-[15px] leading-tight md:text-[16px] text-[#ADFFA2] font-semibold">
             Free Shipping on all Orders
+            <br />
+            Time-limited offer
           </h1>
         </div>
-
+        <GitCommitVertical
+          className="hidden md:block"
+          strokeWidth={1}
+          color="white"
+        />
         <div className="hidden md:flex items-center space-x-2">
-          <Image
+          {/* <Image
             src={negotiation}
             alt="website main logo"
             className="md:w-8 md:h-8 w-7 h-7 brightness-200  invert"
-          />
-          <h1 className="text-[14px] text-[#FFF7A7] font-semibold">
-            Negotiation Available
+          /> */}
+          <PackageCheck strokeWidth={1} className="text-[#FFF7A7]" size={35} />
+          <h1 className="text-[12px] leading-tight md:text-[16px] text-[#FFF7A7] font-semibold">
+            Delivery Guarantee <br />
+            Refund for any issues
           </h1>
         </div>
-        <div className="flex items-center space-x-2">
-          <Image
+        <GitCommitVertical
+          className="hidden md:block"
+          strokeWidth={1}
+          color="white"
+        />
+        <div className="hidden md:flex items-center space-x-2">
+          {/* <Image
             src={mobile}
             alt="website main logo"
             className=" md:w-8 md:h-8 w-7 h-7 brightness-200  invert"
-          />
-          <h1 className="text-[12px] md:text-[14px] text-[#FFF7A7] font-semibold">
+          /> */}
+          <Smartphone strokeWidth={1} className="text-[#FFF7A7]" size={35} />
+          <h1 className="text-[12px] md:text-[16px] text-[#FFF7A7] font-semibold">
             Get The Nile App
           </h1>
         </div>
       </section>
-      <div className="nc-MainNav2Logged relative z-10 md:pt-2  bg-white dark:bg-neutral-900 border-b border-slate-100 dark:border-slate-700">
+      <div className="nc-MainNav2Logged relative z-10 md:pt-2  bg-white dark:bg-neutral-900 border-b border-gray-100 dark:border-gray-700">
         <div className="md:px-10 px-4">{renderContent()}</div>
       </div>
     </header>

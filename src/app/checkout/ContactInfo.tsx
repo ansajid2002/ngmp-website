@@ -17,11 +17,11 @@ const ContactInfo: FC<Props> = ({ isActive, onCloseActive, onOpenActive }) => {
   const { push } = useRouter()
   const renderAccount = () => {
     return (
-      <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden z-0">
+      <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden z-0">
         <div className="flex flex-col sm:flex-row items-start p-6 ">
           <span className="hidden sm:block">
             <svg
-              className="w-6 h-6 text-slate-700 dark:text-slate-400 mt-0.5"
+              className="w-6 h-6 text-gray-700 dark:text-gray-400 mt-0.5"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -50,14 +50,14 @@ const ContactInfo: FC<Props> = ({ isActive, onCloseActive, onOpenActive }) => {
             </svg>
           </span>
           <div className="sm:ml-8">
-            <h3 className=" text-slate-700 dark:text-slate-300 flex ">
+            <h3 className=" text-gray-700 dark:text-gray-300 flex ">
               <span className="uppercase tracking-tight">CONTACT INFO</span>
               <svg
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="2.5"
                 stroke="currentColor"
-                className="w-5 h-5 ml-3 text-slate-900 dark:text-slate-100 "
+                className="w-5 h-5 ml-3 text-gray-900 dark:text-gray-100 "
               >
                 <path
                   strokeLinecap="round"
@@ -72,14 +72,14 @@ const ContactInfo: FC<Props> = ({ isActive, onCloseActive, onOpenActive }) => {
             </div>
           </div>
           <button
-            className="py-2 px-4 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 mt-5 sm:mt-0 sm:ml-auto text-sm font-medium rounded-lg"
+            className="py-2 px-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 mt-5 sm:mt-0 sm:ml-auto text-sm font-medium rounded-lg"
             onClick={() => onOpenActive()}
           >
             Change
           </button>
         </div>
         <div
-          className={`border-t border-slate-200 dark:border-slate-700 px-6 py-7 space-y-4 sm:space-y-6 ${isActive ? "block" : "hidden"
+          className={`border-t border-gray-200 dark:border-gray-700 px-6 py-7 space-y-4 sm:space-y-6 ${isActive ? "block" : "hidden"
             }`}
         >
           <div className="flex justify-between flex-wrap items-baseline">

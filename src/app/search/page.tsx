@@ -9,7 +9,7 @@ import ButtonCircle from "@/shared/Button/ButtonCircle";
 import ProductCard from "@/components/ProductCard";
 import { PRODUCTS } from "@/data/data";
 
-const PageSearch = ({}) => {
+const PageSearch = ({ }) => {
   return (
     <div className={`nc-PageSearch`} data-nc-id="PageSearch">
       <div
@@ -32,13 +32,13 @@ const PageSearch = ({}) => {
                 rounded="rounded-full"
               />
               <ButtonCircle
-                className="absolute right-2.5 top-1/2 transform -translate-y-1/2"
+                className="absolute right-2.5 top-1/2 transform -trangray-y-1/2"
                 size=" w-11 h-11"
                 type="submit"
               >
                 <i className="las la-arrow-right text-xl"></i>
               </ButtonCircle>
-              <span className="absolute left-5 top-1/2 transform -translate-y-1/2 text-2xl md:left-6">
+              <span className="absolute left-5 top-1/2 transform -trangray-y-1/2 text-2xl md:left-6">
                 <svg
                   className="h-5 w-5"
                   viewBox="0 0 24 24"
@@ -86,9 +86,9 @@ const PageSearch = ({}) => {
         </main>
 
         {/* === SECTION 5 === */}
-        <hr className="border-slate-200 dark:border-slate-700" />
-        <SectionSliderCollections/>
-        <hr className="border-slate-200 dark:border-slate-700" />
+        <hr className="border-gray-200 dark:border-gray-700" />
+        <SectionSliderCollections />
+        <hr className="border-gray-200 dark:border-gray-700" />
 
         {/* SUBCRIBES */}
         <SectionPromo1 />

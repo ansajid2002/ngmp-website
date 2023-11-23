@@ -58,18 +58,18 @@ const ProductCard: FC<ProductCardProps> = ({
   //       <Transition
   //         appear
   //         show={t.visible}
-  //         className="p-4 max-w-md w-full bg-white dark:bg-slate-800 shadow-lg rounded-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/10 text-slate-900 dark:text-slate-200"
+  //         className="p-4 max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/10 text-gray-900 dark:text-gray-200"
   //         enter="transition-all duration-150"
-  //         enterFrom="opacity-0 translate-x-20"
-  //         enterTo="opacity-100 translate-x-0"
+  //         enterFrom="opacity-0 trangray-x-20"
+  //         enterTo="opacity-100 trangray-x-0"
   //         leave="transition-all duration-150"
-  //         leaveFrom="opacity-100 translate-x-0"
-  //         leaveTo="opacity-0 translate-x-20"
+  //         leaveFrom="opacity-100 trangray-x-0"
+  //         leaveTo="opacity-0 trangray-x-20"
   //       >
   //         <p className="block text-base font-semibold leading-none">
   //           Added to cart!
   //         </p>
-  //         <div className="border-t border-slate-200 dark:border-slate-700 my-4" />
+  //         <div className="border-t border-gray-200 dark:border-gray-700 my-4" />
   //         {renderProductCartOnNotify({ size })}
   //       </Transition>
   //     ),
@@ -84,7 +84,7 @@ const ProductCard: FC<ProductCardProps> = ({
   // const renderProductCartOnNotify = ({ size }: { size?: string }) => {
   //   return (
   //     <div className="flex ">
-  //       <div className="h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-slate-100">
+  //       <div className="h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
   //         <Image
   //           width={80}
   //           height={96}
@@ -99,7 +99,7 @@ const ProductCard: FC<ProductCardProps> = ({
   //           <div className="flex justify-between ">
   //             <div>
   //               <h3 className="text-base font-medium ">{ad_title}</h3>
-  //               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+  //               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
   //                 <span>{label}</span>
   //               </p>
   //             </div>
@@ -107,7 +107,7 @@ const ProductCard: FC<ProductCardProps> = ({
   //           </div>
   //         </div>
   //         <div className="flex flex-1 items-end justify-between text-sm">
-  //           <p className="text-gray-500 dark:text-slate-400">Qty 1</p>
+  //           <p className="text-gray-500 dark:text-gray-400">Qty 1</p>
 
   //           <div className="flex">
   //             <button
@@ -152,7 +152,7 @@ const ProductCard: FC<ProductCardProps> = ({
       >
         <Link href={"/product-detail"} className="absolute inset-0"></Link>
 
-        <div className="relative flex-shrink-0 bg-slate-50 dark:bg-slate-300 rounded-md overflow-hidden z-1 group">
+        <div className="relative flex-shrink-0 bg-gray-50 dark:bg-gray-300 rounded-md overflow-hidden z-1 group">
           <Link
             href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
             title={`${ad_title}`}
@@ -191,7 +191,7 @@ const ProductCard: FC<ProductCardProps> = ({
               {ad_title}
             </h2>
           )}
-          {/* <p className={`text-sm text-slate-500 dark:text-slate-400 mt-1 `}>
+          {/* <p className={`text-sm text-gray-500 dark:text-gray-400 mt-1 `}>
               {additionaldescription}
             </p> */}
           {/* </div> */}

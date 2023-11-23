@@ -81,7 +81,7 @@ export const DEMO_MORE_EXPLORE_DATA_2: ExploreType[] = [
     desc: "Manufacturar",
     image: explore4Png,
     svgBg: explore4Svg,
-    color: "bg-slate-100/80",
+    color: "bg-gray-100/80",
     count: 122,
   },
 ];
@@ -101,7 +101,7 @@ export const DEMO_MORE_EXPLORE_DATA: ExploreType[] = [
     desc: "Manufacturar",
     image: explore2Png,
     svgBg: explore2Svg,
-    color: "bg-slate-100/80",
+    color: "bg-gray-100/80",
     count: 22,
   },
   {

@@ -4,7 +4,7 @@ import React, { useState, Fragment } from "react";
 import { Transition, Dialog } from "@/app/headlessui";
 import NavMobile from "@/shared/Navigation/NavMobile";
 
-export interface MenuBarProps {}
+export interface MenuBarProps { }
 const MenuBar: React.FC<MenuBarProps> = () => {
   const [isVisable, setIsVisable] = useState(false);
 
@@ -24,11 +24,11 @@ const MenuBar: React.FC<MenuBarProps> = () => {
               <Transition.Child
                 as={Fragment}
                 enter="transition duration-100 transform"
-                enterFrom="opacity-0 -translate-x-14"
-                enterTo="opacity-100 translate-x-0"
+                enterFrom="opacity-0 -trangray-x-14"
+                enterTo="opacity-100 trangray-x-0"
                 leave="transition duration-150 transform"
-                leaveFrom="opacity-100 translate-x-0"
-                leaveTo="opacity-0 -translate-x-14"
+                leaveFrom="opacity-100 trangray-x-0"
+                leaveTo="opacity-0 -trangray-x-14"
               >
                 <div className="z-20 relative">
                   <NavMobile onClickClose={handleCloseMenu} />

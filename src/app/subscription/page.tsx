@@ -49,16 +49,15 @@ const pricings: PricingItem[] = [
   },
 ];
 
-const PageSubcription = ({}) => {
+const PageSubcription = ({ }) => {
   const renderPricingItem = (pricing: PricingItem, index: number) => {
     return (
       <div
         key={index}
-        className={`h-full relative px-6 py-8 rounded-3xl border-2 flex flex-col overflow-hidden ${
-          pricing.isPopular
+        className={`h-full relative px-6 py-8 rounded-3xl border-2 flex flex-col overflow-hidden ${pricing.isPopular
             ? "border-primary-500"
             : "border-neutral-100 dark:border-neutral-700"
-        }`}
+          }`}
       >
         {pricing.isPopular && (
           <span className="bg-primary-500 text-white px-3 py-1 tracking-widest text-xs absolute right-3 top-3 rounded-full z-10">
@@ -69,7 +68,7 @@ const PageSubcription = ({}) => {
           <h3 className="block text-sm uppercase tracking-widest text-neutral-6000 dark:text-neutral-300 mb-2 font-medium">
             {pricing.name}
           </h3>
-          <h2 className="text-5xl leading-none flex items-center text-slate-800 dark:text-slate-200">
+          <h2 className="text-5xl leading-none flex items-center text-gray-800 dark:text-gray-200">
             <span>{pricing.pricing}</span>
             <span className="text-lg ml-1 font-normal text-neutral-500">
               {pricing.per}

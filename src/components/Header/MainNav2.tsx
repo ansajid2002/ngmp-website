@@ -49,13 +49,13 @@ const MainNav2: FC<MainNav2Props> = ({ className = "" }) => {
   const renderSearchForm = () => {
     return (
       <form
-        className="flex-1 py-2 text-slate-900 dark:text-slate-100"
+        className="flex-1 py-2 text-gray-900 dark:text-gray-100"
         onSubmit={(e) => {
           e.preventDefault();
           router.push("/search");
         }}
       >
-        <div className="bg-slate-50 dark:bg-slate-800 flex items-center space-x-1.5 px-5 h-full rounded">
+        <div className="bg-gray-50 dark:bg-gray-800 flex items-center space-x-1.5 px-5 h-full rounded">
           {renderMagnifyingGlassIcon()}
           <input
             type="text"
@@ -73,7 +73,7 @@ const MainNav2: FC<MainNav2Props> = ({ className = "" }) => {
   };
 
   return (
-    <div className="nc-MainNav2 relative z-10 bg-white dark:bg-slate-900 ">
+    <div className="nc-MainNav2 relative z-10 bg-white dark:bg-gray-900 ">
       <div className="container">
         <div className="h-20 flex justify-between">
           <div className="flex items-center md:hidden flex-1">
@@ -83,7 +83,7 @@ const MainNav2: FC<MainNav2Props> = ({ className = "" }) => {
           <div className="flex lg:flex-1 items-center space-x-3 sm:space-x-8">
             <Logo />
             {!showSearchForm && (
-              <div className="hidden md:block h-10 border-l border-slate-200 dark:border-slate-700"></div>
+              <div className="hidden md:block h-10 border-l border-gray-200 dark:border-gray-700"></div>
             )}
             {!showSearchForm && (
               <div className="hidden md:block">
@@ -103,7 +103,7 @@ const MainNav2: FC<MainNav2Props> = ({ className = "" }) => {
             {!showSearchForm && <LangDropdown />}
             {!showSearchForm && (
               <button
-                className="hidden lg:flex w-10 h-10 sm:w-12 sm:h-12 rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none items-center justify-center"
+                className="hidden lg:flex w-10 h-10 sm:w-12 sm:h-12 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none items-center justify-center"
                 onClick={() => setShowSearchForm(!showSearchForm)}
               >
                 {renderMagnifyingGlassIcon()}

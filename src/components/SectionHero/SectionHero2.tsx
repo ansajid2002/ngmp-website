@@ -85,7 +85,7 @@ const SectionHero2: FC<SectionHero2Props> = ({ className = "", data }) => {
         className={`bg-gray-200 nc-SectionHero2Item nc-SectionHero2Item--animation flex flex-col-reverse lg:flex-col relative overflow-hidden ${className}`}
         key={index}
       >
-        <div className="absolute bottom-4 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 z-20 flex justify-center">
+        <div className="absolute bottom-4 start-1/2 -trangray-x-1/2 rtl:trangray-x-1/2 z-20 flex justify-center">
           {data.length > 1 && data.map((_, index) => {
             const isActive = indexActive === index;
             return (
@@ -102,7 +102,7 @@ const SectionHero2: FC<SectionHero2Props> = ({ className = "", data }) => {
                 >
                   {isActive && (
                     <div
-                      className={`nc-SectionHero2Item__dot absolute inset-0 bg-slate-900 rounded-md ${isActive ? " " : " "
+                      className={`nc-SectionHero2Item__dot absolute inset-0 bg-gray-900 rounded-md ${isActive ? " " : " "
                         }`}
                     ></div>
                   )}
@@ -114,14 +114,14 @@ const SectionHero2: FC<SectionHero2Props> = ({ className = "", data }) => {
         {
           data?.length > 1 && <>
             <Prev
-              className="absolute start-1 sm:start-5 top-3/4 sm:top-1/2 sm:-translate-y-1/2 z-10 !text-slate-900  rounded-md"
-              btnClassName="w-14 h-14 hover:border-slate-400 dark:hover:border-slate-400 bg-[#fb7701]"
+              className="absolute start-1 sm:start-5 top-3/4 sm:top-1/2 sm:-trangray-y-1/2 z-10 !text-gray-900  rounded-md"
+              btnClassName="w-14 h-14 hover:border-gray-400 dark:hover:border-gray-400 bg-[#fb7701]"
               svgSize="w-8 h-8"
               onClickPrev={handleClickPrev}
             />
             <Next
-              className="absolute end-1 sm:end-5 top-3/4 sm:top-1/2 sm:-translate-y-1/2 z-10 !text-slate-900 rounded-md"
-              btnClassName="w-14 h-14 hover:border-slate-400 dark:hover:border-slate-400 bg-[#fb7701] "
+              className="absolute end-1 sm:end-5 top-3/4 sm:top-1/2 sm:-trangray-y-1/2 z-10 !text-gray-900 rounded-md"
+              btnClassName="w-14 h-14 hover:border-gray-400 dark:hover:border-gray-400 bg-[#fb7701] "
               svgSize="w-8 h-8"
               onClickNext={handleClickNext}
             />

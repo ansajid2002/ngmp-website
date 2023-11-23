@@ -73,7 +73,7 @@ const HeaderFilterSection: FC<HeaderFilterSectionProps> = ({
             </svg>
 
             <span className="block truncate ml-2.5">Filter</span>
-            <span className="absolute top-1/2 -translate-y-1/2 right-5">
+            <span className="absolute top-1/2 -trangray-y-1/2 right-5">
               <ChevronDownIcon
                 className={`w-5 h-5 ${isOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"

@@ -29,7 +29,7 @@ const CATS: CardCategoryData[] = [
     name: "Beauty Products",
     desc: "10+ categories",
     img: department2Png,
-    color: "bg-slate-100",
+    color: "bg-gray-100",
   },
   {
     name: "Sport Kits",
@@ -120,11 +120,11 @@ const SectionSliderCategories: FC<SectionSliderCategoriesProps> = ({
             ))}
             <li className={`glide__slide ${itemClassName}`}>
               <div
-                className={`flex-1 relative w-full h-0 rounded-2xl overflow-hidden group aspect-w-1 aspect-h-1 bg-slate-100`}
+                className={`flex-1 relative w-full h-0 rounded-2xl overflow-hidden group aspect-w-1 aspect-h-1 bg-gray-100`}
               >
                 <div>
                   <div className="absolute inset-y-6 inset-x-10 flex flex-col sm:items-center justify-center">
-                    <div className="flex relative text-slate-900">
+                    <div className="flex relative text-gray-900">
                       <span className="text-lg font-semibold ">
                         More collections
                       </span>
@@ -152,7 +152,7 @@ const SectionSliderCategories: FC<SectionSliderCategoriesProps> = ({
                         ></path>
                       </svg>
                     </div>
-                    <span className="text-sm mt-1 text-slate-800">
+                    <span className="text-sm mt-1 text-gray-800">
                       Show me more
                     </span>
                   </div>

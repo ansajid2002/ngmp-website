@@ -63,9 +63,8 @@ const LangDropdown: FC<LangDropdownProps> = ({ panelClassName = "" }) => {
             key={index}
             href={item.href}
             onClick={() => close()}
-            className={`flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50 ${
-              item.active ? "bg-gray-100 dark:bg-gray-700" : "opacity-80"
-            }`}
+            className={`flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50 ${item.active ? "bg-gray-100 dark:bg-gray-700" : "opacity-80"
+              }`}
           >
             <div className="">
               <p className="text-sm font-medium ">{item.name}</p>
@@ -87,9 +86,8 @@ const LangDropdown: FC<LangDropdownProps> = ({ panelClassName = "" }) => {
             key={index}
             href={item.href}
             onClick={() => close()}
-            className={`flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50 ${
-              item.active ? "bg-gray-100 dark:bg-gray-700" : "opacity-80"
-            }`}
+            className={`flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50 ${item.active ? "bg-gray-100 dark:bg-gray-700" : "opacity-80"
+              }`}
           >
             <item.icon className="w-[18px] h-[18px] " />
             <p className="ml-2 text-sm font-medium ">{item.name}</p>
@@ -120,18 +118,18 @@ const LangDropdown: FC<LangDropdownProps> = ({ panelClassName = "" }) => {
             <Transition
               as={Fragment}
               enter="transition ease-out duration-200"
-              enterFrom="opacity-0 translate-y-1"
-              enterTo="opacity-100 translate-y-0"
+              enterFrom="opacity-0 trangray-y-1"
+              enterTo="opacity-100 trangray-y-0"
               leave="transition ease-in duration-150"
-              leaveFrom="opacity-100 translate-y-0"
-              leaveTo="opacity-0 translate-y-1"
+              leaveFrom="opacity-100 trangray-y-0"
+              leaveTo="opacity-0 trangray-y-1"
             >
               <Popover.Panel
                 className={`absolute z-20 w-96 mt-3.5 right-0 ${panelClassName}`}
               >
                 <div className="p-6 rounded-2xl bg-white dark:bg-neutral-800 shadow-lg ring-1 ring-black ring-opacity-5">
                   <Tab.Group>
-                    <Tab.List className="flex space-x-1 rounded-full bg-gray-100 dark:bg-slate-700 p-1">
+                    <Tab.List className="flex space-x-1 rounded-full bg-gray-100 dark:bg-gray-700 p-1">
                       {["Language", "Currency"].map((category) => (
                         <Tab
                           key={category}
@@ -141,7 +139,7 @@ const LangDropdown: FC<LangDropdownProps> = ({ panelClassName = "" }) => {
                               "focus:outline-none focus:ring-0",
                               selected
                                 ? "bg-white shadow"
-                                : "text-gray-700 dark:text-slate-300 hover:bg-white/70 dark:hover:bg-slate-900/40"
+                                : "text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-900/40"
                             )
                           }
                         >

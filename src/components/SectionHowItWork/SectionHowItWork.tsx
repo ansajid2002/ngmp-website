@@ -75,14 +75,14 @@ const SectionHowItWork: FC<SectionHowItWorkProps> = ({
                   !index
                     ? "red"
                     : index === 1
-                    ? "indigo"
-                    : index === 2
-                    ? "yellow"
-                    : "purple"
+                      ? "indigo"
+                      : index === 2
+                        ? "yellow"
+                        : "purple"
                 }
               />
               <h3 className="text-base font-semibold">{item.title}</h3>
-              <span className="block text-slate-600 dark:text-slate-400 text-sm leading-6">
+              <span className="block text-gray-600 dark:text-gray-400 text-sm leading-6">
                 {item.desc}
               </span>
             </div>

@@ -31,7 +31,7 @@ const NotifyAddTocart: FC<Props> = ({
   const renderProductCartOnNotify = () => {
     return (
       <div className="flex ">
-        <div className="h-24 w-20 relative flex-shrink-0 overflow-hidden rounded-xl bg-slate-100">
+        <div className="h-24 w-20 relative flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
           <Image
             src={productImage}
             alt={productImage}
@@ -46,7 +46,7 @@ const NotifyAddTocart: FC<Props> = ({
             <div className="flex justify-between ">
               <div>
                 <h3 className="text-base font-medium line-clamp-2">{ad_title}</h3>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   <span>{label}</span>
                 </p>
               </div>
@@ -54,7 +54,7 @@ const NotifyAddTocart: FC<Props> = ({
             </div>
           </div>
           <div className="flex flex-1 items-end justify-between text-sm">
-            <p className="text-gray-500 dark:text-slate-400">{`Qty ${qualitySelected}`}</p>
+            <p className="text-gray-500 dark:text-gray-400">{`Qty ${qualitySelected}`}</p>
 
             <div className="flex">
               <button
@@ -75,18 +75,18 @@ const NotifyAddTocart: FC<Props> = ({
     <Transition
       appear
       show={show}
-      className="p-4 max-w-md w-full bg-white dark:bg-slate-800 shadow-lg rounded-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/10 text-slate-900 dark:text-slate-200"
+      className="p-4 max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/10 text-gray-900 dark:text-gray-200"
       enter="transition-all duration-150"
-      enterFrom="opacity-0 translate-x-20"
-      enterTo="opacity-100 translate-x-0"
+      enterFrom="opacity-0 trangray-x-20"
+      enterTo="opacity-100 trangray-x-0"
       leave="transition-all duration-150"
-      leaveFrom="opacity-100 translate-x-0"
-      leaveTo="opacity-0 translate-x-20"
+      leaveFrom="opacity-100 trangray-x-0"
+      leaveTo="opacity-0 trangray-x-20"
     >
       <p className="block text-base font-semibold leading-none">
         Added to cart!
       </p>
-      <hr className=" border-slate-200 dark:border-slate-700 my-4" />
+      <hr className=" border-gray-200 dark:border-gray-700 my-4" />
       {renderProductCartOnNotify()}
     </Transition>
   );

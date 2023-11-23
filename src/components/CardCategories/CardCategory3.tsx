@@ -41,12 +41,12 @@ const CardCategory3: FC<CardCategory3Props> = ({
         <div>
           <div className="absolute inset-5 sm:inset-8 flex flex-col">
             <div className="max-w-xs">
-              <span className={`block mb-2 text-sm text-slate-700`}>
+              <span className={`block mb-2 text-sm text-gray-700`}>
                 {name}
               </span>
               {desc && (
                 <h2
-                  className={`text-xl md:text-2xl text-slate-900 font-semibold`}
+                  className={`text-xl md:text-2xl text-gray-900 font-semibold`}
                   dangerouslySetInnerHTML={{ __html: desc }}
                 ></h2>
               )}

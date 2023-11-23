@@ -6,13 +6,13 @@ import SectionSliderCollections from "@/components/SectionSliderLargeProduct";
 import ProductCard from "@/components/ProductCard";
 import { PRODUCTS } from "@/data/data";
 import TabFilters from "@/components/TabFilters";
-import {  getAllProducts } from "../page";
+import { getAllProducts } from "../page";
 
-const  PageCollection = async ({}) => {
+const PageCollection = async ({ }) => {
 
   const productData = await getAllProducts()
 
-  
+
   return (
     <div className={`nc-PageCollection`}>
       {/* {
@@ -35,7 +35,7 @@ const  PageCollection = async ({}) => {
             </span>
           </div>
 
-          <hr className="border-slate-200 dark:border-slate-700" />
+          <hr className="border-gray-200 dark:border-gray-700" />
           <main>
             {/* TABS FILTER */}
             <TabFilters />
@@ -56,10 +56,10 @@ const  PageCollection = async ({}) => {
         </div>
 
         {/* === SECTION 5 === */}
-        <hr className="border-slate-200 dark:border-slate-700" />
+        <hr className="border-gray-200 dark:border-gray-700" />
 
         {/* <SectionSliderCollections /> */}
-        <hr className="border-slate-200 dark:border-slate-700" />
+        <hr className="border-gray-200 dark:border-gray-700" />
 
       </div>
     </div>

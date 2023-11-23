@@ -351,7 +351,7 @@ const ProductDetailPage = ({ searchParams }) => {
               sellingprice={sellingPriceData || responseData?.sellingprice}
             />
 
-            <div className="h-7 border-l border-slate-300 dark:border-slate-700"></div>
+            <div className="h-7 border-l border-gray-300 dark:border-gray-700"></div>
 
             <div className="flex items-center">
               <a
@@ -362,7 +362,7 @@ const ProductDetailPage = ({ searchParams }) => {
                 <div className="ml-1.5 flex">
                   <span>4.9</span>
                   <span className="block mx-2">·</span>
-                  <span className="text-slate-600 dark:text-slate-400 underline">
+                  <span className="text-gray-600 dark:text-gray-400 underline">
                     142 reviews
                   </span>
                 </div>
@@ -385,7 +385,7 @@ const ProductDetailPage = ({ searchParams }) => {
         {
           isUniquepidMatched ?
             <div className="flex space-x-3.5">
-              <div className="flex items-center justify-center bg-slate-100/70 dark:bg-slate-800/70 px-2 py-3 sm:p-3.5 rounded-full">
+              <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
                 <NcInputNumber
                   defaultValue={IsMatchedCartProduct && IsMatchedCartProduct.added_quantity}
                   onChange={setQualitySelected}
@@ -402,7 +402,7 @@ const ProductDetailPage = ({ searchParams }) => {
             </div>
             :
             <div className="flex space-x-3.5">
-              <div className="flex items-center justify-center bg-slate-100/70 dark:bg-slate-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
+              <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
                 <NcInputNumber
                   defaultValue={qualitySelected}
                   onChange={setQualitySelected}
@@ -422,7 +422,7 @@ const ProductDetailPage = ({ searchParams }) => {
 
 
         {/*  */}
-        <hr className=" 2xl:!my-10 border-slate-200 dark:border-slate-700"></hr>
+        <hr className=" 2xl:!my-10 border-gray-200 dark:border-gray-700"></hr>
         {/*  */}
 
         {/* ---------- 5 ----------  */}
@@ -510,7 +510,7 @@ const ProductDetailPage = ({ searchParams }) => {
 
           <ButtonSecondary
             onClick={() => setIsOpenModalViewAllReviews(true)}
-            className="mt-10 border border-slate-300 dark:border-slate-700 "
+            className="mt-10 border border-gray-300 dark:border-gray-700 "
           >
             Show me all 142 reviews
           </ButtonSecondary>
@@ -671,11 +671,11 @@ const ProductDetailPage = ({ searchParams }) => {
 
           {renderDetailSection()}
 
-          <hr className="border-slate-200 dark:border-slate-700" />
+          <hr className="border-gray-200 dark:border-gray-700" />
 
           {renderReviews()}
 
-          <hr className="border-slate-200 dark:border-slate-700" />
+          <hr className="border-gray-200 dark:border-gray-700" />
 
           {/* OTHER SECTION */}
           <SectionSliderProductCard

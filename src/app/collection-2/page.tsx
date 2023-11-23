@@ -5,7 +5,7 @@ import ProductCard from "@/components/ProductCard";
 
 import SidebarFilters from "@/components/SidebarFilters";
 
-const PageCollection2 = ({}) => {
+const PageCollection2 = ({ }) => {
   return (
     <div className={`nc-PageCollection2`}>
       <div className="container py-16 lg:pb-28 lg:pt-20 space-y-16 sm:space-y-20 lg:space-y-28">
@@ -21,7 +21,7 @@ const PageCollection2 = ({}) => {
             </span>
           </div>
 
-          <hr className="border-slate-200 dark:border-slate-700" />
+          <hr className="border-gray-200 dark:border-gray-700" />
           <main>
             {/* LOOP ITEMS */}
             <div className="flex flex-col lg:flex-row">
@@ -41,10 +41,10 @@ const PageCollection2 = ({}) => {
         </div>
 
         {/* === SECTION 5 === */}
-        <hr className="border-slate-200 dark:border-slate-700" />
+        <hr className="border-gray-200 dark:border-gray-700" />
 
         {/* <SectionSliderCollections /> */}
-        <hr className="border-slate-200 dark:border-slate-700" />
+        <hr className="border-gray-200 dark:border-gray-700" />
 
         {/* SUBCRIBES */}
         {/* <SectionPromo1 /> */}

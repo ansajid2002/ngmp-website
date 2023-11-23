@@ -231,8 +231,8 @@ const SectionSliderLargeProduct2: FC<SectionSliderLargeProduct2Props> = ({
           </ul>
         </div>
 
-        <Next className="absolute left-full ml-5 top-1/2 -translate-y-1/2" />
-        <Prev className="absolute right-full mr-5 top-1/2 -translate-y-1/2" />
+        <Next className="absolute left-full ml-5 top-1/2 -trangray-y-1/2" />
+        <Prev className="absolute right-full mr-5 top-1/2 -trangray-y-1/2" />
       </div>
     </div>
   );

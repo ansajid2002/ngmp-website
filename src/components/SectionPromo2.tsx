@@ -13,7 +13,7 @@ export interface SectionPromo2Props {
 const SectionPromo2: FC<SectionPromo2Props> = ({ className = "lg:pt-10" }) => {
   return (
     <div className={`nc-SectionPromo2 ${className}`}>
-      <div className="relative flex flex-col lg:flex-row lg:justify-end bg-yellow-50 dark:bg-slate-800 rounded-2xl sm:rounded-[40px] p-4 pb-0 sm:p-5 sm:pb-0 lg:p-24">
+      <div className="relative flex flex-col lg:flex-row lg:justify-end bg-yellow-50 dark:bg-gray-800 rounded-2xl sm:rounded-[40px] p-4 pb-0 sm:p-5 sm:pb-0 lg:p-24">
         <div className="absolute inset-0">
           <Image
             fill
@@ -29,14 +29,14 @@ const SectionPromo2: FC<SectionPromo2Props> = ({ className = "lg:pt-10" }) => {
             Special offer <br />
             in kids products
           </h2>
-          <span className="block mt-6 text-slate-500 dark:text-slate-400">
+          <span className="block mt-6 text-gray-500 dark:text-gray-400">
             Fashion is a form of self-expression and autonomy at a particular
             period and place.
           </span>
           <div className="flex space-x-2 sm:space-x-5 mt-6 sm:mt-12">
             <ButtonPrimary
               href="/search"
-              className="dark:bg-slate-200 dark:text-slate-900"
+              className="dark:bg-gray-200 dark:text-gray-900"
             >
               Discover more
             </ButtonPrimary>

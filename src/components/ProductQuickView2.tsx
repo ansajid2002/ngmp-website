@@ -348,7 +348,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
               sellingprice={sellingPriceData}
             />
 
-            {/* <div className="h-6 border-l border-slate-300 dark:border-slate-700"></div> */}
+            {/* <div className="h-6 border-l border-gray-300 dark:border-gray-700"></div> */}
 
             {/* <div className="flex items-center">
               <a
@@ -359,7 +359,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
                 <div className="ml-1.5 flex">
                   <span>4.9</span>
                   <span className="block mx-2">·</span>
-                  <span className="text-slate-600 dark:text-slate-400 underline">
+                  <span className="text-gray-600 dark:text-gray-400 underline">
                     142 reviews
                   </span>
                 </div>
@@ -378,7 +378,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
         <div className="flex space-x-3.5">
-          <div className="flex items-center justify-center bg-slate-100/70 dark:bg-slate-800/70 px-2 py-3 sm:p-3.5 rounded-full">
+          <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
             <NcInputNumber
               defaultValue={qualitySelected}
               onChange={setQualitySelected}
@@ -395,7 +395,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         </div>
 
         {/*  */}
-        <hr className=" border-slate-200 dark:border-slate-700"></hr>
+        <hr className=" border-gray-200 dark:border-gray-700"></hr>
         {/*  */}
 
         <div className="text-center">

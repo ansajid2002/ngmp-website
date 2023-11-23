@@ -7,7 +7,7 @@ interface Props {
 
 const RemainingTimeNftCard: FC<Props> = ({
   className = "absolute top-[-1px] right-[-1px] flex items-center",
-  contentClassName = "right-5 top-1/2 -translate-y-1/2",
+  contentClassName = "right-5 top-1/2 -trangray-y-1/2",
 }) => {
   return (
     <div className={className}>

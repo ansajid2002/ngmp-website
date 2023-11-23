@@ -14,8 +14,8 @@ export interface NextPrevProps {
 
 const NextPrev: FC<NextPrevProps> = ({
   className = "",
-  onClickNext = () => {},
-  onClickPrev = () => {},
+  onClickNext = () => { },
+  onClickPrev = () => { },
   btnClassName = "w-10 h-10",
   onlyNext = false,
   onlyPrev = false,
@@ -24,17 +24,15 @@ const NextPrev: FC<NextPrevProps> = ({
 
   return (
     <div
-      className={`nc-NextPrev relative flex items-center text-slate-500 dark:text-slate-400 ${className}`}
+      className={`nc-NextPrev relative flex items-center text-gray-500 dark:text-gray-400 ${className}`}
       data-nc-id="NextPrev"
       data-glide-el="controls"
     >
       {!onlyNext && (
         <button
-          className={`${btnClassName} ${
-            !onlyPrev ? "me-2" : ""
-          } border-slate-200 dark:border-slate-600 rounded-full flex items-center justify-center ${
-            focus === "left" ? "border-2" : ""
-          }`}
+          className={`${btnClassName} ${!onlyPrev ? "me-2" : ""
+            } border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center ${focus === "left" ? "border-2" : ""
+            }`}
           onClick={(e) => {
             e.preventDefault();
             onClickPrev();
@@ -69,9 +67,8 @@ const NextPrev: FC<NextPrevProps> = ({
       )}
       {!onlyPrev && (
         <button
-          className={`${btnClassName}  border-slate-200 dark:border-slate-600 rounded-full flex items-center justify-center ${
-            focus === "right" ? "border-2" : ""
-          }`}
+          className={`${btnClassName}  border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center ${focus === "right" ? "border-2" : ""
+            }`}
           onClick={(e) => {
             e.preventDefault();
             onClickNext();

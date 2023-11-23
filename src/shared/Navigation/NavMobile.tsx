@@ -15,6 +15,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import SwitchDarkMode from "@/shared/SwitchDarkMode/SwitchDarkMode";
 import Link from "next/link";
 import { fetchCategoriesAndSubcategories } from "@/app/page";
+import { MessagesSquare } from "lucide-react";
 
 export interface NavMobileProps {
   data?: NavItemType[];
@@ -81,7 +82,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
                     className="flex justify-end flex-grow"
                   >
                     <ChevronDownIcon
-                      className="ml-2 h-4 w-4 text-slate-500"
+                      className="ml-2 h-4 w-4 text-gray-500"
                       aria-hidden="true"
                     />
                   </Disclosure.Button>
@@ -92,7 +93,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
               <Disclosure.Panel>
                 {_renderMenuChild(
                   i,
-                  "pl-3 text-slate-600 dark:text-slate-400 "
+                  "pl-3 text-gray-600 dark:text-gray-400 "
                 )}
               </Disclosure.Panel>
             )}
@@ -107,10 +108,10 @@ const NavMobile: React.FC<NavMobileProps> = ({
       <Disclosure
         key={index}
         as="li"
-        className="text-slate-900 dark:text-white"
+        className="text-gray-900 dark:text-white"
       >
         <Link
-          className="flex w-full items-center py-2.5 px-4 font-medium uppercase tracking-wide text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+          className="flex w-full items-center py-2.5 px-4 font-medium uppercase tracking-wide text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
           href={{
             pathname: item.href || undefined,
           }}
@@ -177,9 +178,9 @@ const NavMobile: React.FC<NavMobileProps> = ({
       <form
         action=""
         method="POST"
-        className="flex-1 text-slate-900 dark:text-slate-200"
+        className="flex-1 text-gray-900 dark:text-gray-200"
       >
-        <div className="bg-slate-50 dark:bg-slate-800 flex items-center space-x-1 py-2 px-4 rounded-xl h-full">
+        <div className="bg-gray-50 dark:bg-gray-800 flex items-center space-x-1 py-2 px-4 rounded-xl h-full">
           {renderMagnifyingGlassIcon()}
           <input
             type="search"
@@ -197,7 +198,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
       <div className="py-6 px-5">
         {/* <Logo /> */}
 
-        <div className="flex flex-col mt-5 text-slate-600 dark:text-slate-300 text-sm">
+        <div className="flex flex-col mt-5 text-gray-600 dark:text-gray-300 text-sm">
           {/* <span>
             Discover the most outstanding articles on all topics of life. Write
             your stories and share them
@@ -213,6 +214,13 @@ const NavMobile: React.FC<NavMobileProps> = ({
             </Link>
             {/* <SocialsList itemClass="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xl" /> */}
             <span className="flex items-center justify-center gap-2">
+              <Link
+                href={"/SupportCenter?query=BuyingOnNile"}
+                onClick={onClickClose}
+                className="px-1"
+              >
+                <MessagesSquare strokeWidth={1} size={28} />
+              </Link>
               <Language />
               <SwitchDarkMode className="bg-neutral-100 dark:bg-neutral-800" />
             </span>
@@ -237,8 +245,10 @@ const NavMobile: React.FC<NavMobileProps> = ({
       </div> */}
       <div className="relative h-auto p-5">
         <ul className="text-[1.2rem] font-medium space-y-3">
-          <li>Home</li>
-          <li>About</li>
+          <Link href={"/"} onClick={onClickClose}>
+            <li>Home</li>
+          </Link>
+          {/* <li>About</li> */}
           <li
             onClick={toggleDropdown}
             className="flex items-center justify-between"
@@ -252,7 +262,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
         </ul>
 
         {isOpen && (
-          <ul className="h-screen overflow-y-auto bg-slate-100 text-[1.2rem] font-medium text-left w-full px-5  m-0 absolute top-full left-0 border z-10">
+          <ul className="h-screen overflow-y-auto bg-gray-100 text-[1.2rem] font-medium text-left w-full px-5  m-0 absolute top-full left-0 border z-10">
             {categoryDaata?.map((option, index) => (
               <Link
                 key={index}
@@ -262,13 +272,13 @@ const NavMobile: React.FC<NavMobileProps> = ({
                     /\s/g,
                     ""
                   )}/${option.subcategories[0].subcategory_name
-                  .replace(/[^\w\s]/g, "")
-                  .replace(/\s/g, "")}`}
+                    .replace(/[^\w\s]/g, "")
+                    .replace(/\s/g, "")}`}
               >
                 <li
                   className="cursor-pointer py-2 border-b-2"
-                  // key={index}
-                  // onClick={() => handleOptionClick()}
+                // key={index}
+                // onClick={() => handleOptionClick()}
                 >
                   {option.category_name}
                 </li>

@@ -89,13 +89,13 @@ export default function DropdownCategories() {
             <Transition
               as={Fragment}
               enter="transition ease-out duration-200"
-              enterFrom="opacity-0 translate-y-1"
-              enterTo="opacity-100 translate-y-0"
+              enterFrom="opacity-0 trangray-y-1"
+              enterTo="opacity-100 trangray-y-0"
               leave="transition ease-in duration-150"
-              leaveFrom="opacity-100 translate-y-0"
-              leaveTo="opacity-0 translate-y-1"
+              leaveFrom="opacity-100 trangray-y-0"
+              leaveTo="opacity-0 trangray-y-1"
             >
-              <Popover.Panel className="absolute z-40 w-80 mt-3.5 transform -translate-x-1/2 left-1/2 sm:px-0">
+              <Popover.Panel className="absolute z-40 w-80 mt-3.5 transform -trangray-x-1/2 left-1/2 sm:px-0">
                 <div className="overflow-hidden rounded-2xl shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative grid grid-cols-1 gap-5 bg-white dark:bg-neutral-800 p-7 ">
                     {CATEGORIES.map((item, index) => (
@@ -103,9 +103,8 @@ export default function DropdownCategories() {
                         key={index}
                         href={"/collection"}
                         onClick={() => close()}
-                        className={`flex items-center focus:outline-none focus-visible:ring-0 ${
-                          item.active ? "" : ""
-                        }`}
+                        className={`flex items-center focus:outline-none focus-visible:ring-0 ${item.active ? "" : ""
+                          }`}
                       >
                         <div
                           dangerouslySetInnerHTML={{ __html: item.icon }}
@@ -131,7 +130,7 @@ export default function DropdownCategories() {
                           Go to our shop
                         </span>
                       </div>
-                      <span className="block text-sm text-slate-500 dark:text-neutral-400">
+                      <span className="block text-sm text-gray-500 dark:text-neutral-400">
                         Look for what you need and love.
                       </span>
                     </Link>

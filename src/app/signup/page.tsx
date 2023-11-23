@@ -38,7 +38,7 @@ const PageSignUp = () => {
               <a
                 key={index}
                 href={item.href}
-                className=" flex w-full rounded-lg bg-primary-50 dark:bg-neutral-800 px-4 py-3 transform transition-transform sm:px-6 hover:translate-y-[-2px]"
+                className=" flex w-full rounded-lg bg-primary-50 dark:bg-neutral-800 px-4 py-3 transform transition-transform sm:px-6 hover:trangray-y-[-2px]"
               >
                 <Image
                   sizes="40px"
@@ -57,7 +57,7 @@ const PageSignUp = () => {
             <span className="relative z-10 inline-block px-4 font-medium text-sm bg-white dark:text-neutral-400 dark:bg-neutral-900">
               OR
             </span>
-            <div className="absolute left-0 w-full top-1/2 transform -translate-y-1/2 border border-neutral-100 dark:border-neutral-800"></div>
+            <div className="absolute left-0 w-full top-1/2 transform -trangray-y-1/2 border border-neutral-100 dark:border-neutral-800"></div>
           </div>
           {/* FORM */}
           <form className="grid grid-cols-1 gap-6" action="#" method="post">

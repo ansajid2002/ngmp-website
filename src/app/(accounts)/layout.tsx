@@ -40,9 +40,8 @@ const pages: {
 const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const customerData = useAppSelector((state) => state.customerData)
-  console.log(customerData);
 
-  const { given_name, family_name, state, country, picture } = customerData?.customerData;
+  const { given_name = '', family_name = '', email = '', state = '', country = '', picture = '' } = customerData?.customerData || {};
   return (
     <div className="nc-AccountCommonLayout container">
       <div className="mt-14 sm:mt-20">
@@ -50,13 +49,13 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
           <div className="max-w-2xl">
             <h2 className="text-3xl xl:text-4xl font-semibold">Account</h2>
             <span className="block mt-4 text-neutral-500 dark:text-neutral-400 text-base sm:text-lg">
-              <span className="text-slate-900 dark:text-slate-200 font-semibold">
+              <span className="text-gray-900 dark:text-gray-200 font-semibold">
                 {given_name || ''} {family_name || ''}
               </span>{" "}
-              ciseco@gmail.com · Los Angeles, CA
+              {email} · {state} {country}
             </span>
           </div>
-          <hr className="mt-10 border-slate-200 dark:border-slate-700"></hr>
+          <hr className="mt-10 border-gray-200 dark:border-gray-700"></hr>
 
           <div className="flex space-x-8 md:space-x-14 overflow-x-auto hiddenScrollbar">
             {pages.map((item, index) => {
@@ -65,8 +64,8 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
                   key={index}
                   href={item.link}
                   className={`block py-5 md:py-8 border-b-2 flex-shrink-0 text-sm sm:text-base ${pathname === item.link
-                    ? "border-primary-500 font-medium text-slate-900 dark:text-slate-200"
-                    : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                    ? "border-primary-500 font-medium text-gray-900 dark:text-gray-200"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                     }`}
                 >
                   {item.name}
@@ -74,7 +73,7 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
               );
             })}
           </div>
-          <hr className="border-slate-200 dark:border-slate-700"></hr>
+          <hr className="border-gray-200 dark:border-gray-700"></hr>
         </div>
       </div>
       <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">

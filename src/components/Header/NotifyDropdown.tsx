@@ -32,7 +32,7 @@ export default function NotifyDropdown() {
             <Popover.Button
               className={`
                 ${open ? "" : "text-opacity-90"}
-                 group w-12 h-12 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full inline-flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 relative`}
+                 group w-12 h-12 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full inline-flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 relative`}
             >
               <span className="w-2 h-2 bg-blue-500 absolute top-2 right-2 rounded-full"></span>
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
@@ -61,11 +61,11 @@ export default function NotifyDropdown() {
             <Transition
               as={Fragment}
               enter="transition ease-out duration-200"
-              enterFrom="opacity-0 translate-y-1"
-              enterTo="opacity-100 translate-y-0"
+              enterFrom="opacity-0 trangray-y-1"
+              enterTo="opacity-100 trangray-y-0"
               leave="transition ease-in duration-150"
-              leaveFrom="opacity-100 translate-y-0"
-              leaveTo="opacity-0 translate-y-1"
+              leaveFrom="opacity-100 trangray-y-0"
+              leaveTo="opacity-0 trangray-y-1"
             >
               <Popover.Panel className="absolute z-10 w-screen max-w-xs sm:max-w-sm px-4 mt-3 -right-28 sm:right-0 sm:px-0">
                 <div className="overflow-hidden rounded-2xl shadow-lg ring-1 ring-black ring-opacity-5">
@@ -89,7 +89,7 @@ export default function NotifyDropdown() {
                             {item.time}
                           </p>
                         </div>
-                        <span className="absolute right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-blue-500"></span>
+                        <span className="absolute right-1 top-1/2 transform -trangray-y-1/2 w-2 h-2 rounded-full bg-blue-500"></span>
                       </a>
                     ))}
                   </div>

@@ -1,3 +1,4 @@
+"use client"
 import Label from "@/components/Label/Label";
 import React, { FC } from "react";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
@@ -6,8 +7,20 @@ import Select from "@/shared/Select/Select";
 import Textarea from "@/shared/Textarea/Textarea";
 import { avatarImgs } from "@/contains/fakeData";
 import Image from "next/image";
+import { AdminUrl } from "@/app/layout";
+import { useAppSelector } from "@/redux/store";
 
 const AccountPage = () => {
+  const customerData = useAppSelector((state) => state.customerData)
+  const {
+    given_name = '',
+    family_name = '',
+    email = '',
+    state = '',
+    country = '',
+    picture = '',
+  } = customerData?.customerData || {};
+
   return (
     <div className={`nc-AccountPage `}>
       <div className="space-y-10 sm:space-y-12">
@@ -20,7 +33,7 @@ const AccountPage = () => {
             {/* AVATAR */}
             <div className="relative rounded-full overflow-hidden flex">
               <Image
-                src={avatarImgs[2]}
+                src={`${AdminUrl}/uploads/customerProfileImages/${picture}`}
                 alt="avatar"
                 width={128}
                 height={128}
@@ -54,7 +67,7 @@ const AccountPage = () => {
           <div className="flex-grow mt-10 md:mt-0 md:pl-16 max-w-3xl space-y-6">
             <div>
               <Label>Full name</Label>
-              <Input className="mt-1.5" defaultValue="Enrico Cole" />
+              <Input className="mt-1.5" defaultValue={`${given_name} ${family_name}`} />
             </div>
 
             {/* ---- */}
@@ -68,25 +81,12 @@ const AccountPage = () => {
                 </span>
                 <Input
                   className="!rounded-l-none"
-                  placeholder="example@email.com"
+                  placeholder={"example@email.com"}
+                  defaultValue={email}
                 />
               </div>
             </div>
 
-            {/* ---- */}
-            <div className="max-w-lg">
-              <Label>Date of birth</Label>
-              <div className="mt-1.5 flex">
-                <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
-                  <i className="text-2xl las la-calendar"></i>
-                </span>
-                <Input
-                  className="!rounded-l-none"
-                  type="date"
-                  defaultValue="1990-07-22"
-                />
-              </div>
-            </div>
             {/* ---- */}
             <div>
               <Label>Addess</Label>

@@ -18,7 +18,7 @@ const CartPage = async () => {
           <h2 className="block text-2xl sm:text-3xl lg:text-4xl font-semibold ">
             Shopping Cart
           </h2>
-          <div className="block mt-3 sm:mt-5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-400">
+          <div className="block mt-3 sm:mt-5 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-400">
             <Link href={`${HomeUrl}`} className="">
               Home
             </Link>
@@ -27,13 +27,13 @@ const CartPage = async () => {
           </div>
         </div>
 
-        <hr className="border-slate-200 dark:border-slate-700 my-10 xl:my-12" />
+        <hr className="border-gray-200 dark:border-gray-700 my-10 xl:my-12" />
 
         <div className="flex flex-col lg:flex-row">
-          <div className="w-full lg:w-[60%] xl:w-[55%] divide-y divide-slate-200 dark:divide-slate-700 ">
+          <div className="w-full lg:w-[60%] xl:w-[55%] divide-y divide-gray-200 dark:divide-gray-700 ">
             <CartProducts />
           </div>
-          <div className="border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-700 my-10 lg:my-0 lg:mx-10 xl:mx-16 2xl:mx-20 flex-shrink-0"></div>
+          <div className="border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 my-10 lg:my-0 lg:mx-10 xl:mx-16 2xl:mx-20 flex-shrink-0"></div>
           <FetchCartPrice />
         </div>
       </main >

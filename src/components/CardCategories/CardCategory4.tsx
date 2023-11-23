@@ -42,14 +42,14 @@ const CardCategory4: FC<CardCategory4Props> = ({
               width={80}
               height={80}
             />
-            <span className="text-xs text-slate-700 dark:text-neutral-300 font-medium">
+            <span className="text-xs text-gray-700 dark:text-neutral-300 font-medium">
               {count} products
             </span>
           </div>
 
           <div className="">
             <span
-              className={`block mb-2 text-sm text-slate-500 dark:text-slate-400`}
+              className={`block mb-2 text-sm text-gray-500 dark:text-gray-400`}
             >
               {desc}
             </span>

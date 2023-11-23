@@ -70,8 +70,8 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className = "" }) => {
               key={index}
               onClick={() => setVariantActive(index)}
               className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === index
-                  ? "border-primary-6000 dark:border-primary-500"
-                  : "border-transparent"
+                ? "border-primary-6000 dark:border-primary-500"
+                : "border-transparent"
                 }`}
             >
               <div
@@ -130,7 +130,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className = "" }) => {
                     : "cursor-pointer"
                   } ${isActive
                     ? "bg-primary-6000 border-primary-6000 text-white hover:bg-primary-6000"
-                    : "border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                    : "border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                   }`}
                 onClick={() => {
                   if (sizeOutStock) {
@@ -153,7 +153,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className = "" }) => {
       return null;
     }
     const CLASSES =
-      "absolute top-3 start-3 px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 nc-shadow-lg rounded-full flex items-center justify-center text-slate-700 text-slate-900 dark:text-slate-300";
+      "absolute top-3 start-3 px-2.5 py-1.5 text-xs bg-white dark:bg-gray-900 nc-shadow-lg rounded-full flex items-center justify-center text-gray-700 text-gray-900 dark:text-gray-300";
     if (status === "New in") {
       return (
         <div className={CLASSES}>
@@ -205,7 +205,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className = "" }) => {
               price={112}
             />
 
-            <div className="h-6 border-s border-slate-300 dark:border-slate-700"></div>
+            <div className="h-6 border-s border-gray-300 dark:border-gray-700"></div>
 
             <div className="flex items-center">
               <Link
@@ -216,7 +216,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className = "" }) => {
                 <div className="ms-1.5 flex">
                   <span>4.9</span>
                   <span className="block mx-2">·</span>
-                  <span className="text-slate-600 dark:text-slate-400 underline">
+                  <span className="text-gray-600 dark:text-gray-400 underline">
                     142 reviews
                   </span>
                 </div>
@@ -236,7 +236,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className = "" }) => {
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
         <div className="flex space-x-3.5 rtl:space-x-reverse">
-          <div className="flex items-center justify-center bg-slate-100/70 dark:bg-slate-800/70 px-2 py-3 sm:p-3.5 rounded-full">
+          <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
             <NcInputNumber
               defaultValue={qualitySelected}
               onChange={setQualitySelected}
@@ -252,7 +252,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className = "" }) => {
         </div>
 
         {/*  */}
-        <hr className=" border-slate-200 dark:border-slate-700"></hr>
+        <hr className=" border-gray-200 dark:border-gray-700"></hr>
         {/*  */}
 
         {/* ---------- 5 ----------  */}

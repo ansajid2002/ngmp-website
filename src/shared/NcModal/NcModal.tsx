@@ -93,7 +93,7 @@ const NcModal: FC<NcModalProps> = ({
                 <div className="py-4 px-6 text-center relative border-b border-neutral-100 dark:border-neutral-700 md:py-5">
                   <ButtonClose
                     onClick={closeModal}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 sm:left-4"
+                    className="absolute left-2 top-1/2 transform -trangray-y-1/2 sm:left-4"
                   />
                   {modalTitle && (
                     <Dialog.Title

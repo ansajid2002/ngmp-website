@@ -10,17 +10,17 @@ export interface NextProps {
 
 const Next: FC<NextProps> = ({
   className = "relative",
-  onClickNext = () => {},
+  onClickNext = () => { },
   btnClassName = "w-10 h-10",
   svgSize = "w-5 h-5",
 }) => {
   return (
     <div
-      className={`nc-Next text-slate-500 dark:text-slate-400 ${className}`}
+      className={`nc-Next text-gray-500 dark:text-gray-400 ${className}`}
       data-glide-el="controls"
     >
       <button
-        className={`${btnClassName} rounded-full flex items-center justify-center border-2 hover:border-slate-200 dark:hover:border-slate-600 border-transparent`}
+        className={`${btnClassName} rounded-full flex items-center justify-center border-2 hover:border-gray-200 dark:hover:border-gray-600 border-transparent`}
         onClick={onClickNext}
         title="Next"
         data-glide-dir=">"

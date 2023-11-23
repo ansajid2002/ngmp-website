@@ -71,15 +71,15 @@ const Policy = () => {
           >
             <div dangerouslySetInnerHTML={{ __html: item.svg }}></div>
             <div className="mt-2.5">
-              <p className="font-semibold text-slate-900">{item.name}</p>
-              <p className="text-slate-500 mt-0.5 text-sm">{item.desc}</p>
+              <p className="font-semibold text-gray-900">{item.name}</p>
+              <p className="text-gray-500 mt-0.5 text-sm">{item.desc}</p>
             </div>
           </div>
         );
       })}
 
-      {/* <div className="absolute inset-x-0 border-t top-1/2 -translate-y-1/2 border-slate-300"></div>
-      <div className="absolute inset-y-0 border-l left-1/2 -translate-x-1/2 border-slate-300"></div> */}
+      {/* <div className="absolute inset-x-0 border-t top-1/2 -trangray-y-1/2 border-gray-300"></div>
+      <div className="absolute inset-y-0 border-l left-1/2 -trangray-x-1/2 border-gray-300"></div> */}
     </div>
   );
 };
