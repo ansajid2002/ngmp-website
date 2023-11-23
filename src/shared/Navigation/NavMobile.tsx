@@ -15,6 +15,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import SwitchDarkMode from "@/shared/SwitchDarkMode/SwitchDarkMode";
 import Link from "next/link";
 import { fetchCategoriesAndSubcategories } from "@/app/page";
+import { MessagesSquare } from "lucide-react";
 
 export interface NavMobileProps {
   data?: NavItemType[];
@@ -213,6 +214,13 @@ const NavMobile: React.FC<NavMobileProps> = ({
             </Link>
             {/* <SocialsList itemClass="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xl" /> */}
             <span className="flex items-center justify-center gap-2">
+              <Link
+                href={"/SupportCenter?query=BuyingOnNile"}
+                onClick={onClickClose}
+                className="px-1"
+              >
+                <MessagesSquare strokeWidth={1} size={28} />
+              </Link>
               <Language />
               <SwitchDarkMode className="bg-neutral-100 dark:bg-neutral-800" />
             </span>
@@ -237,8 +245,10 @@ const NavMobile: React.FC<NavMobileProps> = ({
       </div> */}
       <div className="relative h-auto p-5">
         <ul className="text-[1.2rem] font-medium space-y-3">
-          <li>Home</li>
-          <li>About</li>
+          <Link href={"/"} onClick={onClickClose}>
+            <li>Home</li>
+          </Link>
+          {/* <li>About</li> */}
           <li
             onClick={toggleDropdown}
             className="flex items-center justify-between"

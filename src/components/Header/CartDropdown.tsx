@@ -14,11 +14,20 @@ import { removeItem } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
 
 export default function CartDropdown() {
-  const { cartItems } = useAppSelector((store) => store.cart)
-  const dispatch = useDispatch()
-  const customerId = 71
+  const { cartItems } = useAppSelector((store) => store.cart);
+  const dispatch = useDispatch();
+  const customerId = 71;
   const renderProduct = (item: Product, index: number, close: () => void) => {
-    const { ad_title, mrp, sellingprice, images, label, added_quantity, prod_slug, uniquepid } = item;
+    const {
+      ad_title,
+      mrp,
+      sellingprice,
+      images,
+      label,
+      added_quantity,
+      prod_slug,
+      uniquepid,
+    } = item;
 
     const handleRemove = async (item: any) => {
       try {
@@ -28,11 +37,15 @@ export default function CartDropdown() {
         if (customerId) {
           const { category, subcategory, uniquepid, label } = item;
 
-          const replacecategory = category.replace(/[^\w\s]/g, '').replace(/\s/g, '');
-          const replacesubcategory = subcategory.replace(/[^\w\s]/g, '').replace(/\s/g, '');
+          const replacecategory = category
+            .replace(/[^\w\s]/g, "")
+            .replace(/\s/g, "");
+          const replacesubcategory = subcategory
+            .replace(/[^\w\s]/g, "")
+            .replace(/\s/g, "");
 
           // Construct the URL for your backend endpoint
-          const apiUrl = '/api/DeleteCart';
+          const apiUrl = "/api/DeleteCart";
 
           // Create the payload to send in the POST request
           const payload = {
@@ -40,14 +53,14 @@ export default function CartDropdown() {
             subcategory: replacesubcategory,
             product_uniqueid: uniquepid,
             customer_id: customerId,
-            label: label || 'empty',
+            label: label || "empty",
           };
 
           // Make a POST request to your backend using async/await
           const response = await fetch(apiUrl, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(payload),
           });
@@ -60,14 +73,14 @@ export default function CartDropdown() {
           // Handle success, update UI or perform any other action based on the response data
         }
       } catch (error) {
-        console.error('Error removing product from cart:', error);
+        console.error("Error removing product from cart:", error);
         // Handle error, show a message to the user, or retry the operation
       }
     };
 
     return (
       <div key={index} className="flex py-5 last:pb-0">
-        <div className="relative h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-slate-100">
+        <div className="relative h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
           <Image
             fill
             src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
@@ -86,7 +99,11 @@ export default function CartDropdown() {
             <div className="flex justify-between ">
               <div>
                 <h3 className="text-base font-medium ">
-                  <Link onClick={close} className="line-clamp-2" href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}>
+                  <Link
+                    onClick={close}
+                    className="line-clamp-2"
+                    href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
+                  >
                     {ad_title}
                   </Link>
                 </h3>
@@ -96,7 +113,11 @@ export default function CartDropdown() {
                   <span>{label}</span>
                 </p>
               </div>
-              <Prices price={mrp} sellingprice={sellingprice} className="mt-0.5" />
+              <Prices
+                price={mrp}
+                sellingprice={sellingprice}
+                className="mt-0.5"
+              />
             </div>
           </div>
           <div className="flex flex-1 items-end justify-between text-sm">
@@ -129,7 +150,6 @@ export default function CartDropdown() {
     return subtotal;
   };
 
-
   return (
     <Popover className="relative">
       {({ open, close }) => (
@@ -137,7 +157,7 @@ export default function CartDropdown() {
           <Popover.Button
             className={`
                 ${open ? "" : "text-opacity-90"}
-                 group w-10 h-10 sm:w-12 sm:h-12 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 relative`}
+                 group w-10 h-10 sm:w-12 sm:h-12 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 relative`}
           >
             <div className="w-3.5 h-3.5 flex items-center justify-center bg-primary-500 absolute top-1.5 right-1.5 rounded-full text-[10px] leading-none text-white font-medium">
               <span className="mt-[1px]">{cartItems.length || 0}</span>
@@ -199,12 +219,13 @@ export default function CartDropdown() {
                   <div className="max-h-[60vh] p-5 overflow-y-auto hiddenScrollbar">
                     <h3 className="text-xl font-semibold">Shopping cart</h3>
                     <div className="divide-y divide-slate-100 dark:divide-slate-700">
-                      {cartItems && cartItems.map(
-                        (item: any, index: number) => renderProduct(item, index, close)
-                      )}
+                      {cartItems &&
+                        cartItems.map((item: any, index: number) =>
+                          renderProduct(item, index, close)
+                        )}
                     </div>
                   </div>
-                  <div className="bg-neutral-50 dark:bg-slate-900 p-5">
+                  <div className="bg-neutral-50 dark:bg-gray-900 p-5">
                     <p className="flex justify-between font-semibold text-slate-900 dark:text-slate-100">
                       <span>
                         <span>Subtotal</span>

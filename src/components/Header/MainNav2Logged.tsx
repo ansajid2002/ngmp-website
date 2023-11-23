@@ -16,6 +16,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { HomeUrl } from "@/app/layout";
 import Language from "./Language";
+import {
+  GitCommitVertical,
+  MessagesSquare,
+  PackageCheck,
+  Pointer,
+  Smartphone,
+  Truck,
+} from "lucide-react";
 
 const MainNav2Logged: FC<MainNav2LoggedProps> = ({
   customerId,
@@ -110,7 +118,18 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
               {renderMagnifyingGlassIcon()}
             </button>
           )}
-          <div className="hidden lg:block">
+
+          <div className=" hidden md:block px-3">
+            <Link href={"/SupportCenter?query=BuyingOnNile"}>
+              <MessagesSquare
+                strokeWidth={1}
+                size={28}
+                className="transition-all hover:scale-105"
+              />
+            </Link>
+          </div>
+
+          <div className="hidden md:block">
             <Language />
           </div>
           <AvatarDropdown />
@@ -122,35 +141,50 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
 
   return (
     <header>
-      <section className="justify-between px-4 md:px-10 py-2 items-center bg-black/90 border-b border-gray-100 dark:border-gray-600 flex ">
-        <div className="flex items-center space-x-2">
-          <Image
+      <section className="justify-between px-4 md:px-10 py-2 items-center bg-black border-b border-gray-100 dark:border-gray-600 flex ">
+        <div className="flex w-full md:w-auto items-center justify-center md:justify-start space-x-2">
+          {/* <Image
             src={freeshipping}
             alt="website main logo"
             className="md:w-8 md:h-8 w-7 h-7 brightness-200"
-          />
-          <h1 className="text-[12px] md:text-[14px] text-green-400 font-semibold">
+          /> */}
+          <Truck strokeWidth={1} className="text-green-400" size={35} />
+          <h1 className="text-[15px] leading-tight md:text-[16px] text-green-400 font-semibold">
             Free Shipping on all Orders
+            <br />
+            Time-limited offer
           </h1>
         </div>
-
+        <GitCommitVertical
+          className="hidden md:block"
+          strokeWidth={1}
+          color="white"
+        />
         <div className="hidden md:flex items-center space-x-2">
-          <Image
+          {/* <Image
             src={negotiation}
             alt="website main logo"
             className="md:w-8 md:h-8 w-7 h-7 brightness-200  invert"
-          />
-          <h1 className="text-[14px] text-[#FFF7A7] font-semibold">
-            Negotiation Available
+          /> */}
+          <PackageCheck strokeWidth={1} className="text-[#FFF7A7]" size={35} />
+          <h1 className="text-[12px] leading-tight md:text-[16px] text-[#FFF7A7] font-semibold">
+            Delivery Guarantee <br />
+            Refund for any issues
           </h1>
         </div>
-        <div className="flex items-center space-x-2">
-          <Image
+        <GitCommitVertical
+          className="hidden md:block"
+          strokeWidth={1}
+          color="white"
+        />
+        <div className="hidden md:flex items-center space-x-2">
+          {/* <Image
             src={mobile}
             alt="website main logo"
             className=" md:w-8 md:h-8 w-7 h-7 brightness-200  invert"
-          />
-          <h1 className="text-[12px] md:text-[14px] text-[#FFF7A7] font-semibold">
+          /> */}
+          <Smartphone strokeWidth={1} className="text-[#FFF7A7]" size={35} />
+          <h1 className="text-[12px] md:text-[16px] text-[#FFF7A7] font-semibold">
             Get The Nile App
           </h1>
         </div>

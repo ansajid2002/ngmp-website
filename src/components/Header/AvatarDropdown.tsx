@@ -14,9 +14,7 @@ export default function AvatarDropdown() {
       <Popover className="relative">
         {({ open, close }) => (
           <>
-            <Popover.Button
-              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none flex items-center justify-center`}
-            >
+            <Popover.Button className="w-10 h-10 sm:w-12 sm:h-12 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex items-center justify-center">
               <svg
                 className=" w-6 h-6"
                 viewBox="0 0 24 24"
@@ -330,6 +328,6 @@ export default function AvatarDropdown() {
           </>
         )}
       </Popover>
-    </div >
+    </div>
   );
 }

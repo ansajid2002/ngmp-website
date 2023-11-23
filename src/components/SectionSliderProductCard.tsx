@@ -21,7 +21,7 @@ export interface SectionSliderProductCardProps {
 const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
   className = "",
   itemClassName = "",
-  headingFontClassName = " text-[1.5rem] md:lg:text-[2.3rem] font-semibold",
+  headingFontClassName = " text-[1.5rem] md:lg:text-[2.3rem] font-bold",
   headingClassName,
   heading,
   subHeading = "",

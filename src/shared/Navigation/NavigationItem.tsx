@@ -98,7 +98,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
         <div className="flex justify-center invisible bg-black/50 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50">
           <div className=" bg-white flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
             <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto scrollbar-hidden">
-              <div className="text-sm border-none border-slate-200 dark:border-slate-700">
+              <div className="text-sm border-none border-gray-200 dark:border-gray-700">
                 <div>
                   <div
                     key={999}
@@ -117,7 +117,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                       Featured
                     </p>
                     <ChevronRightIcon
-                      className="ml-1 -mr-1 h-4 w-4 text-slate-400"
+                      className="ml-1 -mr-1 h-4 w-4 text-gray-400"
                       aria-hidden="true"
                     />
                     {/* Add other content for each item */}
@@ -140,7 +140,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                         {item.category_name}
                       </p>
                       <ChevronRightIcon
-                        className="ml-1 -mr-1 h-4 w-4 text-slate-400"
+                        className="ml-1 -mr-1 h-4 w-4 text-gray-400"
                         aria-hidden="true"
                       />
                       {/* Add other content for each item */}
@@ -215,11 +215,11 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
               as={Fragment}
               show={isHover}
               enter="transition ease-out duration-150"
-              enterFrom="opacity-0 translate-y-1"
-              enterTo="opacity-100 translate-y-0"
+              enterFrom="opacity-0 trangray-y-1"
+              enterTo="opacity-100 trangray-y-0"
               leave="transition ease-in duration-150"
-              leaveFrom="opacity-100 translate-y-0"
-              leaveTo="opacity-0 translate-y-1"
+              leaveFrom="opacity-100 trangray-y-0"
+              leaveTo="opacity-0 trangray-y-1"
             >
               <Popover.Panel
                 static
@@ -265,11 +265,11 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
               as={Fragment}
               show={isHover}
               enter="transition ease-out duration-150"
-              enterFrom="opacity-0 translate-y-1"
-              enterTo="opacity-100 translate-y-0"
+              enterFrom="opacity-0 trangray-y-1"
+              enterTo="opacity-100 trangray-y-0"
               leave="transition ease-in duration-150"
-              leaveFrom="opacity-100 translate-y-0"
-              leaveTo="opacity-0 translate-y-1"
+              leaveFrom="opacity-100 trangray-y-0"
+              leaveTo="opacity-0 trangray-y-1"
             >
               <Popover.Panel
                 static
@@ -324,10 +324,10 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     return (
       <div className="h-20 flex-shrink-0 group flex items-center">
         <Link
-          className={`inline-flex items-center group text-sm lg:text-[15px] font-medium text-slate-700 dark:text-slate-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-slate-900 transition-colors duration-300 ease-in-out hover:bg-slate-100  ${
+          className={`inline-flex items-center group text-sm lg:text-[15px] font-medium text-gray-700 dark:text-gray-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-gray-900 transition-colors duration-300 ease-in-out hover:bg-gray-100  ${
             menuCurrentHovers[0] == item.id &&
             item.type &&
-            "bg-slate-100 dark:bg-slate-800 dark:text-slate-200"
+            "bg-gray-100 dark:bg-gray-800 dark:text-gray-200"
           } `}
           href={{
             pathname: item.href || undefined,
@@ -338,7 +338,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
           {item.type && (
             <ChevronDownIcon
               className={`ml-1 -mr-1 h-4 w-4 transition-all  ${
-                menuCurrentHovers[0] == item.id && "rotate-180 text-slate-400"
+                menuCurrentHovers[0] == item.id && "rotate-180 text-gray-700"
               }`}
               aria-hidden="true"
             />

@@ -17,6 +17,10 @@ import Category from "@/components/CategoryPageSlick";
 import TabsCategory from "@/components/TabsInterest/TabsCategory";
 import Heading from "@/components/Heading";
 import NewCategorySlider from "../components/categoriesslider/NewCategorySlider";
+import Safety from "@/components/Safety";
+import DealBar from "@/components/DealBar";
+import { Zap } from "lucide-react";
+import NewHeroSection from "@/components/SectionHero/NewHeroSection";
 
 interface Subcategory {
   subcategory_id: number;
@@ -140,17 +144,32 @@ async function PageHome() {
 
   return (
     <div className="relative overflow-hidden">
-      <SectionHero2 data={bannersData} />
+      {/* <SectionHero2 data={bannersData} /> */}
+      <NewHeroSection data={bannersData} />
 
-      {/* <div className="mt-24 lg:mt-32">
-        <DiscoverMoreSlider />
-      </div> */}
+      <div className="mt-5 px-1 md:px-10 py-0 md:py-2">
+        <Safety />
+      </div>
+
+      <div className="mt-3 px-1 md:px-10 py-0 md:py-2">
+        <DealBar
+          title={"Lightning deals"}
+          bgimage={
+            "https://aimg.kwcdn.com/material-put/1e65f705d6/98afa71b-e6a8-4b7d-ba6b-28789633711d.png?imageView2/2/w/2000/q/80/format/webp"
+          }
+          icon={<Zap size={30} fill="white" />}
+        />
+      </div>
 
       <div className=" px-5 md:px-10 relative space-y-24 my-8 md:my-16">
         <SectionSliderProductCard
-          heading="Recommended For You!!"
+          heading="Recommended"
           data={getAllProductsData}
         />
+
+        <div className="mt-24 lg:mt-32">
+          <DiscoverMoreSlider />
+        </div>
 
         <div className="hidden md:block py-4 border-t border-b border-slate-200 dark:border-slate-700">
           <SectionHowItWork />

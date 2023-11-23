@@ -1,5 +1,5 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
-
+const withMT = require("@material-tailwind/react/utils/withMT");
 // Custom color with css variable color in __theme_color.scss
 function customColors(cssVar) {
   return ({ opacityVariable, opacityValue }) => {
@@ -13,7 +13,7 @@ function customColors(cssVar) {
   };
 }
 
-module.exports = {
+module.exports = withMT( {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: "class", // or 'media' or 'class',
   theme: {
@@ -89,4 +89,4 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/aspect-ratio"),
   ],
-};
+});

@@ -38,7 +38,7 @@ export default async function RootLayout({
         <NextTopLoader color="red" />
         <ReduxProvider>
           <SiteHeader session={session} />
-          <div className="relative top-36">
+          <div className="relative top-32 md:top-36">
             <AuthProvider session={session}>{children}</AuthProvider>
           </div>
           <CommonClient />
