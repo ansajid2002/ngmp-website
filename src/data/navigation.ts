@@ -302,12 +302,12 @@ const OTHER_PAGE_CHILD: NavItemType[] = [
 export const NAVIGATION_DEMO_2: NavItemType[] = [
   {
     id: ncNanoId(),
-    href: "/",
+    href: "/Channel/best-seller",
     name: "Best Sellers",
   },
   {
     id: ncNanoId(),
-    href: "/",
+    href: "/Channel/new-arrivals",
     name: "New Arrivals",
   },
 

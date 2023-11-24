@@ -2,6 +2,7 @@
 
 import { AdminUrl } from '@/app/layout';
 import { removeItem } from '@/redux/slices/cartSlice';
+import { useAppSelector } from '@/redux/store';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -9,7 +10,8 @@ export function RemoveButton({ itemId, item }) {
     const dispatch = useDispatch()
 
     const [isLoading, setIsLoading] = useState(false);
-    const customerId = 71
+    const customerData = useAppSelector((state) => state.customerData)
+    const customerId = customerData?.customerData?.customer_id || null
 
     const handleRemove = async (itemId: number, item: any) => {
         try {

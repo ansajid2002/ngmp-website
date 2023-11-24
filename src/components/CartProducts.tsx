@@ -14,8 +14,8 @@ import NcInputNumber from './NcInputNumber'
 const CartProducts = ({ removeData = true }) => {
     const { cartItems } = useAppSelector((store) => store.cart)
     const dispatch = useDispatch()
-    const customerId = 71
-
+    const customerData = useAppSelector((state) => state.customerData)
+    const customerId = customerData?.customerData?.customer_id || null
 
     const renderProduct = (item: Product, index: number) => {
         const { ad_title, mrp, sellingprice, images, label, added_quantity, prod_slug, uniquepid } = item;

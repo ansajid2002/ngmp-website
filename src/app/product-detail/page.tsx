@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import LikeButton from "@/components/LikeButton";
 import { StarIcon } from "@heroicons/react/24/solid";
@@ -35,12 +35,14 @@ import { useDispatch } from "react-redux";
 import Link from "next/link";
 import AddToCartButton from "@/components/AddtoCart";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
+import { addItemToWishlist, removeItemFromWishlist } from "@/redux/slices/wishlistSlice";
+import { Loader2Icon } from "lucide-react";
 
 const ProductDetailPage = ({ searchParams }) => {
   const router = useRouter()
-  const customerId = 71
+  const customerData = useAppSelector((state) => state.customerData)
+  const customerId = customerData?.customerData?.customer_id || null
+
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
   const [sizeSelected, setSizeSelected] = useState("");
@@ -59,6 +61,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const [IsMatchedCartProduct, setIsMatchedCartProduct] = useState(null);
   const [inFavorite, setinFavorite] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null)
+  const [wishlistLoading, setWishlistLoading] = useState(false)
 
   const cartItems = useAppSelector((state) => state.cart.cartItems);
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems)
@@ -98,7 +101,83 @@ const ProductDetailPage = ({ searchParams }) => {
     // Check if there's an item in wishlistItems with a matching uniquepid
     const isFavorite = wishlistItems.some(wish => wish.uniquepid === responseData?.uniquepid);
     setinFavorite(isFavorite);
-  }, [wishlistItems]);
+  }, [wishlistItems, responseData]);
+
+  const handleToggleWishlist = useCallback(async () => {
+    if (!customerId) return
+    setWishlistLoading(true)
+    const { category, subcategory, uniquepid, vendorid } = responseData;
+    const replacecategory = category.replace(/[^\w\s]/g, '').replace(/\s/g, '');
+    const replacesubcategory = subcategory.replace(/[^\w\s]/g, '').replace(/\s/g, '');
+    const requestData = {
+      customer_id: customerId,
+      vendor_id: vendorid,
+      uniquepid,
+      category: replacecategory,
+      subcategory: replacesubcategory,
+      label: null,
+      mrp: mrpData,
+      sellingprice: sellingPriceData,
+    };
+
+    if (!inFavorite) {
+
+      dispatch(addItemToWishlist({ ...responseData }));
+
+      if (customerId) {
+        try {
+          // Make a POST request to your API endpoint for updating the cart
+          const response = await fetch(`/api/wishlist/addWishlist`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const responseData = await response.json();
+          toast.success('Added to Wishlist')
+          setWishlistLoading(false)
+
+          setinFavorite(true);
+        } catch (error) {
+          console.error('Error updating wishlist:', error);
+        }
+      }
+    } else {
+
+      dispatch(removeItemFromWishlist({ ...responseData }));
+      if (customerId) {
+        try {
+          // Make a POST request to your API endpoint for updating the wishlist
+          const response = await fetch(`/api/wishlist/removeFromWishlist`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const responseData = await response.json();
+          toast.success('Removed From Wishlist')
+          setWishlistLoading(false)
+
+          setinFavorite(false);
+        } catch (error) {
+          console.error('Error updating wishlist:', error);
+        }
+      }
+    }
+
+  }, [customerId, dispatch, inFavorite, responseData, setinFavorite])
 
 
   useEffect(() => {
@@ -190,6 +269,9 @@ const ProductDetailPage = ({ searchParams }) => {
         setsingleData({ ...singleData, mrp: selectedVariant.variant_mrp, sellingprice: selectedVariant.variant_sellingprice, label: selectedVariant?.label })
         const discountPercentage = ((selectedVariant.variant_mrp - selectedVariant.variant_sellingprice) / selectedVariant.variant_mrp) * 100;
         setDiscountPercentage(discountPercentage); // Rounded to 2 decimal places
+      } else {
+        setMrp(responseData?.mrp);
+        setSellingPrice(responseData.sellingprice);
       }
       setSelectedAttributes(initialSelectedAttributes);
     }
@@ -642,8 +724,14 @@ const ProductDetailPage = ({ searchParams }) => {
       </div>
 
       {/* LIKE BUTTON */}
-      <div className="mt-2">
-        <LikeButton liked={inFavorite} data="hey" />
+      <div>
+        {
+          wishlistLoading ? <div className="mt-2 w-9 h-9 flex items-center justify-center">
+            <Loader2Icon className="animate-spin" />
+          </div> : <div className="mt-2" onClick={handleToggleWishlist}>
+            <LikeButton liked={inFavorite} data="hey" />
+          </div>
+        }
       </div>
     </>
   }

@@ -61,9 +61,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
   const [singleData, setsingleData] = useState(item)
   const [selectedImage, setSelectedImage] = useState(images?.[0])
   const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(null);
-  const dispatch = useDispatch()
+  const customerData = useAppSelector((state) => state.customerData)
+  const customerId = customerData?.customerData?.customer_id || null
 
-  console.log(isUniquepidMatched);
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchVariants = async () => {
@@ -76,14 +77,13 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
       }
     };
 
-
     isvariant === 'Variant' && fetchVariants();
   }, []);
 
   useEffect(() => {
     // Create a new variants object
     if (!variantsWithArray) {
-      const newVariantsWithArray = variantsData?.reduce((acc, variant) => {
+      const newVariantsWithArray = variantsData && variantsData?.reduce((acc, variant) => {
         const variantsvaluesObj = variant?.variantsvalues
           ? JSON.parse(variant.variantsvalues)
           : {};
@@ -211,7 +211,6 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
     }
   };
 
-  const customerId = 71
   const notifyAddTocart = async () => {
     const updatedSingleData = {
       ...singleData,
@@ -420,7 +419,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         {/* CONTENT */}
         <div className="flex flex-row w-full lg:w-[50%]">
           {/* PRODUCT GALLERY */}
-          <div className="flex flex-col p-2 lg:w-[20%] h-[calc(100% - 2rem)] overflow-y-auto mb-2">
+          <div className="flexflex-col p-2 w-[20%] h-[calc(100% - 2rem)] overflow-y-auto mb-2">
             {images?.map((image: string, index: number) => (
               <div
                 key={index}

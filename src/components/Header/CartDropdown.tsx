@@ -16,7 +16,9 @@ import { useDispatch } from "react-redux";
 export default function CartDropdown() {
   const { cartItems } = useAppSelector((store) => store.cart);
   const dispatch = useDispatch();
-  const customerId = 71;
+  const customerData = useAppSelector((state) => state.customerData)
+  const customerId = customerData?.customerData?.customer_id || null
+
   const renderProduct = (item: Product, index: number, close: () => void) => {
     const {
       ad_title,

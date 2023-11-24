@@ -54,7 +54,7 @@ const DiscoverMoreSlider = () => {
   return (
     <div
       ref={sliderRef}
-      className={`nc-DiscoverMoreSlider px-10 ${isShow ? "" : "invisible"
+      className={`nc-DiscoverMoreSlider  ${isShow ? "" : "invisible"
         }`}
     >
       <Heading

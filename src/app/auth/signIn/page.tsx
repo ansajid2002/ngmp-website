@@ -12,6 +12,7 @@ import { updateCustomerData } from '@/redux/slices/customerData'
 import { useDispatch } from 'react-redux'
 import { HomeUrl } from '@/app/layout'
 import { useAppSelector } from '@/redux/store'
+import { addItem } from '@/redux/slices/cartSlice'
 
 interface LoginFormInterface {
     email: string,
@@ -22,8 +23,74 @@ function SignIn() {
     const dispatch = useDispatch()
     const [error, setError] = useState(false)
     const customerData = useAppSelector((state) => state.customerData)
+    const cartItems = useAppSelector((state) => state.cart.cartItems);
+
     const router = useRouter()
 
+    const updateCartData = async (customerId) => {
+        try {
+
+            for (const cartItem of cartItems) {
+                // Extract necessary data
+                const { category, subcategory, uniquepid, vendorInfo, added_quantity, mrp, sellingprice, label } = cartItem;
+                console.log(cartItem, 'cart');
+
+                const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
+                const replacesubcategory = subcategory.replace(/[^\w\s]/g, "").replace(/\s/g, "");
+
+                // Prepare the request data
+                const requestData = {
+                    customer_id: customerId,
+                    vendor_id: vendorInfo.id,
+                    product_uniqueid: uniquepid,
+                    category: replacecategory,
+                    subcategory: replacesubcategory,
+                    variantlabel: label,
+                    mrp,
+                    sellingprice,
+                    quantity: added_quantity,
+                };
+
+                // Make a POST request to your API endpoint for updating the cart
+                const response = await fetch(`/api/addCarts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+            }
+
+
+            // Fetch cart data
+            const requestOptions = {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            const urlWithCustomerId = `/api/cart/${customerId}`;
+            const response = await fetch(urlWithCustomerId, requestOptions);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+
+            const cartData = await response.json();
+            cartData.forEach((item: any) => {
+                dispatch(addItem(item));
+            });
+            // Dispatch an action to update the cart items in the Redux store
+        } catch (error) {
+            console.error('Error updating cart:', error);
+        }
+    };
 
     useEffect(() => {
         const userData = data?.user?.name
@@ -52,8 +119,9 @@ function SignIn() {
                 text: userData?.message,
                 icon: 'success',
             })
+            updateCartData(userData?.customerData?.customer_id)
             dispatch(updateCustomerData(userData?.customerData))
-            router.push(`${HomeUrl}`)
+            window.location.href = HomeUrl
         }
     }, [data, dispatch])
 
