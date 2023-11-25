@@ -4,8 +4,10 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { fetchCategoriesAndSubcategories } from "@/app/page";
+import { AdminUrl } from "@/app/layout";
+import Image from "next/image";
 
-const CategoryPageSlick = () => {
+const CategoryPageSlick = ({ data }) => {
   const catData = [
     {
       id: 1,
@@ -134,31 +136,40 @@ const CategoryPageSlick = () => {
     },
   ];
 
-  // const [data, setData] = useState();
+  const [catDataa, setCatDataa] = useState<any[] | any>();
 
-  let dataa = [];
+  // console.log(data);
+
+  // let dataa = [];
   const CategoryPageFetch = async () => {
     const response = await fetchCategoriesAndSubcategories();
-    // console.log(dataa);
-    dataa.push(response);
+    const filteredCat =
+      response &&
+      response.filter(
+        (item) =>
+          item.category_name.replace(/[^\w\s]/g, "").replace(/\s/g, "") ===
+          data.category
+      );
+    setCatDataa(filteredCat);
+    // dataa.push(response);
     // setData(response);
-    // console.log(data);
+    console.log(filteredCat, "updated");
   };
 
   // console.log(dataa);
 
   useEffect(() => {
     CategoryPageFetch();
-  }, []);
+  }, [data]);
 
   const [settings] = useState({
     dots: false,
     infinite: false,
     speed: 500,
     arrows: true,
-    slidesToShow: 8,
-    slidesToScroll: 8,
-    rows: 2,
+    slidesToShow: 6,
+    slidesToScroll: 1,
+    // rows: 2,
     // slidesPerRow: 5,
     responsive: [
       {
@@ -189,29 +200,42 @@ const CategoryPageSlick = () => {
 
   return (
     <div className="p-10">
-      <Slider {...settings} className="pb-5">
-        {catData?.map((item) => {
+      <div>
+        {catDataa?.map((item: any) => {
           return (
-            <div>
-              <div
-                className="flex flex-col items-center gap-2 justify-center p-2 "
-                key={item.id}
-              >
-                <a href="">
-                  <img
-                    className="transition-all ease-in-out hover:scale-105 w-20"
-                    src={item.img}
-                    alt={item.label}
-                  />
-                </a>
-                <span className="text-[0.8rem] text-center leading-4 text-black font-medium mt-2 px-5">
-                  {item.label}
-                </span>
-              </div>
-            </div>
+            <>
+              <h1>{item.category_name}</h1>
+              <Slider {...settings} className="pb-5">
+                {item.subcategories?.map((item3: any, index3: any) => {
+                  return (
+                    <div>
+                      <div
+                        className="flex flex-col items-center gap-2 justify-center p-2 "
+                        key={index3}
+                      >
+                        <div className="h-32 w-32 rounded-full border-gray-200  border-2 overflow-hidden">
+                          <Image
+                            width={100}
+                            height={100}
+                            className=" transition-all ease-in-out hover:scale-105 h-full w-full object-contain"
+                            src={`${AdminUrl}/uploads/SubcategoryImages/${item3.subcategory_image_url}`}
+                            alt={item3.subcategory_name}
+                          />
+                        </div>
+                        <span className="text-[0.9rem]  text-center leading-4 text-black font-medium mt-2 md:px-10">
+                          {item3.subcategory_name}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </Slider>
+            </>
           );
         })}
-      </Slider>
+      </div>
+
+      <div></div>
     </div>
   );
 };

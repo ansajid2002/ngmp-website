@@ -1,12 +1,17 @@
-import CategoryPageSlick from '@/components/CategoryPageSlick'
-import React from 'react'
+"use client";
+import CategoryPageSlick from "@/components/CategoryPageSlick";
+import { useParams } from "next/navigation";
+import React from "react";
 
 const Caregory = () => {
-    return (
-        <div>
-            <CategoryPageSlick />
-        </div>
-    )
-}
+  const params = useParams();
+  //   console.log(params);
 
-export default Caregory
+  return (
+    <div>
+      <CategoryPageSlick data={params} />
+    </div>
+  );
+};
+
+export default Caregory;
