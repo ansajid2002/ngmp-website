@@ -6,6 +6,10 @@
     font-family: "miui", system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", Helvetica, Arial, sans-serif;
 }
 
+.slick-list>div {
+    margin-left: 0;
+}
+
 .rts___tab___selected {
     background-color: #fb7601 !important;
     border: none !important;

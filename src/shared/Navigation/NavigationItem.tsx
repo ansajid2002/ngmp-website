@@ -107,9 +107,8 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                 <div>
                   <div
                     key={999}
-                    className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${
-                      categoryTitle === "Featured Category" && "bg-[#00000010]"
-                    }`}
+                    className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === "Featured Category" && "bg-[#00000010]"
+                      }`}
                     onMouseEnter={() => {
                       setHoveredItem([]);
                       setCategoryTitle("Featured Category");
@@ -130,9 +129,8 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                   {menu.children?.map((item, index) => (
                     <div
                       key={index}
-                      className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${
-                        categoryTitle === item.category_name && "bg-[#00000010]"
-                      }`}
+                      className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === item.category_name && "bg-[#00000010]"
+                        }`}
                       onMouseEnter={() => {
                         setHoveredItem(item.subcategories);
                         setCategoryTitle(item.category_name);
@@ -167,14 +165,13 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                       return (
                         <div className="mx-4 w-[140px] mb-4 ">
                           <Link
-                            href={`/category/${
-                              categoryTitle &&
+                            href={`/category/${categoryTitle &&
                               categoryTitle
                                 ?.replace(/[^\w\s]/g, "")
                                 .replace(/\s/g, "")
-                            }/${singlesubcat.subcategory_name
-                              .replace(/[^\w\s]/g, "")
-                              .replace(/\s/g, "")}`}
+                              }/${singlesubcat.subcategory_name
+                                .replace(/[^\w\s]/g, "")
+                                .replace(/\s/g, "")}`}
                           >
                             <div className="h-32 w-32">
                               <Image
@@ -329,11 +326,10 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     return (
       <div className="h-20 flex-shrink-0 group flex items-center">
         <Link
-          className={`inline-flex items-center group text-sm lg:text-[15px] font-medium text-gray-700 dark:text-gray-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-gray-900 transition-colors duration-300 ease-in-out hover:bg-gray-100  ${
-            menuCurrentHovers[0] == item.id &&
+          className={`inline-flex items-center group text-sm lg:text-[15px] font-medium text-gray-700 dark:text-gray-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-gray-900 transition-colors duration-300 ease-in-out hover:bg-gray-100  ${menuCurrentHovers[0] == item.id &&
             item.type &&
             "bg-gray-100 dark:bg-gray-800 dark:text-gray-200"
-          } `}
+            } `}
           href={{
             pathname: item.href || undefined,
           }}
@@ -342,9 +338,8 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
           {item.name}
           {item.type && (
             <ChevronDownIcon
-              className={`ml-1 -mr-1 h-4 w-4 transition-all  ${
-                menuCurrentHovers[0] == item.id && "rotate-180 text-gray-700"
-              }`}
+              className={`ml-1 -mr-1 h-4 w-4 transition-all  ${menuCurrentHovers[0] == item.id && "rotate-180 text-gray-700"
+                }`}
               aria-hidden="true"
             />
           )}

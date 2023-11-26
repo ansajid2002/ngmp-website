@@ -32,7 +32,7 @@ export default function AvatarDropdown() {
             <>
               <Popover.Button className="rounded-full transition-all px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex items-center gap-2">
                 <Image src={`${AdminUrl}/uploads/customerProfileImages/${picture}`} alt="sa" width={30} height={30} className="rounded-full" />
-                <div className="right-2tCoT hidden md:flex flex-col"><div className=""><div className="hello-7Ci9B textColor-3r-He line-clamp-1"><p className="line-clamp-1">{given_name} {family_name}</p></div></div><div className="title-1fzdZ textColor-3r-He titleCls-2B1Yu"><p className=" line-clamp-1">Orders &amp; Account</p></div></div>
+                <div className="right-2tCoT hidden lg:flex flex-col"><div className=""><div className="hello-7Ci9B textColor-3r-He line-clamp-1"><p className="line-clamp-1">{given_name} {family_name}</p></div></div><div className="title-1fzdZ textColor-3r-He titleCls-2B1Yu"><p className=" line-clamp-1">Orders &amp; Account</p></div></div>
               </Popover.Button>
               <Transition
                 as={Fragment}
@@ -334,7 +334,7 @@ export default function AvatarDropdown() {
           <Link href={'/auth/signIn'}>
             <div className="rounded-full px-4 py-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transform hover:scale-105 focus:outline-none flex items-center gap-2 cursor-pointer transition-transform duration-100">
               <svg className="iconSvg-8qsph iconFill-2q3yE" alt="" aria-label="" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="30" height="30" role="img" fill="#222222"><path d="M701.6 592.6c83.8 0 151.7 67.9 151.7 151.7l0 100.5c0 28.3-22.9 51.2-51.2 51.2l-580.2 0c-28.3 0-51.2-22.9-51.2-51.2l0-100.5c0-83.8 67.9-151.7 151.7-151.7l379.2 0z m0 76.8l-379.2 0c-41.4 0-74.9 33.5-74.9 74.9l0 74.9 529 0 0-74.9c0-39.3-30.3-71.5-68.7-74.7l-6.2-0.2z m-189.6-494.5c94.5 0 171.1 76.6 171.1 171.2 0 94.5-76.6 171.1-171.1 171.1-94.5 0-171.1-76.6-171.1-171.1 0-94.5 76.6-171.1 171.1-171.2z m0 76.8c-52.1 0-94.3 42.2-94.3 94.4 0 52.1 42.2 94.3 94.3 94.3 52.1 0 94.3-42.2 94.3-94.3 0-52.1-42.2-94.3-94.3-94.4z"></path></svg>
-              <div className="right-2tCoT rightCls-2Z7m_ rightClsUnlogin-3WvPu hidden md:flex flex-col justify-start line-clamp-1"><div className="helloWrap-24eF8"><div className="hello-7Ci9B textColor-3r-He "><p className="line-clamp-1">Sign in / Register</p></div></div><div className="title-1fzdZ textColor-3r-He titleCls-2B1Yu line-clamp-1"><p className="line-clamp-1">Orders &amp; Account</p></div></div>
+              <div className="right-2tCoT rightCls-2Z7m_ rightClsUnlogin-3WvPu hidden lg:flex flex-col justify-start line-clamp-1"><div className="helloWrap-24eF8"><div className="hello-7Ci9B textColor-3r-He "><p className="line-clamp-1">Sign in / Register</p></div></div><div className="title-1fzdZ textColor-3r-He titleCls-2B1Yu line-clamp-1"><p className="line-clamp-1">Orders &amp; Account</p></div></div>
             </div>
           </Link>
         </>
