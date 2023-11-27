@@ -180,7 +180,6 @@ async function PageHome() {
         </div> */}
 
         <div className="space-y-10 px-5 mt-4">
-          {/* <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata} /> */}
           <NewCategorySlider
             newcategoriesdata={fetchCategoriesAndSubcategoriesdata}
           />

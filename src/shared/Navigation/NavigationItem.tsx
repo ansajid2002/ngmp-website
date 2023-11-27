@@ -10,7 +10,7 @@ import Image from "next/image";
 import { AdminUrl } from "@/app/layout";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { setLanguage } from "@/redux/features/languageslice";
-import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux"; 
 import { addCarts } from "@/redux/slices/cartSlice";
 import { updateproductsListwishlist } from "@/redux/slices/wishlistSlice";
 
@@ -101,7 +101,10 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
       >
         {renderMainItem(menu)}
         <div className="flex justify-center invisible bg-black/50 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50">
-          <div className=" bg-white flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
+          <div>
+            
+          </div>
+          <div className=" bg-white  flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
             <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto scrollbar-hidden">
               <div className="text-sm border-none border-gray-200 dark:border-gray-700">
                 <div>
