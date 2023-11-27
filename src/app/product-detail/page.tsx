@@ -7,6 +7,9 @@ import { StarIcon } from "@heroicons/react/24/solid";
 import BagIcon from "@/components/BagIcon";
 import NcInputNumber from "@/components/NcInputNumber";
 import { PRODUCTS } from "@/data/data";
+// import logo from "@/images/mainlogo.svg";
+import payment from "@/images/payment.png";
+import security from "@/images/security.png";
 import {
   NoSymbolIcon,
   ClockIcon,
@@ -25,9 +28,9 @@ import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import SectionPromo2 from "@/components/SectionPromo2";
 import ModalViewAllReviews from "./ModalViewAllReviews";
 import NotifyAddTocart from "@/components/NotifyAddTocart";
-import Image from "next/image";
+// import Image from "next/image";
 import AccordionInfo from "@/components/AccordionInfo";
-import { AdminUrl } from "../layout";
+import { AdminUrl, HomeUrl } from "../layout";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
 import { addItem } from "@/redux/slices/cartSlice";
@@ -35,51 +38,91 @@ import { useDispatch } from "react-redux";
 import Link from "next/link";
 import AddToCartButton from "@/components/AddtoCart";
 import { Skeleton } from "@/components/ui/skeleton";
-import { addItemToWishlist, removeItemFromWishlist } from "@/redux/slices/wishlistSlice";
-import { Loader2Icon } from "lucide-react";
+import {
+  addItemToWishlist,
+  removeItemFromWishlist,
+} from "@/redux/slices/wishlistSlice";
+import {
+  Check,
+  ChevronRight,
+  HelpCircle,
+  Loader2Icon,
+  LockKeyhole,
+  MessageCircle,
+  MessagesSquare,
+  ShieldCheck,
+  Truck,
+} from "lucide-react";
+import { Image, Modal } from "antd";
 
 const ProductDetailPage = ({ searchParams }) => {
-  const router = useRouter()
-  const customerData = useAppSelector((state) => state.customerData)
-  const customerId = customerData?.customerData?.customer_id || null
+  const styling = {
+    backgroundImage: `url(https://aimg.kwcdn.com/upload_aimg/commodity/e4b8aee4-b205-4a0d-845e-62d36d532518.png?imageView2/2/w/800/q/70/format/webp)`,
+  };
+
+  // Shipping Modal
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  // -----------------
+
+  const router = useRouter();
+  const customerData = useAppSelector((state) => state.customerData);
+  const customerId = customerData?.customerData?.customer_id || null;
 
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
   const [sizeSelected, setSizeSelected] = useState("");
   const [qualitySelected, setQualitySelected] = useState(1);
   const [variantsWithArray, setVariantsWithArray] = useState(null);
-  const [isOpenModalViewAllReviews, setIsOpenModalViewAllReviews] = useState(false);
+  const [isOpenModalViewAllReviews, setIsOpenModalViewAllReviews] =
+    useState(false);
   const [variantsData, setVariantsData] = useState(null);
   const [responseData, setResponseData] = useState(null);
-  const [singleData, setsingleData] = useState(responseData)
+  const [singleData, setsingleData] = useState(responseData);
   const [selectedAttributes, setSelectedAttributes] = useState<null>(null); // Replace 'YourAttributeType' with the actual type
-  const [selectLabel, setSelectLabel] = useState<string | null>(null)
-  const [mrpData, setMrp] = useState<number | null>(null)
-  const [sellingPriceData, setSellingPrice] = useState<number | null>(null)
-  const [discountPercentage, setDiscountPercentage] = useState<number | null>(null);
-  const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(null);
+  const [selectLabel, setSelectLabel] = useState<string | null>(null);
+  const [mrpData, setMrp] = useState<number | null>(null);
+  const [sellingPriceData, setSellingPrice] = useState<number | null>(null);
+  const [discountPercentage, setDiscountPercentage] = useState<number | null>(
+    null
+  );
+  const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(
+    null
+  );
   const [IsMatchedCartProduct, setIsMatchedCartProduct] = useState(null);
   const [inFavorite, setinFavorite] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null)
-  const [wishlistLoading, setWishlistLoading] = useState(false)
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   const cartItems = useAppSelector((state) => state.cart.cartItems);
-  const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems)
-  const dispatch = useDispatch()
+  const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handlePutRequest = async () => {
       try {
-
         const requestOptions = {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(searchParams),
         };
 
-        const response = await fetch('/api/getproducts', requestOptions);
+        const response = await fetch("/api/getproducts", requestOptions);
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -89,26 +132,30 @@ const ProductDetailPage = ({ searchParams }) => {
 
         setResponseData(responseData?.product);
       } catch (error) {
-        console.error('Error processing request:', error);
+        console.error("Error processing request:", error);
         // Handle error gracefully
       }
     };
 
-    handlePutRequest()
-  }, [searchParams])
+    handlePutRequest();
+  }, [searchParams]);
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
-    const isFavorite = wishlistItems.some(wish => wish.uniquepid === responseData?.uniquepid);
+    const isFavorite = wishlistItems.some(
+      (wish) => wish.uniquepid === responseData?.uniquepid
+    );
     setinFavorite(isFavorite);
   }, [wishlistItems, responseData]);
 
   const handleToggleWishlist = useCallback(async () => {
-    if (!customerId) return
-    setWishlistLoading(true)
+    if (!customerId) return;
+    setWishlistLoading(true);
     const { category, subcategory, uniquepid, vendorid } = responseData;
-    const replacecategory = category.replace(/[^\w\s]/g, '').replace(/\s/g, '');
-    const replacesubcategory = subcategory.replace(/[^\w\s]/g, '').replace(/\s/g, '');
+    const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
+    const replacesubcategory = subcategory
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s/g, "");
     const requestData = {
       customer_id: customerId,
       vendor_id: vendorid,
@@ -121,16 +168,15 @@ const ProductDetailPage = ({ searchParams }) => {
     };
 
     if (!inFavorite) {
-
       dispatch(addItemToWishlist({ ...responseData }));
 
       if (customerId) {
         try {
           // Make a POST request to your API endpoint for updating the cart
           const response = await fetch(`/api/wishlist/addWishlist`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(requestData),
           });
@@ -140,24 +186,23 @@ const ProductDetailPage = ({ searchParams }) => {
           }
 
           const responseData = await response.json();
-          toast.success('Added to Wishlist')
-          setWishlistLoading(false)
+          toast.success("Added to Wishlist");
+          setWishlistLoading(false);
 
           setinFavorite(true);
         } catch (error) {
-          console.error('Error updating wishlist:', error);
+          console.error("Error updating wishlist:", error);
         }
       }
     } else {
-
       dispatch(removeItemFromWishlist({ ...responseData }));
       if (customerId) {
         try {
           // Make a POST request to your API endpoint for updating the wishlist
           const response = await fetch(`/api/wishlist/removeFromWishlist`, {
-            method: 'DELETE',
+            method: "DELETE",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(requestData),
           });
@@ -167,81 +212,82 @@ const ProductDetailPage = ({ searchParams }) => {
           }
 
           const responseData = await response.json();
-          toast.success('Removed From Wishlist')
-          setWishlistLoading(false)
+          toast.success("Removed From Wishlist");
+          setWishlistLoading(false);
 
           setinFavorite(false);
         } catch (error) {
-          console.error('Error updating wishlist:', error);
+          console.error("Error updating wishlist:", error);
         }
       }
     }
-
-  }, [customerId, dispatch, inFavorite, responseData, setinFavorite])
-
+  }, [customerId, dispatch, inFavorite, responseData, setinFavorite]);
 
   useEffect(() => {
     const fetchVariants = async () => {
       try {
-        const response = await fetch(`/api/variants/${responseData?.slug_cat}/${responseData?.slug_subcat}/${responseData?.uniquepid}`);
+        const response = await fetch(
+          `/api/variants/${responseData?.slug_cat}/${responseData?.slug_subcat}/${responseData?.uniquepid}`
+        );
         const data = await response.json();
 
-        setVariantsData(data?.variant)
+        setVariantsData(data?.variant);
       } catch (error) {
-        console.error('Error fetching variants:', error);
+        console.error("Error fetching variants:", error);
       }
     };
 
-
-    responseData?.isvariant === 'Variant' && fetchVariants();
+    responseData?.isvariant === "Variant" && fetchVariants();
   }, [responseData]);
-
 
   useEffect(() => {
     // Create a new variants object
     if (!variantsWithArray) {
-      const newVariantsWithArray = variantsData?.reduce((acc, variant) => {
-        const variantsvaluesObj = variant?.variantsvalues
-          ? JSON.parse(variant.variantsvalues)
-          : {};
+      const newVariantsWithArray =
+        variantsData?.reduce((acc, variant) => {
+          const variantsvaluesObj = variant?.variantsvalues
+            ? JSON.parse(variant.variantsvalues)
+            : {};
 
-        // Initialize the accumulator if it doesn't exist
-        if (!acc.variantsvalues) {
-          acc.variantsvalues = {};
-        }
-
-        // Iterate over the attributes in variantsvaluesObj
-        for (const attribute in variantsvaluesObj) {
-          if (acc.variantsvalues.hasOwnProperty(attribute)) {
-            // If the attribute already exists in the accumulator, push the value to the array
-            acc.variantsvalues[attribute].push(variantsvaluesObj[attribute]);
-          } else {
-            // If the attribute doesn't exist in the accumulator, create a new array with the value
-            acc.variantsvalues[attribute] = [variantsvaluesObj[attribute]];
+          // Initialize the accumulator if it doesn't exist
+          if (!acc.variantsvalues) {
+            acc.variantsvalues = {};
           }
-        }
 
-        return acc;
-      }, {}) || {};
+          // Iterate over the attributes in variantsvaluesObj
+          for (const attribute in variantsvaluesObj) {
+            if (acc.variantsvalues.hasOwnProperty(attribute)) {
+              // If the attribute already exists in the accumulator, push the value to the array
+              acc.variantsvalues[attribute].push(variantsvaluesObj[attribute]);
+            } else {
+              // If the attribute doesn't exist in the accumulator, create a new array with the value
+              acc.variantsvalues[attribute] = [variantsvaluesObj[attribute]];
+            }
+          }
+
+          return acc;
+        }, {}) || {};
 
       for (const attribute in newVariantsWithArray?.variantsvalues) {
         const valuesArray = newVariantsWithArray?.variantsvalues[attribute];
-        newVariantsWithArray.variantsvalues[attribute] = [...new Set(valuesArray)];
+        newVariantsWithArray.variantsvalues[attribute] = [
+          ...new Set(valuesArray),
+        ];
       }
 
       // Check if newVariantsWithArray is not empty, null, or undefined before setting the state
       if (Object.keys(newVariantsWithArray).length > 0) {
         // Convert newVariantsWithArray.variantsvalues to an array of objects
-        const variantsArray = Object.keys(newVariantsWithArray?.variantsvalues).map((attribute) => ({
+        const variantsArray = Object.keys(
+          newVariantsWithArray?.variantsvalues
+        ).map((attribute) => ({
           attribute,
           values: newVariantsWithArray.variantsvalues[attribute],
         }));
 
-
         setVariantsWithArray(variantsArray);
       }
     }
-
   }, [variantsWithArray, variantsData]);
 
   useEffect(() => {
@@ -255,19 +301,30 @@ const ProductDetailPage = ({ searchParams }) => {
       // Combine the selected attribute values into a single string
       const formattedSelection = Object.keys(initialSelectedAttributes)
         .map((attribute) => `${initialSelectedAttributes[attribute]}`)
-        .join('/');
+        .join("/");
 
       // Find the variant with the matching label
-      const selectedVariant = variantsData.find((variant) => variant.label === formattedSelection);
+      const selectedVariant = variantsData.find(
+        (variant) => variant.label === formattedSelection
+      );
       if (selectedVariant) {
         // Set the mrp and sellingprice based on the selected variant
 
         setMrp(selectedVariant.variant_mrp);
         setSellingPrice(selectedVariant.variant_sellingprice);
-        setSelectLabel(selectedVariant?.label)
-        setSizeSelected(selectedVariant.label)
-        setsingleData({ ...singleData, mrp: selectedVariant.variant_mrp, sellingprice: selectedVariant.variant_sellingprice, label: selectedVariant?.label })
-        const discountPercentage = ((selectedVariant.variant_mrp - selectedVariant.variant_sellingprice) / selectedVariant.variant_mrp) * 100;
+        setSelectLabel(selectedVariant?.label);
+        setSizeSelected(selectedVariant.label);
+        setsingleData({
+          ...singleData,
+          mrp: selectedVariant.variant_mrp,
+          sellingprice: selectedVariant.variant_sellingprice,
+          label: selectedVariant?.label,
+        });
+        const discountPercentage =
+          ((selectedVariant.variant_mrp -
+            selectedVariant.variant_sellingprice) /
+            selectedVariant.variant_mrp) *
+          100;
         setDiscountPercentage(discountPercentage); // Rounded to 2 decimal places
       } else {
         setMrp(responseData?.mrp);
@@ -285,24 +342,27 @@ const ProductDetailPage = ({ searchParams }) => {
     const matchedCartProduct = cartItems.find((cartItem) => {
       if (cartItem.uniquepid === responseData?.uniquepid) {
         if (cartItem?.label != null && cartItem?.label != undefined) {
-          return cartItem?.uniquepid === responseData?.uniquepid && cartItem?.label === responseData?.label;
+          return (
+            cartItem?.uniquepid === responseData?.uniquepid &&
+            cartItem?.label === responseData?.label
+          );
         }
         return cartItem?.uniquepid === responseData?.uniquepid;
       }
     });
 
-    setisUniquepidMatched(isUniquepidMatched)
+    setisUniquepidMatched(isUniquepidMatched);
     setIsMatchedCartProduct(matchedCartProduct);
-
-  }, [isUniquepidMatched, cartItems, responseData])
-
+  }, [isUniquepidMatched, cartItems, responseData]);
 
   const handleAttributeSelect = (attribute: any, value: any) => {
     // Create a copy of the selectedAttributes
     let updatedSelectedAttributes = { ...selectedAttributes };
     if (Array.isArray(updatedSelectedAttributes)) {
       // If selectedAttributes is an array, find the index of the attribute and update its value
-      const index = updatedSelectedAttributes.findIndex((attr) => attr === attribute);
+      const index = updatedSelectedAttributes.findIndex(
+        (attr) => attr === attribute
+      );
 
       if (index !== -1) {
         updatedSelectedAttributes[index + 1] = value; // Update the value at the next index
@@ -316,22 +376,24 @@ const ProductDetailPage = ({ searchParams }) => {
     }
 
     // Convert updatedSelectedAttributes to the desired format
-    let formattedSelection = '';
+    let formattedSelection = "";
 
     if (Array.isArray(updatedSelectedAttributes)) {
       formattedSelection = updatedSelectedAttributes
         .map((item, index) => (index % 2 === 0 ? `${item}/` : item))
-        .join('');
+        .join("");
     } else {
       formattedSelection = Object.keys(updatedSelectedAttributes)
         .map((key) => `${updatedSelectedAttributes[key]}`)
-        .join('/');
+        .join("/");
     }
 
     // Set the updated selected attributes in the state
     setSelectedAttributes(updatedSelectedAttributes);
     // Compare formattedSelection with label in variantsData
-    const selectedVariant = variantsData && variantsData.find((variant) => variant.label === formattedSelection);
+    const selectedVariant =
+      variantsData &&
+      variantsData.find((variant) => variant.label === formattedSelection);
 
     if (selectedVariant) {
       // Retrieve mrp and sellingprice from the selected variant
@@ -339,13 +401,19 @@ const ProductDetailPage = ({ searchParams }) => {
       setMrp(variant_mrp);
       // singleData = {...singleData, mrp: variant_mrp}
       setSellingPrice(variant_sellingprice);
-      setSelectLabel(label)
-      setSizeSelected(label)
+      setSelectLabel(label);
+      setSizeSelected(label);
 
-      setsingleData({ ...singleData, mrp: variant_mrp, sellingprice: variant_sellingprice, label: label })
+      setsingleData({
+        ...singleData,
+        mrp: variant_mrp,
+        sellingprice: variant_sellingprice,
+        label: label,
+      });
 
       // Calculate the discount percentage
-      const discountPercentage = ((variant_mrp - variant_sellingprice) / variant_mrp) * 100;
+      const discountPercentage =
+        ((variant_mrp - variant_sellingprice) / variant_mrp) * 100;
       setDiscountPercentage(discountPercentage); // Rounded to 2 decimal places
     } else {
     }
@@ -362,70 +430,72 @@ const ProductDetailPage = ({ searchParams }) => {
       );
     }
 
-    return (
-      variantsWithArray.map((variant: any, index: any) => (
-        <>
-          <label htmlFor="">
-            <span className="text-sm font-medium">
-              {variant.attribute}:
-              <span className="ml-1 font-semibold">
-                {selectedAttributes?.[variant?.attribute]}
-              </span>
+    return variantsWithArray.map((variant: any, index: any) => (
+      <>
+        <label htmlFor="">
+          <span className="text-sm font-medium">
+            {variant.attribute}:
+            <span className="ml-1 font-semibold">
+              {selectedAttributes?.[variant?.attribute]}
             </span>
-          </label>
-          <div className="flex mt-3">
-            {
-              variant?.values?.map((item: any, itemvar: any) => (
-                <div
-                  key={itemvar}
-                  onClick={() => {
-                    handleAttributeSelect(variant.attribute, item);
-                    setVariantActive(itemvar);
-                  }}
-                  className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
-                    ? "border-black/90 dark:border-white"
-                    : "border-transparent"
-                    }`}
-                >
-                  <div
-                    className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && 'bg-black text-white'}`}
-                  >{item}</div>
-                </div>
-              ))
-            }
-          </div>
-        </>
-      ))
-    );
+          </span>
+        </label>
+        <div className="flex mt-3">
+          {variant?.values?.map((item: any, itemvar: any) => (
+            <div
+              key={itemvar}
+              onClick={() => {
+                handleAttributeSelect(variant.attribute, item);
+                setVariantActive(itemvar);
+              }}
+              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${
+                variantActive === itemvar
+                  ? "border-black/90 dark:border-white"
+                  : "border-transparent"
+              }`}
+            >
+              <div
+                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${
+                  variantActive === itemvar && "bg-black text-white"
+                }`}
+              >
+                {item}
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
+    ));
   };
 
   const renderSectionContent = () => {
     if (!responseData) {
-      return <>
-        {/* <div className="h-2 w-full bg-gray-200 animate-pulse"></div>
+      return (
+        <>
+          {/* <div className="h-2 w-full bg-gray-200 animate-pulse"></div>
         <div className="h-2 w-1/2 mt-2 bg-gray-200 animate-pulse"></div>
         <div className="h-full w-full mt-2 bg-gray-200 animate-pulse"></div> */}
-        <div>
-          <Skeleton className="w-full h-[32px] bg-gray-300 rounded-md" />
-          <Skeleton className="w-[300px] mt-4 h-[32px] bg-gray-300 rounded-md" />
-          <div className="flex justify-between">
-            <Skeleton className="w-[130px] mt-4 h-[40px] bg-gray-300 rounded-full" />
-            <Skeleton className="flex-1 ml-2 mt-4 h-[40px] bg-gray-300 rounded-full" />
+          <div>
+            <Skeleton className="w-full h-[32px] bg-gray-300 rounded-md" />
+            <Skeleton className="w-[300px] mt-4 h-[32px] bg-gray-300 rounded-md" />
+            <div className="flex justify-between">
+              <Skeleton className="w-[130px] mt-4 h-[40px] bg-gray-300 rounded-full" />
+              <Skeleton className="flex-1 ml-2 mt-4 h-[40px] bg-gray-300 rounded-full" />
+            </div>
+            <Skeleton className="w-full mt-4 h-[20vh] bg-gray-300 rounded-md" />
           </div>
-          <Skeleton className="w-full mt-4 h-[20vh] bg-gray-300 rounded-md" />
-
-        </div>
-      </>
+        </>
+      );
     }
     return (
       <div className="space-y-7 2xl:space-y-8">
         {/* ---------- 1 HEADING ----------  */}
         <div>
-          <h2 className="text-2xl sm:text-3xl font-semibold">
+          <h2 className="text-[1.2rem] tracking-normal">
             {responseData?.ad_title}
           </h2>
 
-          <div className="flex items-center mt-5 space-x-4 sm:space-x-5">
+          <div className="flex items-center text-or mt-5 space-x-4 sm:space-x-5">
             {/* <div className="flex text-xl font-semibold">$112.00</div> */}
             <Prices
               contentClass="py-1 px-2 md:py-1.5 md:px-3 text-lg font-semibold"
@@ -458,63 +528,210 @@ const ProductDetailPage = ({ searchParams }) => {
           </div>
         </div>
 
-        {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
-        {responseData?.isvariant === "Variant" && <div className="">{renderVariants()}</div>}
+        <div
+          style={styling}
+          className="text-white py-1 px-2 rounded-lg text-[0.8rem] md:text-[0.9rem] flex justify-between items-center"
+        >
+          <div className="flex items-center ">
+            <img
+              src="https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
+              className="h-[25px] md:h-[35px]"
+            />
+            <Check size={15} className="mt-1 mr-1 md:mr-2" />
+            <span>Free shipping on all orders</span>
+          </div>
+          <span className="hidden md:block">Time-Limited Offer</span>
+        </div>
 
+        {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
+        {responseData?.isvariant === "Variant" && (
+          <div className="">{renderVariants()}</div>
+        )}
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
 
-        {
-          isUniquepidMatched ?
-            <div className="flex space-x-3.5">
-              <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
-                <NcInputNumber
-                  defaultValue={IsMatchedCartProduct && IsMatchedCartProduct.added_quantity}
-                  onChange={setQualitySelected}
-                />
-              </div>
-              <ButtonPrimary
-                className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500"
-              >
-                <Link href={"/cart"}>
-                  <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-                  <span className="ml-3">View Cart</span>
-                </Link>
-              </ButtonPrimary>
+        {isUniquepidMatched ? (
+          <div className="flex space-x-3.5">
+            <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
+              <NcInputNumber
+                defaultValue={
+                  IsMatchedCartProduct && IsMatchedCartProduct.added_quantity
+                }
+                onChange={setQualitySelected}
+              />
             </div>
-            :
-            <div className="flex space-x-3.5">
-              <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
-                <NcInputNumber
-                  defaultValue={qualitySelected}
-                  onChange={setQualitySelected}
-                />
-              </div>
-              <ButtonPrimary
-                className="flex-1 flex-shrink-0 transition-all duration-300"
-                onClick={notifyAddTocart}
-              >
+            <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
+              <Link href={"/cart"}>
                 <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-                <span className="ml-3">Add to Cart</span>
-              </ButtonPrimary>
-
+                <span className="ml-3">View Cart</span>
+              </Link>
+            </ButtonPrimary>
+          </div>
+        ) : (
+          <div className="flex space-x-3.5">
+            <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
+              <NcInputNumber
+                defaultValue={qualitySelected}
+                onChange={setQualitySelected}
+              />
             </div>
-
-        }
-
+            <ButtonPrimary
+              className="flex-1 flex-shrink-0 transition-all duration-300"
+              onClick={notifyAddTocart}
+            >
+              <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+              <span className="ml-3">Add to Cart</span>
+            </ButtonPrimary>
+          </div>
+        )}
 
         {/*  */}
         <hr className=" 2xl:!my-10 border-gray-200 dark:border-gray-700"></hr>
         {/*  */}
 
         {/* ---------- 5 ----------  */}
-        <AccordionInfo />
+        {/* <AccordionInfo /> */}
 
         {/* ---------- 6 ----------  */}
-        <div className="hidden xl:block">
-          <Policy />
+        {/* <div className="hidden xl:block">{<Policy />}</div> */}
+
+        <div>
+          <span
+            className="flex items-center text-green-700 font-medium cursor-pointer"
+            onClick={showModal}
+          >
+            <ShieldCheck size={20} className="mr-1" />
+            Shopping security
+            <ChevronRight size={20} className="mt-1" />
+          </span>
+          <div className="md:flex gap-5 mt-2 px-5 text-[0.9rem]">
+            <span>
+              <li>Safe Payment Options</li>
+              <li>Secure privacy</li>
+            </span>
+            <span>
+              <li>Secure logistics</li>
+              <li>Purchase protections</li>
+            </span>
+          </div>
         </div>
-      </div >
+
+        {/* Description */}
+
+        <hr />
+
+        <div>
+          <h2 className="text-[1.3rem] font-medium">Description</h2>
+          <p className="leading-normal mt-3 text-[1rem]">
+            {responseData?.additionaldescription}
+          </p>
+        </div>
+
+        <Modal
+          title="Shopping security"
+          className="text-center text-lg"
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          footer={null}
+          width={650}
+        >
+          <div className="text-left flex flex-col gap-2">
+            <span className="flex items-center text-[1rem] text-green-700 font-medium">
+              <ShieldCheck size={20} className="mr-1" />
+              Safe Payment Options
+            </span>
+            <div className="md:px-5 flex flex-col gap-2 md:gap-2">
+              <li className="list-disc">
+                Nile is committed to protecting your payment information. We
+                follow PCI DSS standards, use strong encryption, and perform
+                regular reviews of its system to protect your privacy.
+              </li>
+              <h2>1. Payment methods</h2>
+              {/* <img src={payment} /> */}
+              <img src={payment.src} alt="website main logo" />
+              <span className="flex text-gray-700 font-medium items-center underline">
+                Learn more <ChevronRight size={15} className="mt-[2px]" />
+              </span>
+              <h2>2. Security certification</h2>
+              <img src={security.src} alt="website main logo" />
+            </div>
+
+            <hr className="my-2" />
+
+            <span className="flex items-center text-[1rem] text-green-700 font-medium">
+              <Truck size={20} className="mr-1" />
+              Secure logistics
+            </span>
+            <div className="md:px-5 flex flex-col gap-1 md:gap-2">
+              <li className="list-disc">Delivery guaranteed</li>
+              <span className="">Accurate and precise order tracking</span>
+              <span className="flex text-gray-700 font-medium items-center underline">
+                Check your order <ChevronRight size={15} className="mt-[2px]" />
+              </span>
+            </div>
+
+            <hr className="my-2" />
+
+            <span className="flex items-center text-[1rem] text-green-700 font-medium">
+              <LockKeyhole size={20} className="mr-1" />
+              Secure Privacy
+            </span>
+            <div className="md:px-5 flex flex-col gap-1 md:gap-2">
+              <li className="list-disc">
+                Protecting your privacy is important to us! Please be assured
+                that your information will be kept secured and uncompromised. We
+                do not sell your personal information for money and will only
+                use your information in accordance with our privacy and cookie
+                policy to provide and improve our services to you.
+              </li>
+              <span className="flex text-gray-700 font-medium items-center underline">
+                Learn more <ChevronRight size={15} className="mt-[2px]" />
+              </span>
+            </div>
+
+            <hr className="my-2" />
+
+            <span className="flex items-center text-[1rem] text-green-700 font-medium">
+              <ShieldCheck size={20} className="mr-1" />
+              Purchase Protection
+            </span>
+            <div className="md:px-5 flex flex-col gap-1 md:gap-2">
+              <li className="list-disc">
+                Shop confidently on Temu knowing that if something goes wrong,
+                we've always got your back.
+              </li>
+              <span className="flex text-gray-700 font-medium items-center underline">
+                Learn more <ChevronRight size={15} className="mt-[2px]" />
+              </span>
+            </div>
+
+            <hr className="my-2" />
+
+            <span className="flex items-center text-[1rem] text-green-700 font-medium">
+              <MessagesSquare size={20} className="mr-1" />
+              Customer Service
+            </span>
+            <div className="md:px-5 flex flex-col gap-1 md:gap-2">
+              <li className="list-disc">
+                Our customer service team is always here if you need help.
+              </li>
+              <div className="w-full bg-blue-gray-50 flex items-center justify-around py-3 rounded-xl">
+                <Link href={`${HomeUrl}/SupportCenter?query=BuyingOnNile`}>
+                  <span className="flex flex-col items-center justify-center">
+                    <HelpCircle />
+                    FAQs
+                  </span>
+                </Link>
+                <span className="flex flex-col items-center justify-center">
+                  <MessageCircle />
+                  Live chat
+                </span>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      </div>
     );
   };
 
@@ -632,9 +849,9 @@ const ProductDetailPage = ({ searchParams }) => {
         };
 
         const response = await fetch(`/api/cart/addCarts`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(requestData),
         });
@@ -647,7 +864,7 @@ const ProductDetailPage = ({ searchParams }) => {
         dispatch(addItem(updatedSingleData));
         setisUniquepidMatched(true);
       } catch (error) {
-        console.error('Error updating cart:', error);
+        console.error("Error updating cart:", error);
       }
     } else {
       dispatch(addItem(updatedSingleData));
@@ -672,76 +889,85 @@ const ProductDetailPage = ({ searchParams }) => {
 
   const ImageGallery = () => {
     if (!responseData) {
-      return <>
-        <div className="flex gap-4 relative w-full">
-          <div className="gap-2 flex flex-col w-[10%]">
-            <Skeleton className="w-[50px] h-[50px] bg-gray-300 rounded-md" />
-            <Skeleton className="w-[50px] h-[50px] bg-gray-300 rounded-md" />
-            <Skeleton className="w-[50px] h-[50px] bg-gray-300 rounded-md" />
-          </div>
-          <div className="flex-1">
-            <Skeleton className="w-full h-full bg-gray-300 rounded-md" />
-          </div>
-        </div>
-      </>
-    }
-    return <>
-      {/* PRODUCT GALLERY */}
-      <div className="flex flex-col p-2 lg:w-[10%] h-[50vh] scrollbar-hidden  overflow-y-auto mb-2">
-        {responseData?.images?.map((image: string, index: number) => (
-          <div
-            key={index}
-            className="h-18 mb-2 cursor-pointer"
-            onMouseOver={() => setSelectedImage(image)}
-          >
-            <div className="aspect-w-1 aspect-h-1">
-              <Image
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
-                className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? 'ring-2 ring-primary' : ''
-                  }`}
-                alt={`Product Detail ${index + 1}`}
-                loading="lazy" // Add the lazy loading attribute here
-              />
+      return (
+        <>
+          <div className="flex gap-4 relative w-full">
+            <div className="gap-2 flex flex-col w-[10%]">
+              <Skeleton className="w-[50px] h-[50px] bg-gray-300 rounded-md" />
+              <Skeleton className="w-[50px] h-[50px] bg-gray-300 rounded-md" />
+              <Skeleton className="w-[50px] h-[50px] bg-gray-300 rounded-md" />
+            </div>
+            <div className="flex-1">
+              <Skeleton className="w-full h-full bg-gray-300 rounded-md" />
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* MAIN IMAGE */}
-      <div className="flex-1">
-        <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
-          <Image
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || responseData?.images?.[0]}`}
-            className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
-            alt="Main Product Image"
-            loading="lazy"
-          />
+        </>
+      );
+    }
+    return (
+      <>
+        {/* PRODUCT GALLERY */}
+        <div className="flex flex-row md:flex-col p-2 w-full md:w-[10%] h-auto scrollbar-hidden overflow-x-auto  md:overflow-y-auto mb-2">
+          <Image.PreviewGroup>
+            {responseData?.images?.map((image: string, index: number) => (
+              <div
+                key={index}
+                className="h-18 mb-2 cursor-pointer"
+                onMouseOver={() => setSelectedImage(image)}
+              >
+                <div className="w-full p-1 md:aspect-w-1 md:aspect-h-1">
+                  <img
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                    className={`w-full rounded-xl object-contain transition duration-300 ${
+                      selectedImage === image ? "ring-2 ring-primary" : ""
+                    }`}
+                    alt={`Product Detail ${index + 1}`}
+                    loading="lazy" // Add the lazy loading attribute here
+                  />
+                </div>
+              </div>
+            ))}
+          </Image.PreviewGroup>
         </div>
-      </div>
 
-      {/* LIKE BUTTON */}
-      <div>
-        {
-          wishlistLoading ? <div className="mt-2 w-9 h-9 flex items-center justify-center">
-            <Loader2Icon className="animate-spin" />
-          </div> : <div className="mt-2" onClick={handleToggleWishlist}>
-            <LikeButton liked={inFavorite} data="hey" />
+        {/* MAIN IMAGE */}
+        <div className="flex-1">
+          <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
+            <Image
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${
+                selectedImage || responseData?.images?.[0]
+              }`}
+              className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
+              alt="Main Product Image"
+              loading="lazy"
+            />
           </div>
-        }
-      </div>
-    </>
-  }
+        </div>
+
+        {/* LIKE BUTTON */}
+        <div>
+          {wishlistLoading ? (
+            <div className="mt-2 w-9 h-9 flex items-center justify-center">
+              <Loader2Icon className="animate-spin" />
+            </div>
+          ) : (
+            <div className="mt-2" onClick={handleToggleWishlist}>
+              <LikeButton liked={inFavorite} data="hey" />
+            </div>
+          )}
+        </div>
+      </>
+    );
+  };
   return (
     <div className={`nc-ProductDetailPage `}>
       {/* MAIn */}
-      <main className="px-10 mt-5 lg:mt-11">
+      <main className="px-5 md:px-10 mt-5 lg:mt-11">
         <div className="lg:flex">
           {/* CONTENT */}
-          <div className="flex flex-row w-full lg:w-[50%]">
+          <div className="flex flex-col-reverse md:flex-row w-full lg:w-[50%]">
             {ImageGallery()}
           </div>
 
@@ -753,11 +979,9 @@ const ProductDetailPage = ({ searchParams }) => {
 
         {/* DETAIL AND REVIEW */}
         <div className="mt-12 sm:mt-16 space-y-10 sm:space-y-16">
-          <div className="block xl:hidden">
-            <Policy />
-          </div>
+          <div className="block xl:hidden">{/* <Policy /> */}</div>
 
-          {renderDetailSection()}
+          {/* {renderDetailSection()} */}
 
           <hr className="border-gray-200 dark:border-gray-700" />
 
