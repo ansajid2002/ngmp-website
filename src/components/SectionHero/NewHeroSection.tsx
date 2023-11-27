@@ -1,17 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Carousel } from "@material-tailwind/react";
-import banner from "@/images/collections/banner.png";
 import Image from "next/image";
 import { AdminUrl } from "@/app/layout";
 
 const NewHeroSection = ({ data }) => {
-  const [dataa, setDataa] = useState<any | null>();
-  //   console.log(data);
-
-  useEffect(() => {
-    setDataa(data);
-  }, []);
 
   return (
     <div className="h-[30vh] md:h-auto">
@@ -30,19 +23,25 @@ const NewHeroSection = ({ data }) => {
           </div>
         )}
       >
-        {dataa?.map((item, index) => (
-          <Image
-            key={index}
-            src={`${AdminUrl}/uploads/Banners${item.banner_url.startsWith("/") ? "" : "/"
-              }${item.banner_url}`}
-            alt="image1"
-            width={1200}
-            height={216}
-            className="h-full w-full object-cover object-right"
-          ></Image>
-        ))}
+        {data && data?.map((item: any, index: number) => {
+
+
+          return <>
+            <Image
+              key={index}
+              src={`${AdminUrl}/uploads/Banners/${item.banner_url}`}
+              alt="image1"
+              width={1200}
+              height={216}
+              placeholder="blur"
+              blurDataURL="LKN]Rv%2Tw=w]~RBVZRi};RPxuwH"
+              className="h-full w-full object-cover object-right"
+            />
+          </>
+        }
+        )}
       </Carousel>
-    </div>
+    </div >
   );
 };
 

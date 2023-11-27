@@ -15,10 +15,11 @@ const nextConfig = {
   },
   env: {
     BASEURL: process.env.BASEURL,
-    HOMEURL: process.env.HOMEURL
+    HOMEURL: process.env.HOMEURL,
+    HOSTNAME_IMAGES: process.env.HOSTNAME_IMAGES
   },
   images: {
-    domains: ['localhost', 'https://nileadmin.websitetest.info', process.env.HOSTNAME_IMAGES], // Add the IP address to the list of allowed domains
+    domains: ['localhost', 'https://nileadmin.websitetest.info', 'admin.nilegmp.com', '192.168.1.5'], // Add the IP address to the list of allowed domains
     remotePatterns: [
       {
         protocol: "https",

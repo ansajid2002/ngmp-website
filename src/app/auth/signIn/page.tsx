@@ -27,7 +27,7 @@ function SignIn() {
 
     const router = useRouter()
 
-    const updateCartData = async (customerId) => {
+    const updateCartData = async (customerId: number) => {
         try {
 
             for (const cartItem of cartItems) {

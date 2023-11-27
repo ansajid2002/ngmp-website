@@ -33,8 +33,8 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
   const [hoveredItem, setHoveredItem] = useState([]);
   const [categoryTitle, setCategoryTitle] = useState("Featured Category");
   const { languageCode } = useAppSelector((store) => store.languagesReducer);
-  const customerData = useAppSelector((state) => state.customerData)
-  const customerId = customerData?.customerData?.customer_id || null
+  const customerData = useAppSelector((state) => state.customerData);
+  const customerId = customerData?.customerData?.customer_id || null;
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -50,11 +50,10 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     });
   };
 
-
   useEffect(() => {
     const fetchCart = async (customerId: any) => {
       try {
-        if (!customerId) return
+        if (!customerId) return;
         const response = await fetch(`/api/cart/${customerId}`, {
           method: "PUT", // Change the request method to PUT
           headers: {
@@ -75,7 +74,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
   useEffect(() => {
     const fetchWishlist = async (customerId: any) => {
       try {
-        if (!customerId) return
+        if (!customerId) return;
 
         const response = await fetch(`/api/wishlist/${customerId}`, {
           method: "PUT", // Change the request method to PUT
@@ -174,9 +173,9 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                                 .replace(/[^\w\s]/g, "")
                                 .replace(/\s/g, "")}`}
                           >
-                            <div className="mx-auto">
+                            <div className="h-32 w-32">
                               <Image
-                                className="mx-auto rounded-full border border-gray-300 h-[130px] w-[130px] transition hover:scale-105"
+                                className="mx-auto h-full w-full object-contain rounded-full border border-gray-300  transition hover:scale-105"
                                 width={150}
                                 height={150}
                                 src={`${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`}
