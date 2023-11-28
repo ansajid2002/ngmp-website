@@ -58,7 +58,7 @@ const CategoryPageSlick = ({ newcategoriesdata }) => {
       <Slider {...settings} className="pb-5">
         {newcategoriesdata?.slice(0, 24).map((single: any, index: any) => {
           return (
-            <div>
+            <div key={index}>
               <div
                 className="flex flex-col items-center gap-2 justify-center p-2 "
                 key={index}
@@ -70,8 +70,8 @@ const CategoryPageSlick = ({ newcategoriesdata }) => {
                       /\s/g,
                       ""
                     )}/${single.subcategories[0].subcategory_name
-                    .replace(/[^\w\s]/g, "")
-                    .replace(/\s/g, "")}`}
+                      .replace(/[^\w\s]/g, "")
+                      .replace(/\s/g, "")}`}
                   className="text-center"
                 >
                   <div className=" overflow-hidden mx-auto border h-[100px] w-[100px] lg:w-[140px] lg:h-[140px] rounded-full flex items-center justify-center">

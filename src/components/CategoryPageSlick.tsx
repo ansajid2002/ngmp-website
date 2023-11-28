@@ -88,7 +88,7 @@ const CategoryPageSlick = ({ data }) => {
                 <Slider {...settings}>
                   {item.subcategories?.map((item3: any, index3: any) => {
                     return (
-                      <Link className="flex gap-2" href={`/category/${data.category}/${item3.subcategory_name.replace(/[^\w\s]/g, "").replace(/\s/g, "")}`}>
+                      <Link key={index3} className="flex gap-2" href={`/category/${data.category}/${item3.subcategory_name.replace(/[^\w\s]/g, "").replace(/\s/g, "")}`}>
                         <div className={`w-24 h-24 lg:h-32 lg:w-32 rounded-full overflow-hidden  transition-all ease-in-out hover:scale-105 ${item3.subcategory_name.replace(/[^\w\s]/g, "").replace(/\s/g, "") === data.subcatname ? 'border-4 border-gray-700' : 'border-gray-200  border-2 '}`}>
                           <Image
                             width={100}

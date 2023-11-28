@@ -4,13 +4,11 @@ const nextConfig = {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
     ignoreBuildErrors: true,
-    ignoreDuringBuilds: true
   },
   eslint: {
     ignoreDuringBuilds: true
   },
   experimental: {
-
     // appDir: true,
     typedRoutes: true,
   },
@@ -19,7 +17,7 @@ const nextConfig = {
     HOMEURL: process.env.HOMEURL,
   },
   images: {
-    domains: ['localhost', 'https://nileadmin.websitetest.info', 'https://admin.nilegmp.com', '192.168.1.5'], // Add the IP address to the list of allowed domains
+    domains: ['localhost', 'https://nileadmin.websitetest.info', 'https://admin.nilegmp.com', '192.168.1.4'], // Add the IP address to the list of allowed domains
     remotePatterns: [
       {
         protocol: "https",
@@ -49,7 +47,7 @@ const nextConfig = {
       // Add a new pattern for the new IP address
       {
         protocol: "https",
-        hostname: "admin.nilegmp.com", // Replace with the actual hostname or IP address
+        hostname: "192.168.1.4", // Replace with the actual hostname or IP address
         port: "", // If there is a specific port, add it here
         pathname: "/**",
       },
