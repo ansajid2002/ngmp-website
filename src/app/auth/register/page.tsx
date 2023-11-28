@@ -60,11 +60,13 @@ const Register = () => {
                     title: 'Error!',
                     text: data?.message,
                     icon: 'error',
-                }) : Swal.fire({
-                    title: 'Success!',
-                    text: data?.message,
-                    icon: 'success',
-                })
+                }) : (
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data?.message,
+                        icon: 'success',
+                    })
+                )
                 setLoading(false)
 
             })
@@ -94,7 +96,7 @@ const Register = () => {
                             firstname: '',
                             lastname: '',
                             email: '',
-                            mobile: 0,
+                            mobile: '',
                             countryCode: '',
                             password: '',
                             confirmPassword: '',

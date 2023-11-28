@@ -16,14 +16,9 @@ const nextConfig = {
   env: {
     BASEURL: process.env.BASEURL,
     HOMEURL: process.env.HOMEURL,
-    HOSTNAME_IMAGES: process.env.HOSTNAME_IMAGES
   },
   images: {
-<<<<<<< HEAD
-    domains: ['localhost', 'https://nileadmin.websitetest.info', 'admin.nilegmp.com', '192.168.1.5'], // Add the IP address to the list of allowed domains
-=======
-    domains: ['localhost', 'https://admin.nilegmp.com', 'https://nileadmin.websitetest.info', '192.168.1.5'], // Add the IP address to the list of allowed domains
->>>>>>> 51d4da2c7f97c55adbb2c450dbfa9955800af22f
+    domains: ['localhost', 'https://nileadmin.websitetest.info', 'https://admin.nilegmp.com', '192.168.1.5'], // Add the IP address to the list of allowed domains
     remotePatterns: [
       {
         protocol: "https",
@@ -53,11 +48,7 @@ const nextConfig = {
       // Add a new pattern for the new IP address
       {
         protocol: "https",
-<<<<<<< HEAD
-        hostname: process.env.HOSTNAME_IMAGES, // Replace with the actual hostname or IP address
-=======
-        hostname: "192.168.1.5", // Replace with the actual hostname or IP address
->>>>>>> 51d4da2c7f97c55adbb2c450dbfa9955800af22f
+        hostname: "admin.nilegmp.com", // Replace with the actual hostname or IP address
         port: "", // If there is a specific port, add it here
         pathname: "/**",
       },
