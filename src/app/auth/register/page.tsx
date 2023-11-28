@@ -30,6 +30,7 @@ const Register = () => {
     const dispatch = useDispatch()
     const [error, setError] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [openModalOtp, setOpenModalOTP] = useState(false)
     const customerData = useAppSelector((state) => state.customerData)
     const cartItems = useAppSelector((state) => state.cart.cartItems);
 
