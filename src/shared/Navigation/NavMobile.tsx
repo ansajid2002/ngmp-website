@@ -91,10 +91,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
             </Link>
             {i.children && (
               <Disclosure.Panel>
-                {_renderMenuChild(
-                  i,
-                  "pl-3 text-gray-600 dark:text-gray-400 "
-                )}
+                {_renderMenuChild(i, "pl-3 text-gray-600 dark:text-gray-400 ")}
               </Disclosure.Panel>
             )}
           </Disclosure>
@@ -105,11 +102,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
 
   const _renderItem = (item: NavItemType, index: number) => {
     return (
-      <Disclosure
-        key={index}
-        as="li"
-        className="text-gray-900 dark:text-white"
-      >
+      <Disclosure key={index} as="li" className="text-gray-900 dark:text-white">
         <Link
           className="flex w-full items-center py-2.5 px-4 font-medium uppercase tracking-wide text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
           href={{
@@ -213,16 +206,16 @@ const NavMobile: React.FC<NavMobileProps> = ({
               />
             </Link>
             {/* <SocialsList itemClass="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xl" /> */}
-            <span className="flex items-center justify-center gap-2">
+            <span className="flex items-center justify-center gap-3">
+              <Language />
               <Link
                 href={"/SupportCenter?query=BuyingOnNile"}
                 onClick={onClickClose}
-                className="px-1"
+                className="px-2"
               >
                 <MessagesSquare strokeWidth={1} size={28} />
               </Link>
-              <Language />
-              <SwitchDarkMode className="bg-neutral-100 dark:bg-neutral-800" />
+              {/* <SwitchDarkMode className="bg-neutral-100 dark:bg-neutral-800" /> */}
             </span>
           </div>
         </div>
@@ -244,11 +237,13 @@ const NavMobile: React.FC<NavMobileProps> = ({
         </ButtonPrimary>
       </div> */}
       <div className="relative h-auto p-5">
-        <ul className="text-[1.2rem] font-medium space-y-3">
-          <Link href={"/"} onClick={onClickClose}>
-            <li>Home</li>
+        <ul className="text-[1.2rem]  font-medium space-y-2">
+          <Link href={"/Channel/best-sellers"} onClick={onClickClose}>
+            <li>Best Sellers</li>
           </Link>
-          {/* <li>About</li> */}
+          <Link href={"/Channel/new-arrivals"} onClick={onClickClose}>
+            <li>New Arrivals</li>
+          </Link>
           <li
             onClick={toggleDropdown}
             className="flex items-center justify-between"
@@ -272,13 +267,13 @@ const NavMobile: React.FC<NavMobileProps> = ({
                     /\s/g,
                     ""
                   )}/${option.subcategories[0].subcategory_name
-                    .replace(/[^\w\s]/g, "")
-                    .replace(/\s/g, "")}`}
+                  .replace(/[^\w\s]/g, "")
+                  .replace(/\s/g, "")}`}
               >
                 <li
                   className="cursor-pointer py-2 border-b-2"
-                // key={index}
-                // onClick={() => handleOptionClick()}
+                  // key={index}
+                  // onClick={() => handleOptionClick()}
                 >
                   {option.category_name}
                 </li>

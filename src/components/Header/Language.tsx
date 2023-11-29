@@ -36,7 +36,7 @@ export default function AvatarDropdown() {
         {({ open, close }) => (
           <>
             <Popover.Button
-              className={`w-12 h-10 sm:w-14 sm:h-10 rounded-md  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex items-center justify-center`}
+              className={`w-10 h-10 sm:w-14 sm:h-10 rounded-md  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex items-center justify-center`}
             >
               <img
                 className="md:w-6 md:h-6"

@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChevronRight, MoveRight } from "lucide-react";
 import Link from "next/link";
 import { Rate } from "antd";
 import { AdminUrl } from "@/app/layout";
+import "react-loading-skeleton/dist/skeleton.css";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 const SingleVendorsCard = ({ item, index }) => {
+  const [isLoading, setIsLoading] = useState();
   return (
     <a href={`/Channel/Shops?vendorid=${item.id}`} target="blank">
       <div className=" rounded-xl overflow-hidden border-[1px] shadow-md">
