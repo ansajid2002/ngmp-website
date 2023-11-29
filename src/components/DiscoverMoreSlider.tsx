@@ -7,8 +7,11 @@ import CardCategory3 from "./CardCategories/CardCategory3";
 import Glide from "@glidejs/glide/dist/glide.esm";
 import { CATS_DISCOVER } from "./CardCategories/data";
 
-const DiscoverMoreSlider = () => {
+import SingleVendorsCard from "./Vendors/SingleVendorsCard";
+
+const DiscoverMoreSlider = ({ data }) => {
   const sliderRef = useRef(null);
+  // console.log(data, "PRODUCTTS");
 
   const [isShow, setIsShow] = useState(false);
 
@@ -54,30 +57,28 @@ const DiscoverMoreSlider = () => {
   return (
     <div
       ref={sliderRef}
-      className={`nc-DiscoverMoreSlider  ${isShow ? "" : "invisible"
-        }`}
+      className={`nc-DiscoverMoreSlider  ${isShow ? "" : "invisible"}`}
     >
       <Heading
         className="mb-12 lg:mb-14 text-neutral-900 dark:text-neutral-50 nc-p-r-container "
         desc=""
-        rightDescText="Good things are waiting for you"
+        showSlideButton={false}
+        // rightDescText="Good things are waiting for you"
         hasNextPrev
       >
-        Discover more
+        Recommended Shop!!
       </Heading>
-      <div className="" data-glide-el="track">
-        <ul className="glide__slides">
-          {CATS_DISCOVER.map((item, index) => (
-            <li key={index} className={`glide__slide`}>
-              <CardCategory3
-                name={item.name}
-                desc={item.desc}
-                featuredImage={item.featuredImage}
-                color={item.color}
-              />
-            </li>
-          ))}
-        </ul>
+      <div className="p-5" data-glide-el="track">
+        <div className="glide__slides">
+          {data &&
+            data.map((item: any, index: any) => (
+              <div
+                className={`glide__slide bg-gray-100 rounded-lg overflow-hidden border mb-14 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-gray-200`}
+              >
+                <SingleVendorsCard item={item} index={index} />
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );

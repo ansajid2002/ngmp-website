@@ -136,9 +136,30 @@ export const getAllProducts = async () => {
   }
 };
 
+export const getAllVendors = async () => {
+  try {
+    const response = await fetch(`${AdminUrl}/api/allVendors`, {
+      next: { revalidate: 30 },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data?.vendors;
+    // Log the data
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
 async function PageHome() {
   const getAllProductsData = await getAllProducts();
   const bannersData = await getBannerdata();
+  const vendors = await getAllVendors();
+
   const fetchCategoriesAndSubcategoriesdata =
     await fetchCategoriesAndSubcategories();
 
@@ -168,7 +189,7 @@ async function PageHome() {
         />
 
         <div className="mt-24 lg:mt-32">
-          <DiscoverMoreSlider />
+          <DiscoverMoreSlider data={vendors} />
         </div>
 
         <div className="hidden md:block py-4 border-t border-b border-gray-200 dark:border-gray-700">
@@ -225,7 +246,7 @@ async function PageHome() {
             </div>
           </div>
         </div> */}
-        <SectionClientSay />
+        {/* <SectionClientSay /> */}
       </div>
 
       <div>{/* <Category /> */}</div>

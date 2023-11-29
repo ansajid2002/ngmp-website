@@ -1,5 +1,7 @@
 import React, { HTMLAttributes, ReactNode } from "react";
 import NextPrev from "@/shared/NextPrev/NextPrev";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 export interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   fontClass?: string;
@@ -8,6 +10,7 @@ export interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   desc?: ReactNode;
   hasNextPrev?: boolean;
   isCenter?: boolean;
+  showSlideButton?: boolean;
 }
 
 const solutions = [
@@ -34,6 +37,7 @@ const Heading: React.FC<HeadingProps> = ({
   fontClass = "text-3xl md:text-4xl font-semibold",
   rightDescText,
   rightPopoverOptions = solutions,
+  showSlideButton = true,
   ...args
 }) => {
   return (
@@ -67,9 +71,17 @@ const Heading: React.FC<HeadingProps> = ({
           </span>
         )}
       </div>
-      {hasNextPrev && !isCenter && (
+      {showSlideButton && hasNextPrev && !isCenter && (
         <div className="mt-4 flex justify-end sm:ms-2 sm:mt-0 flex-shrink-0">
           <NextPrev onClickNext={() => {}} onClickPrev={() => {}} />
+        </div>
+      )}
+      {!showSlideButton && hasNextPrev && !isCenter && (
+        <div>
+          <Link href={"/Channel/Shops"} className="flex items-center gap-1">
+            <h2>View All Shop</h2>
+            <ChevronRight className="mt-1" color="#ED642B" size={25} />
+          </Link>
         </div>
       )}
     </div>

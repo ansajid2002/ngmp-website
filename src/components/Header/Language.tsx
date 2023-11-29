@@ -7,33 +7,29 @@ import Avatar from "@/shared/Avatar/Avatar";
 import SwitchDarkMode2 from "@/shared/SwitchDarkMode/SwitchDarkMode2";
 import Link from "next/link";
 import { HomeUrl } from "@/app/layout";
-import { useAppSelector,AppDispatch } from '@/redux/store'
-import usa from "@/images/flags/united-states.png"
+import { useAppSelector, AppDispatch } from "@/redux/store";
+import usa from "@/images/flags/united-states.png";
 import { useDispatch } from "react-redux";
 import { setLanguage } from "@/redux/features/languageslice";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 
 export default function AvatarDropdown() {
-  
   const dispatch = useDispatch<AppDispatch>();
 
-    const {availablelanguages,languageCode,languageName,languageImg} = useAppSelector((store) =>store.languagesReducer)
+  const { availablelanguages, languageCode, languageName, languageImg } =
+    useAppSelector((store) => store.languagesReducer);
 
-
-
-  const ChangeLanguageIcon = (item : any) => {
-    const {label,img,lcode} = item
+  const ChangeLanguageIcon = (item: any) => {
+    const { label, img, lcode } = item;
     dispatch(
       setLanguage({
         newlanguageCode: lcode,
         newlanguageName: label,
-        newlanguageImg:img
+        newlanguageImg: img,
       })
     );
-
   };
 
-  
   return (
     <div className="AvatarDropdown  ">
       <Popover className="relative">
@@ -42,10 +38,12 @@ export default function AvatarDropdown() {
             <Popover.Button
               className={`w-12 h-10 sm:w-14 sm:h-10 rounded-md  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex items-center justify-center`}
             >
-            
-
-              <img className="md:w-6 md:h-6" src={languageImg.src} alt="language" />
-              <span className="ml-1 font-medium">{languageCode}</span>
+              <img
+                className="md:w-6 md:h-6"
+                src={languageImg.src}
+                alt="language"
+              />
+              <span className="ml-1 font-medium uppercase">{languageCode}</span>
               {/* <span>{lcode}</span> */}
             </Popover.Button>
             <Transition
@@ -75,21 +73,20 @@ export default function AvatarDropdown() {
                           />
                         </div>
                         <div className="ml-2 lg:ml-4">
-                          <p className="text-sm font-medium ">{item.label}</p>
+                          <p className="text-sm font-medium capitalize">
+                            {item.label}
+                          </p>
                         </div>
                         <div className="ml-8">
-
-                        {
-                          item.label === languageName &&
-                          <ChevronRightIcon
-                          className="ml-1 -mr-1 h-4 w-4 text-gray-700"
-                          aria-hidden="true"
-                          />
-                        }
+                          {item.label === languageName && (
+                            <ChevronRightIcon
+                              className="ml-1 -mr-1 h-4 w-4 text-gray-700"
+                              aria-hidden="true"
+                            />
+                          )}
                         </div>
                       </Link>
                     ))}
-
                   </div>
                 </div>
               </Popover.Panel>

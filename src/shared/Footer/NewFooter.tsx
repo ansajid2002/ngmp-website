@@ -19,7 +19,10 @@ const Footer: React.FC = () => {
       title: "Company info",
       menus: [
         { href: `${HomeUrl}`, label: "About Nile" },
-        { href: `${HomeUrl}`, label: "Nile Market-place - Team Up, Price Down!" },
+        {
+          href: `${HomeUrl}`,
+          label: "Nile Market-place - Team Up, Price Down!",
+        },
         { href: `${HomeUrl}`, label: "Affiliate & influencer Program" },
         { href: `${HomeUrl}`, label: "Campus ambassador" },
         { href: `${HomeUrl}`, label: "Contact us" },
@@ -89,7 +92,7 @@ const Footer: React.FC = () => {
 
   return (
     <div className="nc-Footer  top-32 relative px-2 py-10 lg:pt-20 mt-20 lg:pb-5 border-t border-neutral-200 dark:border-neutral-700">
-      <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-10 ">
+      <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-4 lg:gap-x-10 ">
         {widgetMenus.map(renderWidgetMenuItem)}
         <div className="">
           <h2 className="font-semibold text-neutral-700 dark:text-neutral-200 mb-5">
@@ -109,14 +112,14 @@ const Footer: React.FC = () => {
             />
           </a>
         </div>
-        <div className="grid grid-cols-1 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
+        {/* <div className="grid grid-cols-1 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
           <h2 className="font-semibold text-center text-neutral-700 dark:text-neutral-200">
             Our Social Media
           </h2>
           <div className="col-span-1 flex items-center justify-center md:col-span-3">
             <SocialsList1 className="flex items-center space-x-2 lg:space-x-0 lg:flex-col lg:space-y-3 lg:items-start" />
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
