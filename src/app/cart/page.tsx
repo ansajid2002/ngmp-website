@@ -6,14 +6,13 @@ import FetchCartPrice from "@/components/FetchCartPrice";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
-
 const CartPage = async () => {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
   console.log(session);
 
   return (
     <div className="nc-CartPage">
-      <main className="container py-16 lg:pb-28 lg:pt-20 ">
+      <main className="px-5 md:px-10 py-16 lg:pb-28 lg:pt-20 ">
         <div className="mb-12 sm:mb-16">
           <h2 className="block text-2xl sm:text-3xl lg:text-4xl font-semibold ">
             Shopping Cart
@@ -36,8 +35,8 @@ const CartPage = async () => {
           <div className="border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 my-10 lg:my-0 lg:mx-10 xl:mx-16 2xl:mx-20 flex-shrink-0"></div>
           <FetchCartPrice />
         </div>
-      </main >
-    </div >
+      </main>
+    </div>
   );
 };
 

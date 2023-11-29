@@ -28,7 +28,6 @@ const CheckoutPage = () => {
     }, 80);
   };
 
-
   const renderLeft = () => {
     return (
       <div className="space-y-8">
@@ -76,7 +75,7 @@ const CheckoutPage = () => {
 
   return (
     <div className="nc-CheckoutPage">
-      <main className="container py-16 lg:pb-28 lg:pt-20 ">
+      <main className="px-5 md:px-10 py-16 lg:pb-28 lg:pt-20 ">
         <div className="mb-16">
           <h2 className="block text-2xl sm:text-3xl lg:text-4xl font-semibold ">
             Checkout
@@ -170,8 +169,8 @@ const CheckoutPage = () => {
             </div>
           </div>
         </div>
-      </main >
-    </div >
+      </main>
+    </div>
   );
 };
 

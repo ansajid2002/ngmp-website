@@ -25,27 +25,42 @@ import { useAppSelector } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { addItem } from "@/redux/slices/cartSlice";
 
-
 export interface ProductQuickView2Props {
-  className?: string,
-  item?: any
-
+  className?: string;
+  item?: any;
 }
 
-const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item }) => {
+const ProductQuickView2: FC<ProductQuickView2Props> = ({
+  className = "",
+  item,
+}) => {
   // const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
 
   const [inFavorite, setinFavorite] = useState(false);
-  const { wishlistItems } = useAppSelector((store) => store.wishlist)
+  const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
-    const isFavorite = wishlistItems && wishlistItems?.some(wish => wish.uniquepid.toString() === item.uniquepid.toString());
+    const isFavorite =
+      wishlistItems &&
+      wishlistItems?.some(
+        (wish) => wish.uniquepid.toString() === item.uniquepid.toString()
+      );
     // Set the result in inFavorite state
     setinFavorite(isFavorite);
   }, [wishlistItems]);
 
-  const { ad_title, sellingprice, images, mrp, uniquepid, isvariant, prod_slug, slug_subcat, slug_cat } = item
+  const {
+    ad_title,
+    sellingprice,
+    images,
+    mrp,
+    uniquepid,
+    isvariant,
+    prod_slug,
+    slug_subcat,
+    slug_cat,
+  } = item;
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
   const [sizeSelected, setSizeSelected] = useState("");
@@ -54,77 +69,94 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
   const [variantsData, setVariantsData] = useState(null);
 
   const [selectedAttributes, setSelectedAttributes] = useState<null>(null); // Replace 'YourAttributeType' with the actual type
-  const [selectLabel, setSelectLabel] = useState<string | null>(item?.label)
-  const [mrpData, setMrp] = useState<number | null>(mrp)
-  const [sellingPriceData, setSellingPrice] = useState<number | null>(sellingprice)
-  const [discountPercentage, setDiscountPercentage] = useState<number | null>(((mrp - sellingprice) / mrp) * 100);
-  const [singleData, setsingleData] = useState(item)
-  const [selectedImage, setSelectedImage] = useState(images?.[0])
-  const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(null);
-  const customerData = useAppSelector((state) => state.customerData)
-  const customerId = customerData?.customerData?.customer_id || null
+  const [selectLabel, setSelectLabel] = useState<string | null>(item?.label);
+  const [mrpData, setMrp] = useState<number | null>(mrp);
+  const [sellingPriceData, setSellingPrice] = useState<number | null>(
+    sellingprice
+  );
+  const [discountPercentage, setDiscountPercentage] = useState<number | null>(
+    ((mrp - sellingprice) / mrp) * 100
+  );
+  const [singleData, setsingleData] = useState(item);
+  const [selectedImage, setSelectedImage] = useState(images?.[0]);
+  const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(
+    null
+  );
+  const cartItems = useAppSelector((state) => state.cart.cartItems);
 
-  const dispatch = useDispatch()
+  const customerData = useAppSelector((state) => state.customerData);
+  const customerId = customerData?.customerData?.customer_id || null;
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchVariants = async () => {
       try {
-        const response = await fetch(`/api/variants/${slug_cat}/${slug_subcat}/${uniquepid}`);
+        const response = await fetch(
+          `/api/variants/${slug_cat}/${slug_subcat}/${uniquepid}`
+        );
         const data = await response.json();
-        setVariantsData(data?.variant)
+        setVariantsData(data?.variant);
       } catch (error) {
-        console.error('Error fetching variants:', error);
+        console.error("Error fetching variants:", error);
       }
     };
 
-    isvariant === 'Variant' && fetchVariants();
+    isvariant === "Variant" && fetchVariants();
   }, []);
 
   useEffect(() => {
     // Create a new variants object
     if (!variantsWithArray) {
-      const newVariantsWithArray = variantsData && variantsData?.reduce((acc, variant) => {
-        const variantsvaluesObj = variant?.variantsvalues
-          ? JSON.parse(variant.variantsvalues)
-          : {};
+      const newVariantsWithArray =
+        (variantsData &&
+          variantsData?.reduce((acc, variant) => {
+            const variantsvaluesObj = variant?.variantsvalues
+              ? JSON.parse(variant.variantsvalues)
+              : {};
 
-        // Initialize the accumulator if it doesn't exist
-        if (!acc.variantsvalues) {
-          acc.variantsvalues = {};
-        }
+            // Initialize the accumulator if it doesn't exist
+            if (!acc.variantsvalues) {
+              acc.variantsvalues = {};
+            }
 
-        // Iterate over the attributes in variantsvaluesObj
-        for (const attribute in variantsvaluesObj) {
-          if (acc.variantsvalues.hasOwnProperty(attribute)) {
-            // If the attribute already exists in the accumulator, push the value to the array
-            acc.variantsvalues[attribute].push(variantsvaluesObj[attribute]);
-          } else {
-            // If the attribute doesn't exist in the accumulator, create a new array with the value
-            acc.variantsvalues[attribute] = [variantsvaluesObj[attribute]];
-          }
-        }
+            // Iterate over the attributes in variantsvaluesObj
+            for (const attribute in variantsvaluesObj) {
+              if (acc.variantsvalues.hasOwnProperty(attribute)) {
+                // If the attribute already exists in the accumulator, push the value to the array
+                acc.variantsvalues[attribute].push(
+                  variantsvaluesObj[attribute]
+                );
+              } else {
+                // If the attribute doesn't exist in the accumulator, create a new array with the value
+                acc.variantsvalues[attribute] = [variantsvaluesObj[attribute]];
+              }
+            }
 
-        return acc;
-      }, {}) || {};
+            return acc;
+          }, {})) ||
+        {};
 
       for (const attribute in newVariantsWithArray?.variantsvalues) {
         const valuesArray = newVariantsWithArray?.variantsvalues[attribute];
-        newVariantsWithArray.variantsvalues[attribute] = [...new Set(valuesArray)];
+        newVariantsWithArray.variantsvalues[attribute] = [
+          ...new Set(valuesArray),
+        ];
       }
 
       // Check if newVariantsWithArray is not empty, null, or undefined before setting the state
       if (Object.keys(newVariantsWithArray).length > 0) {
         // Convert newVariantsWithArray.variantsvalues to an array of objects
-        const variantsArray = Object.keys(newVariantsWithArray?.variantsvalues).map((attribute) => ({
+        const variantsArray = Object.keys(
+          newVariantsWithArray?.variantsvalues
+        ).map((attribute) => ({
           attribute,
           values: newVariantsWithArray.variantsvalues[attribute],
         }));
 
-
         setVariantsWithArray(variantsArray);
       }
     }
-
   }, [variantsWithArray, variantsData]);
 
   useEffect(() => {
@@ -138,31 +170,64 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
       // Combine the selected attribute values into a single string
       const formattedSelection = Object.keys(initialSelectedAttributes)
         .map((attribute) => `${initialSelectedAttributes[attribute]}`)
-        .join('/');
+        .join("/");
 
       // Find the variant with the matching label
-      const selectedVariant = variantsData.find((variant) => variant.label === formattedSelection);
+      const selectedVariant = variantsData.find(
+        (variant) => variant.label === formattedSelection
+      );
       if (selectedVariant) {
         // Set the mrp and sellingprice based on the selected variant
 
         setMrp(selectedVariant.variant_mrp);
         setSellingPrice(selectedVariant.variant_sellingprice);
-        setSelectLabel(selectedVariant?.label)
-        setSizeSelected(selectedVariant.label)
-        setsingleData({ ...singleData, mrp: selectedVariant.variant_mrp, sellingprice: selectedVariant.variant_sellingprice, label: selectedVariant?.label })
-        const discountPercentage = ((selectedVariant.variant_mrp - selectedVariant.variant_sellingprice) / selectedVariant.variant_mrp) * 100;
+        setSelectLabel(selectedVariant?.label);
+        setSizeSelected(selectedVariant.label);
+        setsingleData({
+          ...singleData,
+          mrp: selectedVariant.variant_mrp,
+          sellingprice: selectedVariant.variant_sellingprice,
+          label: selectedVariant?.label,
+        });
+        const discountPercentage =
+          ((selectedVariant.variant_mrp -
+            selectedVariant.variant_sellingprice) /
+            selectedVariant.variant_mrp) *
+          100;
         setDiscountPercentage(discountPercentage); // Rounded to 2 decimal places
       }
       setSelectedAttributes(initialSelectedAttributes);
     }
   }, [variantsWithArray]);
 
+  useEffect(() => {
+    const isUniquepidMatched = cartItems.some((cartItem) => {
+      return cartItem.uniquepid === item?.uniquepid;
+    });
+
+    const matchedCartProduct = cartItems.find((cartItem) => {
+      if (cartItem.uniquepid === item?.uniquepid) {
+        if (cartItem?.label != null && cartItem?.label != undefined) {
+          return (
+            cartItem?.uniquepid === item?.uniquepid &&
+            cartItem?.label === item?.label
+          );
+        }
+        return cartItem?.uniquepid === item?.uniquepid;
+      }
+    });
+
+    setisUniquepidMatched(isUniquepidMatched);
+  }, [isUniquepidMatched, cartItems, item]);
+
   const handleAttributeSelect = (attribute: any, value: any) => {
     // Create a copy of the selectedAttributes
     let updatedSelectedAttributes = { ...selectedAttributes };
     if (Array.isArray(updatedSelectedAttributes)) {
       // If selectedAttributes is an array, find the index of the attribute and update its value
-      const index = updatedSelectedAttributes.findIndex((attr) => attr === attribute);
+      const index = updatedSelectedAttributes.findIndex(
+        (attr) => attr === attribute
+      );
 
       if (index !== -1) {
         updatedSelectedAttributes[index + 1] = value; // Update the value at the next index
@@ -176,22 +241,24 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
     }
 
     // Convert updatedSelectedAttributes to the desired format
-    let formattedSelection = '';
+    let formattedSelection = "";
 
     if (Array.isArray(updatedSelectedAttributes)) {
       formattedSelection = updatedSelectedAttributes
         .map((item, index) => (index % 2 === 0 ? `${item}/` : item))
-        .join('');
+        .join("");
     } else {
       formattedSelection = Object.keys(updatedSelectedAttributes)
         .map((key) => `${updatedSelectedAttributes[key]}`)
-        .join('/');
+        .join("/");
     }
 
     // Set the updated selected attributes in the state
     setSelectedAttributes(updatedSelectedAttributes);
     // Compare formattedSelection with label in variantsData
-    const selectedVariant = variantsData.find((variant) => variant.label === formattedSelection);
+    const selectedVariant =
+      variantsData &&
+      variantsData.find((variant) => variant.label === formattedSelection);
 
     if (selectedVariant) {
       // Retrieve mrp and sellingprice from the selected variant
@@ -199,13 +266,19 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
       setMrp(variant_mrp);
       // singleData = {...singleData, mrp: variant_mrp}
       setSellingPrice(variant_sellingprice);
-      setSelectLabel(label)
-      setSizeSelected(label)
+      setSelectLabel(label);
+      setSizeSelected(label);
 
-      setsingleData({ ...singleData, mrp: variant_mrp, sellingprice: variant_sellingprice, label: label })
+      setsingleData({
+        ...singleData,
+        mrp: variant_mrp,
+        sellingprice: variant_sellingprice,
+        label: label,
+      });
 
       // Calculate the discount percentage
-      const discountPercentage = ((variant_mrp - variant_sellingprice) / variant_mrp) * 100;
+      const discountPercentage =
+        ((variant_mrp - variant_sellingprice) / variant_mrp) * 100;
       setDiscountPercentage(discountPercentage); // Rounded to 2 decimal places
     } else {
     }
@@ -221,9 +294,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
     };
 
     const { category, subcategory, uniquepid, vendorid } = singleData;
-    const replacecategory = category
-      .replace(/[^\w\s]/g, "")
-      .replace(/\s/g, "");
+    const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
     const replacesubcategory = subcategory
       .replace(/[^\w\s]/g, "")
       .replace(/\s/g, "");
@@ -243,9 +314,9 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         };
 
         const response = await fetch(`/api/cart/addCarts`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(requestData),
         });
@@ -258,7 +329,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         dispatch(addItem(updatedSingleData));
         setisUniquepidMatched(true);
       } catch (error) {
-        console.error('Error updating cart:', error);
+        console.error("Error updating cart:", error);
       }
     } else {
       dispatch(addItem(updatedSingleData));
@@ -292,41 +363,42 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
       );
     }
 
-    return (
-      variantsWithArray.map((variant: any, index: any) => (
-        <>
-          <label htmlFor="">
-            <span className="text-sm font-medium">
-              {variant.attribute}:
-              <span className="ml-1 font-semibold">
-                {selectedAttributes?.[variant?.attribute]}
-              </span>
+    return variantsWithArray.map((variant: any, index: any) => (
+      <>
+        <label htmlFor="">
+          <span className="text-sm font-medium">
+            {variant.attribute}:
+            <span className="ml-1 font-semibold">
+              {selectedAttributes?.[variant?.attribute]}
             </span>
-          </label>
-          <div className="flex mt-3">
-            {
-              variant?.values?.map((item: any, itemvar: any) => (
-                <div
-                  key={itemvar}
-                  onClick={() => {
-                    handleAttributeSelect(variant.attribute, item);
-                    setVariantActive(itemvar);
-                  }}
-                  className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
-                    ? "border-black/90 dark:border-white"
-                    : "border-transparent"
-                    }`}
-                >
-                  <div
-                    className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && 'bg-black text-white'}`}
-                  >{item}</div>
-                </div>
-              ))
-            }
-          </div>
-        </>
-      ))
-    );
+          </span>
+        </label>
+        <div className="flex mt-3">
+          {variant?.values?.map((item: any, itemvar: any) => (
+            <div
+              key={itemvar}
+              onClick={() => {
+                handleAttributeSelect(variant.attribute, item);
+                setVariantActive(itemvar);
+              }}
+              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${
+                variantActive === itemvar
+                  ? "border-black/90 dark:border-white"
+                  : "border-transparent"
+              }`}
+            >
+              <div
+                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${
+                  variantActive === itemvar && "bg-black text-white"
+                }`}
+              >
+                {item}
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
+    ));
   };
 
   const renderSectionContent = () => {
@@ -335,12 +407,20 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         {/* ---------- 1 HEADING ----------  */}
         <div>
           <h2 className="text-2xl 2xl:text-3xl font-semibold">
-            <Link href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}>{ad_title}</Link>
+            <Link
+              href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
+            >
+              {ad_title}
+            </Link>
           </h2>
 
           <div className="flex items-center mt-5 space-x-4 sm:space-x-5">
             {/* <div className="flex text-xl font-semibold">$112.00</div> */}
-            {discountPercentage && discountPercentage > 0 && <p className="text-green-600  ">{discountPercentage?.toFixed(2)}% off</p>}
+            {discountPercentage && discountPercentage > 0 && (
+              <p className="text-green-600  ">
+                {discountPercentage?.toFixed(2)}% off
+              </p>
+            )}
             <Prices
               contentClass="py-1 md:py-1.5 text-lg font-semibold"
               price={mrpData}
@@ -376,22 +456,40 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
         {isvariant === "Variant" && <div className="">{renderVariants()}</div>}
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
-        <div className="flex space-x-3.5">
-          <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
-            <NcInputNumber
-              defaultValue={qualitySelected}
-              onChange={setQualitySelected}
-            />
+        {isUniquepidMatched ? (
+          <div className="flex space-x-3.5">
+            {/* <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
+              <NcInputNumber
+                defaultValue={
+                  IsMatchedCartProduct && IsMatchedCartProduct.added_quantity
+                }
+                onChange={setQualitySelected}
+              />
+            </div> */}
+            <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
+              <Link href={"/cart"}>
+                <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+                <span className="ml-3">View Cart</span>
+              </Link>
+            </ButtonPrimary>
           </div>
-          <ButtonPrimary
-            className="flex-1 flex-shrink-0"
-            onClick={notifyAddTocart}
-          >
-            <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-            <span className="ml-3">Add to cart</span>
-          </ButtonPrimary>
-
-        </div>
+        ) : (
+          <div className="flex space-x-3.5">
+            <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
+              <NcInputNumber
+                defaultValue={qualitySelected}
+                onChange={setQualitySelected}
+              />
+            </div>
+            <ButtonPrimary
+              className="flex-1 flex-shrink-0 transition-all duration-300"
+              onClick={notifyAddTocart}
+            >
+              <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+              <span className="ml-3">Add to Cart</span>
+            </ButtonPrimary>
+          </div>
+        )}
 
         {/*  */}
         <hr className=" border-gray-200 dark:border-gray-700"></hr>
@@ -401,8 +499,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
           <Link
             className="text-primary-6000 hover:text-primary-500 font-medium"
             href={{
-              pathname: '/product-detail',
-              query: { product: prod_slug, uniqueid: uniquepid }
+              pathname: "/product-detail",
+              query: { product: prod_slug, uniqueid: uniquepid },
             }}
           >
             View full details
@@ -431,8 +529,9 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
-                    className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? 'ring-2 ring-primary' : ''
-                      }`}
+                    className={`w-full rounded-xl object-contain transition duration-300 ${
+                      selectedImage === image ? "ring-2 ring-primary" : ""
+                    }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -447,7 +546,9 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({ className = "", item })
               <Image
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || images?.[0]}`}
+                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${
+                  selectedImage || images?.[0]
+                }`}
                 className="w-full rounded-xl object-contain"
                 alt="Main Product Image"
                 loading="lazy" // Add the lazy loading attribute here
