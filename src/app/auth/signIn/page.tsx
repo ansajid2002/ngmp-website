@@ -13,6 +13,9 @@ import { useDispatch } from 'react-redux'
 import { HomeUrl } from '@/app/layout'
 import { useAppSelector } from '@/redux/store'
 import { addItem } from '@/redux/slices/cartSlice'
+import Heading from '@/components/Heading'
+import { Divider } from 'antd'
+import { GoogleOutlined } from "@ant-design/icons"
 
 interface LoginFormInterface {
     email: string,
@@ -141,6 +144,8 @@ function SignIn() {
 
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+            <Heading title='Login' />
+
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm shadow-md mb-20">
                 <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
                     {
@@ -214,9 +219,23 @@ function SignIn() {
                     <Link href="/auth/register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                         Signup
                     </Link>
-                    <button onClick={() => signIn("google")}>Sign in with Google</button>
 
                 </p>
+                <Divider orientation="center" >
+                    Or
+                </Divider>
+                <div className='flex justify-center py-4'>
+                    <button
+                        onClick={() => signIn("google")}
+                        className="flex items-center justify-center bg-white border border-gray-300 p-2 rounded-md hover:border-gray-400 focus:outline-none focus:ring gap-1 focus:border-blue-300"
+                    >
+                        {/* Google Logo SVG */}
+                        <GoogleOutlined color='red' />
+                        <p className='text-sm'>Sign in with Google</p>
+                    </button>
+                </div>
+
+
             </div>
         </div>
     )

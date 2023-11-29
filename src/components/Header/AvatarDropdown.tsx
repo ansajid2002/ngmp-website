@@ -30,8 +30,8 @@ export default function AvatarDropdown() {
         customerData?.customerData ? <Popover className="relative">
           {({ open, close }) => (
             <>
-              <Popover.Button className="rounded-full transition-all px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex items-center gap-2">
-                <Image src={`${AdminUrl}/uploads/customerProfileImages/${picture}`} alt="sa" width={30} height={30} className="rounded-full" />
+              <Popover.Button className="rounded-full transition-all px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex  gap-2">
+                <Image src={`${AdminUrl}/uploads/customerProfileImages/${picture}`} alt={given_name} width={30} height={30} className="rounded-full" />
                 <div className="right-2tCoT hidden lg:flex flex-col"><div className=""><div className="hello-7Ci9B textColor-3r-He line-clamp-1"><p className="line-clamp-1">{given_name} {family_name}</p></div></div><div className="title-1fzdZ textColor-3r-He titleCls-2B1Yu"><p className=" line-clamp-1">Orders &amp; Account</p></div></div>
               </Popover.Button>
               <Transition

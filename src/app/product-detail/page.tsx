@@ -11,25 +11,16 @@ import { PRODUCTS } from "@/data/data";
 import payment from "@/images/payment.png";
 import security from "@/images/security.png";
 import {
-  NoSymbolIcon,
-  ClockIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
-import IconDiscount from "@/components/IconDiscount";
 import Prices from "@/components/Prices";
 import toast from "react-hot-toast";
 import SectionSliderProductCard from "@/components/SectionSliderProductCard";
-import detail1JPG from "@/images/products/detail1.jpg";
-import detail2JPG from "@/images/products/detail2.jpg";
-import detail3JPG from "@/images/products/detail3.jpg";
-import Policy from "./Policy";
 import ReviewItem from "@/components/ReviewItem";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
-import SectionPromo2 from "@/components/SectionPromo2";
 import ModalViewAllReviews from "./ModalViewAllReviews";
 import NotifyAddTocart from "@/components/NotifyAddTocart";
 // import Image from "next/image";
-import AccordionInfo from "@/components/AccordionInfo";
 import { AdminUrl, HomeUrl } from "../layout";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
@@ -149,7 +140,8 @@ const ProductDetailPage = ({ searchParams }) => {
   }, [wishlistItems, responseData]);
 
   const handleToggleWishlist = useCallback(async () => {
-    if (!customerId) return;
+    if (!customerId) return router.push('/auth/signIn');
+
     setWishlistLoading(true);
     const { category, subcategory, uniquepid, vendorid } = responseData;
     const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
@@ -448,16 +440,14 @@ const ProductDetailPage = ({ searchParams }) => {
                 handleAttributeSelect(variant.attribute, item);
                 setVariantActive(itemvar);
               }}
-              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${
-                variantActive === itemvar
-                  ? "border-black/90 dark:border-white"
-                  : "border-transparent"
-              }`}
+              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
+                ? "border-black/90 dark:border-white"
+                : "border-transparent"
+                }`}
             >
               <div
-                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${
-                  variantActive === itemvar && "bg-black text-white"
-                }`}
+                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && "bg-black text-white"
+                  }`}
               >
                 {item}
               </div>
@@ -887,6 +877,8 @@ const ProductDetailPage = ({ searchParams }) => {
     );
   };
 
+  console.log(inFavorite);
+
   const ImageGallery = () => {
     if (!responseData) {
       return (
@@ -919,9 +911,8 @@ const ProductDetailPage = ({ searchParams }) => {
                   <img
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
-                    className={`w-full rounded-xl object-contain transition duration-300 ${
-                      selectedImage === image ? "ring-2 ring-primary" : ""
-                    }`}
+                    className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
+                      }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -936,9 +927,8 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${
-                selectedImage || responseData?.images?.[0]
-              }`}
+              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || responseData?.images?.[0]
+                }`}
               className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
               alt="Main Product Image"
               loading="lazy"
