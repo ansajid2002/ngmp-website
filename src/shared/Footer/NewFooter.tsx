@@ -4,7 +4,7 @@ import Applestore from "@/shared/applestore.png";
 import { CustomLink } from "@/data/types";
 import React from "react";
 import Image from "next/image";
-import { HomeUrl } from "@/app/layout";
+import { AdminUrl, HomeUrl } from "@/app/layout";
 
 export interface WidgetFooterMenu {
   id: string;
@@ -47,7 +47,7 @@ const Footer: React.FC = () => {
         { href: `${HomeUrl}`, label: "Sitemap" },
         { href: `${HomeUrl}`, label: "How to order" },
         { href: `${HomeUrl}`, label: "How to track" },
-        { href: `${HomeUrl}`, label: "Sell on Nile" },
+        { href: `${process.env.SELLERURL}/seller`, label: "Sell on Nile" },
       ],
     },
     //   {

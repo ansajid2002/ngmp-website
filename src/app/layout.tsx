@@ -36,7 +36,7 @@ export default async function RootLayout({
   return (
     <html lang="en" dir="" className={`${poppins.className} font-miui`}>
       <body className="bg-white overflow-x-hidden text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
-        <NextTopLoader color="red" />
+        {/* <NextTopLoader color="red" /> */}
         <ReduxProvider>
           <div className="">
             <SiteHeader session={session} />

@@ -15,6 +15,7 @@ const nextConfig = {
   env: {
     BASEURL: process.env.BASEURL,
     HOMEURL: process.env.HOMEURL,
+    SELLERURL: process.env.SELLERURL
   },
   images: {
     domains: ['localhost', 'https://nileadmin.websitetest.info', 'https://admin.nilegmp.com', '192.168.1.9'], // Add the IP address to the list of allowed domains
