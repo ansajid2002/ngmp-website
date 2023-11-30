@@ -18,38 +18,59 @@ const Footer: React.FC = () => {
       id: "5",
       title: "Company info",
       menus: [
-        { href: `${HomeUrl}`, label: "About Nile" },
+        { href: `${HomeUrl}/company/about-us`, label: "About Nile" },
         {
-          href: `${HomeUrl}`,
+          href: `${HomeUrl}/company/price-down`,
           label: "Nile Market-place - Team Up, Price Down!",
         },
-        { href: `${HomeUrl}`, label: "Affiliate & influencer Program" },
-        { href: `${HomeUrl}`, label: "Campus ambassador" },
-        { href: `${HomeUrl}`, label: "Contact us" },
-        { href: `${HomeUrl}`, label: "Careers" },
-        { href: `${HomeUrl}`, label: "Press" },
+        {
+          href: `${HomeUrl}/company/affiliate-influencer-program`,
+          label: "Affiliate & influencer Program",
+        },
+        {
+          href: `${HomeUrl}/company/campus-ambassador`,
+          label: "Campus ambassador",
+        },
+        { href: `${HomeUrl}/company/contact-us`, label: "Contact us" },
+        { href: `${HomeUrl}/company/careers`, label: "Careers" },
+        { href: `${HomeUrl}/company/press`, label: "Press" },
       ],
     },
     {
       id: "1",
       title: "Customer service",
       menus: [
-        { href: `${HomeUrl}`, label: "Return and refund policy" },
-        { href: `${HomeUrl}`, label: "Intellectual property policy" },
-        { href: `${HomeUrl}`, label: "Shipping info" },
-        { href: `${HomeUrl}`, label: "Student discount" },
-        { href: `${HomeUrl}`, label: "Your Recalls and Product Safety Alerts" },
+        {
+          href: `${HomeUrl}/company/return-refund-policy`,
+          label: "Return and refund policy",
+        },
+        {
+          href: `${HomeUrl}/company/intellectual-property-policy`,
+          label: "Intellectual property policy",
+        },
+        { href: `${HomeUrl}/company/shipping-info`, label: "Shipping info" },
+        {
+          href: `${HomeUrl}/company/student-discount`,
+          label: "Student discount",
+        },
+        {
+          href: `${HomeUrl}/company/recalls-product-safety-alerts`,
+          label: "Your Recalls and Product Safety Alerts",
+        },
       ],
     },
     {
       id: "2",
       title: "Help",
       menus: [
-        { href: `${HomeUrl}`, label: "Support center & FAQ" },
-        { href: `${HomeUrl}`, label: "Nile Market-place purchase protection" },
-        { href: `${HomeUrl}`, label: "Sitemap" },
-        { href: `${HomeUrl}`, label: "How to order" },
-        { href: `${HomeUrl}`, label: "How to track" },
+        { href: `${HomeUrl}/SupportCenter`, label: "Support center & FAQ" },
+        {
+          href: `${HomeUrl}/company/purchase-protection`,
+          label: "Nile Market-place purchase protection",
+        },
+        { href: `${HomeUrl}/company/sitemap`, label: "Sitemap" },
+        { href: `${HomeUrl}/company/how-to-order`, label: "How to order" },
+        { href: `${HomeUrl}/company/how-to-track`, label: "How to track" },
         { href: `${process.env.SELLERURL}/seller`, label: "Sell on Nile" },
       ],
     },
@@ -78,7 +99,7 @@ const Footer: React.FC = () => {
                 key={index}
                 className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white"
                 href={item.href}
-                target="_blank"
+                target="blank"
                 rel="noopener noreferrer"
               >
                 {item.label}

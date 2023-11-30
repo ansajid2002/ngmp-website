@@ -40,7 +40,7 @@ const DiscoverMoreSlider = ({ data }) => {
         },
         500: {
           gap: 20,
-          perView: 1,
+          perView: 1.1,
         },
       },
     };
@@ -68,7 +68,7 @@ const DiscoverMoreSlider = ({ data }) => {
       >
         Recommended Shop!!
       </Heading>
-      <div className="p-5" data-glide-el="track">
+      <div className="md:p-5" data-glide-el="track">
         <div className="glide__slides">
           {data &&
             data.map((item: any, index: any) => (

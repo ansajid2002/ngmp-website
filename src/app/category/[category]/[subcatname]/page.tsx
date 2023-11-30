@@ -42,8 +42,6 @@ const Caregory = () => {
         // Filter products based on activeTab value
         let filteredProducts = response;
 
-
-
         setProducts(filteredProducts);
 
         setTimeout(() => {
@@ -51,28 +49,28 @@ const Caregory = () => {
         }, 600);
       } catch (error) {
         setLoading(false);
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchSubcategoryProducts();
   }, []);
 
-
   return (
     <div style={{ position: "relative" }} className="px-2 md:px-10">
       <CategoryPageSlick data={params} />
-      <div className={`p-4 sticky transition-all ease-in-out duration-300 z-[30] bg-white ${visible ? 'top-32' : 'top-0'}`}>
+      <div
+        className={`p-4 sticky transition-all ease-in-out duration-300 z-[30] bg-white ${
+          visible ? "top-32" : "top-0"
+        }`}
+      >
         <hr className="border-gray-200 dark:border-gray-700 mb-4" />
         {/* TABS FILTER */}
         <TabFilters />
       </div>
       {/* LOOP ITEMS */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-        {products &&
-          products.map((item, index) => (
-            <ProductCard data={item} />
-          ))}
+        {products && products.map((item, index) => <ProductCard data={item} />)}
       </div>
     </div>
   );

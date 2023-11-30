@@ -13,7 +13,7 @@ const SingleVendorsCard = ({ item, index }) => {
       <div className=" rounded-xl overflow-hidden border-[1px] shadow-md">
         <div
           key={index}
-          className=" flex h-[250px] w-full border-b-[1px] border-gray-400"
+          className=" flex h-[250px] w-full border-b-[1px] border-gray-200"
         >
           <div className="h-full w-[50%] border-r-[1px]">
             <img

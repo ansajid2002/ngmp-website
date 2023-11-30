@@ -206,7 +206,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
               />
             </Link>
             {/* <SocialsList itemClass="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xl" /> */}
-            <span className="flex items-center justify-center gap-3">
+            <span className="flex items-center justify-center gap-4 mr-2">
               <Language />
               <Link
                 href={"/SupportCenter?query=BuyingOnNile"}
@@ -237,27 +237,33 @@ const NavMobile: React.FC<NavMobileProps> = ({
         </ButtonPrimary>
       </div> */}
       <div className="relative h-auto p-5">
-        <ul className="text-[1.2rem]  font-medium space-y-2">
+        <ul className="text-[1.2rem] flex flex-col gap-2 ">
           <Link href={"/Channel/best-sellers"} onClick={onClickClose}>
-            <li>Best Sellers</li>
+            <li className="tracking-wide">Best Sellers</li>
           </Link>
           <Link href={"/Channel/new-arrivals"} onClick={onClickClose}>
-            <li>New Arrivals</li>
+            <li className="tracking-wide">New Arrivals</li>
           </Link>
-          <li
-            onClick={toggleDropdown}
-            className="flex items-center justify-between"
-          >
-            <span>Category</span>
-            <ChevronDownIcon
-              className="ml-2 mt-2 h-5 w-5 text-neutral-500"
-              aria-hidden="true"
-            />
-          </li>
+          <Link href={"#"}>
+            <li
+              onClick={toggleDropdown}
+              className="flex items-center justify-between"
+            >
+              <span className="tracking-wide">Category</span>
+              <ChevronDownIcon
+                className={
+                  isOpen
+                    ? "transition-all ease-in-out rotate-180 ml-2 h-5 w-5 text-[#ED642B]"
+                    : "transition-all ease-in-out ml-2 h-5 w-5 text-neutral-500 "
+                }
+                aria-hidden="true"
+              />
+            </li>
+          </Link>
         </ul>
 
         {isOpen && (
-          <ul className="h-screen overflow-y-auto bg-gray-100 text-[1.2rem] font-medium text-left w-full px-5  m-0 absolute top-full left-0 border z-10">
+          <ul className="h-screen overflow-y-auto bg-gray-100 text-[1rem] text-left w-full px-5  m-0 absolute top-full left-0 border z-10">
             {categoryDaata?.map((option, index) => (
               <Link
                 key={index}
@@ -274,6 +280,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
                   className="cursor-pointer py-2 border-b-2"
                   // key={index}
                   // onClick={() => handleOptionClick()}
+                  onClick={onClickClose}
                 >
                   {option.category_name}
                 </li>

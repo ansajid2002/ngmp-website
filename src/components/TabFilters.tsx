@@ -66,7 +66,7 @@ const DATA_sortOrderRadios = [
 
 const PRICE_RANGE = [1, 500];
 //
-const TabFilters = () => {
+const TabFilters = ({ showOnlySort = true }: any) => {
   const [isOpenMoreFilter, setisOpenMoreFilter] = useState(false);
   //
   const [isOnSale, setIsIsOnSale] = useState(false);
@@ -129,13 +129,15 @@ const TabFilters = () => {
           <>
             <Popover.Button
               className={`flex items-center justify-center px-4 py-2 text-sm rounded-full border focus:outline-none select-none
-               ${open
-                  ? "!border-primary-500 "
-                  : "border-neutral-300 dark:border-neutral-700"
-                }
-                ${!!categoriesState.length
-                  ? "!border-primary-500 bg-primary-50 text-primary-900"
-                  : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
+               ${
+                 open
+                   ? "!border-primary-500 "
+                   : "border-neutral-300 dark:border-neutral-700"
+               }
+                ${
+                  !!categoriesState.length
+                    ? "!border-primary-500 bg-primary-50 text-primary-900"
+                    : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
                 }
                 `}
             >
@@ -267,9 +269,10 @@ const TabFilters = () => {
             <Popover.Button
               className={`flex items-center justify-center px-4 py-2 text-sm border rounded-full focus:outline-none select-none
               ${open ? "!border-primary-500 " : ""}
-                ${!!sortOrderStates.length
-                  ? "!border-primary-500 bg-primary-50 text-primary-900"
-                  : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
+                ${
+                  !!sortOrderStates.length
+                    ? "!border-primary-500 bg-primary-50 text-primary-900"
+                    : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
                 }
                 `}
             >
@@ -318,8 +321,8 @@ const TabFilters = () => {
               <span className="ml-2">
                 {sortOrderStates
                   ? DATA_sortOrderRadios.filter(
-                    (i) => i.id === sortOrderStates
-                  )[0].name
+                      (i) => i.id === sortOrderStates
+                    )[0].name
                   : "Sort order"}
               </span>
               {!sortOrderStates.length ? (
@@ -388,9 +391,10 @@ const TabFilters = () => {
             <Popover.Button
               className={`flex items-center justify-center px-4 py-2 text-sm rounded-full border focus:outline-none select-none
               ${open ? "!border-primary-500 " : ""}
-                ${!!colorsState.length
-                  ? "!border-primary-500 bg-primary-50 text-primary-900"
-                  : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
+                ${
+                  !!colorsState.length
+                    ? "!border-primary-500 bg-primary-50 text-primary-900"
+                    : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
                 }
                 `}
             >
@@ -508,9 +512,10 @@ const TabFilters = () => {
             <Popover.Button
               className={`flex items-center justify-center px-4 py-2 text-sm rounded-full border focus:outline-none select-none
               ${open ? "!border-primary-500 " : ""}
-                ${!!sizesState.length
-                  ? "!border-primary-500 bg-primary-50 text-primary-900"
-                  : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
+                ${
+                  !!sizesState.length
+                    ? "!border-primary-500 bg-primary-50 text-primary-900"
+                    : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
                 }
                 `}
             >
@@ -648,7 +653,7 @@ const TabFilters = () => {
 
               <span className="ml-2 min-w-[90px]">{`${rangePrices[0]}$ - ${rangePrices[1]}$`}</span>
               {rangePrices[0] === PRICE_RANGE[0] &&
-                rangePrices[1] === PRICE_RANGE[1] ? null : (
+              rangePrices[1] === PRICE_RANGE[1] ? null : (
                 <span onClick={() => setRangePrices(PRICE_RANGE)}>
                   {renderXClear()}
                 </span>
@@ -756,10 +761,11 @@ const TabFilters = () => {
   const renderTabIsOnsale = () => {
     return (
       <div
-        className={`flex items-center justify-center px-4 py-2 text-sm rounded-full border focus:outline-none cursor-pointer select-none ${isOnSale
-          ? "border-primary-500 bg-primary-50 text-primary-900"
-          : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
-          }`}
+        className={`flex items-center justify-center px-4 py-2 text-sm rounded-full border focus:outline-none cursor-pointer select-none ${
+          isOnSale
+            ? "border-primary-500 bg-primary-50 text-primary-900"
+            : "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500"
+        }`}
         onClick={() => setIsIsOnSale(!isOnSale)}
       >
         <svg
@@ -962,100 +968,108 @@ const TabFilters = () => {
                     <div className="px-6 sm:px-8 md:px-10 divide-y divide-neutral-200 dark:divide-neutral-800">
                       {/* --------- */}
                       {/* ---- */}
-                      <div className="py-7">
-                        <h3 className="text-xl font-medium">Categories</h3>
-                        <div className="mt-6 relative ">
-                          {renderMoreFilterItem(DATA_categories)}
+                      {showOnlySort && (
+                        <div className="py-7">
+                          <h3 className="text-xl font-medium">Categories</h3>
+                          <div className="mt-6 relative ">
+                            {renderMoreFilterItem(DATA_categories)}
+                          </div>
                         </div>
-                      </div>
+                      )}
                       {/* --------- */}
                       {/* ---- */}
-                      <div className="py-7">
-                        <h3 className="text-xl font-medium">Colors</h3>
-                        <div className="mt-6 relative ">
-                          {renderMoreFilterItem(DATA_colors)}
+                      {showOnlySort && (
+                        <div className="py-7">
+                          <h3 className="text-xl font-medium">Colors</h3>
+                          <div className="mt-6 relative ">
+                            {renderMoreFilterItem(DATA_colors)}
+                          </div>
                         </div>
-                      </div>
+                      )}
                       {/* --------- */}
                       {/* ---- */}
-                      <div className="py-7">
-                        <h3 className="text-xl font-medium">Size</h3>
-                        <div className="mt-6 relative ">
-                          {renderMoreFilterItem(DATA_sizes)}
+                      {showOnlySort && (
+                        <div className="py-7">
+                          <h3 className="text-xl font-medium">Size</h3>
+                          <div className="mt-6 relative ">
+                            {renderMoreFilterItem(DATA_sizes)}
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* --------- */}
                       {/* ---- */}
-                      <div className="py-7">
-                        <h3 className="text-xl font-medium">Range Prices</h3>
-                        <div className="mt-6 relative ">
-                          <div className="relative flex flex-col space-y-8">
-                            <div className="space-y-5">
-                              <Slider
-                                range
-                                className="text-red-400"
-                                min={PRICE_RANGE[0]}
-                                max={PRICE_RANGE[1]}
-                                defaultValue={rangePrices}
-                                allowCross={false}
-                                onChange={(_input: number | number[]) =>
-                                  setRangePrices(_input as number[])
-                                }
-                              />
-                            </div>
-
-                            <div className="flex justify-between space-x-5">
-                              <div>
-                                <label
-                                  htmlFor="minPrice"
-                                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300"
-                                >
-                                  Min price
-                                </label>
-                                <div className="mt-1 relative rounded-md">
-                                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span className="text-neutral-500 sm:text-sm">
-                                      $
-                                    </span>
-                                  </div>
-                                  <input
-                                    type="text"
-                                    name="minPrice"
-                                    disabled
-                                    id="minPrice"
-                                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-3 sm:text-sm border-neutral-200 rounded-full text-neutral-900"
-                                    value={rangePrices[0]}
-                                  />
-                                </div>
+                      {showOnlySort && (
+                        <div className="py-7">
+                          <h3 className="text-xl font-medium">Range Prices</h3>
+                          <div className="mt-6 relative ">
+                            <div className="relative flex flex-col space-y-8">
+                              <div className="space-y-5">
+                                <Slider
+                                  range
+                                  className="text-red-400"
+                                  min={PRICE_RANGE[0]}
+                                  max={PRICE_RANGE[1]}
+                                  defaultValue={rangePrices}
+                                  allowCross={false}
+                                  onChange={(_input: number | number[]) =>
+                                    setRangePrices(_input as number[])
+                                  }
+                                />
                               </div>
-                              <div>
-                                <label
-                                  htmlFor="maxPrice"
-                                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300"
-                                >
-                                  Max price
-                                </label>
-                                <div className="mt-1 relative rounded-md">
-                                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span className="text-neutral-500 sm:text-sm">
-                                      $
-                                    </span>
+
+                              <div className="flex justify-between space-x-5">
+                                <div>
+                                  <label
+                                    htmlFor="minPrice"
+                                    className="block text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                                  >
+                                    Min price
+                                  </label>
+                                  <div className="mt-1 relative rounded-md">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                      <span className="text-neutral-500 sm:text-sm">
+                                        $
+                                      </span>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      name="minPrice"
+                                      disabled
+                                      id="minPrice"
+                                      className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-3 sm:text-sm border-neutral-200 rounded-full text-neutral-900"
+                                      value={rangePrices[0]}
+                                    />
                                   </div>
-                                  <input
-                                    type="text"
-                                    disabled
-                                    name="maxPrice"
-                                    id="maxPrice"
-                                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-3 sm:text-sm border-neutral-200 rounded-full text-neutral-900"
-                                    value={rangePrices[1]}
-                                  />
+                                </div>
+                                <div>
+                                  <label
+                                    htmlFor="maxPrice"
+                                    className="block text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                                  >
+                                    Max price
+                                  </label>
+                                  <div className="mt-1 relative rounded-md">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                      <span className="text-neutral-500 sm:text-sm">
+                                        $
+                                      </span>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      disabled
+                                      name="maxPrice"
+                                      id="maxPrice"
+                                      className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-3 sm:text-sm border-neutral-200 rounded-full text-neutral-900"
+                                      value={rangePrices[1]}
+                                    />
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* --------- */}
                       {/* ---- */}
@@ -1079,17 +1093,19 @@ const TabFilters = () => {
 
                       {/* --------- */}
                       {/* ---- */}
-                      <div className="py-7">
-                        <h3 className="text-xl font-medium">On sale!</h3>
-                        <div className="mt-6 relative ">
-                          <MySwitch
-                            label="On sale!"
-                            desc="Products currently on sale"
-                            enabled={isOnSale}
-                            onChange={setIsIsOnSale}
-                          />
+                      {showOnlySort && (
+                        <div className="py-7">
+                          <h3 className="text-xl font-medium">On sale!</h3>
+                          <div className="mt-6 relative ">
+                            <MySwitch
+                              label="On sale!"
+                              desc="Products currently on sale"
+                              enabled={isOnSale}
+                              onChange={setIsIsOnSale}
+                            />
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
 
@@ -1126,11 +1142,11 @@ const TabFilters = () => {
     <div className="flex lg:space-x-4">
       {/* FOR DESKTOP */}
       <div className="hidden lg:flex flex-1 space-x-4">
-        {renderTabsPriceRage()}
-        {renderTabsCategories()}
-        {renderTabsColor()}
-        {renderTabsSize()}
-        {renderTabIsOnsale()}
+        {showOnlySort && renderTabsPriceRage()}
+        {showOnlySort && renderTabsCategories()}
+        {showOnlySort && renderTabsColor()}
+        {showOnlySort && renderTabsSize()}
+        {showOnlySort && renderTabIsOnsale()}
         <div className="!ml-auto">{renderTabsSortOrder()}</div>
       </div>
 

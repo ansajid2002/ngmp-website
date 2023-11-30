@@ -18,7 +18,7 @@ const nextConfig = {
     SELLERURL: process.env.SELLERURL
   },
   images: {
-    domains: ['localhost', 'https://nileadmin.websitetest.info', 'https://admin.nilegmp.com', '192.168.1.8'], // Add the IP address to the list of allowed domains
+    domains: ['localhost', 'https://nileadmin.websitetest.info', 'https://admin.nilegmp.com', '192.168.1.4'], // Add the IP address to the list of allowed domains
     remotePatterns: [
       {
         protocol: "https",
@@ -48,7 +48,7 @@ const nextConfig = {
       // Add a new pattern for the new IP address
       {
         protocol: "https",
-        hostname: "192.168.1.8", // Replace with the actual hostname or IP address
+        hostname: "192.168.1.4", // Replace with the actual hostname or IP address
         port: "", // If there is a specific port, add it here
         pathname: "/**",
       },
