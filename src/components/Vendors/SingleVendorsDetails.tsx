@@ -74,7 +74,7 @@ const SingleVendorsDetails = ({ data }) => {
             <TabFilters showOnlySort={false} />
           </div>
           {/* <ProductCard /> */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-x-8 gap-y-10 mt-8 lg:mt-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-8 gap-y-10 mt-8 lg:mt-10">
             {products &&
               products.map((item, index) => <ProductCard data={item} />)}
           </div>

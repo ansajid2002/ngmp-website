@@ -73,7 +73,7 @@ const DiscoverMoreSlider = ({ data }) => {
           {data &&
             data.map((item: any, index: any) => (
               <div
-                className={`glide__slide bg-gray-100 rounded-lg overflow-hidden border mb-14 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-gray-200`}
+                className={`glide__slide bg-gray-50 rounded-xl overflow-hidden border mb-14 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-gray-200`}
               >
                 <SingleVendorsCard item={item} index={index} />
               </div>

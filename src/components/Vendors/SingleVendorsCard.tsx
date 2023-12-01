@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { ChevronRight, MoveRight } from "lucide-react";
 import Link from "next/link";
@@ -49,9 +50,20 @@ const SingleVendorsCard = ({ item, index }) => {
         </div>
         <div className="py-2 px-3 leading-relaxed">
           <div>
-            <h2 className="text-[1.1rem] line-clamp-1 tracking-wide ">
-              {item.brand_name || "NA"}
-            </h2>
+            <div className="flex items-center justify-start gap-1">
+              <img
+                className="h-8 w-8 object-contain rounded-full border border-gray-300"
+                src={
+                  item && item.brand_logo && item.brand_logo.images[0]
+                    ? `${`${AdminUrl}/uploads/vendorBrandLogo/${item?.brand_logo?.images[0]}`}`
+                    : "https://connectkaro.org/wp-content/uploads/2019/03/placeholder-profile-male-500x500.png"
+                }
+                alt={item?.brand_name}
+              />
+              <h2 className="text-[1.1rem] line-clamp-1 tracking-wide ">
+                {item.brand_name || "NA"}
+              </h2>
+            </div>
             <span className="text-[0.8rem] text-gray-700 ">
               {item.company_city || "NA"} , {item.company_state || "NA"} ,{" "}
               {item.Company_country || "NA"}

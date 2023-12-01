@@ -21,6 +21,7 @@ import Safety from "@/components/Safety";
 import DealBar from "@/components/DealBar";
 import { Zap } from "lucide-react";
 import NewHeroSection from "@/components/SectionHero/NewHeroSection";
+import NewHeroSectionMobile from "@/components/SectionHero/NewHeroSectionMobile";
 
 interface Subcategory {
   subcategory_id: number;
@@ -54,6 +55,21 @@ export async function getcustomerData(vendorId: any) {
 export async function getBannerdata() {
   try {
     const response = await fetch(`${AdminUrl}/api/getBanners`, {
+      next: { revalidate: 30 },
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch banner data: ${response.status}`);
+    }
+    const bannersData = await response.json();
+    return bannersData;
+  } catch (error) {
+    console.error("Error fetching customer data:", error);
+    throw error; // Re-throw the error to handle it at a higher level if needed
+  }
+}
+export async function getBannerdataMobile() {
+  try {
+    const response = await fetch(`${AdminUrl}/api/getBannersMobile`, {
       next: { revalidate: 30 },
     });
     if (!response.ok) {
@@ -158,6 +174,7 @@ export const getAllVendors = async () => {
 async function PageHome() {
   const getAllProductsData = await getAllProducts();
   const bannersData = await getBannerdata();
+  const bannersDataMobile = await getBannerdataMobile();
   const vendors = await getAllVendors();
 
   const fetchCategoriesAndSubcategoriesdata =
@@ -166,7 +183,12 @@ async function PageHome() {
   return (
     <div className="relative overflow-hidden">
       {/* <SectionHero2 data={bannersData} /> */}
-      <NewHeroSection data={bannersData} />
+      <div className=" md:hidden">
+        <NewHeroSection data={bannersData} />
+      </div>
+      <div className="hidden md:block">
+        <NewHeroSectionMobile data={bannersDataMobile} />
+      </div>
 
       <div className="mt-5 px-1 md:px-10 py-0 md:py-2">
         <Safety />
@@ -192,9 +214,9 @@ async function PageHome() {
           <DiscoverMoreSlider data={vendors} />
         </div>
 
-        <div className="hidden md:block py-4 border-t border-b border-gray-200 dark:border-gray-700">
+        {/* <div className="hidden md:block py-4 border-t border-b border-gray-200 dark:border-gray-700">
           <SectionHowItWork />
-        </div>
+        </div> */}
 
         {/* <div className="space-y-10 mt-4">
           <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata} />

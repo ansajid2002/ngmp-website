@@ -15,6 +15,7 @@ import Link from "next/link";
 import NcImage from "@/shared/NcImage/NcImage";
 import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
+import { Rate } from "antd";
 
 export interface ProductCardProps {
   className?: string;
@@ -145,17 +146,17 @@ const ProductCard: FC<ProductCardProps> = ({
   return (
     <>
       <div
-        className={`nc-ProductCard relative flex flex-col bg-transparent ${className}`}
+        className={`nc-ProductCard relative flex flex-col rounded-lg overflow-hidden hover:shadow-md p-1 py-2 bg-transparent ${className}`}
       >
         <Link href={"/product-detail"} className="absolute inset-0"></Link>
 
-        <div className="relative flex-shrink-0 bg-gray-50 dark:bg-gray-300 rounded-md overflow-hidden z-1 group">
+        <div className="relative flex-shrink-0 bg-gray-50 dark:bg-gray-300  overflow-hidden z-1 group">
           <Link
             href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
             title={`${ad_title}`}
             className="block overflow-hidden group"
           >
-            <div className="relative group-hover:scale-110 transition-transform duration-300">
+            <div className="relative group-hover:scale-105 transition-transform duration-300">
               <NcImage
                 containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
                 src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
@@ -174,17 +175,17 @@ const ProductCard: FC<ProductCardProps> = ({
           )}
           <LikeButton
             liked={inFavorite}
-            className="absolute top-3 end-3 z-10"
+            className="absolute top-3 end-3 z-10 transition-all ease-in-out hover:scale-110"
           />
           {/* {renderSizeList()} */}
           {renderGroupButtons()}
         </div>
 
-        <div className="space-y-4 pt-3 pb-2.5">
+        <div className="space-y-0 px-1 pt-2 pb-1">
           {/* {renderVariants()} */}
           {/* <div> */}
           {showTitle && (
-            <h2 className="nc-ProductCard__title text-base font-semibold transition-colors line-clamp-1">
+            <h2 className="nc-ProductCard__title text-[0.9rem] font-medium transition-colors line-clamp-1">
               {ad_title}
             </h2>
           )}
@@ -193,9 +194,17 @@ const ProductCard: FC<ProductCardProps> = ({
             </p> */}
           {/* </div> */}
 
-          <div className="  px-0">
+          <div className="">
             <Prices price={mrp} sellingprice={sellingprice} />
-            <div className="flex items-center mb-0.5"></div>
+            <div className="flex items-center gap-1 mb-0.5">
+              <Rate
+                allowHalf
+                disabled
+                value={4.7}
+                className="text-xs text-[#ED642B]"
+              />
+              <span className="text-sm font-medium text-[#ED642B]">(352)</span>
+            </div>
           </div>
         </div>
       </div>

@@ -44,25 +44,44 @@ import {
 } from "@/redux/slices/wishlistSlice";
 import {
   Check,
+  ChevronDown,
   ChevronRight,
+  Heart,
   HelpCircle,
   Loader2Icon,
   LockKeyhole,
   MessageCircle,
   MessagesSquare,
+  Minus,
   ShieldCheck,
   Truck,
 } from "lucide-react";
-import { Image, Modal } from "antd";
+import { Image, Modal, Rate } from "antd";
 
 const ProductDetailPage = ({ searchParams }) => {
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showDetailModal = () => {
+    setIsDetailModalOpen(true);
+  };
+
+  const detailhandleOk = () => {
+    setIsDetailModalOpen(false);
+  };
+
+  const detailhandleCancel = () => {
+    setIsDetailModalOpen(false);
+  };
+  console.log(isDetailModalOpen, "isDetailModalOpen");
+
+  const [seeMore, setSeeMore] = useState(false);
+
   const styling = {
     backgroundImage: `url(https://aimg.kwcdn.com/upload_aimg/commodity/e4b8aee4-b205-4a0d-845e-62d36d532518.png?imageView2/2/w/800/q/70/format/webp)`,
   };
 
   // Shipping Modal
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -818,6 +837,142 @@ const ProductDetailPage = ({ searchParams }) => {
     );
   };
 
+  const renderSellerProfile = () => {
+    return (
+      <>
+        <div className="flex  items-center justify-start gap-5">
+          <div className="h-20 w-20 md:h-24 md:w-24  border-gray-200 border-2  rounded-full overflow-hidden">
+            <img
+              className="h-full w-full object-contain"
+              src={
+                "https://connectkaro.org/wp-content/uploads/2019/03/placeholder-profile-male-500x500.png"
+              }
+              // alt={singleVendors?.brand_name}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="flex">
+              <h2 className="text-2xl tracking-wide pr-2 font-medium">
+                {/* {singleVendors?.brand_name || "NA"} */}
+                Pasha Shop
+              </h2>
+              <span>
+                4.8
+                <Rate
+                  allowHalf
+                  disabled
+                  defaultValue={4.9}
+                  className="text-gray-900 text-sm md:text-xl ml-2"
+                />
+              </span>
+            </div>
+
+            <div className="flex items-center justify-start">
+              <div className="flex gap-1 items-center">
+                <h2 className="font-medium">
+                  {/* {singleVendors?.followers || "NA"} */}
+                  1000
+                </h2>
+                <h3 className="text-gray-600 text-sm">Followers</h3>
+              </div>
+
+              <Minus className="rotate-90 text-gray-400" />
+
+              <div className="flex gap-1 items-center">
+                <h2 className="font-medium">
+                  {/* {singleVendors?.total_sales || "NA"} */}
+                  20
+                </h2>
+                <h3 className="text-gray-600 text-sm">Sold</h3>
+              </div>
+
+              <Minus className="rotate-90 text-gray-400" />
+
+              <div className="flex items-center gap-1">
+                <h2 className="font-medium">
+                  {/* {singleVendors?.total_products || "NA"} */}
+                  23
+                </h2>
+                <h3 className="text-gray-600 text-sm">Items</h3>
+              </div>
+            </div>
+
+            <div className="flex gap-2 items-center ">
+              <h2 className="w-[50%] flex gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
+                <Heart />
+                <p className="font-medium">Follow</p>
+              </h2>
+              <h2 className="w-[50%] flex gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
+                <p className="font-medium">Shop all items</p>
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-5 font-medium text-lg flex items-center justify-between">
+          <h2>Details</h2>
+          <h2 className="flex text-sm items-center gap-1">
+            Report this item
+            <ChevronRight size={15} />
+          </h2>
+        </div>
+        <div className="mt-2">
+          <ul className="space-y-2">
+            <li>Details : Drawstring</li>
+            <li>Patterned : ANimals</li>
+
+            {seeMore ? (
+              <>
+                <li>Sheer : No</li>
+                <li>Fabric : Medium Stretch</li>
+                <li>Collar Style : Hooded</li>
+                <li>Type : Other</li>
+                <li>Care Instructions : Machine washable, no dry clean</li>
+                <li>Material : Polyester</li>
+                <li>Fit Type : Regular</li>
+                <li>Composition : 95% Polyester,5% Spandex</li>
+                <li>Weaving Method : Knit Fabric</li>
+                <li>Tops Composition : 95% Polyester,5% Spandex</li>
+                <li>Bottoms Composition : 95% Polyester,5% Spandex</li>
+                <li
+                  className="flex gap-1 items-center cursor-pointer hover:underline"
+                  onClick={showDetailModal}
+                >
+                  Seller information <ChevronRight size={20} />
+                </li>
+                <Modal
+                  title="Seller Information"
+                  open={isDetailModalOpen}
+                  onOk={detailhandleOk}
+                  onCancel={detailhandleCancel}
+                  footer={[
+                    <h1
+                      onClick={detailhandleCancel}
+                      className="cursor-pointer bg-orange-600 text-center mx-5 md:mx-10 rounded-full p-2 text-xl text-white font-medium"
+                    >
+                      OK
+                    </h1>,
+                  ]}
+                >
+                  <div>Seller Details</div>
+                </Modal>
+              </>
+            ) : (
+              <>
+                <li
+                  className="flex items-center gap-1 text-sm text-gray-700 font-medium hover:underline cursor-pointer"
+                  onClick={() => setSeeMore(!seeMore)}
+                >
+                  See More <ChevronDown size={15} />
+                </li>
+              </>
+            )}
+          </ul>
+        </div>
+      </>
+    );
+  };
+
   const notifyAddTocart = async () => {
     const updatedSingleData = {
       ...responseData,
@@ -944,6 +1099,7 @@ const ProductDetailPage = ({ searchParams }) => {
               loading="lazy"
             />
           </div>
+          <div className="py-10">{renderSellerProfile()}</div>
         </div>
 
         {/* LIKE BUTTON */}
@@ -970,7 +1126,7 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="flex flex-col-reverse md:flex-row w-full lg:w-[50%]">
             {ImageGallery()}
           </div>
-
+          <div></div>
           {/* SIDEBAR */}
           <div className="w-full lg:w-[45%] pt-10 lg:pt-0 lg:pl-7 xl:pl-9 2xl:pl-10">
             {renderSectionContent()}
@@ -980,15 +1136,10 @@ const ProductDetailPage = ({ searchParams }) => {
         {/* DETAIL AND REVIEW */}
         <div className="mt-12 sm:mt-16 space-y-10 sm:space-y-16">
           <div className="block xl:hidden">{/* <Policy /> */}</div>
-
           {/* {renderDetailSection()} */}
-
           <hr className="border-gray-200 dark:border-gray-700" />
-
           {renderReviews()}
-
           <hr className="border-gray-200 dark:border-gray-700" />
-
           {/* OTHER SECTION */}
           <SectionSliderProductCard
             heading="Customers also purchased"
@@ -996,11 +1147,10 @@ const ProductDetailPage = ({ searchParams }) => {
             headingFontClassName="text-2xl font-semibold"
             headingClassName="mb-40 text-neutral-900 dark:text-neutral-50"
           />
-
-          {/* SECTION
-          <div className="pb-20 xl:pb-28 lg:pt-14">
-            <SectionPromo2 />
-          </div> */}
+          <div className="py-5">
+            {/* <SectionPromo2 /> */}
+            {/* {renderSellerProfile()} */}
+          </div>
         </div>
       </main>
 
