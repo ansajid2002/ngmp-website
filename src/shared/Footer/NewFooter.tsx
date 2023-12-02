@@ -19,10 +19,10 @@ const Footer: React.FC = () => {
       title: "Company info",
       menus: [
         { href: `${HomeUrl}/company/about-us`, label: "About Nile" },
-        {
-          href: `${HomeUrl}/company/price-down`,
-          label: "Nile Market-place - Team Up, Price Down!",
-        },
+        // {
+        //   href: `${HomeUrl}/company/price-down`,
+        //   label: "Nile Market-place - Team Up, Price Down!",
+        // },
         {
           href: `${HomeUrl}/company/affiliate-influencer-program`,
           label: "Affiliate & influencer Program",
@@ -74,16 +74,6 @@ const Footer: React.FC = () => {
         { href: `${process.env.SELLERURL}/seller`, label: "Sell on Nile" },
       ],
     },
-    //   {
-    //     id: "4",
-    //     title: "Community",
-    //     menus: [
-    //       { href: {`${HomeUrl}`}, label: "Discussion Forums" },
-    //       { href: {`${HomeUrl}`}, label: "Code of Conduct" },
-    //       { href: {`${HomeUrl}`}, label: "Contributing" },
-    //       { href: {`${HomeUrl}`}, label: "API Reference" },
-    //     ],
-    //   },
   ];
 
   const renderWidgetMenuItem = (menu: WidgetFooterMenu, index: number) => {

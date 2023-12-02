@@ -2,9 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .font-miui {
     font-family: "miui", system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", Helvetica, Arial, sans-serif;
 }
+
 
 .slick-list>div {
     margin-left: 0;

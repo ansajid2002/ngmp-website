@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Label from "@/components/Label/Label";
 import React, { FC } from "react";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
@@ -11,14 +11,14 @@ import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 
 const AccountPage = () => {
-  const customerData = useAppSelector((state) => state.customerData)
+  const customerData = useAppSelector((state) => state.customerData);
   const {
-    given_name = '',
-    family_name = '',
-    email = '',
-    state = '',
-    country = '',
-    picture = '',
+    given_name = "",
+    family_name = "",
+    email = "",
+    state = "",
+    country = "",
+    picture = "",
   } = customerData?.customerData || {};
 
   return (
@@ -26,7 +26,7 @@ const AccountPage = () => {
       <div className="space-y-10 sm:space-y-12">
         {/* HEADING */}
         <h2 className="text-2xl sm:text-3xl font-semibold">
-          Account infomation
+          Account information
         </h2>
         <div className="flex flex-col md:flex-row">
           <div className="flex-shrink-0 flex items-start">
@@ -67,7 +67,10 @@ const AccountPage = () => {
           <div className="flex-grow mt-10 md:mt-0 md:pl-16 max-w-3xl space-y-6">
             <div>
               <Label>Full name</Label>
-              <Input className="mt-1.5" defaultValue={`${given_name} ${family_name}`} />
+              <Input
+                className="mt-1.5"
+                defaultValue={`${given_name} ${family_name}`}
+              />
             </div>
 
             {/* ---- */}

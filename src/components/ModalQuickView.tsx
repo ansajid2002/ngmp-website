@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 
 export interface ModalQuickViewProps {
   show: boolean;
-  item: any,
+  item: any;
   onCloseModalQuickView: () => void;
 }
 

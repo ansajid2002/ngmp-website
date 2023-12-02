@@ -24,6 +24,7 @@ import {
   Smartphone,
   Truck,
 } from "lucide-react";
+import SupportCenterDropdown from "./SupportCenterDropdown";
 
 const MainNav2Logged: FC<MainNav2LoggedProps> = ({
   customerId,
@@ -119,15 +120,18 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
             </button>
           )}
 
+          {/* Header Profile */}
           <AvatarDropdown />
+
           <div className=" hidden md:block px-3">
-            <Link href={"/SupportCenter?query=BuyingOnNile"}>
-              <MessagesSquare
-                strokeWidth={1}
-                size={28}
-                className="transition-all hover:scale-105"
-              />
-            </Link>
+            {/* <Link href={"/SupportCenter?query=BuyingOnNile"}> */}
+            {/* <MessagesSquare
+              strokeWidth={1}
+              size={28}
+              className="transition-all hover:scale-105"
+            /> */}
+            <SupportCenterDropdown />
+            {/* </Link> */}
           </div>
           <div className="hidden md:block">
             <Language />

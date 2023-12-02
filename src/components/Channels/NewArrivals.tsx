@@ -4,6 +4,7 @@ import { fetchCategoriesAndSubcategories, getAllProducts } from "@/app/page";
 import { Skeleton } from "../ui/skeleton";
 import ProductCard from "../ProductCard";
 import { ChevronRight } from "lucide-react";
+import BreadCrumb from "../BreadCrumb";
 
 const NewArrivals = () => {
   const [loading, setLoading] = useState(true);
@@ -38,13 +39,7 @@ const NewArrivals = () => {
   return (
     <div>
       {/* <h1 className='font-medium text-xl text-center my-2' >New Arrivals</h1> */}
-      <div className="pt-3 px-5 md:px-10">
-        <ul className="flex gap-1 font-medium text-gray-800 items-center justify-start">
-          <li>Home</li>
-          <ChevronRight size={15} />
-          <li>New Arrivals</li>
-        </ul>
-      </div>
+      <BreadCrumb label1={"Home"} label2={"New Arrivals"} />
       <div className="px-2 md:mx-8 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 mt-5">
         {loading
           ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item: any, index: number) => (

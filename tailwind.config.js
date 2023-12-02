@@ -13,10 +13,13 @@ function customColors(cssVar) {
   };
 }
 
-module.exports = withMT( {
+module.exports = withMT({
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: "class", // or 'media' or 'class',
   theme: {
+    // fontFamily: {
+    //   recom: ['Sacramento', 'cursive']
+    // },
     container: {
       center: true,
       padding: {

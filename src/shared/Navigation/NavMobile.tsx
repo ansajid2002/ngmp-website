@@ -16,6 +16,7 @@ import SwitchDarkMode from "@/shared/SwitchDarkMode/SwitchDarkMode";
 import Link from "next/link";
 import { fetchCategoriesAndSubcategories } from "@/app/page";
 import { MessagesSquare } from "lucide-react";
+import SupportCenterDropdown from "@/components/Header/SupportCenterDropdown";
 
 export interface NavMobileProps {
   data?: NavItemType[];
@@ -208,13 +209,16 @@ const NavMobile: React.FC<NavMobileProps> = ({
             {/* <SocialsList itemClass="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xl" /> */}
             <span className="flex items-center justify-center gap-4 mr-2">
               <Language />
-              <Link
+              {/* <Link
                 href={"/SupportCenter?query=BuyingOnNile"}
                 onClick={onClickClose}
                 className="px-2"
               >
                 <MessagesSquare strokeWidth={1} size={28} />
-              </Link>
+              </Link> */}
+
+              <SupportCenterDropdown />
+
               {/* <SwitchDarkMode className="bg-neutral-100 dark:bg-neutral-800" /> */}
             </span>
           </div>
@@ -237,19 +241,19 @@ const NavMobile: React.FC<NavMobileProps> = ({
         </ButtonPrimary>
       </div> */}
       <div className="relative h-auto p-5">
-        <ul className="text-[1.2rem] flex flex-col gap-2 ">
+        <ul className=" flex flex-col gap-1 ">
           <Link href={"/Channel/best-sellers"} onClick={onClickClose}>
-            <li className="tracking-wide">Best Sellers</li>
+            <li className="text-lg font-medium">Best Sellers</li>
           </Link>
           <Link href={"/Channel/new-arrivals"} onClick={onClickClose}>
-            <li className="tracking-wide">New Arrivals</li>
+            <li className="text-lg font-medium">New Arrivals</li>
           </Link>
           <Link href={"#"}>
             <li
               onClick={toggleDropdown}
               className="flex items-center justify-between"
             >
-              <span className="tracking-wide">Category</span>
+              <span className="text-lg font-medium">Category</span>
               <ChevronDownIcon
                 className={
                   isOpen

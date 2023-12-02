@@ -2,11 +2,7 @@
 import React from "react";
 
 const page = () => {
-  return (
-    <div>
-      <h1>Will Update Soon !!</h1>
-    </div>
-  );
+  return <div>page</div>;
 };
 
 export default page;

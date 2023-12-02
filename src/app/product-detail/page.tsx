@@ -57,6 +57,7 @@ import {
   Truck,
 } from "lucide-react";
 import { Image, Modal, Rate } from "antd";
+import ProductSalebadge from "@/components/ProductSalebadge";
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -76,10 +77,6 @@ const ProductDetailPage = ({ searchParams }) => {
   console.log(isDetailModalOpen, "isDetailModalOpen");
 
   const [seeMore, setSeeMore] = useState(false);
-
-  const styling = {
-    backgroundImage: `url(https://aimg.kwcdn.com/upload_aimg/commodity/e4b8aee4-b205-4a0d-845e-62d36d532518.png?imageView2/2/w/800/q/70/format/webp)`,
-  };
 
   // Shipping Modal
 
@@ -547,19 +544,17 @@ const ProductDetailPage = ({ searchParams }) => {
           </div>
         </div>
 
-        <div
-          style={styling}
-          className="text-white py-1 px-2 rounded-lg text-[0.8rem] md:text-[0.9rem] flex justify-between items-center"
-        >
-          <div className="flex items-center ">
-            <img
-              src="https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
-              className="h-[25px] md:h-[35px]"
-            />
-            <Check size={15} className="mt-1 mr-1 md:mr-2" />
-            <span>Free shipping on all orders</span>
-          </div>
-          <span className="hidden md:block">Time-Limited Offer</span>
+        <div>
+          <ProductSalebadge
+            bgImg={
+              "https://aimg.kwcdn.com/upload_aimg/commodity/e4b8aee4-b205-4a0d-845e-62d36d532518.png?imageView2/2/w/800/q/70/format/webp"
+            }
+            dealimg={
+              "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
+            }
+            label1={"Free shipping on all orders"}
+            label2={"Time-Limited Offer"}
+          />
         </div>
 
         {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
@@ -645,6 +640,8 @@ const ProductDetailPage = ({ searchParams }) => {
             {responseData?.additionaldescription}
           </p>
         </div>
+
+        <div className=" lg:hidden py-10">{renderSellerProfile()}</div>
 
         <Modal
           title="Shopping security"
@@ -840,8 +837,8 @@ const ProductDetailPage = ({ searchParams }) => {
   const renderSellerProfile = () => {
     return (
       <>
-        <div className="flex  items-center justify-start gap-5">
-          <div className="h-20 w-20 md:h-24 md:w-24  border-gray-200 border-2  rounded-full overflow-hidden">
+        <div className="flex  items-center justify-start gap-3 md:gap-5">
+          <div className="h-14 w-14 md:h-24 md:w-24  border-gray-200 border-2  rounded-full overflow-hidden">
             <img
               className="h-full w-full object-contain"
               src={
@@ -852,7 +849,7 @@ const ProductDetailPage = ({ searchParams }) => {
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex">
-              <h2 className="text-2xl tracking-wide pr-2 font-medium">
+              <h2 className="text-lg md:text-2xl tracking-wide pr-2 font-medium">
                 {/* {singleVendors?.brand_name || "NA"} */}
                 Pasha Shop
               </h2>
@@ -873,7 +870,7 @@ const ProductDetailPage = ({ searchParams }) => {
                   {/* {singleVendors?.followers || "NA"} */}
                   1000
                 </h2>
-                <h3 className="text-gray-600 text-sm">Followers</h3>
+                <h3 className="text-gray-600 text-xs">Followers</h3>
               </div>
 
               <Minus className="rotate-90 text-gray-400" />
@@ -883,7 +880,7 @@ const ProductDetailPage = ({ searchParams }) => {
                   {/* {singleVendors?.total_sales || "NA"} */}
                   20
                 </h2>
-                <h3 className="text-gray-600 text-sm">Sold</h3>
+                <h3 className="text-gray-600 text-xs">Sold</h3>
               </div>
 
               <Minus className="rotate-90 text-gray-400" />
@@ -893,17 +890,17 @@ const ProductDetailPage = ({ searchParams }) => {
                   {/* {singleVendors?.total_products || "NA"} */}
                   23
                 </h2>
-                <h3 className="text-gray-600 text-sm">Items</h3>
+                <h3 className="text-gray-600 text-xs">Items</h3>
               </div>
             </div>
 
             <div className="flex gap-2 items-center ">
-              <h2 className="w-[50%] flex gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
-                <Heart />
-                <p className="font-medium">Follow</p>
+              <h2 className="w-[50%] flex gap-1 md:gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
+                <Heart className="" size={16} />
+                <p className="text-sm font-medium">Follow</p>
               </h2>
               <h2 className="w-[50%] flex gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
-                <p className="font-medium">Shop all items</p>
+                <p className="text-sm font-medium">Shop all items</p>
               </h2>
             </div>
           </div>
@@ -1063,7 +1060,7 @@ const ProductDetailPage = ({ searchParams }) => {
       <>
         {/* PRODUCT GALLERY */}
         <div className="flex flex-row md:flex-col p-2 w-full md:w-[10%] h-auto scrollbar-hidden overflow-x-auto  md:overflow-y-auto mb-2">
-          <Image.PreviewGroup>
+          <>
             {responseData?.images?.map((image: string, index: number) => (
               <div
                 key={index}
@@ -1083,7 +1080,7 @@ const ProductDetailPage = ({ searchParams }) => {
                 </div>
               </div>
             ))}
-          </Image.PreviewGroup>
+          </>
         </div>
 
         {/* MAIN IMAGE */}
@@ -1099,7 +1096,7 @@ const ProductDetailPage = ({ searchParams }) => {
               loading="lazy"
             />
           </div>
-          <div className="py-10">{renderSellerProfile()}</div>
+          <div className="hidden lg:block py-10">{renderSellerProfile()}</div>
         </div>
 
         {/* LIKE BUTTON */}

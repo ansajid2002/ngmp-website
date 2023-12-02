@@ -194,11 +194,11 @@ async function PageHome() {
         <Safety />
       </div>
 
-      <div className="mt-3 px-1 md:px-10 py-0 md:py-2">
+      <div className="mt-1 px-1 md:px-10 py-0 md:py-2">
         <DealBar
           title={"Lightning deals"}
           bgimage={
-            "https://aimg.kwcdn.com/material-put/1e65f705d6/98afa71b-e6a8-4b7d-ba6b-28789633711d.png?imageView2/2/w/2000/q/80/format/webp"
+            "https://aimg.kwcdn.com/upload_aimg/commodity/e4b8aee4-b205-4a0d-845e-62d36d532518.png?imageView2/2/w/800/q/70/format/webp"
           }
           icon={<Zap size={30} fill="white" />}
         />

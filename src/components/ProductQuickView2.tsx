@@ -18,12 +18,15 @@ import detail1JPG from "@/images/products/detail1.jpg";
 import detail2JPG from "@/images/products/detail2.jpg";
 import detail3JPG from "@/images/products/detail3.jpg";
 import NotifyAddTocart from "./NotifyAddTocart";
-import Image from "next/image";
+// import Image from "next/image";
+import { Image, Rate } from "antd";
 import Link from "next/link";
 import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { addItem } from "@/redux/slices/cartSlice";
+import { ChevronRight } from "lucide-react";
+import ProductSalebadge from "./ProductSalebadge";
 
 export interface ProductQuickView2Props {
   className?: string;
@@ -403,10 +406,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
   const renderSectionContent = () => {
     return (
-      <div className="space-y-8">
+      <div className="space-y-5">
         {/* ---------- 1 HEADING ----------  */}
         <div>
-          <h2 className="text-2xl 2xl:text-3xl font-semibold">
+          <h2 className="text-lg ">
             <Link
               href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
             >
@@ -414,41 +417,41 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
             </Link>
           </h2>
 
-          <div className="flex items-center mt-5 space-x-4 sm:space-x-5">
+          <div className="flex items-center mt-1 space-x-4 sm:space-x-5">
             {/* <div className="flex text-xl font-semibold">$112.00</div> */}
-            {discountPercentage && discountPercentage > 0 && (
-              <p className="text-green-600  ">
-                {discountPercentage?.toFixed(2)}% off
-              </p>
-            )}
             <Prices
               contentClass="py-1 md:py-1.5 text-lg font-semibold"
               price={mrpData}
               sellingprice={sellingPriceData}
             />
+            {discountPercentage && discountPercentage > 0 && (
+              <p className="text-green-600  ">
+                {discountPercentage?.toFixed(2)}% off
+              </p>
+            )}
+          </div>
 
-            {/* <div className="h-6 border-l border-gray-300 dark:border-gray-700"></div> */}
+          <div className="flex items-center gap-1 mb-0.5">
+            <Rate
+              allowHalf
+              disabled
+              value={4.7}
+              className="text-xs md:text-sm text-[#ED642B]"
+            />
+            <span className="text-sm font-medium text-[#ED642B]">(352)</span>
+          </div>
 
-            {/* <div className="flex items-center">
-              <a
-                href="#reviews"
-                className="flex items-center text-sm font-medium"
-              >
-                <StarIcon className="w-5 h-5 pb-[1px] text-yellow-400" />
-                <div className="ml-1.5 flex">
-                  <span>4.9</span>
-                  <span className="block mx-2">·</span>
-                  <span className="text-gray-600 dark:text-gray-400 underline">
-                    142 reviews
-                  </span>
-                </div>
-              </a>
-              <span className="hidden sm:block mx-2.5">·</span>
-              <div className="hidden sm:flex items-center text-sm">
-                <SparklesIcon className="w-3.5 h-3.5" />
-                <span className="ml-1 leading-none">{status}</span>
-              </div>
-            </div> */}
+          <div className="py-1">
+            <ProductSalebadge
+              bgImg={
+                "https://aimg.kwcdn.com/upload_aimg/commodity/e4b8aee4-b205-4a0d-845e-62d36d532518.png?imageView2/2/w/800/q/70/format/webp"
+              }
+              dealimg={
+                "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
+              }
+              label1={"Free shipping on all orders"}
+              label2={"Time-Limited Offer"}
+            />
           </div>
         </div>
 
@@ -495,15 +498,28 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         <hr className=" border-gray-200 dark:border-gray-700"></hr>
         {/*  */}
 
-        <div className="text-center">
+        <div>
+          <h2 className="text-[1rem] font-medium">Description</h2>
+          <p className=" text-[0.9rem] line-clamp-2">
+            {/* {responseData?.additionaldescription} */}
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ab enim
+            inventore, illum laboriosam expedita voluptas quia odit ipsam
+            voluptate deserunt ipsa architecto. Molestiae placeat libero eaque
+            fuga exercitationem! Ipsa error voluptates consequuntur repudiandae
+            repellat fugit, eveniet maiores assumenda aliquam sapiente.
+          </p>
+        </div>
+
+        <div>
           <Link
-            className="text-primary-6000 hover:text-primary-500 font-medium"
+            className="flex items-center justify-center gap-1 text-primary-6000 hover:text-primary-500 font-medium"
             href={{
               pathname: "/product-detail",
               query: { product: prod_slug, uniqueid: uniquepid },
             }}
           >
             View full details
+            <ChevronRight size={20} />
           </Link>
         </div>
       </div>
@@ -517,7 +533,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         {/* CONTENT */}
         <div className="flex flex-row w-full lg:w-[50%]">
           {/* PRODUCT GALLERY */}
-          <div className="flexflex-col p-2 w-[20%] h-[calc(100% - 2rem)] overflow-y-auto mb-2">
+          <div className="flex flex-col p-2 w-[20%] h-[calc(100% - 2rem)] overflow-y-auto mb-2">
             {images?.map((image: string, index: number) => (
               <div
                 key={index}
@@ -525,8 +541,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                 onMouseOver={() => setSelectedImage(image)}
               >
                 <div className="aspect-w-1 aspect-h-1">
-                  <Image
-                    fill
+                  <img
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${
@@ -542,9 +557,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
           {/* MAIN IMAGE */}
           <div className="flex-1">
-            <div className="relative aspect-w-1 aspect-h-1">
+            <div className="relative aspect-w-1 aspect-h-1 rounded-2xl overflow-hidden">
               <Image
-                fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${
                   selectedImage || images?.[0]
