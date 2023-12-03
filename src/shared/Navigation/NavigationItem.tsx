@@ -10,9 +10,10 @@ import Image from "next/image";
 import { AdminUrl } from "@/app/layout";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { setLanguage } from "@/redux/features/languageslice";
-import { useDispatch } from "react-redux"; 
+import { useDispatch } from "react-redux";
 import { addCarts } from "@/redux/slices/cartSlice";
 import { updateproductsListwishlist } from "@/redux/slices/wishlistSlice";
+import { useParams, useSearchParams } from "next/navigation";
 
 export interface NavItemType {
   id: string;
@@ -102,7 +103,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
         {renderMainItem(menu)}
         <div className="flex justify-center invisible bg-black/50 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50">
           <div>
-            
+
           </div>
           <div className=" bg-white  flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
             <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto scrollbar-hidden">
@@ -110,9 +111,8 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                 <div>
                   <div
                     key={999}
-                    className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${
-                      categoryTitle === "Featured Category" && "bg-[#00000010]"
-                    }`}
+                    className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === "Featured Category" && "bg-[#00000010]"
+                      }`}
                     onMouseEnter={() => {
                       setHoveredItem([]);
                       setCategoryTitle("Featured Category");
@@ -133,9 +133,8 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                   {menu.children?.map((item, index) => (
                     <div
                       key={index}
-                      className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${
-                        categoryTitle === item.category_name && "bg-[#00000010]"
-                      }`}
+                      className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === item.category_name && "bg-[#00000010]"
+                        }`}
                       onMouseEnter={() => {
                         setHoveredItem(item.subcategories);
                         setCategoryTitle(item.category_name);
@@ -170,14 +169,13 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                       return (
                         <div className="mx-4 w-[140px] mb-4 ">
                           <Link
-                            href={`/category/${
-                              categoryTitle &&
+                            href={`/category/${categoryTitle &&
                               categoryTitle
                                 ?.replace(/[^\w\s]/g, "")
                                 .replace(/\s/g, "")
-                            }/${singlesubcat.subcategory_name
-                              .replace(/[^\w\s]/g, "")
-                              .replace(/\s/g, "")}`}
+                              }/${singlesubcat.subcategory_name
+                                .replace(/[^\w\s]/g, "")
+                                .replace(/\s/g, "")}`}
                             target="_blank"
                           >
                             <div className="h-32 w-32">
@@ -330,25 +328,34 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
 
   // ===================== MENU MAIN MENU =====================
   const renderMainItem = (item: NavItemType) => {
+    const params = useParams();
+
+    const { channel_name } = params;
+
+    const { category, subcatname } = params
+
+
     return (
       <div className="h-20 flex-shrink-0 group flex items-center">
         <Link
-          className={`inline-flex items-center group text-sm lg:text-[15px] font-medium text-gray-700 dark:text-gray-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-gray-900 transition-colors duration-300 ease-in-out hover:bg-gray-100  ${
-            menuCurrentHovers[0] == item.id &&
+          className={`relative inline-flex justify-center  items-center group text-sm lg:text-[15px] font-medium text-gray-700 dark:text-gray-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-gray-900 transition-colors duration-300 ease-in-out hover:bg-gray-100  ${menuCurrentHovers[0] == item.id &&
             item.type &&
             "bg-gray-100 dark:bg-gray-800 dark:text-gray-200"
-          } `}
+            } `}
           href={{
             pathname: item.href || undefined,
           }}
           onMouseOver={() => onMouseEnterMenu(item.id)}
         >
-          {item.name}
+          {
+            channel_name === item.slug && <div className="w-1/4 h-[5px] rounded-full absolute bottom-0 bg-orange-500"></div>
+          }
+          {subcatname && item.slug === 'categories' ? subcatname : (category && item.slug === 'categories' ? category : item.name)}
+
           {item.type && (
             <ChevronDownIcon
-              className={`ml-1 -mr-1 h-4 w-4 transition-all  ${
-                menuCurrentHovers[0] == item.id && "rotate-180 text-gray-700"
-              }`}
+              className={`ml-1 -mr-1 h-4 w-4 transition-all  ${menuCurrentHovers[0] == item.id && "rotate-180 text-gray-700"
+                }`}
               aria-hidden="true"
             />
           )}
@@ -364,7 +371,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
       return renderMegaMenu(menuItem);
     default:
       return (
-        <li className="menu-item flex-shrink-0">{renderMainItem(menuItem)}</li>
+        <li className="menu-item flex-shrink-0 ">{renderMainItem(menuItem)}</li>
       );
   }
 };

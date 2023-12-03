@@ -7,7 +7,6 @@ import { StarIcon } from "@heroicons/react/24/solid";
 import BagIcon from "@/components/BagIcon";
 import NcInputNumber from "@/components/NcInputNumber";
 import { PRODUCTS } from "@/data/data";
-// import logo from "@/images/mainlogo.svg";
 import payment from "@/images/payment.png";
 import security from "@/images/security.png";
 import {

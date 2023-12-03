@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import LikeButton from "./LikeButton";
 import Prices from "./Prices";
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
@@ -16,6 +16,9 @@ import NcImage from "@/shared/NcImage/NcImage";
 import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { Rate } from "antd";
+import { Loader2Icon } from "lucide-react";
+import { addItemToWishlist, removeItemFromWishlist } from "@/redux/slices/wishlistSlice";
+import { useDispatch } from "react-redux";
 
 export interface ProductCardProps {
   className?: string;
@@ -28,12 +31,18 @@ const ProductCard: FC<ProductCardProps> = ({
   data = PRODUCTS[0],
   showTitle = true,
 }) => {
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
   const { ad_title, mrp, sellingprice, images, uniquepid, prod_slug } = data;
   const [inFavorite, setinFavorite] = useState(false);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
+  const customerData = useAppSelector((state) => state.customerData);
+  const customerId = customerData?.customerData?.customer_id || null;
+
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
 
+  const dispatch = useDispatch()
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
     const isFavorite =
@@ -141,7 +150,82 @@ const ProductCard: FC<ProductCardProps> = ({
     );
   };
 
-  // console.log(process.env.BASEURL);
+
+  const handleToggleWishlist = useCallback(async () => {
+    if (!customerId) return;
+    setWishlistLoading(true);
+    const { category, subcategory, uniquepid, vendorid, mrp, sellingprice, label } = data;
+    const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
+    const replacesubcategory = subcategory
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s/g, "");
+    const requestData = {
+      customer_id: customerId,
+      vendor_id: vendorid,
+      uniquepid,
+      category: replacecategory,
+      subcategory: replacesubcategory,
+      label,
+      mrp,
+      sellingprice,
+    };
+
+    if (!inFavorite) {
+      dispatch(addItemToWishlist({ ...data }));
+
+      if (customerId) {
+        try {
+          // Make a POST request to your API endpoint for updating the cart
+          const response = await fetch(`/api/wishlist/addWishlist`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const responseData = await response.json();
+          toast.success("Added to Wishlist");
+          setWishlistLoading(false);
+
+          setinFavorite(true);
+        } catch (error) {
+          console.error("Error updating wishlist:", error);
+        }
+      }
+    } else {
+      dispatch(removeItemFromWishlist({ ...data }));
+      if (customerId) {
+        try {
+          // Make a POST request to your API endpoint for updating the wishlist
+          const response = await fetch(`/api/wishlist/removeFromWishlist`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const responseData = await response.json();
+          toast.success("Removed From Wishlist");
+          setWishlistLoading(false);
+
+          setinFavorite(false);
+        } catch (error) {
+          console.error("Error updating wishlist:", error);
+        }
+      }
+    }
+  }, [customerId, dispatch, inFavorite, data, setinFavorite]);
+
 
   return (
     <>
@@ -173,10 +257,18 @@ const ProductCard: FC<ProductCardProps> = ({
               value={`${discountPercentage.toFixed(2)} Off`}
             />
           )}
-          <LikeButton
-            liked={inFavorite}
-            className="absolute top-3 end-3 z-10 transition-all ease-in-out hover:scale-110"
-          />
+          <div>
+            {wishlistLoading ? (
+              <div className="mt-2 w-9 h-9 absolute top-3 end-3 z-10 transition-all ease-in-out hover:scale-110 flex items-center justify-center">
+                <Loader2Icon className="animate-spin" />
+              </div>
+            ) : (
+              <div className="mt-2 absolute top-3 end-3 z-10 transition-all ease-in-out hover:scale-110" onClick={handleToggleWishlist}>
+                <LikeButton liked={inFavorite} data="hey" />
+              </div>
+            )}
+          </div>
+          {/* className="absolute top-3 end-3 z-10 transition-all ease-in-out hover:scale-110" */}
           {/* {renderSizeList()} */}
           {renderGroupButtons()}
         </div>
