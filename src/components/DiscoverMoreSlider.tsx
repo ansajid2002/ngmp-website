@@ -8,6 +8,8 @@ import Glide from "@glidejs/glide/dist/glide.esm";
 import { CATS_DISCOVER } from "./CardCategories/data";
 
 import SingleVendorsCard from "./Vendors/SingleVendorsCard";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 const DiscoverMoreSlider = ({ data }) => {
   const sliderRef = useRef(null);
@@ -59,15 +61,16 @@ const DiscoverMoreSlider = ({ data }) => {
       ref={sliderRef}
       className={`nc-DiscoverMoreSlider  ${isShow ? "" : "invisible"}`}
     >
-      <Heading
-        className="mb-12 lg:mb-14 text-neutral-900 dark:text-neutral-50 nc-p-r-container "
-        desc=""
-        showSlideButton={false}
-        // rightDescText="Good things are waiting for you"
-        hasNextPrev
-      >
-        Recommended Shop!!
-      </Heading>
+      <div className="md:flex  items-center justify-between pb-5">
+        <h2 className="text-[2rem] md:text-[2.3rem] text-left tracking-tight leading-none uppercase font-bold mb-2">
+          <span className="text-[#ED642B]">Recommended</span> Shops
+        </h2>
+        <Link href={"/Channel/Shops"}>
+          <span className="flex items-end justify-end gap-1 font-medium text-base">
+            View All Shops <ChevronRight size={20} color="#ED642B" />
+          </span>
+        </Link>
+      </div>
       <div className="md:p-5" data-glide-el="track">
         <div className="glide__slides">
           {data &&

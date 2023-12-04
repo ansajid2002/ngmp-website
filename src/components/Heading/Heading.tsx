@@ -53,7 +53,7 @@ const Heading: React.FC<HeadingProps> = ({
       >
         <h2
           className={`${isCenter ? "justify-center" : ""} ${fontClass}`}
-          {...args}
+          // {...args}
         >
           {children || `Section Heading`}
           {rightDescText && (
@@ -76,14 +76,14 @@ const Heading: React.FC<HeadingProps> = ({
           <NextPrev onClickNext={() => {}} onClickPrev={() => {}} />
         </div>
       )}
-      {!showSlideButton && hasNextPrev && !isCenter && (
+      {/* {!showSlideButton && hasNextPrev && !isCenter && (
         <div>
           <Link href={"/Channel/Shops"} className="flex items-center gap-1">
             <h2>View All Shop</h2>
             <ChevronRight className="mt-1" color="#ED642B" size={25} />
           </Link>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

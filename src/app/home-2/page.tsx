@@ -1,5 +1,5 @@
 import React from "react";
-import SectionHowItWork from "@/components/SectionHowItWork/SectionHowItWork";
+import SectionHowItWork from "@/components/ItemsInCart/ItemsInCart";
 import BackgroundSection from "@/components/BackgroundSection/BackgroundSection";
 import SectionSliderLargeProduct from "@/components/SectionSliderLargeProduct";
 import SectionSliderProductCard from "@/components/SectionSliderProductCard";

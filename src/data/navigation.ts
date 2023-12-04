@@ -304,17 +304,20 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     id: ncNanoId(),
     href: "/Channel/best-seller",
     name: "Best Sellers",
+    slug: 'best-seller'
   },
   {
     id: ncNanoId(),
     href: "/Channel/new-arrivals",
     name: "New Arrivals",
+    slug: "new-arrivals"
   },
 
   {
     id: ncNanoId(),
     href: "/",
     name: "Categories",
+    slug: 'categories',
     type: "megaMenu",
     children: MEGAMENU_TEMPLATES,
   },

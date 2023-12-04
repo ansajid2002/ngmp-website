@@ -12,6 +12,7 @@ import usa from "@/images/flags/united-states.png";
 import { useDispatch } from "react-redux";
 import { setLanguage } from "@/redux/features/languageslice";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import { CheckIcon } from "lucide-react";
 
 export default function AvatarDropdown() {
   const dispatch = useDispatch<AppDispatch>();
@@ -61,7 +62,7 @@ export default function AvatarDropdown() {
                     {availablelanguages?.map((item) => (
                       <Link
                         href={item.link}
-                        className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                        className={`flex justify-between items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50 ${item.label === languageName && 'bg-green-100/50'}`}
                         onClick={() => ChangeLanguageIcon(item)}
                       >
                         <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
@@ -71,16 +72,16 @@ export default function AvatarDropdown() {
                             src={item.img.src}
                             alt="selected language"
                           />
+                          <div className="ml-2 lg:ml-4">
+                            <p className="text-sm font-medium capitalize">
+                              {item.label}
+                            </p>
+                          </div>
                         </div>
-                        <div className="ml-2 lg:ml-4">
-                          <p className="text-sm font-medium capitalize">
-                            {item.label}
-                          </p>
-                        </div>
-                        <div className="ml-8">
+                        <div className="">
                           {item.label === languageName && (
-                            <ChevronRightIcon
-                              className="ml-1 -mr-1 h-4 w-4 text-gray-700"
+                            <CheckIcon
+                              className="h-4 w-4 text-green-500"
                               aria-hidden="true"
                             />
                           )}

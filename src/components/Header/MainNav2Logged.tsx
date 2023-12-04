@@ -92,16 +92,16 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
   const renderContent = () => {
     return (
       <div className="h-20 flex justify-between">
-        <div className="flex items-center lg:hidden flex-1">
+        <div className="flex items-center lg:hidden">
           <MenuBar />
         </div>
-        <div className="lg:flex-1 flex items-center">
+        <div className="flex items-center">
           {/* <Logo className="flex-shrink-0" /> */}
           <Link href={`${HomeUrl}`}>
             <Image
               src={logo}
               alt="website main logo"
-              className=" w-32 md:w-32 xl:w-32 pb-1"
+              className="w-32 md:w-32 xl:w-32 pb-1"
             />
           </Link>
         </div>
@@ -110,7 +110,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
           {showSearchForm ? renderSearchForm() : <Navigation />}
         </div>
 
-        <div className="flex-1 flex items-center justify-end text-gray-700 dark:text-gray-100">
+        <div className="flex-[1] flex items-center justify-end text-gray-700 dark:text-gray-100">
           {!showSearchForm && (
             <button
               className="hidden lg:flex w-10 h-10 sm:w-12 sm:h-12 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none items-center justify-center"
@@ -123,7 +123,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
           {/* Header Profile */}
           <AvatarDropdown />
 
-          <div className=" hidden md:block px-3">
+          <div className="block px-3">
             {/* <Link href={"/SupportCenter?query=BuyingOnNile"}> */}
             {/* <MessagesSquare
               strokeWidth={1}

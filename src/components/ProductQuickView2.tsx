@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import LikeButton from "@/components/LikeButton";
 import { StarIcon } from "@heroicons/react/24/solid";
@@ -25,8 +25,9 @@ import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { addItem } from "@/redux/slices/cartSlice";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2Icon } from "lucide-react";
 import ProductSalebadge from "./ProductSalebadge";
+import { addItemToWishlist, removeItemFromWishlist } from "@/redux/slices/wishlistSlice";
 
 export interface ProductQuickView2Props {
   className?: string;
@@ -77,6 +78,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   const [sellingPriceData, setSellingPrice] = useState<number | null>(
     sellingprice
   );
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
   const [discountPercentage, setDiscountPercentage] = useState<number | null>(
     ((mrp - sellingprice) / mrp) * 100
   );
@@ -384,16 +387,14 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                 handleAttributeSelect(variant.attribute, item);
                 setVariantActive(itemvar);
               }}
-              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${
-                variantActive === itemvar
-                  ? "border-black/90 dark:border-white"
-                  : "border-transparent"
-              }`}
+              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
+                ? "border-black/90 dark:border-white"
+                : "border-transparent"
+                }`}
             >
               <div
-                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${
-                  variantActive === itemvar && "bg-black text-white"
-                }`}
+                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && "bg-black text-white"
+                  }`}
               >
                 {item}
               </div>
@@ -526,6 +527,81 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     );
   };
 
+  const handleToggleWishlist = useCallback(async () => {
+    if (!customerId) return;
+    setWishlistLoading(true);
+    const { category, subcategory, uniquepid, vendorid } = item;
+    const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
+    const replacesubcategory = subcategory
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s/g, "");
+    const requestData = {
+      customer_id: customerId,
+      vendor_id: vendorid,
+      uniquepid,
+      category: replacecategory,
+      subcategory: replacesubcategory,
+      label: null,
+      mrp: mrpData,
+      sellingprice: sellingPriceData,
+    };
+
+    if (!inFavorite) {
+      dispatch(addItemToWishlist({ ...item }));
+
+      if (customerId) {
+        try {
+          // Make a POST request to your API endpoint for updating the cart
+          const response = await fetch(`/api/wishlist/addWishlist`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const responseData = await response.json();
+          toast.success("Added to Wishlist");
+          setWishlistLoading(false);
+
+          setinFavorite(true);
+        } catch (error) {
+          console.error("Error updating wishlist:", error);
+        }
+      }
+    } else {
+      dispatch(removeItemFromWishlist({ ...item }));
+      if (customerId) {
+        try {
+          // Make a POST request to your API endpoint for updating the wishlist
+          const response = await fetch(`/api/wishlist/removeFromWishlist`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const responseData = await response.json();
+          toast.success("Removed From Wishlist");
+          setWishlistLoading(false);
+
+          setinFavorite(false);
+        } catch (error) {
+          console.error("Error updating wishlist:", error);
+        }
+      }
+    }
+  }, [customerId, dispatch, inFavorite, item, setinFavorite]);
+
   return (
     <div className={`nc-ProductQuickView2 ${className}`}>
       {/* MAIn */}
@@ -544,9 +620,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                   <img
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
-                    className={`w-full rounded-xl object-contain transition duration-300 ${
-                      selectedImage === image ? "ring-2 ring-primary" : ""
-                    }`}
+                    className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
+                      }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -556,23 +631,30 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
           </div>
 
           {/* MAIN IMAGE */}
-          <div className="flex-1">
-            <div className="relative aspect-w-1 aspect-h-1 rounded-2xl overflow-hidden">
-              <Image
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${
-                  selectedImage || images?.[0]
+          <div className="flex-1 relative w-full h-[500px] rounded-2xl overflow-hidden">
+            <Image
+              // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+
+              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || images?.[0]
                 }`}
-                className="w-full rounded-xl object-contain"
-                alt="Main Product Image"
-                loading="lazy" // Add the lazy loading attribute here
-              />
-            </div>
+              className="w-full h-full object-cover"
+              alt="Main Product Image"
+              loading="lazy" // Add the lazy loading attribute here
+            />
           </div>
 
           {/* LIKE BUTTON */}
-          <div className="mt-2">
-            <LikeButton liked={inFavorite} data="hey" />
+
+          <div>
+            {wishlistLoading ? (
+              <div className="mt-2 w-9 h-9 flex items-center justify-center">
+                <Loader2Icon className="animate-spin" />
+              </div>
+            ) : (
+              <div className="mt-2" onClick={handleToggleWishlist}>
+                <LikeButton liked={inFavorite} data="hey" />
+              </div>
+            )}
           </div>
         </div>
 

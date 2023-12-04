@@ -16,13 +16,15 @@ export interface SectionSliderProductCardProps {
   headingClassName?: string;
   subHeading?: string;
   data?: Product[];
+  ShowProduct?: boolean;
 }
 
 const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
+  ShowProduct = true,
   className = "",
   itemClassName = "",
-  headingFontClassName = " text-[1.5rem] md:lg:text-[2.3rem] font-medium",
-  headingClassName,
+  headingFontClassName = "leading-none text-[2rem] md:text-[2.3rem] font-bold",
+  headingClassName = "  tracking-tight uppercase mb-10",
   heading,
   subHeading = "",
   data,
@@ -78,7 +80,10 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
           rightDescText={subHeading}
           hasNextPrev
         >
-          {heading || `New Arrivals`}
+          {heading || `New Arrivals`}{" "}
+          {ShowProduct && (
+            <span className="text-[#ed642b] font-bold">Products</span>
+          )}
         </Heading>
 
         <div className="glide__track" data-glide-el="track">

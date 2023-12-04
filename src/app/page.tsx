@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import SectionHowItWork from "@/components/SectionHowItWork/SectionHowItWork";
-import CategoriesSlider from "@/components/categoriesslider/Categoriesslider";
+import ItemsInCart from "@/components/ItemsInCart/ItemsInCart";
+// import CategoriesSlider from "@/components/categoriesslider/Categoriesslider";
 import BackgroundSection from "@/components/BackgroundSection/BackgroundSection";
 import SectionPromo1 from "@/components/SectionPromo1";
 import SectionHero2 from "@/components/SectionHero/SectionHero2";
@@ -22,6 +22,7 @@ import DealBar from "@/components/DealBar";
 import { Zap } from "lucide-react";
 import NewHeroSection from "@/components/SectionHero/NewHeroSection";
 import NewHeroSectionMobile from "@/components/SectionHero/NewHeroSectionMobile";
+import { useAppSelector } from "@/redux/store";
 
 interface Subcategory {
   subcategory_id: number;
@@ -224,11 +225,12 @@ async function PageHome() {
           />
         </div>
 
-        <div className=" py-4 border-t border-b border-gray-200 dark:border-gray-700">
-          <SectionHowItWork />
+        <div className=" ">
+          <ItemsInCart label1={"Items"} label2={"In Your Cart"} />
         </div>
 
         <SectionSliderProductCard
+          ShowProduct={false}
           heading="Best Sellers"
           subHeading="Best selling of the month"
           data={getAllProductsData}

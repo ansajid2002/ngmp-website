@@ -19,6 +19,7 @@ const AccountPage = () => {
     state = "",
     country = "",
     picture = "",
+    phone_number = ''
   } = customerData?.customerData || {};
 
   return (
@@ -104,15 +105,6 @@ const AccountPage = () => {
               </div>
             </div>
 
-            {/* ---- */}
-            <div>
-              <Label>Gender</Label>
-              <Select className="mt-1.5">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </Select>
-            </div>
 
             {/* ---- */}
             <div>
@@ -121,7 +113,7 @@ const AccountPage = () => {
                 <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                   <i className="text-2xl las la-phone-volume"></i>
                 </span>
-                <Input className="!rounded-l-none" defaultValue="003 888 232" />
+                <Input className="!rounded-l-none" defaultValue={phone_number} />
               </div>
             </div>
             {/* ---- */}

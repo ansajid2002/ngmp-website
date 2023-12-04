@@ -22,7 +22,7 @@ const SingleVendorsCard = ({ item, index }) => {
               src={
                 item.products && item.products.images && item.products.images[0]
                   ? `${AdminUrl}/uploads/vendorsProductImages/${item.products.images[0]}`
-                  : "https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png"
+                  : "/placeholder.png"
               }
               alt={item.brand_name || "NA"}
             />
@@ -33,7 +33,7 @@ const SingleVendorsCard = ({ item, index }) => {
               src={
                 item.products && item.products.images && item.products.images[1]
                   ? `${AdminUrl}/uploads/vendorsProductImages/${item.products.images[1]}`
-                  : "https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png"
+                  : "/placeholder.png"
               }
               alt={item.brand_name || "NA"}
             />
@@ -42,7 +42,7 @@ const SingleVendorsCard = ({ item, index }) => {
               src={
                 item.products && item.products.images && item.products.images[2]
                   ? `${AdminUrl}/uploads/vendorsProductImages/${item.products.images[2]}`
-                  : "https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png"
+                  : "/placeholder.png"
               }
               alt={item.brand_name || "NA"}
             />
