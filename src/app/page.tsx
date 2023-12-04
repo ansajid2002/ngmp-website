@@ -183,10 +183,10 @@ async function PageHome() {
   return (
     <div className="relative overflow-hidden">
       {/* <SectionHero2 data={bannersData} /> */}
-      <div className=" md:hidden">
+      <div className="hidden md:block">
         <NewHeroSection data={bannersData} />
       </div>
-      <div className="hidden md:block">
+      <div className="md:hidden">
         <NewHeroSectionMobile data={bannersDataMobile} />
       </div>
 
@@ -214,10 +214,6 @@ async function PageHome() {
           <DiscoverMoreSlider data={vendors} />
         </div>
 
-        {/* <div className="hidden md:block py-4 border-t border-b border-gray-200 dark:border-gray-700">
-          <SectionHowItWork />
-        </div> */}
-
         {/* <div className="space-y-10 mt-4">
           <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata} />
         </div> */}
@@ -226,6 +222,10 @@ async function PageHome() {
           <NewCategorySlider
             newcategoriesdata={fetchCategoriesAndSubcategoriesdata}
           />
+        </div>
+
+        <div className=" py-4 border-t border-b border-gray-200 dark:border-gray-700">
+          <SectionHowItWork />
         </div>
 
         <SectionSliderProductCard

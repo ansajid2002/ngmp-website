@@ -6,7 +6,7 @@ const DealBar = ({ title, icon, bgimage }) => {
   const styling = {
     backgroundImage: `url(${bgimage})`,
     backgroundSize: "cover",
-    padding: "20px",
+    padding: "15px",
     color: "white",
   };
 

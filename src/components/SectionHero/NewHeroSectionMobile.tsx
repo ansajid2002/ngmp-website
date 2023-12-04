@@ -6,7 +6,7 @@ import { AdminUrl } from "@/app/layout";
 
 const NewHeroSection = ({ data }: any) => {
   return (
-    <div className="h-[50vh]">
+    <div className="h-[200px]">
       <Carousel>
         {data &&
           data?.map((item: any, index: number) => {
