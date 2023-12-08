@@ -14,8 +14,8 @@ export const AddTokenToWalletForm = () => {
       <Typography variant="h4" className="text-[#063b69]">
         Add Token To Wallet
       </Typography>
-      <Typography className=" mt-1 font-normal">
-        Fill out yout transaction details in below form
+      <Typography className="mt-1 font-normal">
+        Fill out your transaction details in below form
       </Typography>
       <form className="mt-4 mb-2 w-80 max-w-screen-lg sm:w-96">
         <div className="mb-1 flex flex-col gap-5">
