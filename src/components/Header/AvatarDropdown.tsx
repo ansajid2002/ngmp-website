@@ -88,13 +88,15 @@ export default function AvatarDropdown() {
 
                           <div className="flex-grow">
                             <h4 className="font-semibold">{`${given_name} ${family_name}`}</h4>
-                            <p className="text-xs mt-0.5">{`${state && state?.trim() !== "" ? state + "," : ""
-                              } ${country && country?.trim() !== "" ? country : ""
-                              }`}</p>
+                            <p className="text-xs mt-0.5">{`${
+                              state && state?.trim() !== "" ? state + "," : ""
+                            } ${
+                              country && country?.trim() !== "" ? country : ""
+                            }`}</p>
                           </div>
                         </div>
 
-                      <div className="w-full border-b gap-5 border-neutral-200 dark:border-neutral-700" />
+                        <div className="w-full border-b gap-5 border-neutral-200 dark:border-neutral-700" />
 
                         {/* ------------------ 1 --------------------- */}
                         <Link
@@ -112,6 +114,18 @@ export default function AvatarDropdown() {
                           </div>
                         </Link>
 
+                        <Link
+                          href={"/wallet"}
+                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                          onClick={() => close()}
+                        >
+                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                            <Wallet size={20} />
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-sm font-medium ">{"Wallet"}</p>
+                          </div>
+                        </Link>
                         {/* ------------------ 2 --------------------- */}
                         <Link
                           href={"/checkout"}
@@ -137,21 +151,6 @@ export default function AvatarDropdown() {
                           <div className="ml-4">
                             <p className="text-sm font-medium ">
                               {"My Reviews"}
-                            </p>
-                          </div>
-                        </Link>
-
-                        <Link
-                          href={"/credit-balance"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <Wallet size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">
-                              {"Credit Balance"}
                             </p>
                           </div>
                         </Link>
@@ -230,7 +229,6 @@ export default function AvatarDropdown() {
                           </div>
                         </Link>
 
-                      
                         {/* ------------------ 2 --------------------- */}
                         <Link
                           href={"/SupportCenter?query=BuyingOnNile"}

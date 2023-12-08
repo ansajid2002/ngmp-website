@@ -5,8 +5,8 @@ const page = () => {
   return (
     <>
       <BreadCrumb label1={"Home"} label2={"About Us"} />
-      <div className="py-10 px-20 space-y-5">
-        <h1 className="text-5xl font-medium text-[#ED642B] mb-2">
+      <div className="py-5 md:py-10 px-5 md:px-20 space-y-5">
+        <h1 className="text-3xl md:text-5xl font-medium text-[#ED642B] mb-2">
           What is Nile ?
         </h1>
         <p>
@@ -17,7 +17,7 @@ const page = () => {
           to fulfill their dreams in an inclusive environment. Nile was founded
           in Boston, Massachusetts in 2022.
         </p>
-        <h1 className="text-5xl font-medium text-[#ED642B] mb-2">
+        <h1 className="text-3xl md:text-5xl font-medium text-[#ED642B] mb-2">
           Where does Nile ship from?
         </h1>
         <p>
@@ -28,7 +28,7 @@ const page = () => {
           FedEx, and USPS to ensure that all orders are delivered promptly and
           securely to customers.
         </p>
-        <h1 className="text-5xl font-medium text-[#ED642B] mb-2">
+        <h1 className="text-3xl md:text-5xl font-medium text-[#ED642B] mb-2">
           Nile's unique strengths
         </h1>
         <div>

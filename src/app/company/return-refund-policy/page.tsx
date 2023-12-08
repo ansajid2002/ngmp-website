@@ -3,8 +3,10 @@ import React from "react";
 
 const page = () => {
   return (
-    <div>
-      <h1>Will Update Soon !!</h1>
+    <div className="p-10">
+      <h1 className="text-5xl font-extrabold text-center">
+        <span>Return &</span> Refund Policy
+      </h1>
     </div>
   );
 };
