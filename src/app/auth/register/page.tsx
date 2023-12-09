@@ -14,6 +14,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Heading from "@/components/Heading";
 import { GoogleOutlined } from "@ant-design/icons";
+import { LockKeyhole } from "lucide-react";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -111,9 +112,16 @@ const Register = () => {
   };
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <Heading title="Register" />
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md shadow-md mb-20">
+    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-5 lg:px-8">
+      {/* <Heading title="Register" /> */}
+      <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-md shadow-xl mb-20">
+        <h1 className="text-4xl text-center pt-5 uppercase tracking-tight text-[#063b69] pb-2 font-bold">
+          <span className="text-[#ed642b]">Sign</span>Up
+        </h1>
+        <h2 className="flex gap-1 items-center text-sm -mt-2 text-[#22B317] font-medium justify-center">
+          <LockKeyhole size={15} />
+          All data will be encrypted
+        </h2>
         <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
           <Form
             form={form}
@@ -131,7 +139,11 @@ const Register = () => {
                 { required: true, message: "Please enter your first name!" },
               ]}
             >
-              <Input prefix={<UserOutlined />} placeholder="First Name" />
+              <Input
+                className="text-[#ed642b]"
+                prefix={<UserOutlined />}
+                placeholder="First Name"
+              />
             </Form.Item>
             <Form.Item
               name="lastname"
@@ -139,7 +151,11 @@ const Register = () => {
                 { required: true, message: "Please enter your last name!" },
               ]}
             >
-              <Input prefix={<UserOutlined />} placeholder="Last Name" />
+              <Input
+                className="text-[#ed642b]"
+                prefix={<UserOutlined />}
+                placeholder="Last Name"
+              />
             </Form.Item>
 
             <div className="flex gap-2">
@@ -157,7 +173,11 @@ const Register = () => {
                 ]}
                 style={{ width: "20%" }}
               >
-                <Input prefix={<FlagOutlined />} placeholder="+91" />
+                <Input
+                  className="text-[#ed642b]"
+                  prefix={<FlagOutlined />}
+                  placeholder="+91"
+                />
               </Form.Item>
 
               <Form.Item
@@ -171,7 +191,11 @@ const Register = () => {
                 ]}
                 style={{ width: "80%" }}
               >
-                <Input prefix={<PhoneOutlined />} placeholder="Mobile Number" />
+                <Input
+                  className="text-[#ed642b]"
+                  prefix={<PhoneOutlined />}
+                  placeholder="Mobile Number"
+                />
               </Form.Item>
             </div>
             <Form.Item
@@ -181,7 +205,11 @@ const Register = () => {
                 { type: "email", message: "Invalid email address!" },
               ]}
             >
-              <Input prefix={<MailOutlined />} placeholder="Email" />
+              <Input
+                className="text-[#ed642b]"
+                prefix={<MailOutlined />}
+                placeholder="Email"
+              />
             </Form.Item>
             <Form.Item
               name="password"
@@ -191,6 +219,7 @@ const Register = () => {
               ]}
             >
               <Input.Password
+                className="text-[#ed642b]"
                 prefix={<LockOutlined />}
                 placeholder="Password"
               />
@@ -211,15 +240,26 @@ const Register = () => {
               ]}
             >
               <Input.Password
+                className="text-[#ed642b]"
                 prefix={<LockOutlined />}
                 placeholder="Confirm Password"
               />
             </Form.Item>
+            <h2 className="text-sm -mt-5 text-center">
+              By Signing up, you agree to our{" "}
+              <Link
+                className="text-[#ed642b]"
+                href={"/company/terms-conditions"}
+              >
+                Terms of Use
+              </Link>
+              .
+            </h2>
             <Form.Item className="flex justify-center w-full">
               <Button
                 type="default"
                 htmlType="submit"
-                className={`w-full flex justify-center items-center bg-indigo-600 text-white py-2 rounded-md ${
+                className={`w-full flex justify-center items-center bg-[#063b69] text-white py-2 rounded-md ${
                   loading
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-indigo-500"
@@ -230,18 +270,18 @@ const Register = () => {
               </Button>
             </Form.Item>
           </Form>
-          <p className="mt-10 text-center text-sm text-gray-500">
+          <p className="mt-2 text-center text-sm text-gray-500">
             Already a member?{" "}
             <Link
               href="/auth/signIn"
               className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
             >
-              Sign in
+              Login
             </Link>
           </p>
 
           <Divider orientation="center">Or</Divider>
-          <div className="flex justify-center py-4">
+          <div className="flex justify-center py-2">
             <button
               onClick={() => signIn("google")}
               className="flex items-center justify-center bg-white border border-gray-300 p-2 rounded-md hover:border-gray-400 focus:outline-none focus:ring gap-1 focus:border-blue-300"

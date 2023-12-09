@@ -46,7 +46,7 @@ export default function AvatarDropdown() {
                   src={
                     picture
                       ? `${AdminUrl}/uploads/customerProfileImages/${picture}`
-                      : "https://images.pexels.com/photos/19244211/pexels-photo-19244211/free-photo-of-man-holding-a-smartphone-on-a-camera-stabilizer.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                      : "/avatarplaceholder.png"
                   }
                   alt={given_name}
                   width={30}
