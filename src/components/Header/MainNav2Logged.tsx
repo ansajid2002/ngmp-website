@@ -1,38 +1,67 @@
 "use client";
 
-import React, { createRef, FC, useState } from "react";
-import Logo from "@/shared/Logo/Logo";
+import React, { createRef, FC, useEffect, useRef, useState } from "react";
 import MenuBar from "@/shared/MenuBar/MenuBar";
 import AvatarDropdown from "./AvatarDropdown";
 import Navigation from "@/shared/Navigation/Navigation";
 import CartDropdown from "./CartDropdown";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import logo from "@/images/mainlogo.svg";
-import freeshipping from "@/images/header/free-shipping.png";
-import negotiation from "@/images/header/negotiation.png";
-import mobile from "@/images/header/test.png";
 import Image from "next/image";
 import Link from "next/link";
-import { HomeUrl } from "@/app/layout";
+import { AdminUrl, HomeUrl } from "@/app/layout";
 import Language from "./Language";
 import {
   GitCommitVertical,
-  MessagesSquare,
   PackageCheck,
-  Pointer,
   Smartphone,
   Truck,
 } from "lucide-react";
 import SupportCenterDropdown from "./SupportCenterDropdown";
+import PopularSearches from "./Search/PopularSearches";
+import SearchList from "./Search/SearchList";
 
-const MainNav2Logged: FC<MainNav2LoggedProps> = ({
-  customerId,
-  customerData,
-}) => {
+const MainNav2Logged = () => {
   const inputRef = createRef<HTMLInputElement>();
-  const [showSearchForm, setShowSearchForm] = useState(false);
+  const searchNode = useRef();
+  const search = useSearchParams()
+  const searchEncrypt = search && search.get('query') || ''
+  const decryptedText = atob(searchEncrypt)
   const router = useRouter();
+  const [searchText, setSearchText] = useState(decryptedText || '')
+  const [MatchingKeyword, setMatchingKeyword] = useState(null)
+  const [focusInput, setFocusInput] = useState(false)
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (searchNode.current && !searchNode.current?.contains(event.target)) {
+        setFocusInput(false);
+      } 
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleSearchInput = async (text: string) => {
+    setSearchText(text);
+    try {
+      if (text.trim() === '') return
+      const response = await fetch(`${AdminUrl}/api/searchProducts?searchTerm=${text}&currency=USD`);
+      const searchKeywords = await response.json();
+      setMatchingKeyword(searchKeywords)
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  };
+
+  useEffect(() => {
+    searchText.trim() !== '' && handleSearchInput(searchText)
+  }, [searchText])
 
   const renderMagnifyingGlassIcon = () => {
     return (
@@ -61,31 +90,53 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
     );
   };
 
+  const handleSearhForm = (status: boolean, searchTextprop: string) => {
+    setSearchText(searchTextprop)
+  }
+
   const renderSearchForm = () => {
     return (
-      <form
-        className="flex-1 py-2 text-gray-900 dark:text-gray-100"
-        onSubmit={(e) => {
-          e.preventDefault();
-          router.push("/search");
-          inputRef.current?.blur();
-        }}
-      >
-        <div className="bg-gray-50 dark:bg-gray-800 flex items-center space-x-1.5 px-5 h-full rounded">
-          {renderMagnifyingGlassIcon()}
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Type and press enter"
-            className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-base"
-            autoFocus
-          />
-          <button type="button" onClick={() => setShowSearchForm(false)}>
-            <XMarkIcon className="w-5 h-5" />
-          </button>
-        </div>
-        <input type="submit" hidden value="" />
-      </form>
+      <div className="">
+        <form
+          className="flex-1 py-2 text-gray-900 dark:text-gray-100 w-full"
+          onSubmit={(e) => {
+            e.preventDefault();
+            router.replace(`/Channel/search?query=${btoa(searchText)}`);
+            inputRef.current?.blur();
+          }}
+        >
+          <div className="bg-gray-50 w-full dark:bg-gray-800 flex items-center space-x-1.5 px-5 h-full rounded">
+            {renderMagnifyingGlassIcon()}
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Type and press enter"
+              value={searchText}
+              className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-base"
+              onChange={(e) => handleSearchInput(e.target.value)}
+              onFocus={() => setFocusInput(true)}
+            // onBlur={() => setFocusInput(false)}
+            />
+            <button type="button" onClick={() => setSearchText('')}>
+              <XMarkIcon className="w-5 h-5" />
+            </button>
+          </div>
+          <input type="submit" hidden value="" />
+        </form>
+        {/* AutoComplete Overlay */}
+        {
+          focusInput && <>
+            <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center -z-[99] transition-all duration-150 ease-in-out"></div>
+            <div ref={searchNode} className="w-full p-4 bg-white rounded-lg shadow-lg  h-96 overflow-hidden overflow-y-auto w-full z-[99999999]">
+              {
+                searchText.trim() === '' ? <PopularSearches /> : <SearchList closeSearch={handleSearhForm} searchKeywords={MatchingKeyword} />
+              }
+
+            </div>
+          </>
+        }
+      </div>
+
     );
   };
 
@@ -95,7 +146,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
         <div className="flex items-center lg:hidden">
           <MenuBar />
         </div>
-        <div className="flex items-center">
+        <div className=" md:w-[10%] flex items-center">
           {/* <Logo className="flex-shrink-0" /> */}
           <Link href={`${HomeUrl}`}>
             <Image
@@ -106,20 +157,12 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
           </Link>
         </div>
 
-        <div className="flex-[2] hidden lg:flex justify-center mx-4">
-          {showSearchForm ? renderSearchForm() : <Navigation />}
+        <div className="hidden lg:flex justify-center mx-4 w-[65%]">
+          <div className="w-1/2"><Navigation /></div>
+          <div className="w-1/2 mt-2">{renderSearchForm()}</div>
         </div>
 
-        <div className="flex-[1] flex items-center justify-end text-gray-700 dark:text-gray-100">
-          {!showSearchForm && (
-            <button
-              className="hidden lg:flex w-10 h-10 sm:w-12 sm:h-12 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none items-center justify-center"
-              onClick={() => setShowSearchForm(!showSearchForm)}
-            >
-              {renderMagnifyingGlassIcon()}
-            </button>
-          )}
-
+        <div className="w-[25%] flex items-center justify-end text-gray-700 dark:text-gray-100">
           {/* Header Profile */}
           <AvatarDropdown />
 
@@ -192,7 +235,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({
           </h1>
         </div>
       </section>
-      <div className="nc-MainNav2Logged relative z-10 md:pt-2  bg-white dark:bg-neutral-900 border-b border-gray-100 dark:border-gray-700">
+      <div className="nc-MainNav2Logged relative md:pt-2  bg-white dark:bg-neutral-900 border-b border-gray-100 dark:border-gray-700">
         <div className="md:px-10 px-4">{renderContent()}</div>
       </div>
     </header>

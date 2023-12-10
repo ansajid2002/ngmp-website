@@ -35,7 +35,7 @@ export default function AvatarDropdown() {
     picture = "",
   } = customerData?.customerData || {};
 
-  return (
+  return (  
     <div className="AvatarDropdown">
       {customerData?.customerData ? (
         <Popover className="relative">
