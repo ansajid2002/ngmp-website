@@ -16,9 +16,6 @@ import { addItem } from "@/redux/slices/cartSlice";
 import Heading from "@/components/Heading";
 import { Divider } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
-import { LockKeyhole } from "lucide-react";
-import SocialLogin from '@/components/SocialLogin'
-import { Loader } from 'lucide-react'
 
 interface LoginFormInterface {
   email: string;

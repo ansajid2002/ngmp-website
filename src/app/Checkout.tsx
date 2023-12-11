@@ -1,15 +1,19 @@
+import { useAppSelector } from "@/redux/store"
 import getStripePromise from "@/utils/stripe"
+import { useStripe, useElements, ExpressCheckoutElement } from '@stripe/react-stripe-js';
 
 const StripeCheckButton = () => {
+    const { cartItems } = useAppSelector((store) => store.cart)
 
-    const products = [
-        {
-            product: 1,
-            name: 'Stripe',
-            price: 400,
-            quantity: 2
-        }
-    ]
+
+    const products = cartItems.map((item, index) => ({
+        product: index + 1,
+        name: item.ad_title,
+        price: parseFloat(item.sellingprice),
+        quantity: item.added_quantity,
+        image: item.images?.[0]
+    }));
+
     const handleClick = async () => {
         const stripe = await getStripePromise()
 
@@ -28,6 +32,7 @@ const StripeCheckButton = () => {
         }
 
     }
+
     return (
         <div>
             <button onClick={handleClick}>Checkout</button>

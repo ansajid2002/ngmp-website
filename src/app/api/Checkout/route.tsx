@@ -9,7 +9,6 @@ const stripe = new Stripe(key, {
 
 export async function POST(request: NextRequest) {
     const body = await request.json();
-    console.log(body);
     try {
         if (body.products.length > 0) {
             const session = await stripe.checkout.sessions.create({
@@ -20,6 +19,17 @@ export async function POST(request: NextRequest) {
                 invoice_creation: {
                     enabled: true,
                 },
+                custom_text: {
+                    shipping_address: {
+                        message: 'Please provide your shipping address for delivery.',
+                    },
+                    submit: {
+                        message: 'Thank you for submitting your order.',
+                    },
+                },
+                shipping_address_collection: {
+                    allowed_countries: ['US', 'SO', 'IN'], // Add the countries you want to allow
+                },
                 line_items: body.products.map((item: any) => {
                     return {
                         price_data: {
@@ -28,6 +38,7 @@ export async function POST(request: NextRequest) {
                                 name: item.name,
                             },
                             unit_amount: item.price * 100,
+
                         },
                         quantity: item.quantity,
                         adjustable_quantity: {
