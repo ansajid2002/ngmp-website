@@ -134,7 +134,7 @@ const MainNav2Logged = () => {
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center -z-[99] transition-all duration-150 ease-in-out"></div>
             <div
               ref={searchNode}
-              className=" p-4 bg-white rounded-lg shadow-lg  h-96 overflow-hidden overflow-y-auto w-full z-[99999999]"
+              className="w-full p-4 bg-white rounded-lg shadow-lg  h-96 overflow-hidden overflow-y-auto w-full z-[99999999]"
             >
               {searchText.trim() === "" ? (
                 <PopularSearches />
