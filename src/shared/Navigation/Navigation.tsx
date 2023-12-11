@@ -3,11 +3,13 @@ import NavigationItem from "./NavigationItem";
 import { NAVIGATION_DEMO_2 } from "@/data/navigation";
 import { fetchCategoriesAndSubcategories } from "@/app/page";
 import { useAppSelector } from "@/redux/store";
+import Skeleton from "react-loading-skeleton";
 
 // Replace "yourFilePath" with the actual path to your data fetching function
 
 function Navigation() {
   const [navigationData, setNavigationData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { availablelanguages } = useAppSelector(
     (store) => store.languagesReducer
   );
@@ -33,6 +35,7 @@ function Navigation() {
         })
       );
       setNavigationData(updatedNavigation);
+      setIsLoading(false);
       // console.log(updatedNavigation);
     };
 
@@ -41,9 +44,17 @@ function Navigation() {
 
   return (
     <ul className="nc-Navigation flex items-center">
-      {navigationData.map((item) => (
-        <NavigationItem key={item.id} menuItem={item} />
-      ))}
+      {isLoading ? (
+        <div className="flex gap-2">
+          <Skeleton height={35} borderRadius={"5rem"} width={135} />
+          <Skeleton height={35} borderRadius={"5rem"} width={135} />
+          <Skeleton height={35} borderRadius={"5rem"} width={135} />
+        </div>
+      ) : (
+        navigationData.map((item) => (
+          <NavigationItem key={item.id} menuItem={item} />
+        ))
+      )}
     </ul>
   );
 }

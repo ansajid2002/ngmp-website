@@ -17,7 +17,10 @@ import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { Rate } from "antd";
 import { Loader2Icon } from "lucide-react";
-import { addItemToWishlist, removeItemFromWishlist } from "@/redux/slices/wishlistSlice";
+import {
+  addItemToWishlist,
+  removeItemFromWishlist,
+} from "@/redux/slices/wishlistSlice";
 import { useDispatch } from "react-redux";
 
 export interface ProductCardProps {
@@ -42,7 +45,7 @@ const ProductCard: FC<ProductCardProps> = ({
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
     const isFavorite =
@@ -138,7 +141,7 @@ const ProductCard: FC<ProductCardProps> = ({
     return (
       <div className="absolute bottom-0 group-hover:bottom-4 inset-x-1 flex justify-center opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
         <ButtonPrimary
-          className="shadow-lg"
+          className="hidden md:flex shadow-lg"
           fontSize="text-xs"
           sizeClass="py-2 px-4"
           onClick={() => setShowModalQuickView(true)}
@@ -150,11 +153,18 @@ const ProductCard: FC<ProductCardProps> = ({
     );
   };
 
-
   const handleToggleWishlist = useCallback(async () => {
     if (!customerId) return;
     setWishlistLoading(true);
-    const { category, subcategory, uniquepid, vendorid, mrp, sellingprice, label } = data;
+    const {
+      category,
+      subcategory,
+      uniquepid,
+      vendorid,
+      mrp,
+      sellingprice,
+      label,
+    } = data;
     const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
     const replacesubcategory = subcategory
       .replace(/[^\w\s]/g, "")
@@ -226,7 +236,6 @@ const ProductCard: FC<ProductCardProps> = ({
     }
   }, [customerId, dispatch, inFavorite, data, setinFavorite]);
 
-
   return (
     <>
       <div
@@ -263,7 +272,10 @@ const ProductCard: FC<ProductCardProps> = ({
                 <Loader2Icon className="animate-spin" />
               </div>
             ) : (
-              <div className="mt-2 absolute top-3 end-3 z-10 transition-all ease-in-out hover:scale-110" onClick={handleToggleWishlist}>
+              <div
+                className="mt-2 absolute top-3 end-3 z-10 transition-all ease-in-out hover:scale-110"
+                onClick={handleToggleWishlist}
+              >
                 <LikeButton liked={inFavorite} data="hey" />
               </div>
             )}

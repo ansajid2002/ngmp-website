@@ -13,7 +13,7 @@ const Safety = () => {
   return (
     <>
       <a href={`${HomeUrl}/commitments`} target="_blank">
-        <div className="bg-gray-200 cursor-pointer text-[0.8rem] md:text-[0.9rem] font-medium hover:bg-gray-300 px-2 py-3 flex items-center justify-between">
+        <div className="bg-[#0A8800] hover:bg-[#0A8800]/90 text-white text-sm md:text-base lg:text-lg font-semibold cursor-pointer px-2 py-3 flex items-center justify-between rounded-lg">
           <div>
             <ul className="flex flex-wrap gap-3 md:gap-4 ">
               <li className="flex items-center gap-1">
