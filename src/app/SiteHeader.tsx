@@ -8,6 +8,8 @@ import { useDispatch } from "react-redux";
 import { updateCustomerData } from "@/redux/slices/customerData";
 
 const SiteHeader = ({ session }) => {
+  console.log(session, 'sess');
+
   useThemeMode();
   const customerData = useAppSelector((state) => state.customerData)
   const updateCustomer = session?.user.name.customerData

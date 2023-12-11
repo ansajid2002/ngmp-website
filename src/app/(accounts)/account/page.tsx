@@ -19,8 +19,20 @@ const AccountPage = () => {
     state = "",
     country = "",
     picture = "",
-    phone_number = ''
+    phone_number = '',
+    google_id = ""
   } = customerData?.customerData || {};
+
+  let profile_pic = ''
+  if (picture) {
+    if (google_id && google_id.trim() != "") {
+      profile_pic = picture
+    } else {
+      profile_pic = `${AdminUrl}/uploads/customerProfileImages/${picture}`
+    }
+  } else {
+    profile_pic = 'https://images.pexels.com/photos/19244211/pexels-photo-19244211/free-photo-of-man-holding-a-smartphone-on-a-camera-stabilizer.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+  }
 
   return (
     <div className={`nc-AccountPage `}>
@@ -34,7 +46,7 @@ const AccountPage = () => {
             {/* AVATAR */}
             <div className="relative rounded-full overflow-hidden flex">
               <Image
-                src={`${AdminUrl}/uploads/customerProfileImages/${picture}`}
+                src={profile_pic}
                 alt="avatar"
                 width={128}
                 height={128}

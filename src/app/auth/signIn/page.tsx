@@ -16,6 +16,8 @@ import { addItem } from '@/redux/slices/cartSlice'
 import Heading from '@/components/Heading'
 import { Divider } from 'antd'
 import { GoogleOutlined } from "@ant-design/icons"
+import SocialLogin from '@/components/SocialLogin'
+import { Loader } from 'lucide-react'
 
 interface LoginFormInterface {
     email: string,
@@ -25,10 +27,8 @@ function SignIn() {
     const { data, status } = useSession()
     const dispatch = useDispatch()
     const [error, setError] = useState(false)
-    const customerData = useAppSelector((state) => state.customerData)
+    const [loading, setLoading] = useState(false)
     const cartItems = useAppSelector((state) => state.cart.cartItems);
-
-    const router = useRouter()
 
     const updateCartData = async (customerId: number) => {
         try {
@@ -126,6 +126,7 @@ function SignIn() {
             dispatch(updateCustomerData(userData?.customerData))
             window.location.href = HomeUrl
         }
+
     }, [data, dispatch])
 
 
@@ -142,102 +143,104 @@ function SignIn() {
 
     }
 
+    const getLogStatus = (status: boolean) => {
+        setLoading(status)
+    }
     return (
-        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-            <Heading title='Login' />
 
-            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm shadow-md mb-20">
-                <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-                    {
-                        error &&
-                        <div className={`p-4 mb-4 text-sm rounded-lg  ${data?.user?.name?.status !== 200 ? 'text-red-800 dark:text-red-400 bg-red-50 dark:bg-gray-800' : 'text-green-800 dark:text-green-400 bg-green-50 dark:bg-gray-800'}`} role="alert">
-                            <p>{data?.user?.name?.message}</p>
+
+        loading ? (<div className='gap-4 flex justify-center items-center w-full h-screen overflow-hidden fixed top-0 bg-gray-100 z-[999]'>
+            <Loader className='animate-spin' />
+            <p className='animate-pulse'>Checking Authentication</p>
+        </div>) :
+            (
+                <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+                    <Heading title='Login' />
+                    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm shadow-md mb-20">
+                        <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+                            {
+                                error &&
+                                <div className={`p-4 mb-4 text-sm rounded-lg  ${data?.user?.name?.status !== 200 ? 'text-red-800 dark:text-red-400 bg-red-50 dark:bg-gray-800' : 'text-green-800 dark:text-green-400 bg-green-50 dark:bg-gray-800'}`} role="alert">
+                                    <p>{data?.user?.name?.message}</p>
+                                </div>
+                            }
+                            <Formik
+                                initialValues={{
+                                    email: '', password: ''
+                                }}
+                                onSubmit={handleLogin}>
+                                {({
+                                    values,
+                                    handleSubmit,
+                                    handleChange,
+                                    isSubmitting
+                                }) =>
+                                    <form className='space-y-6' onSubmit={handleSubmit}>
+                                        <div>
+                                            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                                Email address
+                                            </label>
+                                            <div className="mt-2">
+                                                <Input
+                                                    id='email'
+                                                    name='email'
+                                                    onChange={handleChange}
+                                                    value={values.email}
+                                                    type='email'
+                                                    required
+                                                    placeholder='Email'
+                                                    className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center justify-between">
+                                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                                                    Password
+                                                </label>
+                                            </div>
+                                            <div className="mt-2">
+                                                <Input
+                                                    id="password"
+                                                    name='password'
+                                                    onChange={handleChange}
+                                                    value={values.password}
+                                                    type="password"
+                                                    placeholder="Password"
+                                                    required
+                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <Button
+                                                disabled={isSubmitting}
+                                                type="submit"
+                                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            >
+                                                Sign in
+                                            </Button>
+                                        </div>
+                                    </form>
+                                }
+                            </Formik>
                         </div>
-                    }
-                    <Formik
-                        initialValues={{
-                            email: '', password: ''
-                        }}
-                        onSubmit={handleLogin}>
-                        {({
-                            values,
-                            handleSubmit,
-                            handleChange,
-                            isSubmitting
-                        }) =>
-                            <form className='space-y-6' onSubmit={handleSubmit}>
-                                <div>
-                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                        Email address
-                                    </label>
-                                    <div className="mt-2">
-                                        <Input
-                                            id='email'
-                                            name='email'
-                                            onChange={handleChange}
-                                            value={values.email}
-                                            type='email'
-                                            required
-                                            placeholder='Email'
-                                            className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6' />
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex items-center justify-between">
-                                        <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                                            Password
-                                        </label>
-                                    </div>
-                                    <div className="mt-2">
-                                        <Input
-                                            id="password"
-                                            name='password'
-                                            onChange={handleChange}
-                                            value={values.password}
-                                            type="password"
-                                            placeholder="Password"
-                                            required
-                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <Button
-                                        disabled={isSubmitting}
-                                        type="submit"
-                                        className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    >
-                                        Sign in
-                                    </Button>
-                                </div>
-                            </form>
-                        }
-                    </Formik>
+                        <p className="mt-10 text-center text-sm text-gray-500">
+                            Not a member?{' '}
+                            <Link href="/auth/register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                                Signup
+                            </Link>
+
+                        </p>
+                        <Divider orientation="center" >
+                            Or
+                        </Divider>
+
+                        <SocialLogin loggstatus={getLogStatus} />
+
+
+                    </div>
                 </div>
-                <p className="mt-10 text-center text-sm text-gray-500">
-                    Not a member?{' '}
-                    <Link href="/auth/register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                        Signup
-                    </Link>
-
-                </p>
-                <Divider orientation="center" >
-                    Or
-                </Divider>
-                <div className='flex justify-center py-4'>
-                    <button
-                        onClick={() => signIn("google")}
-                        className="flex items-center justify-center bg-white border border-gray-300 p-2 rounded-md hover:border-gray-400 focus:outline-none focus:ring gap-1 focus:border-blue-300"
-                    >
-                        {/* Google Logo SVG */}
-                        <GoogleOutlined color='red' />
-                        <p className='text-sm'>Sign in with Google</p>
-                    </button>
-                </div>
-
-
-            </div>
-        </div>
+            )
     )
 }
 

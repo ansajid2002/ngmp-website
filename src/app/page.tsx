@@ -24,6 +24,8 @@ import NewHeroSection from "@/components/SectionHero/NewHeroSection";
 import NewHeroSectionMobile from "@/components/SectionHero/NewHeroSectionMobile";
 import { useAppSelector } from "@/redux/store";
 
+
+
 interface Subcategory {
   subcategory_id: number;
   subcategory_name: string;
@@ -35,6 +37,7 @@ interface Category {
   category_name: string;
   subcategories: Subcategory[];
 }
+
 
 export async function getcustomerData(vendorId: any) {
   try {

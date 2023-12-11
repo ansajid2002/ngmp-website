@@ -15,6 +15,10 @@ import Link from "next/link";
 import CartProducts from "@/components/CartProducts";
 import FetchCartPrice from "@/components/FetchCartPrice";
 import { HomeUrl } from "../layout";
+import { loadStripe } from '@stripe/stripe-js';
+import StripeCheckButton from "../Checkout";
+
+
 
 const CheckoutPage = () => {
   const [tabActive, setTabActive] = useState<
@@ -27,6 +31,7 @@ const CheckoutPage = () => {
       element?.scrollIntoView({ behavior: "smooth" });
     }, 80);
   };
+
 
   const renderLeft = () => {
     return (
@@ -90,6 +95,7 @@ const CheckoutPage = () => {
           </div>
         </div>
 
+
         <div className="flex flex-col lg:flex-row">
           <div className="flex-1">{renderLeft()}</div>
 
@@ -114,7 +120,9 @@ const CheckoutPage = () => {
 
               <FetchCartPrice showTitle={false} showCheckout={false} />
             </div>
-            <ButtonPrimary className="mt-8 w-full">Confirm order</ButtonPrimary>
+            <ButtonPrimary className="mt-8 w-full" >Confirm order</ButtonPrimary>
+            <StripeCheckButton />
+
             <div className="mt-5 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center">
               <p className="block relative pl-5">
                 <svg

@@ -14,6 +14,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Heading from "@/components/Heading";
 import { GoogleOutlined } from "@ant-design/icons";
+import SocialLogin from "@/components/SocialLogin";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -219,11 +220,10 @@ const Register = () => {
               <Button
                 type="default"
                 htmlType="submit"
-                className={`w-full flex justify-center items-center bg-indigo-600 text-white py-2 rounded-md ${
-                  loading
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-indigo-500"
-                }`}
+                className={`w-full flex justify-center items-center bg-indigo-600 text-white py-2 rounded-md ${loading
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-indigo-500"
+                  }`}
                 loading={loading}
               >
                 {loading ? "Creating Account" : "Sign up"}
@@ -241,16 +241,8 @@ const Register = () => {
           </p>
 
           <Divider orientation="center">Or</Divider>
-          <div className="flex justify-center py-4">
-            <button
-              onClick={() => signIn("google")}
-              className="flex items-center justify-center bg-white border border-gray-300 p-2 rounded-md hover:border-gray-400 focus:outline-none focus:ring gap-1 focus:border-blue-300"
-            >
-              {/* Google Logo SVG */}
-              <GoogleOutlined color="red" />
-              <p className="text-sm">Sign in with Google</p>
-            </button>
-          </div>
+          <SocialLogin />
+
         </div>
       </div>
       <Modal

@@ -54,11 +54,34 @@ export const authOptions: NextAuthOptions = {
                 })
         }),
         FacebookProvider({
-            clientId: process.env.FACEBOOK_CLIENT_ID,
-            clientSecret: process.env.FACEBOOK_CLIENT_SECRET
+            clientId: process.env.FACEBOOK_CLIENT_ID || '',
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET || ""
         })
     ],
+    callbacks: {
+        async session({ session, token }) {
+            const response = await fetch(`${AdminUrl}/api/getGoogleuserByid`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: token.sub, email: token.email, given_name: token.name, picture: token.picture }),
+            });
+
+            const data = await response.json();
+            const user: User = { user: { name: data } };
+            return user
+        },
+
+        async signIn({ profile }) {
+            console.log(profile, 'profile');
+            return true
+        }
+    },
     secret: process.env.NEXTAUTH_SECRET,
+    session: {
+        strategy: 'jwt'
+    }
 
 };
 
