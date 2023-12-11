@@ -15,53 +15,57 @@ import Language from "./Language";
 import {
   GitCommitVertical,
   PackageCheck,
+  Search,
   Smartphone,
   Truck,
 } from "lucide-react";
 import SupportCenterDropdown from "./SupportCenterDropdown";
 import PopularSearches from "./Search/PopularSearches";
 import SearchList from "./Search/SearchList";
+import MobileSearch from "./Search/MobileSearch";
 
 const MainNav2Logged = () => {
   const inputRef = createRef<HTMLInputElement>();
   const searchNode = useRef();
-  const search = useSearchParams()
-  const searchEncrypt = search && search.get('query') || ''
-  const decryptedText = atob(searchEncrypt)
+  const search = useSearchParams();
+  const searchEncrypt = (search && search.get("query")) || "";
+  const decryptedText = atob(searchEncrypt);
   const router = useRouter();
-  const [searchText, setSearchText] = useState(decryptedText || '')
-  const [MatchingKeyword, setMatchingKeyword] = useState(null)
-  const [focusInput, setFocusInput] = useState(false)
+  const [searchText, setSearchText] = useState(decryptedText || "");
+  const [MatchingKeyword, setMatchingKeyword] = useState(null);
+  const [focusInput, setFocusInput] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (searchNode.current && !searchNode.current?.contains(event.target)) {
         setFocusInput(false);
-      } 
+      }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleSearchInput = async (text: string) => {
     setSearchText(text);
     try {
-      if (text.trim() === '') return
-      const response = await fetch(`${AdminUrl}/api/searchProducts?searchTerm=${text}&currency=USD`);
+      if (text.trim() === "") return;
+      const response = await fetch(
+        `${AdminUrl}/api/searchProducts?searchTerm=${text}&currency=USD`
+      );
       const searchKeywords = await response.json();
-      setMatchingKeyword(searchKeywords)
+      setMatchingKeyword(searchKeywords);
     } catch (error) {
-      console.error('An error occurred:', error);
+      console.error("An error occurred:", error);
     }
   };
 
   useEffect(() => {
-    searchText.trim() !== '' && handleSearchInput(searchText)
-  }, [searchText])
+    searchText.trim() !== "" && handleSearchInput(searchText);
+  }, [searchText]);
 
   const renderMagnifyingGlassIcon = () => {
     return (
@@ -91,8 +95,8 @@ const MainNav2Logged = () => {
   };
 
   const handleSearhForm = (status: boolean, searchTextprop: string) => {
-    setSearchText(searchTextprop)
-  }
+    setSearchText(searchTextprop);
+  };
 
   const renderSearchForm = () => {
     return (
@@ -105,7 +109,7 @@ const MainNav2Logged = () => {
             inputRef.current?.blur();
           }}
         >
-          <div className="bg-gray-50 w-full dark:bg-gray-800 flex items-center space-x-1.5 px-5 h-full rounded">
+          <div className="bg-gray-100  w-full dark:bg-gray-800 flex items-center space-x-1.5 px-5 h-full rounded-lg">
             {renderMagnifyingGlassIcon()}
             <input
               ref={inputRef}
@@ -114,39 +118,46 @@ const MainNav2Logged = () => {
               value={searchText}
               className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-base"
               onChange={(e) => handleSearchInput(e.target.value)}
-              onFocus={() => setFocusInput(true)}
-            // onBlur={() => setFocusInput(false)}
+              // onFocus={() => setFocusInput(true)}
+              onClick={() => setFocusInput(true)}
+              // onBlur={() => setFocusInput(false)}
             />
-            <button type="button" onClick={() => setSearchText('')}>
+            <button type="button" onClick={() => setSearchText("")}>
               <XMarkIcon className="w-5 h-5" />
             </button>
           </div>
           <input type="submit" hidden value="" />
         </form>
         {/* AutoComplete Overlay */}
-        {
-          focusInput && <>
+        {focusInput && (
+          <>
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center -z-[99] transition-all duration-150 ease-in-out"></div>
-            <div ref={searchNode} className="w-full p-4 bg-white rounded-lg shadow-lg  h-96 overflow-hidden overflow-y-auto w-full z-[99999999]">
-              {
-                searchText.trim() === '' ? <PopularSearches /> : <SearchList closeSearch={handleSearhForm} searchKeywords={MatchingKeyword} />
-              }
-
+            <div
+              ref={searchNode}
+              className=" p-4 bg-white rounded-lg shadow-lg  h-96 overflow-hidden overflow-y-auto w-full z-[99999999]"
+            >
+              {searchText.trim() === "" ? (
+                <PopularSearches />
+              ) : (
+                <SearchList
+                  closeSearch={handleSearhForm}
+                  searchKeywords={MatchingKeyword}
+                />
+              )}
             </div>
           </>
-        }
+        )}
       </div>
-
     );
   };
 
   const renderContent = () => {
     return (
-      <div className="h-20 flex justify-between">
-        <div className="flex items-center lg:hidden">
+      <div className="h-20 w-full flex justify-between">
+        <div className="flex items-center md:hidden">
           <MenuBar />
         </div>
-        <div className=" md:w-[10%] flex items-center">
+        <div className="-ml-10 md:-ml-0 lg:w-[10%] flex items-center">
           {/* <Logo className="flex-shrink-0" /> */}
           <Link href={`${HomeUrl}`}>
             <Image
@@ -157,16 +168,21 @@ const MainNav2Logged = () => {
           </Link>
         </div>
 
-        <div className="hidden lg:flex justify-center mx-4 w-[65%]">
-          <div className="w-1/2"><Navigation /></div>
-          <div className="w-1/2 mt-2">{renderSearchForm()}</div>
+        <div className="hidden  md:flex justify-start ld:justify-center mx-4 w-[65%]">
+          <div className="w-1/2">
+            <Navigation />
+          </div>
+          <div className="hidden lg:block w-1/2 mt-2">{renderSearchForm()}</div>
         </div>
 
-        <div className="w-[25%] flex items-center justify-end text-gray-700 dark:text-gray-100">
+        <div className="w-[35%] lg:w-[25%]  flex items-center gap-1 justify-center text-gray-700 dark:text-gray-100">
           {/* Header Profile */}
+          <div className="lg:hidden">
+            <MobileSearch />
+          </div>
           <AvatarDropdown />
 
-          <div className="block px-3">
+          <div className="hidden lg:block">
             {/* <Link href={"/SupportCenter?query=BuyingOnNile"}> */}
             {/* <MessagesSquare
               strokeWidth={1}
@@ -236,7 +252,7 @@ const MainNav2Logged = () => {
         </div>
       </section>
       <div className="nc-MainNav2Logged relative md:pt-2  bg-white dark:bg-neutral-900 border-b border-gray-100 dark:border-gray-700">
-        <div className="md:px-10 px-4">{renderContent()}</div>
+        <div className="md:px-10 px-2">{renderContent()}</div>
       </div>
     </header>
   );

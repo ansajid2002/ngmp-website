@@ -30,7 +30,7 @@ import NotifyAddTocart from "@/components/NotifyAddTocart";
 // import Image from "next/image";
 import AccordionInfo from "@/components/AccordionInfo";
 import { AdminUrl, HomeUrl } from "../layout";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
 import { addItem } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
@@ -146,6 +146,7 @@ const ProductDetailPage = ({ searchParams }) => {
         const responseData = await response.json();
 
         setResponseData(responseData?.product);
+        console.log(responseData, "DATATATATATATAT");
       } catch (error) {
         console.error("Error processing request:", error);
         // Handle error gracefully

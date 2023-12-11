@@ -45,10 +45,10 @@ function Navigation() {
   return (
     <ul className="nc-Navigation flex items-center">
       {isLoading ? (
-        <div className="flex gap-2">
-          <Skeleton height={35} borderRadius={"5rem"} width={135} />
-          <Skeleton height={35} borderRadius={"5rem"} width={135} />
-          <Skeleton height={35} borderRadius={"5rem"} width={135} />
+        <div className="flex justify-center items-center gap-1 mt-5">
+          <Skeleton height={35} borderRadius={"5rem"} width={120} />
+          <Skeleton height={35} borderRadius={"5rem"} width={120} />
+          <Skeleton height={35} borderRadius={"5rem"} width={120} />
         </div>
       ) : (
         navigationData.map((item) => (

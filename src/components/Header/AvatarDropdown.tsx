@@ -23,6 +23,7 @@ import {
   User,
   Wallet,
 } from "lucide-react";
+import Skeleton from "react-loading-skeleton";
 
 export default function AvatarDropdown() {
   const customerData = useAppSelector((state) => state.customerData);
@@ -33,18 +34,18 @@ export default function AvatarDropdown() {
     state = "",
     country = "",
     picture = "",
-    google_id
+    google_id,
   } = customerData?.customerData || {};
 
-  let profile_pic = ''
+  let profile_pic = "";
   if (picture) {
     if (google_id && google_id.trim() != "") {
-      profile_pic = picture
+      profile_pic = picture;
     } else {
-      profile_pic = `${AdminUrl}/uploads/customerProfileImages/${picture}`
+      profile_pic = `${AdminUrl}/uploads/customerProfileImages/${picture}`;
     }
   } else {
-    profile_pic = 'https://images.pexels.com/photos/19244211/pexels-photo-19244211/free-photo-of-man-holding-a-smartphone-on-a-camera-stabilizer.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+    profile_pic = "/avatarplaceholder.png";
   }
 
   return (
@@ -53,7 +54,7 @@ export default function AvatarDropdown() {
         <Popover className="relative">
           {({ open, close }) => (
             <>
-              <Popover.Button className="rounded-full transition-all px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex  gap-2">
+              <Popover.Button className=" bg-gray-100 rounded-full transition-all lg:px-4 lg:py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex  gap-2">
                 <Image
                   src={profile_pic}
                   alt={given_name}
@@ -66,7 +67,7 @@ export default function AvatarDropdown() {
                   <div className="">
                     <div className="hello-7Ci9B textColor-3r-He line-clamp-1">
                       <p className="line-clamp-1">
-                        {given_name} {family_name}
+                        {given_name ? `${given_name}` : <Skeleton />}
                       </p>
                     </div>
                   </div>
@@ -89,16 +90,15 @@ export default function AvatarDropdown() {
                     <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
                       <div className="relative grid grid-cols-1 gap-5 bg-white dark:bg-neutral-800 py-7 px-6">
                         <div className="flex items-center space-x-3">
-                          <Avatar
-                            imgUrl={profile_pic}
-                            sizeClass="w-12 h-12"
-                          />
+                          <Avatar imgUrl={profile_pic} sizeClass="w-12 h-12" />
 
                           <div className="flex-grow">
                             <h4 className="font-semibold">{`${given_name} ${family_name}`}</h4>
-                            <p className="text-xs mt-0.5">{`${state && state?.trim() !== "" ? state + "," : ""
-                              } ${country && country?.trim() !== "" ? country : ""
-                              }`}</p>
+                            <p className="text-xs mt-0.5">{`${
+                              state && state?.trim() !== "" ? state + "," : ""
+                            } ${
+                              country && country?.trim() !== "" ? country : ""
+                            }`}</p>
                           </div>
                         </div>
 
@@ -277,7 +277,7 @@ export default function AvatarDropdown() {
       ) : (
         <>
           <Link href={"/auth/signIn"}>
-            <div className="rounded-full px-4 py-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transform hover:scale-105 focus:outline-none flex items-center gap-2 cursor-pointer transition-transform duration-100">
+            <div className="rounded-full mr-1 lg:px-4 lg:py-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transform hover:scale-105 focus:outline-none flex items-center gap-2 cursor-pointer transition-transform duration-100">
               <svg
                 className="iconSvg-8qsph iconFill-2q3yE"
                 alt=""

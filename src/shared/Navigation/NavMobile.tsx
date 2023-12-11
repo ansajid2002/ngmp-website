@@ -15,7 +15,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import SwitchDarkMode from "@/shared/SwitchDarkMode/SwitchDarkMode";
 import Link from "next/link";
 import { fetchCategoriesAndSubcategories } from "@/app/page";
-import { MessagesSquare } from "lucide-react";
+import { MessagesSquare, Search } from "lucide-react";
 import SupportCenterDropdown from "@/components/Header/SupportCenterDropdown";
 
 export interface NavMobileProps {
@@ -199,7 +199,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
           </span> */}
 
           <div className="flex justify-between gap-2 items-center mt-4">
-            <Link href={"/"}>
+            <Link href={"/"} onClick={onClickClose}>
               <Image
                 src={logo}
                 alt="website main logo"
@@ -227,7 +227,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
           <ButtonClose onClick={onClickClose} />
         </span>
 
-        <div className="mt-5">{renderSearchForm()}</div>
+        {/* <div className="mt-5">{renderSearchForm()}</div> */}
       </div>
       {/* <ul className="flex flex-col py-6 px-2 space-y-1"> */}
       {/* {data.map(_renderItem)} */}
@@ -248,22 +248,22 @@ const NavMobile: React.FC<NavMobileProps> = ({
           <Link href={"/Channel/new-arrivals"} onClick={onClickClose}>
             <li className="text-lg font-medium">New Arrivals</li>
           </Link>
-          <Link href={"#"}>
-            <li
-              onClick={toggleDropdown}
-              className="flex items-center justify-between"
-            >
-              <span className="text-lg font-medium">Category</span>
-              <ChevronDownIcon
-                className={
-                  isOpen
-                    ? "transition-all ease-in-out rotate-180 ml-2 h-5 w-5 text-[#ED642B]"
-                    : "transition-all ease-in-out ml-2 h-5 w-5 text-neutral-500 "
-                }
-                aria-hidden="true"
-              />
-            </li>
-          </Link>
+          {/* <Link href={"#"}> */}
+          <li
+            onClick={toggleDropdown}
+            className="flex items-center justify-between"
+          >
+            <span className="text-lg font-medium">Category</span>
+            <ChevronDownIcon
+              className={
+                isOpen
+                  ? "transition-all ease-in-out rotate-180 ml-2 h-5 w-5 text-[#ED642B]"
+                  : "transition-all ease-in-out ml-2 h-5 w-5 text-neutral-500 "
+              }
+              aria-hidden="true"
+            />
+          </li>
+          {/* </Link> */}
         </ul>
 
         {isOpen && (
