@@ -60,23 +60,25 @@ export const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         async session({ session, token }) {
-            const response = await fetch(`${AdminUrl}/api/getGoogleuserByid`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id: token.sub, email: token.email, given_name: token.name, picture: token.picture }),
-            });
+            if (token && token.sub) {
+                const response = await fetch(`${AdminUrl}/api/getGoogleuserByid`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: token.sub, email: token.email, given_name: token.name, picture: token.picture }),
+                });
 
-            const data = await response.json();
-            const user: User = { user: { name: data } };
-            return user
+                const data = await response.json();
+
+                const user: User = { user: { name: data } };
+                return user
+            }
+
+            return session
         },
 
-        async signIn({ profile }) {
-            console.log(profile, 'profile');
-            return true
-        }
+
     },
     secret: process.env.NEXTAUTH_SECRET,
     session: {

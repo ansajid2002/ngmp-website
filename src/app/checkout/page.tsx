@@ -17,13 +17,15 @@ import FetchCartPrice from "@/components/FetchCartPrice";
 import { HomeUrl } from "../layout";
 import { loadStripe } from '@stripe/stripe-js';
 import StripeCheckButton from "../Checkout";
-
+import { useAppSelector } from "@/redux/store";
 
 
 const CheckoutPage = () => {
   const [tabActive, setTabActive] = useState<
     "ContactInfo" | "ShippingAddress" | "PaymentMethod"
   >("ShippingAddress");
+
+  const customerData = useAppSelector((state) => state.customerData)
 
   const handleScrollToEl = (id: string) => {
     const element = document.getElementById(id);
@@ -50,30 +52,34 @@ const CheckoutPage = () => {
           />
         </div>
 
-        <div id="ShippingAddress" className="scroll-mt-24">
-          <ShippingAddress
-            isActive={tabActive === "ShippingAddress"}
-            onOpenActive={() => {
-              setTabActive("ShippingAddress");
-              handleScrollToEl("ShippingAddress");
-            }}
-            onCloseActive={() => {
-              setTabActive("PaymentMethod");
-              handleScrollToEl("PaymentMethod");
-            }}
-          />
-        </div>
+        {
+          customerData?.customerData && <>
+            <div id="ShippingAddress" className="scroll-mt-24">
+              <ShippingAddress
+                isActive={tabActive === "ShippingAddress"}
+                onOpenActive={() => {
+                  setTabActive("ShippingAddress");
+                  handleScrollToEl("ShippingAddress");
+                }}
+                onCloseActive={() => {
+                  setTabActive("PaymentMethod");
+                  handleScrollToEl("PaymentMethod");
+                }}
+              />
+            </div>
 
-        <div id="PaymentMethod" className="scroll-mt-24">
-          <PaymentMethod
-            isActive={tabActive === "PaymentMethod"}
-            onOpenActive={() => {
-              setTabActive("PaymentMethod");
-              handleScrollToEl("PaymentMethod");
-            }}
-            onCloseActive={() => setTabActive("PaymentMethod")}
-          />
-        </div>
+            <div id="PaymentMethod" className="scroll-mt-24">
+              <PaymentMethod
+                isActive={tabActive === "PaymentMethod"}
+                onOpenActive={() => {
+                  setTabActive("PaymentMethod");
+                  handleScrollToEl("PaymentMethod");
+                }}
+                onCloseActive={() => setTabActive("PaymentMethod")}
+              />
+            </div>
+          </>
+        }
       </div>
     );
   };
