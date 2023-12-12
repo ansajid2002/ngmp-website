@@ -14,6 +14,7 @@ import AuthProvider from "@/components/AuthProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import type { Metadata } from "next";
+import { usePathname } from "next/navigation";
 
 const poppins = {
   fontFamily:
@@ -31,7 +32,6 @@ export default async function RootLayout({
   params: any;
 }) {
   const session = await getServerSession(authOptions);
-
   return (
     <html lang="en" dir="" className={`${poppins.className} font-miui`}>
       <body className="bg-white overflow-x-hidden text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
@@ -39,9 +39,9 @@ export default async function RootLayout({
         <ReduxProvider>
           <div className="">
             <SiteHeader session={session} />
-            <div className="relative top-32 md:top-36">
-              <AuthProvider session={session}>{children}</AuthProvider>
-            </div>
+
+            <AuthProvider session={session}>{children}</AuthProvider>
+
             <CommonClient />
             {/* <Footer /> */}
             <NewFooter />

@@ -1,7 +1,6 @@
-"use client";
 import React from "react";
 
-const page = () => {
+const Page = () => {
   return (
     <div>
       <h1>Will Update Soon !!</h1>
@@ -9,4 +8,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

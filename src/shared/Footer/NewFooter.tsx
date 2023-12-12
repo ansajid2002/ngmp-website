@@ -1,3 +1,4 @@
+"use client";
 import Logo from "@/shared/Logo/Logo";
 import SocialsList1 from "@/shared/SocialsList1/SocialsList1";
 import Applestore from "@/shared/applestore.png";
@@ -5,6 +6,7 @@ import { CustomLink } from "@/data/types";
 import React from "react";
 import Image from "next/image";
 import { AdminUrl, HomeUrl } from "@/app/layout";
+import { usePathname } from "next/navigation";
 
 export interface WidgetFooterMenu {
   id: string;
@@ -13,6 +15,9 @@ export interface WidgetFooterMenu {
 }
 
 const Footer: React.FC = () => {
+  const footerPathname = usePathname();
+  console.log(footerPathname, "FOOTERRRRRRRRR");
+
   const widgetMenus: WidgetFooterMenu[] = [
     {
       id: "5",
@@ -45,8 +50,8 @@ const Footer: React.FC = () => {
           label: "Return and refund policy",
         },
         {
-          href: `${HomeUrl}/company/intellectual-property-policy`,
-          label: "Intellectual property policy",
+          href: `${HomeUrl}/company/terms-conditions`,
+          label: "Terms & conditions",
         },
         { href: `${HomeUrl}/company/shipping-info`, label: "Shipping info" },
         {
@@ -105,28 +110,32 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <div className="nc-Footer  top-32 relative px-2 py-10 lg:pt-20 mt-20 lg:pb-5 border-t border-neutral-200 dark:border-neutral-700">
-      <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-4 lg:gap-x-10 ">
-        {widgetMenus.map(renderWidgetMenuItem)}
-        <div className="">
-          <h2 className="font-semibold text-neutral-700 dark:text-neutral-200 mb-5">
-            Download Our App
-          </h2>
-          <a
-            className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white"
-            href=""
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/store.png"
-              width={150}
-              height={200}
-              alt="Picture of the author"
-            />
-          </a>
-        </div>
-        {/* <div className="grid grid-cols-1 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
+    <>
+      {footerPathname !== "/auth/signIn" &&
+        footerPathname !== "/auth/register" &&
+        footerPathname !== "/auth/forgotpassword" && (
+          <div className="nc-Footer  top-32 relative px-2 py-10 lg:pt-20 mt-20 lg:pb-5 border-t border-neutral-200 dark:border-neutral-700">
+            <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-4 lg:gap-x-10 ">
+              {widgetMenus.map(renderWidgetMenuItem)}
+              <div className="">
+                <h2 className="font-semibold text-neutral-700 dark:text-neutral-200 mb-5">
+                  Download Our App
+                </h2>
+                <a
+                  className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white"
+                  href=""
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    src="/store.png"
+                    width={150}
+                    height={200}
+                    alt="Picture of the author"
+                  />
+                </a>
+              </div>
+              {/* <div className="grid grid-cols-1 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
           <h2 className="font-semibold text-center text-neutral-700 dark:text-neutral-200">
             Our Social Media
           </h2>
@@ -134,8 +143,10 @@ const Footer: React.FC = () => {
             <SocialsList1 className="flex items-center space-x-2 lg:space-x-0 lg:flex-col lg:space-y-3 lg:items-start" />
           </div>
         </div> */}
-      </div>
-    </div>
+            </div>
+          </div>
+        )}
+    </>
   );
 };
 

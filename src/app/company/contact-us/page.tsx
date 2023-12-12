@@ -1,9 +1,8 @@
-"use client";
 import BreadCrumb from "@/components/BreadCrumb";
 import ContactUs from "@/components/ContactUs";
 import React from "react";
 
-const page = () => {
+const Page = () => {
   return (
     <>
       <BreadCrumb label1={"Home"} label2={"Contact Us"} />
@@ -12,4 +11,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
