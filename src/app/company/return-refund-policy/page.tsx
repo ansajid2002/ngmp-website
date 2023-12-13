@@ -2,22 +2,24 @@ import React from "react";
 
 const Page = () => {
   return (
-    <div className="px-40 p-10 space-y-12">
-      <h1 className="text-5xl font-semibold text-[#063b69]">
+    <div className="px-5 lg:px-40 p-10 space-y-6 lg:space-y-12">
+      <h1 className="text-3xl lg:text-5xl font-semibold text-[#063b69]">
         Return & Refund Policy
       </h1>
 
       <div className="space-y-1">
-        <h2 className="text-3xl font-semibold">Introduction</h2>
-        <p className="text-lg">
+        <h2 className="text-xl lg:text-3xl font-semibold">Introduction</h2>
+        <p className="lg:text-lg">
           This Refund Policy outlines the procedures and conditions under which
           refunds are processed on the Nile Global Marketplace (NGMP).
         </p>
       </div>
 
       <div className="space-y-1">
-        <h2 className="text-3xl font-semibold">Refund Eligibility</h2>
-        <p className="text-lg">
+        <h2 className="text-xl lg:text-3xl font-semibold">
+          Refund Eligibility
+        </h2>
+        <p className="lg:text-lg">
           Refund eligibility is primarily determined by the seller’s policy,
           which can vary from no returns accepted to 15, 30, or 60 days return
           options.
@@ -31,8 +33,8 @@ const Page = () => {
       </div>
 
       <div className="space-y-1">
-        <h2 className="text-3xl font-semibold">Refund Process</h2>
-        <p className="text-lg">
+        <h2 className="text-xl lg:text-3xl font-semibold">Refund Process</h2>
+        <p className="lg:text-lg">
           Customers can initiate a refund by selecting the return option for
           their order, filling out the required details such as the reason for
           the return, and submitting the request.
@@ -40,24 +42,26 @@ const Page = () => {
       </div>
 
       <div className="space-y-1">
-        <h2 className="text-3xl font-semibold">Time Frame for Refunds</h2>
-        <p className="text-lg">
+        <h2 className="text-xl lg:text-3xl font-semibold">
+          Time Frame for Refunds
+        </h2>
+        <p className="lg:text-lg">
           The time frame for requesting a refund depends on the seller’s return
           policy, which should be clearly stated in their store.
         </p>
       </div>
 
       <div className="space-y-1">
-        <h2 className="text-3xl font-semibold">Restocking Fees</h2>
-        <p className="text-lg">
+        <h2 className="text-xl lg:text-3xl font-semibold">Restocking Fees</h2>
+        <p className="lg:text-lg">
           Restocking fees may apply depending on the seller’s policy. Sellers
           are responsible for specifying if such fees are charged.
         </p>
       </div>
 
       <div className="space-y-1">
-        <h2 className="text-3xl font-semibold">Refund Method</h2>
-        <p className="text-lg">
+        <h2 className="text-xl lg:text-3xl font-semibold">Refund Method</h2>
+        <p className="lg:text-lg">
           All refunds on NGMP are issued in Nile Money, regardless of the
           transaction's nature or the seller's individual policy. This is a
           universal policy across the platform, without exceptions.
@@ -65,8 +69,10 @@ const Page = () => {
       </div>
 
       <div className="space-y-1">
-        <h2 className="text-3xl font-semibold">Dispute Resolution</h2>
-        <p className="text-lg">
+        <h2 className="text-xl lg:text-3xl font-semibold">
+          Dispute Resolution
+        </h2>
+        <p className="lg:text-lg">
           In case of disputes over refunds, buyers can reach out to NGMP through
           the contact us Page.
           <br />
@@ -78,8 +84,8 @@ const Page = () => {
       </div>
 
       <div className="space-y-1">
-        <h2 className="text-3xl font-semibold">Policy Amendments</h2>
-        <p className="text-lg">
+        <h2 className="text-xl lg:text-3xl font-semibold">Policy Amendments</h2>
+        <p className="lg:text-lg">
           NGMP reserves the right to modify this Refund Policy. Changes will be
           communicated to users and will take effect immediately.
         </p>

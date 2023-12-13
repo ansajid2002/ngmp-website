@@ -7,6 +7,7 @@ import React from "react";
 import Image from "next/image";
 import { AdminUrl, HomeUrl } from "@/app/layout";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export interface WidgetFooterMenu {
   id: string;
@@ -53,6 +54,10 @@ const Footer: React.FC = () => {
           href: `${HomeUrl}/company/terms-conditions`,
           label: "Terms & conditions",
         },
+        {
+          href: `${HomeUrl}/company/privacy-policy`,
+          label: "Privacy & policy",
+        },
         { href: `${HomeUrl}/company/shipping-info`, label: "Shipping info" },
         {
           href: `${HomeUrl}/company/student-discount`,
@@ -93,15 +98,15 @@ const Footer: React.FC = () => {
         <ul className="mt-5 space-y-4">
           {menu.menus.map((item, index) => (
             <li key={index}>
-              <a
+              <Link
                 key={index}
                 className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white"
                 href={item.href}
-                target="blank"
-                rel="noopener noreferrer"
+                // target="blank"
+                // rel="noopener noreferrer"
               >
                 {item.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -121,9 +126,9 @@ const Footer: React.FC = () => {
                 <h2 className="font-semibold text-neutral-700 dark:text-neutral-200 mb-5">
                   Download Our App
                 </h2>
-                <a
+                <Link
                   className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white"
-                  href=""
+                  href={"/"}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -133,7 +138,7 @@ const Footer: React.FC = () => {
                     height={200}
                     alt="Picture of the author"
                   />
-                </a>
+                </Link>
               </div>
               {/* <div className="grid grid-cols-1 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
           <h2 className="font-semibold text-center text-neutral-700 dark:text-neutral-200">
