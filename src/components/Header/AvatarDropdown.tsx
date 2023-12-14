@@ -94,11 +94,9 @@ export default function AvatarDropdown() {
 
                           <div className="flex-grow">
                             <h4 className="font-semibold">{`${given_name} ${family_name}`}</h4>
-                            <p className="text-xs mt-0.5">{`${
-                              state && state?.trim() !== "" ? state + "," : ""
-                            } ${
-                              country && country?.trim() !== "" ? country : ""
-                            }`}</p>
+                            <p className="text-xs mt-0.5">{`${state && state?.trim() !== "" ? state + "," : ""
+                              } ${country && country?.trim() !== "" ? country : ""
+                              }`}</p>
                           </div>
                         </div>
 
@@ -134,7 +132,7 @@ export default function AvatarDropdown() {
                         </Link>
                         {/* ------------------ 2 --------------------- */}
                         <Link
-                          href={"/checkout"}
+                          href={"/account-order"}
                           className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                           onClick={() => close()}
                         >

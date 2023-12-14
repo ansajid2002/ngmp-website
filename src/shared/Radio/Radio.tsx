@@ -16,6 +16,7 @@ const Radio: FC<RadioProps> = ({
   id,
   onChange,
   label,
+  value,
   sizeClassName = "w-6 h-6",
   defaultChecked,
 }) => {
@@ -28,7 +29,7 @@ const Radio: FC<RadioProps> = ({
         className={`focus:ring-action-primary text-primary-500 rounded-full border-gray-400 hover:border-gray-700 bg-transparent dark:border-gray-700 dark:hover:border-gray-500 dark:checked:bg-primary-500 focus:ring-primary-500 ${sizeClassName}`}
         onChange={(e) => onChange && onChange(e.target.value)}
         defaultChecked={defaultChecked}
-        value={id}
+        value={value}
       />
       {label && (
         <label

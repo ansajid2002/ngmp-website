@@ -8,10 +8,7 @@ import { useDispatch } from "react-redux";
 import { updateCustomerData } from "@/redux/slices/customerData";
 
 const SiteHeader = ({ session }) => {
-  console.log(session, 'sess');
-
   useThemeMode();
-  const customerData = useAppSelector((state) => state.customerData)
   const updateCustomer = session?.user.name.customerData
   const dispatch = useDispatch()
   useEffect(() => {
@@ -19,7 +16,7 @@ const SiteHeader = ({ session }) => {
   }, [dispatch])
 
 
-  return <HeaderLogged customerId={customerData?.customerData?.customer_id || null} customerData={customerData?.customerData} />;
+  return <HeaderLogged />;
 };
 
 export default SiteHeader;

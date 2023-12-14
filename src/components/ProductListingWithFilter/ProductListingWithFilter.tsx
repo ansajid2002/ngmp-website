@@ -1,10 +1,9 @@
 import { AdminUrl } from '@/app/layout';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import ProductCard from '../ProductCard';
 import { Skeleton } from '../ui/skeleton';
 
-const ProductListingWithFilter = ({ searchTerm }: string) => {
-    console.log(searchTerm);
+const ProductListingWithFilter = ({ searchTerm }: any) => {
 
     const [getSearchedProducts, setgetSearchedProducts] = useState([])
     const [totalProducts, settotalProducts] = useState(0);
@@ -15,38 +14,47 @@ const ProductListingWithFilter = ({ searchTerm }: string) => {
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
 
-    const fetchData = async () => {
-        setIsLoading(true);
-        setkeyord(searchTerm)
-        try {
-            const response = await fetch(
-                `${AdminUrl}/api/getSearchedProducts?searchTerm=${searchTerm}&page=${page}&limit=${limit}&currency=USD`
-            );
+    const fetchData = useMemo(
+        () =>
+            async () => {
+                setIsLoading(true);
+                keyword !== searchTerm && setgetSearchedProducts([]);
+                try {
+                    const response = await fetch(
+                        `${AdminUrl}/api/getSearchedProducts?searchTerm=${searchTerm}&page=${page}&limit=${limit}&currency=USD`
+                    );
 
-            if (response.ok) {
-                const newItems = await response.json();
+                    if (response.ok) {
+                        const newItems = await response.json();
 
-                const newProducts = newItems.products; // Extract products from newItems
-                const total = newItems.totalProducts; // Extract totalProducts count
+                        const newProducts = newItems.products; // Extract products from newItems
+                        const total = newItems.totalProducts; // Extract totalProducts count
+                        console.log(getSearchedProducts, newProducts);
 
-                if (newProducts.length > 0) {
-                    // Append new products to the existing data
-                    setgetSearchedProducts([...getSearchedProducts, ...newProducts]);
-                    settotalProducts(total); // Update the totalProducts count
+                        if (newProducts.length > 0) {
+                            // Append new products to the existing data
+                            setgetSearchedProducts(newProducts);
+                            settotalProducts(total); // Update the totalProducts count
+                        }
+                    }
+                } catch (error) {
+                    console.error('An error occurred:', error);
+                    // Handle error here
+                } finally {
+                    setIsLoading(false);
                 }
-            }
-        } catch (error) {
-            console.error("An error occurred:", error);
-            // Handle error here
-        } finally {
-            setIsLoading(false);
-        }
-    };
+            },
+        [keyword, searchTerm]
+    );
 
     useEffect(() => {
-        keyword != searchTerm && setgetSearchedProducts([])
         fetchData(); // Initial data fetch
-    }, [searchTerm]);
+    }, [searchTerm, fetchData]);
+
+    console.log(keyword, searchTerm);
+
+    console.log(keyword, searchTerm);
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -76,26 +84,26 @@ const ProductListingWithFilter = ({ searchTerm }: string) => {
             </div>
 
             {/* Right Side (Scrollable) */}
-            <div className="flex-1 overflow-y-auto scrollbar-hidden h-screen">
+            <div className="flex-1 overflow-y-auto scrollbar-hidden">
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-                    {getSearchedProducts?.length !==0 ?
-                    getSearchedProducts.map((item, index) => <ProductCard data={item} />)
+                    {getSearchedProducts?.length !== 0 ?
+                        getSearchedProducts.map((item, index) => <ProductCard data={item} />)
                         :
-                        
-                             
-                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
-                    (item: any, index: number) => (
-                      <div>
-                        <Skeleton className="w-full h-[250px] bg-gray-200" />
-                        <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
-                        <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
-                      </div>
-                    )
-                  )
-            
-                            
-                
-                }
+
+
+                        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
+                            (item: any, index: number) => (
+                                <div>
+                                    <Skeleton className="w-full h-[250px] bg-gray-200" />
+                                    <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
+                                    <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
+                                </div>
+                            )
+                        )
+
+
+
+                    }
                 </div>
             </div>
         </div>
