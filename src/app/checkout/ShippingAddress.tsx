@@ -322,11 +322,11 @@ const ShippingAddress: FC<Props> = ({
         {addressData &&
           addressData.map((address: any, index: number) => (
             <div key={index} className={`bg-white p-4 rounded-lg shadow-md cursor-pointer transition-all duration-150 ease-in-out border ${selectedAddress && selectedAddress?.address_id === address.address_id && 'border border-orange-300'}`} onClick={() => {
+              setSelectedAddress(address)
               axios.post(`/api/Customers/setDefaultAddress`, { address_id: address.address_id, customerId: id })
                 .then(response => {
-                  setSelectedAddress(address)
                   onChangeAddress(address)
-                });
+                }).catch(err => setSelectedAddress(null));
 
 
             }}>

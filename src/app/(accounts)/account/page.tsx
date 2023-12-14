@@ -19,19 +19,19 @@ const AccountPage = () => {
     state = "",
     country = "",
     picture = "",
-    phone_number = '',
-    google_id = ""
+    phone_number = "",
+    google_id = "",
   } = customerData?.customerData || {};
 
-  let profile_pic = ''
+  let profile_pic = "";
   if (picture) {
     if (google_id && google_id.trim() != "") {
-      profile_pic = picture
+      profile_pic = picture;
     } else {
-      profile_pic = `${AdminUrl}/uploads/customerProfileImages/${picture}`
+      profile_pic = `${AdminUrl}/uploads/customerProfileImages/${picture}`;
     }
   } else {
-    profile_pic = 'https://images.pexels.com/photos/19244211/pexels-photo-19244211/free-photo-of-man-holding-a-smartphone-on-a-camera-stabilizer.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+    profile_pic = "/avatarplaceholder.png";
   }
 
   return (
@@ -117,7 +117,6 @@ const AccountPage = () => {
               </div>
             </div>
 
-
             {/* ---- */}
             <div>
               <Label>Phone number</Label>
@@ -125,7 +124,10 @@ const AccountPage = () => {
                 <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                   <i className="text-2xl las la-phone-volume"></i>
                 </span>
-                <Input className="!rounded-l-none" defaultValue={phone_number} />
+                <Input
+                  className="!rounded-l-none"
+                  defaultValue={phone_number}
+                />
               </div>
             </div>
             {/* ---- */}

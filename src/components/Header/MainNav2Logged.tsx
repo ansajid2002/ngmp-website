@@ -108,6 +108,7 @@ const MainNav2Logged = () => {
             e.preventDefault();
             router.replace(`/Channel/search?query=${btoa(searchText)}`);
             inputRef.current?.blur();
+            setFocusInput(false);
           }}
         >
           <div className="bg-gray-100  w-full dark:bg-gray-800 flex items-center space-x-1.5 px-5 h-full rounded-lg">

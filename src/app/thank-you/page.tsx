@@ -46,8 +46,6 @@ const ThankYou = () => {
     }
   }
 
-
-
   const checkoutData = [
     {
       orders: cartItems,

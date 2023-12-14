@@ -15,6 +15,8 @@ const SingleVendors = () => {
   const vendorid = params.get("vendorid");
   // console.log(vendorId);
 
+  // console.log(singleVendors, "SSSSS");
+
   useEffect(() => {
     const fetchData = async () => {
       try {

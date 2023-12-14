@@ -1,9 +1,6 @@
 "use client";
-
 import BreadCrumb from "@/components/BreadCrumb";
-import AccordionTab from "@/components/SupportCenter/AccordionTab";
 import NewAccordionTab from "@/components/SupportCenter/NewAccordionTab";
-import { ChevronRightIcon } from "lucide-react";
 
 const Page = () => {
   const styling = {
