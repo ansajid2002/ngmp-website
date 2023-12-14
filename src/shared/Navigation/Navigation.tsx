@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavigationItem from "./NavigationItem";
 import { NAVIGATION_DEMO_2 } from "@/data/navigation";
-import { fetchCategoriesAndSubcategories } from "@/app/page";
+import { fetchCategoriesAndSubcategories, getFeaturedData } from "@/app/page";
 import { useAppSelector } from "@/redux/store";
 import Skeleton from "react-loading-skeleton";
 
@@ -9,10 +9,13 @@ import Skeleton from "react-loading-skeleton";
 
 function Navigation() {
   const [navigationData, setNavigationData] = useState([]);
+  const [fdata,setFdata] = useState([])
   const [isLoading, setIsLoading] = useState(true);
   const { availablelanguages } = useAppSelector(
     (store) => store.languagesReducer
   );
+
+  
 
   useEffect(() => {
     const fetchAndSetData = async () => {
@@ -42,6 +45,18 @@ function Navigation() {
     fetchAndSetData();
   }, []);
 
+  useEffect(() => {
+    const getFeatured = async () => {
+      const featuredData = await getFeaturedData()
+      setFdata(featuredData)
+    
+    }
+
+    if (fdata.length===0) {
+      getFeatured()
+    }
+  },[])
+
   return (
     <ul className="nc-Navigation flex items-center">
       {isLoading ? (
@@ -52,7 +67,7 @@ function Navigation() {
         </div>
       ) : (
         navigationData.map((item) => (
-          <NavigationItem key={item.id} menuItem={item} />
+          <NavigationItem key={item.id} menuItem={item} featuredData={fdata} />
         ))
       )}
     </ul>

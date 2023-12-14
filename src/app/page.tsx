@@ -156,6 +156,24 @@ export const getAllProducts = async () => {
   }
 };
 
+export const getFeaturedData = async () => {
+  try {
+    const response = await fetch(
+      `${AdminUrl}/api/getFeaturedSubcategories`,
+      { next: { revalidate: 30 } }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();    
+    return data;
+    
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
+
 export const getAllVendors = async () => {
   try {
     const response = await fetch(`${AdminUrl}/api/allVendors`, {
@@ -175,14 +193,35 @@ export const getAllVendors = async () => {
   }
 };
 
+export const getReviewData = async (product_id:any) => {
+  if (product_id === null || product_id === undefined) {
+    // Handle the case when customerId or product_id is null or undefined, such as displaying an error message or taking appropriate action.
+    return;
+  }
+
+  try {
+    const response = await fetch(`${AdminUrl}/api/fetchRatings?product_id=${product_id}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(data,"REVIEW DATA");
+    
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+// getReviewData(644106)
 async function PageHome() {
   const getAllProductsData = await getAllProducts();
   const bannersData = await getBannerdata();
   const bannersDataMobile = await getBannerdataMobile();
   const vendors = await getAllVendors();
 
-  const fetchCategoriesAndSubcategoriesdata =
-    await fetchCategoriesAndSubcategories();
+  const fetchCategoriesAndSubcategoriesdata = await fetchCategoriesAndSubcategories();
 
   return (
     <div className="relative overflow-hidden">
@@ -198,7 +237,7 @@ async function PageHome() {
         <Safety />
       </div>
 
-      <div className="mt-1 px-1 md:px-10 py-0 md:py-2">
+      {/* <div className="mt-1 px-1 md:px-10 py-0 md:py-2">
         <DealBar
           title={"Lightning deals"}
           bgimage={
@@ -206,7 +245,7 @@ async function PageHome() {
           }
           icon={<Zap size={30} fill="white" />}
         />
-      </div>
+      </div> */}
 
       <div className=" px-5 md:px-10 relative space-y-24 my-8 md:my-16">
         <SectionSliderProductCard

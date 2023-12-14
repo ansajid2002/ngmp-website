@@ -9,7 +9,6 @@ const nextConfig = {
     ignoreDuringBuilds: true
   },
   experimental: {
-    // appDir: true,
     typedRoutes: true,
   },
   env: {

@@ -57,6 +57,7 @@ import {
 } from "lucide-react";
 import { Image, Modal, Rate } from "antd";
 import ProductSalebadge from "@/components/ProductSalebadge";
+import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -73,7 +74,6 @@ const ProductDetailPage = ({ searchParams }) => {
   const detailhandleCancel = () => {
     setIsDetailModalOpen(false);
   };
-  console.log(isDetailModalOpen, "isDetailModalOpen");
 
   const [seeMore, setSeeMore] = useState(false);
 
@@ -370,6 +370,9 @@ const ProductDetailPage = ({ searchParams }) => {
     setisUniquepidMatched(isUniquepidMatched);
     setIsMatchedCartProduct(matchedCartProduct);
   }, [isUniquepidMatched, cartItems, responseData]);
+
+
+
 
   const handleAttributeSelect = (attribute: any, value: any) => {
     // Create a copy of the selectedAttributes
@@ -751,35 +754,6 @@ const ProductDetailPage = ({ searchParams }) => {
     );
   };
 
-  const renderDetailSection = () => {
-    return (
-      <div className="">
-        <h2 className="text-2xl font-semibold">Product Details</h2>
-        <div className="prose prose-sm sm:prose dark:prose-invert sm:max-w-4xl mt-7">
-          <p>
-            The patented eighteen-inch hardwood Arrowhead deck --- finely
-            mortised in, makes this the strongest and most rigid canoe ever
-            built. You cannot buy a canoe that will afford greater satisfaction.
-          </p>
-          <p>
-            The St. Louis Meramec Canoe Company was founded by Alfred Wickett in
-            1922. Wickett had previously worked for the Old Town Canoe Co from
-            1900 to 1914. Manufacturing of the classic wooden canoes in Valley
-            Park, Missouri ceased in 1978.
-          </p>
-          <ul>
-            <li>Regular fit, mid-weight t-shirt</li>
-            <li>Natural color, 100% premium combed organic cotton</li>
-            <li>
-              Quality cotton grown without the use of herbicides or pesticides -
-              GOTS certified
-            </li>
-            <li>Soft touch water based printed in the USA</li>
-          </ul>
-        </div>
-      </div>
-    );
-  };
 
   const renderReviews = () => {
     return (
@@ -787,49 +761,12 @@ const ProductDetailPage = ({ searchParams }) => {
         {/* HEADING */}
         <h2 className="text-2xl font-semibold flex items-center">
           <StarIcon className="w-7 h-7 mb-0.5" />
-          <span className="ml-1.5"> 4,87 · 142 Reviews</span>
+          <span className="ml-1.5"> 4,87 · 14fff sgyrztd ys2 Reviews</span>
+          
         </h2>
 
         {/* comment */}
-        <div className="mt-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-11 gap-x-28">
-            <ReviewItem />
-            <ReviewItem
-              data={{
-                comment: `I love the charcoal heavyweight hoodie. Still looks new after plenty of washes. 
-                  If you’re unsure which hoodie to pick.`,
-                date: "December 22, 2021",
-                name: "Stiven Hokinhs",
-                starPoint: 5,
-              }}
-            />
-            <ReviewItem
-              data={{
-                comment: `The quality and sizing mentioned were accurate and really happy with the purchase. Such a cozy and comfortable hoodie. 
-                Now that it’s colder, my husband wears his all the time. I wear hoodies all the time. `,
-                date: "August 15, 2022",
-                name: "Gropishta keo",
-                starPoint: 5,
-              }}
-            />
-            <ReviewItem
-              data={{
-                comment: `Before buying this, I didn't really know how I would tell a "high quality" sweatshirt, but after opening, I was very impressed. 
-                The material is super soft and comfortable and the sweatshirt also has a good weight to it.`,
-                date: "December 12, 2022",
-                name: "Dahon Stiven",
-                starPoint: 5,
-              }}
-            />
-          </div>
-
-          <ButtonSecondary
-            onClick={() => setIsOpenModalViewAllReviews(true)}
-            className="mt-10 border border-gray-300 dark:border-gray-700 "
-          >
-            Show me all 142 reviews
-          </ButtonSecondary>
-        </div>
+        
       </div>
     );
   };
@@ -1135,7 +1072,8 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="block xl:hidden">{/* <Policy /> */}</div>
           {/* {renderDetailSection()} */}
           <hr className="border-gray-200 dark:border-gray-700" />
-          {renderReviews()}
+          {/* {renderReviews()} */}
+          <Reviewcomponent uniquepid={responseData?.uniquepid}/>
           <hr className="border-gray-200 dark:border-gray-700" />
           {/* OTHER SECTION */}
           <SectionSliderProductCard
