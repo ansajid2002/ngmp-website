@@ -27,7 +27,10 @@ import { useDispatch } from "react-redux";
 import { addItem } from "@/redux/slices/cartSlice";
 import { ChevronRight, Loader2Icon } from "lucide-react";
 import ProductSalebadge from "./ProductSalebadge";
-import { addItemToWishlist, removeItemFromWishlist } from "@/redux/slices/wishlistSlice";
+import {
+  addItemToWishlist,
+  removeItemFromWishlist,
+} from "@/redux/slices/wishlistSlice";
 
 export interface ProductQuickView2Props {
   className?: string;
@@ -64,7 +67,11 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     prod_slug,
     slug_subcat,
     slug_cat,
+    additionaldescription,
   } = item;
+
+  console.log(item, "TTTTTTTTTTTTT");
+
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
   const [sizeSelected, setSizeSelected] = useState("");
@@ -387,14 +394,16 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                 handleAttributeSelect(variant.attribute, item);
                 setVariantActive(itemvar);
               }}
-              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
-                ? "border-black/90 dark:border-white"
-                : "border-transparent"
-                }`}
+              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${
+                variantActive === itemvar
+                  ? "border-black/90 dark:border-white"
+                  : "border-transparent"
+              }`}
             >
               <div
-                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && "bg-black text-white"
-                  }`}
+                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${
+                  variantActive === itemvar && "bg-black text-white"
+                }`}
               >
                 {item}
               </div>
@@ -502,12 +511,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         <div>
           <h2 className="text-[1rem] font-medium">Description</h2>
           <p className=" text-[0.9rem] line-clamp-2">
-            {/* {responseData?.additionaldescription} */}
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ab enim
-            inventore, illum laboriosam expedita voluptas quia odit ipsam
-            voluptate deserunt ipsa architecto. Molestiae placeat libero eaque
-            fuga exercitationem! Ipsa error voluptates consequuntur repudiandae
-            repellat fugit, eveniet maiores assumenda aliquam sapiente.
+            {additionaldescription || "NA"}
           </p>
         </div>
 
@@ -620,8 +624,9 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                   <img
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
-                    className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
-                      }`}
+                    className={`w-full rounded-xl object-contain transition duration-300 ${
+                      selectedImage === image ? "ring-2 ring-primary" : ""
+                    }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -635,8 +640,9 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
             <Image
               // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 
-              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || images?.[0]
-                }`}
+              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${
+                selectedImage || images?.[0]
+              }`}
               className="w-full h-full object-cover"
               alt="Main Product Image"
               loading="lazy" // Add the lazy loading attribute here

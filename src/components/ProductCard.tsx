@@ -17,13 +17,15 @@ import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { Rate } from "antd";
 import { Loader2Icon } from "lucide-react";
-import { Button, Modal } from 'antd';
+import { Button, Modal } from "antd";
 import {
   addItemToWishlist,
   removeItemFromWishlist,
 } from "@/redux/slices/wishlistSlice";
 import { useDispatch } from "react-redux";
 import SignIn from "@/app/auth/signIn/page";
+import ProductSalebadge from "./ProductSalebadge";
+import ProductOfferBadge from "./ProductOfferBadge";
 
 export interface ProductCardProps {
   className?: string;
@@ -42,15 +44,12 @@ const ProductCard: FC<ProductCardProps> = ({
   const [inFavorite, setinFavorite] = useState(false);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
-  const {customerData} = useAppSelector((state) => state.customerData);
+  const { customerData } = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
 
   const dispatch = useDispatch();
-
-
-  
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
@@ -66,7 +65,6 @@ const ProductCard: FC<ProductCardProps> = ({
 
   const [showModalQuickView, setShowModalQuickView] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
 
   const router = useRouter();
 
@@ -163,14 +161,10 @@ const ProductCard: FC<ProductCardProps> = ({
 
   const handleToggleWishlist = useCallback(async () => {
     if (!customerId) {
-   
-      showModal()      
-      
-      
-    }
-    else {
+      showModal();
+    } else {
       console.log("true");
-      
+
       setWishlistLoading(true);
       const {
         category,
@@ -181,7 +175,9 @@ const ProductCard: FC<ProductCardProps> = ({
         sellingprice,
         label,
       } = data;
-      const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
+      const replacecategory = category
+        .replace(/[^\w\s]/g, "")
+        .replace(/\s/g, "");
       const replacesubcategory = subcategory
         .replace(/[^\w\s]/g, "")
         .replace(/\s/g, "");
@@ -195,10 +191,10 @@ const ProductCard: FC<ProductCardProps> = ({
         mrp,
         sellingprice,
       };
-  
+
       if (!inFavorite) {
         dispatch(addItemToWishlist({ ...data }));
-  
+
         if (customerId) {
           try {
             // Make a POST request to your API endpoint for updating the cart
@@ -209,15 +205,15 @@ const ProductCard: FC<ProductCardProps> = ({
               },
               body: JSON.stringify(requestData),
             });
-  
+
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
-  
+
             const responseData = await response.json();
             toast.success("Added to Wishlist");
             setWishlistLoading(false);
-  
+
             setinFavorite(true);
           } catch (error) {
             console.error("Error updating wishlist:", error);
@@ -235,15 +231,15 @@ const ProductCard: FC<ProductCardProps> = ({
               },
               body: JSON.stringify(requestData),
             });
-  
+
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
-  
+
             const responseData = await response.json();
             toast.success("Removed From Wishlist");
             setWishlistLoading(false);
-  
+
             setinFavorite(false);
           } catch (error) {
             console.error("Error updating wishlist:", error);
@@ -251,8 +247,6 @@ const ProductCard: FC<ProductCardProps> = ({
         }
       }
     }
-    
-   
   }, [customerId, dispatch, inFavorite, data, setinFavorite]);
   const showModal = () => {
     setIsModalOpen(true);
@@ -270,7 +264,7 @@ const ProductCard: FC<ProductCardProps> = ({
   return (
     <>
       <div
-        className={`nc-ProductCard relative flex flex-col rounded-lg overflow-hidden hover:shadow-md p-1 py-2 bg-transparent ${className}`}
+        className={`nc-ProductCard relative flex flex-col overflow-hidden hover:shadow-md p-1 py-2 bg-transparent ${className}`}
       >
         <Link href={"/product-detail"} className="absolute inset-0"></Link>
 
@@ -289,6 +283,9 @@ const ProductCard: FC<ProductCardProps> = ({
                 sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
                 alt="product"
               />
+              <div className="w-full bg-white z-50 absolute left-0 bottom-0">
+                <ProductOfferBadge />
+              </div>
             </div>
           </Link>
           {discountPercentage > 50 && (
@@ -310,22 +307,21 @@ const ProductCard: FC<ProductCardProps> = ({
                 {/* <LikeButton  data="hey" /> */}
                 {/* /////////////////////////////button COMPONENT/////////////////////////// */}
                 <button
-      className={`w-9 h-9 flex items-center justify-center rounded-full bg-white dark:bg-gray-900 text-neutral-700 dark:text-gray-200 nc-shadow-lg ${className}`}
-    >
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M12.62 20.81C12.28 20.93 11.72 20.93 11.38 20.81C8.48 19.82 2 15.69 2 8.68998C2 5.59998 4.49 3.09998 7.56 3.09998C9.38 3.09998 10.99 3.97998 12 5.33998C13.01 3.97998 14.63 3.09998 16.44 3.09998C19.51 3.09998 22 5.59998 22 8.68998C22 15.69 15.52 19.82 12.62 20.81Z"
-          stroke={inFavorite ? "#ef4444" : "currentColor"}
-          fill={inFavorite ? "#ef4444" : "none"}
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </button>
-     
-                {/* /////////////////////////////button COMPONENT/////////////////////////// */}
+                  className={`w-9 h-9 flex items-center justify-center rounded-full bg-white dark:bg-gray-900 text-neutral-700 dark:text-gray-200 nc-shadow-lg ${className}`}
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12.62 20.81C12.28 20.93 11.72 20.93 11.38 20.81C8.48 19.82 2 15.69 2 8.68998C2 5.59998 4.49 3.09998 7.56 3.09998C9.38 3.09998 10.99 3.97998 12 5.33998C13.01 3.97998 14.63 3.09998 16.44 3.09998C19.51 3.09998 22 5.59998 22 8.68998C22 15.69 15.52 19.82 12.62 20.81Z"
+                      stroke={inFavorite ? "#ef4444" : "currentColor"}
+                      fill={inFavorite ? "#ef4444" : "none"}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
 
+                {/* /////////////////////////////button COMPONENT/////////////////////////// */}
               </div>
             )}
           </div>
@@ -368,17 +364,25 @@ const ProductCard: FC<ProductCardProps> = ({
         item={data}
         onCloseModalQuickView={() => setShowModalQuickView(false)}
       />
-      <Modal title="" open={isModalOpen}   onCancel={handleCancel}
+      <Modal
+        title=""
+        open={isModalOpen}
+        onCancel={handleCancel}
         footer={[
           <Button className="hidden" key="cancel" onClick={handleCancel}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" className=" hidden" onClick={handleOk}>
+          <Button
+            key="submit"
+            type="primary"
+            className=" hidden"
+            onClick={handleOk}
+          >
             Submit
           </Button>,
         ]}
-        >
-        <SignIn/>
+      >
+        <SignIn />
       </Modal>
     </>
   );

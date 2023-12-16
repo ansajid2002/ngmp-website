@@ -21,7 +21,7 @@ const Prices: FC<PricesProps> = ({
     <div className={`${className}`}>
       <div className={`flex items-center gap-1 ${contentClass}`}>
         <del
-          className={`md:mx-2 text-sm md:text-base  text-gray-600 flex ${sellingClasses}`}
+          className={` text-sm md:text-base  text-gray-600 flex ${sellingClasses}`}
         >
           <p>$</p>
           {String(price)}
