@@ -16,8 +16,8 @@ import { useDispatch } from "react-redux";
 export default function CartDropdown() {
   const { cartItems } = useAppSelector((store) => store.cart);
   const dispatch = useDispatch();
-  const customerData = useAppSelector((state) => state.customerData)
-  const customerId = customerData?.customerData?.customer_id || null
+  const customerData = useAppSelector((state) => state.customerData);
+  const customerId = customerData?.customerData?.customer_id || null;
 
   const renderProduct = (item: Product, index: number, close: () => void) => {
     const {
@@ -152,6 +152,8 @@ export default function CartDropdown() {
     return subtotal;
   };
 
+  // console.log(cartItems, "CARTTTTTTT");
+
   return (
     <Popover className="relative">
       {({ open, close }) => (
@@ -219,41 +221,55 @@ export default function CartDropdown() {
               <div className="overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5 dark:ring-white/10">
                 <div className="relative bg-white dark:bg-neutral-800">
                   <div className="max-h-[60vh] p-5 overflow-y-auto hiddenScrollbar">
-                    <h3 className="text-xl font-semibold">Shopping cart</h3>
-                    <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                      {cartItems &&
-                        cartItems.map((item: any, index: number) =>
-                          renderProduct(item, index, close)
-                        )}
-                    </div>
+                    {cartItems.length === 0 ? (
+                      <div className="py-10 text-center">
+                        <h2 className="text-2xl text-gray-700 font-bold capitalize">
+                          No item in your cart!
+                        </h2>
+                      </div>
+                    ) : (
+                      <>
+                        <h3 className="text-xl font-semibold">Shopping cart</h3>
+                        <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                          {cartItems &&
+                            cartItems.map((item: any, index: number) =>
+                              renderProduct(item, index, close)
+                            )}
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <div className="bg-neutral-50 dark:bg-gray-900 p-5">
-                    <p className="flex justify-between font-semibold text-gray-900 dark:text-gray-100">
-                      <span>
-                        <span>Subtotal</span>
-                        <span className="block text-sm text-gray-500 dark:text-gray-400 font-normal">
-                          Shipping and taxes calculated at checkout.
+                  {cartItems.length === 0 ? (
+                    <></>
+                  ) : (
+                    <div className="bg-neutral-50 dark:bg-gray-900 p-5">
+                      <p className="flex justify-between font-semibold text-gray-900 dark:text-gray-100">
+                        <span>
+                          <span>Subtotal</span>
+                          <span className="block text-sm text-gray-500 dark:text-gray-400 font-normal">
+                            Shipping and taxes calculated at checkout.
+                          </span>
                         </span>
-                      </span>
-                      <span className="">${calculateSubtotal()}</span>
-                    </p>
-                    <div className="flex space-x-2 mt-5">
-                      <ButtonSecondary
-                        href="/cart"
-                        className="flex-1 border border-gray-200 dark:border-gray-700"
-                        onClick={close}
-                      >
-                        View cart
-                      </ButtonSecondary>
-                      <ButtonPrimary
-                        href="/checkout"
-                        onClick={close}
-                        className="flex-1"
-                      >
-                        Check out
-                      </ButtonPrimary>
+                        <span className="">${calculateSubtotal()}</span>
+                      </p>
+                      <div className="flex space-x-2 mt-5">
+                        <ButtonSecondary
+                          href="/cart"
+                          className="flex-1 border border-gray-200 dark:border-gray-700"
+                          onClick={close}
+                        >
+                          View cart
+                        </ButtonSecondary>
+                        <ButtonPrimary
+                          href="/checkout"
+                          onClick={close}
+                          className="flex-1"
+                        >
+                          Check out
+                        </ButtonPrimary>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </Popover.Panel>
