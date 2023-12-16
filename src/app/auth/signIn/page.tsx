@@ -6,7 +6,6 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 // import { Input } from "@/components/ui/input";
 import { Input } from "antd";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import { updateCustomerData } from "@/redux/slices/customerData";
@@ -14,12 +13,10 @@ import { useDispatch } from "react-redux";
 import { HomeUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { addItem } from "@/redux/slices/cartSlice";
-import Heading from "@/components/Heading";
-import { Divider } from "antd";
-import { GoogleOutlined } from "@ant-design/icons";
-import { ArrowRight, LockKeyhole } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import logo from "@/images/mainlogo.svg";
 import Image from "next/image";
+import { NextSeo } from "next-seo";
 
 interface LoginFormInterface {
   email: string;
@@ -32,6 +29,7 @@ function SignIn({ showImage = true }) {
   const [error, setError] = useState(false);
   const customerData = useAppSelector((state) => state.customerData);
   const cartItems = useAppSelector((state) => state.cart.cartItems);
+
 
   const router = useRouter();
 
@@ -142,7 +140,16 @@ function SignIn({ showImage = true }) {
       dispatch(updateCustomerData(userData?.customerData));
       window.location.href = HomeUrl;
     }
-  }, [data, dispatch]);
+  }, [data]);
+
+  useEffect(() => {
+    console.log(customerData.customerData);
+
+    if (customerData?.customerData) {
+      window.location.href = HomeUrl;
+    }
+  }, [customerData])
+
 
   const handleLogin = async (
     data: LoginFormInterface,
@@ -184,11 +191,10 @@ function SignIn({ showImage = true }) {
               </p>
               {error && (
                 <div
-                  className={`p-4 mb-4 text-sm rounded-lg  ${
-                    data?.user?.name?.status !== 200
-                      ? "text-red-800 dark:text-red-400 bg-red-50 dark:bg-gray-800"
-                      : "text-green-800 dark:text-green-400 bg-green-50 dark:bg-gray-800"
-                  }`}
+                  className={`p-4 mb-4 text-sm rounded-lg  ${data?.user?.name?.status !== 200
+                    ? "text-red-800 dark:text-red-400 bg-red-50 dark:bg-gray-800"
+                    : "text-green-800 dark:text-green-400 bg-green-50 dark:bg-gray-800"
+                    }`}
                   role="alert"
                 >
                   <p>{data?.user?.name?.message}</p>
@@ -262,7 +268,7 @@ function SignIn({ showImage = true }) {
                           type="submit"
                           className="inline-flex w-full items-center justify-center rounded-md bg-[#063b69] px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
                         >
-                          Get started <ArrowRight className="ml-2" size={16} />
+                          Login <ArrowRight className="ml-2" size={16} />
                         </button>
                       </div>
                     </div>
