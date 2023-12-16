@@ -1,31 +1,27 @@
 "use client";
 
 import Label from "@/components/Label/Label";
-import NcInputNumber from "@/components/NcInputNumber";
-import Prices from "@/components/Prices";
-import { Product, PRODUCTS } from "@/data/data";
-import { useState } from "react";
-import ButtonPrimary from "@/shared/Button/ButtonPrimary";
+import { useEffect, useState } from "react";
 import Input from "@/shared/Input/Input";
 import ContactInfo from "./ContactInfo";
 import PaymentMethod from "./PaymentMethod";
 import ShippingAddress from "./ShippingAddress";
-import Image from "next/image";
 import Link from "next/link";
 import CartProducts from "@/components/CartProducts";
 import FetchCartPrice from "@/components/FetchCartPrice";
 import { HomeUrl } from "../layout";
-import { loadStripe } from '@stripe/stripe-js';
-import StripeCheckButton from "../Checkout";
 import { useAppSelector } from "@/redux/store";
-
+import { useRouter } from "next/navigation";
 
 const CheckoutPage = () => {
   const [tabActive, setTabActive] = useState<
     "ContactInfo" | "ShippingAddress" | "PaymentMethod"
   >("ShippingAddress");
 
+  const [selectedAddress, setSelectedAddress] = useState(null)
   const customerData = useAppSelector((state) => state.customerData)
+  const { cartItems } = useAppSelector((state) => state.cart)
+  const [loading, setLoading] = useState(true)
 
   const handleScrollToEl = (id: string) => {
     const element = document.getElementById(id);
@@ -34,6 +30,10 @@ const CheckoutPage = () => {
     }, 80);
   };
 
+  const handleChangeAddress = (address: any) => {
+    setSelectedAddress(address)
+    setTabActive('PaymentMethod')
+  }
 
   const renderLeft = () => {
     return (
@@ -51,7 +51,6 @@ const CheckoutPage = () => {
             }}
           />
         </div>
-
         {
           customerData?.customerData && <>
             <div id="ShippingAddress" className="scroll-mt-24">
@@ -65,6 +64,7 @@ const CheckoutPage = () => {
                   setTabActive("PaymentMethod");
                   handleScrollToEl("PaymentMethod");
                 }}
+                onChangeAddress={handleChangeAddress}
               />
             </div>
 
@@ -72,8 +72,12 @@ const CheckoutPage = () => {
               <PaymentMethod
                 isActive={tabActive === "PaymentMethod"}
                 onOpenActive={() => {
-                  setTabActive("PaymentMethod");
-                  handleScrollToEl("PaymentMethod");
+                  if (selectedAddress) {
+                    setTabActive("PaymentMethod");
+                    handleScrollToEl("PaymentMethod");
+                  } else {
+                    alert('No Address Selected')
+                  }
                 }}
                 onCloseActive={() => setTabActive("PaymentMethod")}
               />
@@ -126,8 +130,7 @@ const CheckoutPage = () => {
 
               <FetchCartPrice showTitle={false} showCheckout={false} />
             </div>
-            <ButtonPrimary className="mt-8 w-full" >Confirm order</ButtonPrimary>
-            <StripeCheckButton />
+            {/* <ButtonPrimary className="mt-8 w-full" >Confirm order</ButtonPrimary> */}
 
             <div className="mt-5 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center">
               <p className="block relative pl-5">

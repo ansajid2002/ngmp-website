@@ -8,11 +8,8 @@ import { useDispatch } from "react-redux";
 import { updateCustomerData } from "@/redux/slices/customerData";
 import { usePathname } from "next/navigation";
 
-const SiteHeader = ({ session }) => {
+const SiteHeader = ({ session }: any) => {
   const path = usePathname();
-  console.log(path, "PATHHHHHHHHH");
-
-  console.log(session, "sess");
 
   useThemeMode();
   const customerData = useAppSelector((state) => state.customerData);
@@ -27,10 +24,7 @@ const SiteHeader = ({ session }) => {
       {path !== "/auth/signIn" &&
         path !== "/auth/register" &&
         path !== "/auth/forgotpassword" && (
-          <HeaderLogged
-            customerId={customerData?.customerData?.customer_id || null}
-            customerData={customerData?.customerData}
-          />
+          <HeaderLogged />
         )}
     </>
   );

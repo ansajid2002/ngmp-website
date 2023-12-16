@@ -6,6 +6,7 @@ import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import Input from "@/shared/Input/Input";
 import Radio from "@/shared/Radio/Radio";
+import StripeCheckButton from "../Checkout";
 
 interface Props {
   isActive: boolean;
@@ -414,12 +415,14 @@ const PaymentMethod: FC<Props> = ({
           {/* <div>{renderWallet()}</div> */}
 
           <div className="flex pt-6">
-            <ButtonPrimary
+            {/* <ButtonPrimary
               className="w-full max-w-[240px]"
               onClick={onCloseActive}
             >
               Confirm order
-            </ButtonPrimary>
+            </ButtonPrimary> */}
+            <StripeCheckButton />
+
             <ButtonSecondary className="ml-3" onClick={onCloseActive}>
               Cancel
             </ButtonSecondary>

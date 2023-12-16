@@ -20,18 +20,22 @@ const Prices: FC<PricesProps> = ({
   return (
     <div className={`${className}`}>
       <div className={`flex items-center gap-1 ${contentClass}`}>
-        <del
-          className={` text-sm md:text-base  text-gray-600 flex ${sellingClasses}`}
-        >
-          <p>$</p>
-          {String(price)}
-        </del>
-        <span
-          className={`flex text-base text-black/90 relative dark:text-white/90 md:text-lg font-semibold !leading-none ${mrpClasses}`}
-        >
-          <p className="absolute top-[-2.5px]">$</p>
-          <p className="ml-[10px]">{String(sellingprice)}</p>
-        </span>
+        {price && price > 0 && (
+          <del
+            className={`md:mx-2 text-sm md:text-base  text-gray-600 flex ${sellingClasses}`}
+          >
+            <p>$</p>
+            {String(price)}
+          </del>
+        )}
+        {sellingprice && sellingprice > 0 && (
+          <span
+            className={`flex text-base text-black/90 relative dark:text-white/90 md:text-lg font-semibold !leading-none ${mrpClasses}`}
+          >
+            <p className="absolute top-[-2.5px]">$</p>
+            <p className="ml-[10px]">{String(sellingprice)}</p>
+          </span>
+        )}
       </div>
     </div>
   );

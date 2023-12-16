@@ -6,7 +6,7 @@ import AvatarDropdown from "./AvatarDropdown";
 import Navigation from "@/shared/Navigation/Navigation";
 import CartDropdown from "./CartDropdown";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import logo from "@/images/mainlogo.svg";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,6 +25,7 @@ import SearchList from "./Search/SearchList";
 import MobileSearch from "./Search/MobileSearch";
 
 const MainNav2Logged = () => {
+
   const inputRef = createRef<HTMLInputElement>();
   const searchNode = useRef();
   const search = useSearchParams();
@@ -121,7 +122,7 @@ const MainNav2Logged = () => {
               onChange={(e) => handleSearchInput(e.target.value)}
               // onFocus={() => setFocusInput(true)}
               onClick={() => setFocusInput(true)}
-              // onBlur={() => setFocusInput(false)}
+            // onBlur={() => setFocusInput(false)}
             />
             <button type="button" onClick={() => setSearchText("")}>
               <XMarkIcon className="w-5 h-5" />

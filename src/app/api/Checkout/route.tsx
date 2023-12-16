@@ -21,11 +21,9 @@ export async function POST(request: NextRequest) {
                 },
                 custom_text: {
                     shipping_address: {
-                        message: 'Please provide your shipping address for delivery.',
-                    },
-                    submit: {
-                        message: 'Thank you for submitting your order.',
-                    },
+                        message: 'Kindly enter your delivery address, ensuring it matches the address provided during checkout. In case of a delivery address mismatch, we are not responsible for any delays in your package delivery.',
+                    }
+
                 },
                 shipping_address_collection: {
                     allowed_countries: ['US', 'SO', 'IN'], // Add the countries you want to allow
@@ -41,17 +39,12 @@ export async function POST(request: NextRequest) {
 
                         },
                         quantity: item.quantity,
-                        adjustable_quantity: {
-                            enabled: true,
-                            minimum: 1,
-                            maximum: 10,
-                        },
                     };
                 }),
                 phone_number_collection: {
                     enabled: true,
                 },
-                success_url: `${request.headers.get("origin")}/success`,
+                success_url: `${request.headers.get("origin")}/thank-you`,
                 cancel_url: `${request.headers.get("origin")}/?canceled=true`,
             });
             return NextResponse.json({ session });

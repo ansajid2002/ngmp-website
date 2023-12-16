@@ -160,11 +160,17 @@ const ProductCard: FC<ProductCardProps> = ({
   };
 
   const handleToggleWishlist = useCallback(async () => {
-    if (!customerId) {
-      showModal();
-    } else {
-      console.log("true");
+    console.log(customerId);
 
+    if (!customerId) {
+   
+      showModal()      
+      
+      
+    }
+    else {
+      console.log("true");
+      
       setWishlistLoading(true);
       const {
         category,
@@ -247,7 +253,10 @@ const ProductCard: FC<ProductCardProps> = ({
         }
       }
     }
+    
+   
   }, [customerId, dispatch, inFavorite, data, setinFavorite]);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -364,10 +373,7 @@ const ProductCard: FC<ProductCardProps> = ({
         item={data}
         onCloseModalQuickView={() => setShowModalQuickView(false)}
       />
-      <Modal
-        title=""
-        open={isModalOpen}
-        onCancel={handleCancel}
+      <Modal title="" open={isModalOpen}   onCancel={handleCancel}
         footer={[
           <Button className="hidden" key="cancel" onClick={handleCancel}>
             Cancel
