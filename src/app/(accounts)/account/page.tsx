@@ -39,7 +39,7 @@ const AccountPage = () => {
   const [isOTPModalVisible, setOTPModalVisible] = useState(false);
   const [otp, setOtp] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
-  const [profileImage, setImage] = useState('');
+  const [profileImage, setImage] = useState('/avatarplaceholder.png');
 
   const dispatch = useDispatch()
   const [userData, setUserData] = useState({
@@ -56,8 +56,6 @@ const AccountPage = () => {
     phone_number,
     bio
   });
-
-
 
   useEffect(() => {
     setUserData({
@@ -77,18 +75,19 @@ const AccountPage = () => {
   }, [customerData])
 
   useEffect(() => {
-    console.log(picture);
 
     if (picture) {
       if (google_id && google_id.trim() !== "" || !picture.startsWith("https")) {
-        // setImage(`${AdminUrl}/uploads/customerProfileImages/${picture}`);
+        setImage(`${AdminUrl}/uploads/customerProfileImages/${picture}`);
       } else {
-        // setImage(picture);
+        setImage(picture);
       }
     } else {
       setImage("/avatarplaceholder.png");
     }
   }, [customerData, picture, google_id]);
+
+  console.log(profileImage, 'profi');
 
   const handleInputChange = (fieldName: any, value: any) => {
     setUserData((prevData) => ({
@@ -273,7 +272,7 @@ const AccountPage = () => {
             {/* AVATAR */}
             <div className="relative rounded-full overflow-hidden flex">
               {
-                profileImage && profileImage.trim !== '' && <Image
+                <Image
                   src={profileImage}
                   alt="avatar"
                   width={128}
@@ -310,7 +309,7 @@ const AccountPage = () => {
             </div>
           </div>
           <div className="flex-grow mt-10 md:mt-0 md:pl-16 max-w-3xl space-y-6">
-            <div className="flex md:flex-row flex-col w-full gap-2">
+            <div className="grid grid-cols-2 w-full gap-2">
               <div className="flex-1">
                 <Label>First name</Label>
                 <Input
@@ -324,45 +323,47 @@ const AccountPage = () => {
                 <Label>Last name</Label>
                 <Input
                   className="mt-1.5"
-                  value={` ${userData?.family_name}`}
+                  value={`${userData?.family_name}`}
                   onChange={(e) => handleInputChange("family_name", e.target.value)}
 
                 />
               </div>
-            </div>
 
-            {/* ---- */}
-            <div>
-              <Label>Email</Label>
-              <div className="mt-1.5 flex">
-                <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
-                  <i className="text-2xl las la-envelope"></i>
-                </span>
-                <Input
-                  className="!rounded-l-none"
-                  placeholder={"example@email.com"}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  value={userData.email}
-                />
+              <div>
+                <Label>Email</Label>
+                <div className="mt-1.5 flex">
+                  <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                    <i className="text-2xl las la-envelope"></i>
+                  </span>
+                  <Input
+                    className="!rounded-l-none"
+                    placeholder={"example@email.com"}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    value={userData.email}
+                  />
+                </div>
+              </div>
+
+              {/* ---- */}
+              <div>
+                <Label>Phone number</Label>
+                <div className="mt-1.5 flex">
+                  <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                    <i className="text-2xl las la-phone-volume"></i>
+                  </span>
+                  <Input
+                    className="!rounded-l-none"
+                    placeholder="91xxxxxxx"
+                    value={userData?.phone_number}
+                    onChange={(e) => handleInputChange("phone_number", e.target.value)}
+
+                  />
+                </div>
               </div>
             </div>
 
             {/* ---- */}
-            <div>
-              <Label>Phone number</Label>
-              <div className="mt-1.5 flex">
-                <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
-                  <i className="text-2xl las la-phone-volume"></i>
-                </span>
-                <Input
-                  className="!rounded-l-none"
-                  placeholder="91xxxxxxx"
-                  value={userData?.phone_number}
-                  onChange={(e) => handleInputChange("phone_number", e.target.value)}
 
-                />
-              </div>
-            </div>
 
             <div>
               <Label>Address Line 1</Label>
@@ -372,6 +373,7 @@ const AccountPage = () => {
                 </span>
                 <Textarea
                   className="!rounded-l-none"
+                  rows={1}
                   placeholder="Sayeed Road, 104 xyz"
                   value={userData?.address_line_1}
                   onChange={(e) => handleInputChange("address_line_1", e.target.value)}
@@ -387,10 +389,11 @@ const AccountPage = () => {
                 </span>
                 <Textarea
                   className="!rounded-l-none"
+                  rows={1}
+
                   placeholder="Mumbai, Kausa"
                   value={userData?.address_line_2}
                   onChange={(e) => handleInputChange("address_line_2", e.target.value)}
-
                 />
               </div>
             </div>
