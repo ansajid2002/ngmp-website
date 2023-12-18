@@ -13,8 +13,9 @@ function Icon({ id, open }) {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
-      className={`${id === open ? "rotate-180" : ""
-        } h-5 w-5 transition-transform`}
+      className={`${
+        id === open ? "rotate-180" : ""
+      } h-5 w-5 transition-transform`}
     >
       <path
         strokeLinecap="round"
@@ -34,56 +35,166 @@ const AccountPreferences = () => {
     {
       id: 1,
       value: "item-1",
-      title: "How to get help before I buy",
-      content: "Content",
+      title: "How to set notification preferences?",
+      content: (
+        <>
+          <h3>
+            If you don't want to receive email, push, or SMS-related
+            notifications, you can open the Nile Market Place app, go to 'You'{" "}
+            {">"}
+            'Settings' {">"} 'Notifications' and choose 'Edit' to set your
+            preferences.
+          </h3>
+          <h3>
+            You can also go to Nile Market Place.com and click your username in
+            the top right comer of your screen. Click 'Notifications' on the
+            left sidebar and then choose 'Edit' to set your preferences.
+          </h3>
+          <h3>
+            You can click the link below to select your notification
+            preferences:
+          </h3>
+        </>
+      ),
     },
     {
       id: 2,
       value: "item-2",
-      title: "How to search for items on Nile Market-place",
-      content: "Content",
+      title: "How to change my password",
+      content: (
+        <>
+          <h3>Please follow these steps to change your password:</h3>
+          <h3>
+            1. Sign in to Nile Market Place app or Nile Market Place.com and go
+            to your account page.
+          </h3>
+          <h3>2. Go to 'Settings' {">"} 'Account security'.</h3>
+          <h3>3. Find 'Password' and click 'Edit' to change your password.</h3>
+          <h3>
+            4. Enter your 'Old password' and 'New password' (Minimum 6
+            characters required).
+          </h3>
+          <h3>5. Click 'Submit' and you're done.</h3>
+          <h3>
+            If you used your Google, Facebook, Apple, or Twitter account details
+            to log in to Nile Market Place, then you will need to change your
+            password details there.
+          </h3>
+        </>
+      ),
     },
     {
       id: 3,
       value: "item-3",
-      title: "How to purchase an item on Nile Market-place?",
-      content: "Content",
+      title: "How to change my address",
+      content: (
+        <>
+          <h3>Please follow these steps to change your address:</h3>
+          <h3>
+            1. Sign in to Nile Market Place app or Nile Market Place.com and go
+            to your account page
+          </h3>
+          <h3>2. Go to 'Addresses'</h3>
+          <h3>
+            3. From here, you can change your address by clicking "Edit" next to
+            the address you want to change.
+          </h3>
+          <h3>4. Update your address details and then click "Save".</h3>
+          <h3>
+            If desired, you can also change your default address, delete
+            addresses, or add a new address from this screen as well.
+          </h3>
+        </>
+      ),
     },
     {
       id: 4,
       value: "item-4",
-      title: "I received an email about an order I did not place",
-      content: "Content",
+      title: "How to change my email address",
+      content: (
+        <>
+          <h3>Please follow these steps to change your email address:</h3>
+          <h3>
+            1. Sign in to Nile Market Place app or Nile Market Place.com and go
+            to your account page.
+          </h3>
+          <h3>2. Go to 'Settings' {">"} 'Account security'.</h3>
+          <h3>
+            3. Click 'Edit' next to the 'Email' line to make changes to your
+            information. For security purposes, you may be prompted to enter
+            your password or verify your original email address before you can
+            edit. Enter your password or verification code to proceed.
+          </h3>
+          <h3>
+            4. Enter your new email address and click 'Continue' to update your
+            email address.
+          </h3>
+        </>
+      ),
     },
     {
       id: 5,
       value: "item-5",
-      title: "How to follow shops/sellers",
-      content: "Content",
+      title: "How to change my mobile phone number",
+      content: (
+        <>
+          <h3>Please follow these steps to change your phone number:</h3>
+          <h3>
+            1. Sign in to Nile Market Place app or Nile Market Place.com and go
+            to your account page
+          </h3>
+          <h3>2. Go to 'Settings' {">"} 'Account security'.</h3>
+          <h3>
+            3. Click 'Edit' next to the 'Mobile phone number' line to make
+            changes to your information. For security purposes, you may be
+            prompted to enter your password or verify your original phone number
+            before you can edit. Enter your password or verification code to
+            proceed.
+          </h3>
+          <h3>
+            4. Enter your new mobile phone number and click 'Continue' to update
+            your number.
+          </h3>
+        </>
+      ),
     },
     {
       id: 6,
       value: "item-6",
-      title: "Tips for buying safely on Nile Market-place",
-      content: "Content",
+      title: "How to update my username",
+      content: (
+        <>
+          <h3>
+            On the Nile Market Place app, go to the user avatar at the bottom of
+            your screen. Click your username {">"} select 'Name' {">"} delete
+            your old name and enter your new name. Click save and you're done!
+          </h3>
+          <h3>
+            On Nile Market Place.com, click your username in the top right
+            corner of your screen. Click 'Your profile' {">"} delete your old
+            name and enter your new name. Click save and you're done!
+          </h3>
+        </>
+      ),
     },
     {
       id: 7,
       value: "item-7",
-      title: "Does Nile Market-place support drop shipping?",
-      content: "Content",
-    },
-    {
-      id: 8,
-      value: "item-8",
-      title: "Does Nile Market-place accept tax exemption certificates?",
-      content: "Content",
-    },
-    {
-      id: 9,
-      value: "item-9",
-      title: "How is Nile Market-place able to offer lower prices than others?",
-      content: "Content",
+      title: "How do I update my payment methods?",
+      content: (
+        <>
+          <h3>
+            1. Go to your accounts tab by clicking your user avatar in the top
+            right corner
+          </h3>
+          <h3>2. Choose 'Your payment methods' in the lefthand menu</h3>
+          <h3>
+            3. Click '+ Add a new card' to add a new payment method, or click
+            'Edit' or 'Remove' to update any existing payment methods attached
+            to your account.
+          </h3>
+        </>
+      ),
     },
   ];
 
@@ -98,7 +209,9 @@ const AccountPreferences = () => {
           <AccordionHeader onClick={() => handleOpen(item.id)}>
             <span className="text-[1rem] font-medium">{item.title}</span>
           </AccordionHeader>
-          <AccordionBody>{item.content}</AccordionBody>
+          <AccordionBody>
+            <div className="space-y-4 p-2">{item.content}</div>
+          </AccordionBody>
         </Accordion>
       ))}
     </div>

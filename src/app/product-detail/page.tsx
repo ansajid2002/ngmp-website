@@ -779,7 +779,7 @@ const ProductDetailPage = ({ searchParams }) => {
                 Our customer service team is always here if you need help.
               </li>
               <div className="w-full bg-blue-gray-50 flex items-center justify-around py-3 rounded-xl">
-                <Link href={`${HomeUrl}/SupportCenter?query=BuyingOnNile`}>
+                <Link href={`${HomeUrl}/SupportCenter?querys=BuyingOnNile`}>
                   <span className="flex flex-col items-center justify-center">
                     <HelpCircle />
                     FAQs

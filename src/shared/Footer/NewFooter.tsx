@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
       title: "Help",
       menus: [
         {
-          href: `${HomeUrl}/SupportCenter?query=BuyingOnNile`,
+          href: `${HomeUrl}/SupportCenter?querys=BuyingOnNile`,
           label: "Support center & FAQ",
         },
         { href: `${HomeUrl}/company/how-to-order`, label: "How to order" },

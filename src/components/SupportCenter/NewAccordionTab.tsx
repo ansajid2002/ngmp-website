@@ -45,8 +45,9 @@ function Icon({ id, open }) {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
-      className={`${id === open ? "rotate-180" : ""
-        } h-5 w-5 transition-transform`}
+      className={`${
+        id === open ? "rotate-180" : ""
+      } h-5 w-5 transition-transform`}
     >
       <path
         strokeLinecap="round"
@@ -58,22 +59,22 @@ function Icon({ id, open }) {
 }
 
 const NewAccordionTab = () => {
-  const [query, setQuery] = useState<any | null>();
+  const [querys, setquerys] = useState<any | null>();
   const [activeItem, setActiveItem] = useState<string | null>("");
 
   const params = useSearchParams();
 
-  const search = params.get("query");
+  const search = params.get("querys");
   useEffect(() => {
-    setQuery(search);
+    setquerys(search);
     setActiveItem(search);
   }, []);
 
   const SetRightComp = (data) => {
-    setQuery(data);
+    setquerys(data);
   };
 
-  console.log(query);
+  console.log(querys);
 
   const AccordionData = [
     {
@@ -84,31 +85,31 @@ const NewAccordionTab = () => {
       content: [
         {
           list: "Buying on Nile",
-          link: `${HomeUrl}/SupportCenter?query=BuyingOnNile`,
+          link: `${HomeUrl}/SupportCenter?querys=BuyingOnNile`,
           slug: "BuyingOnNile",
           components: <BuyingOnNile />,
         },
         {
           list: "Checkout",
-          link: `${HomeUrl}/SupportCenter?query=Checkout`,
+          link: `${HomeUrl}/SupportCenter?querys=Checkout`,
           slug: "Checkout",
           components: <Checkout />,
         },
         {
           list: "Find My Order",
-          link: `${HomeUrl}/SupportCenter?query=FindMyOrder`,
+          link: `${HomeUrl}/SupportCenter?querys=FindMyOrder`,
           slug: "FindMyOrder",
           components: <FindMyOrder />,
         },
         {
           list: "Order Changes",
-          link: `${HomeUrl}/SupportCenter?query=OrderChanges`,
+          link: `${HomeUrl}/SupportCenter?querys=OrderChanges`,
           slug: "OrderChanges",
           components: <OrderChanges />,
         },
         {
           list: "Reviews",
-          link: `${HomeUrl}/SupportCenter?query=Reviews`,
+          link: `${HomeUrl}/SupportCenter?querys=Reviews`,
           slug: "Reviews",
           components: <Reviews />,
         },
@@ -122,13 +123,13 @@ const NewAccordionTab = () => {
       content: [
         {
           list: "Shipping",
-          link: `${HomeUrl}/SupportCenter?query=Shipping`,
+          link: `${HomeUrl}/SupportCenter?querys=Shipping`,
           slug: "Shipping",
           components: <Shipping />,
         },
         {
           list: "Delivery",
-          link: `${HomeUrl}/SupportCenter?query=Delivery`,
+          link: `${HomeUrl}/SupportCenter?querys=Delivery`,
           slug: "Delivery",
           components: <Delivery />,
         },
@@ -142,13 +143,13 @@ const NewAccordionTab = () => {
       content: [
         {
           list: "Returns",
-          link: `${HomeUrl}/SupportCenter?query=Returns`,
+          link: `${HomeUrl}/SupportCenter?querys=Returns`,
           slug: "Returns",
           components: <Returns />,
         },
         {
           list: "Refunds",
-          link: `${HomeUrl}/SupportCenter?query=Refunds`,
+          link: `${HomeUrl}/SupportCenter?querys=Refunds`,
           slug: "Refunds",
           components: <Refunds />,
         },
@@ -162,13 +163,13 @@ const NewAccordionTab = () => {
       content: [
         {
           list: "Stock",
-          link: `${HomeUrl}/SupportCenter?query=Stock`,
+          link: `${HomeUrl}/SupportCenter?querys=Stock`,
           slug: "Stock",
           components: <Stock />,
         },
         {
           list: "Size & fit",
-          link: `${HomeUrl}/SupportCenter?query=SizeAndFit`,
+          link: `${HomeUrl}/SupportCenter?querys=SizeAndFit`,
           slug: "SizeAndFit",
           components: <SizeAndFit />,
         },
@@ -182,13 +183,13 @@ const NewAccordionTab = () => {
       content: [
         {
           list: "Account preferences",
-          link: `${HomeUrl}/SupportCenter?query=AccountPreferences`,
+          link: `${HomeUrl}/SupportCenter?querys=AccountPreferences`,
           slug: "AccountPreferences",
           components: <AccountPreferences />,
         },
         {
           list: "Signing in",
-          link: `${HomeUrl}/SupportCenter?query=SigningIn`,
+          link: `${HomeUrl}/SupportCenter?querys=SigningIn`,
           slug: "SigningIn",
           components: <SigningIn />,
         },
@@ -202,19 +203,19 @@ const NewAccordionTab = () => {
       content: [
         {
           list: "Payments",
-          link: `${HomeUrl}/SupportCenter?query=Payments`,
+          link: `${HomeUrl}/SupportCenter?querys=Payments`,
           slug: "Payments",
           components: <Payments />,
         },
         {
           list: "Nile credit",
-          link: `${HomeUrl}/SupportCenter?query=NileCredits`,
+          link: `${HomeUrl}/SupportCenter?querys=NileCredits`,
           slug: "NileCredits",
           components: <NileCredit />,
         },
         {
           list: "Promos",
-          link: `${HomeUrl}/SupportCenter?query=Promos`,
+          link: `${HomeUrl}/SupportCenter?querys=Promos`,
           slug: "Promos",
           components: <Promos />,
         },
@@ -228,7 +229,7 @@ const NewAccordionTab = () => {
       content: [
         {
           list: "Security and Privacy",
-          link: `${HomeUrl}/SupportCenter?query=SecurityAndPrivacy`,
+          link: `${HomeUrl}/SupportCenter?querys=SecurityAndPrivacy`,
           slug: "SecurityAndPrivacy",
           components: <SecurityAndPrivacy />,
         },
@@ -242,16 +243,16 @@ const NewAccordionTab = () => {
       content: [
         {
           list: "Policies",
-          link: `${HomeUrl}/SupportCenter?query=Policies`,
+          link: `${HomeUrl}/SupportCenter?querys=Policies`,
           slug: "Policies",
           components: <Policies />,
         },
-        {
-          list: "Feedbacks & collab inquiries",
-          link: `${HomeUrl}/SupportCenter?query=FeedbacksAndCollabInquiries`,
-          slug: "FeedbacksAndCollabInquiries",
-          components: <FeedbacksAndCollabInquiries />,
-        },
+        // {
+        //   list: "Feedbacks & collab inquiries",
+        //   link: `${HomeUrl}/SupportCenter?querys=FeedbacksAndCollabInquiries`,
+        //   slug: "FeedbacksAndCollabInquiries",
+        //   components: <FeedbacksAndCollabInquiries />,
+        // },
       ],
     },
   ];
@@ -259,7 +260,7 @@ const NewAccordionTab = () => {
 
   const handleOpen = (value) => setOpen(open === value ? 0 : value);
 
-  const findComponentByQueryAndSlug = (slug: any) => {
+  const findComponentByquerysAndSlug = (slug: any) => {
     const item = AccordionData.find((accordionItem) =>
       accordionItem.content.some((contentItem) => contentItem.slug === slug)
     );
@@ -279,7 +280,7 @@ const NewAccordionTab = () => {
     return <div>No matching component found</div>;
   };
 
-  const component = findComponentByQueryAndSlug(query);
+  const component = findComponentByquerysAndSlug(querys);
 
   const handleClick = (citem) => {
     SetRightComp(citem.slug); // Assuming SetRightComp is a function to set some state
@@ -313,10 +314,11 @@ const NewAccordionTab = () => {
                   {item.content.map((citem, cindex) => (
                     <Link href={citem.link}>
                       <li
-                        className={`font-medium text-[0.8rem] px-8 py-1  hover:border-l-2 border-orange-900  hover:bg-gradient-to-r from-orange-100  text-gray-500 hover:text-black ${activeItem === citem.slug
-                            ? "bg-gradient-to-r from-orange-100 border-l-2 border-orange-900"
+                        className={`font-medium text-[0.8rem] px-8 py-1  hover:border-l-2 border-orange-900  hover:bg-gradient-to-r from-orange-100   ${
+                          activeItem === citem.slug
+                            ? "bg-gradient-to-r from-orange-100 border-l-2 border-orange-900 text-black"
                             : ""
-                          }`}
+                        }`}
                         onClick={() => handleClick(citem)}
                         key={cindex}
                       >

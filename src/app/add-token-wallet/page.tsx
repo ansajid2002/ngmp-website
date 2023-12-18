@@ -70,7 +70,10 @@ const page = () => {
               <p className="text-[0.9rem] text-gray-800 leading-snug">
                 If you have any questions or encounter issues while using Nile
                 Wallet, our dedicated support team is here to help. Visit the '
-                <Link href={"/SupportCenter?query=BuyingOnNile"} target="blank">
+                <Link
+                  href={"/SupportCenter?querys=BuyingOnNile"}
+                  target="blank"
+                >
                   <span className="text-[#ed642b] font-medium">Support</span>
                 </Link>
                 ' section for FAQs, tutorials, and{" "}
