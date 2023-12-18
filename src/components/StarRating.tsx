@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Modal, message } from 'antd';
 import { AdminUrl } from '@/app/layout';
 
-const StarRating = ({ enable = true, selectedRating = 0, ratingData, item }) => {
+const StarRating = ({ enable = true, selectedRating, ratingData, item }) => {
+    console.log(selectedRating);
+
     const [rating, setRating] = useState(selectedRating);
     const [data, setData] = useState(ratingData || [])
     const [visible, setModalVisible] = useState(false)

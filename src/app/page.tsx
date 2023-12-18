@@ -1,17 +1,8 @@
 import React, { useEffect } from "react";
 import ItemsInCart from "@/components/ItemsInCart/ItemsInCart";
 // import CategoriesSlider from "@/components/categoriesslider/Categoriesslider";
-import BackgroundSection from "@/components/BackgroundSection/BackgroundSection";
-import SectionPromo1 from "@/components/SectionPromo1";
-import SectionHero2 from "@/components/SectionHero/SectionHero2";
-import SectionSliderLargeProduct from "@/components/SectionSliderLargeProduct";
 import SectionSliderProductCard from "@/components/SectionSliderProductCard";
 import DiscoverMoreSlider from "@/components/DiscoverMoreSlider";
-import SectionGridMoreExplore from "@/components/SectionGridMoreExplore/SectionGridMoreExplore";
-import SectionSliderCategories from "@/components/SectionSliderCategories/SectionSliderCategories";
-import SectionClientSay from "@/components/SectionClientSay/SectionClientSay";
-import ButtonSecondary from "@/shared/Button/ButtonSecondary";
-import SectionGridFeatureItems from "@/components/SectionGridFeatureItems";
 import { AdminUrl } from "./layout";
 import Category from "@/components/CategoryPageSlick";
 import TabsCategory from "@/components/TabsInterest/TabsCategory";
@@ -22,9 +13,7 @@ import DealBar from "@/components/DealBar";
 import { Zap } from "lucide-react";
 import NewHeroSection from "@/components/SectionHero/NewHeroSection";
 import NewHeroSectionMobile from "@/components/SectionHero/NewHeroSectionMobile";
-import { useAppSelector } from "@/redux/store";
-
-
+import { NextSeo } from 'next-seo';
 
 interface Subcategory {
   subcategory_id: number;
@@ -37,7 +26,6 @@ interface Category {
   category_name: string;
   subcategories: Subcategory[];
 }
-
 
 export async function getcustomerData(vendorId: any) {
   try {
@@ -55,7 +43,6 @@ export async function getcustomerData(vendorId: any) {
     throw error; // Re-throw the error to handle it at a higher level if needed
   }
 }
-
 export async function getBannerdata() {
   try {
     const response = await fetch(`${AdminUrl}/api/getBanners`, {
@@ -139,7 +126,7 @@ export const fetchCategoriesAndSubcategories = async (): Promise<
 export const getAllProducts = async () => {
   try {
     const response = await fetch(
-      `${AdminUrl}/api/AllProductsVendors?currency=USD}`,
+      `${AdminUrl}/api/AllProductsVendors?currency=USD&pageNumber=1&pageSize=10}`,
       { next: { revalidate: 30 } }
     );
 
@@ -181,11 +168,11 @@ async function PageHome() {
   const bannersDataMobile = await getBannerdataMobile();
   const vendors = await getAllVendors();
 
-  const fetchCategoriesAndSubcategoriesdata =
-    await fetchCategoriesAndSubcategories();
+  const fetchCategoriesAndSubcategoriesdata = await fetchCategoriesAndSubcategories();
 
   return (
     <div className="relative overflow-hidden">
+
       {/* <SectionHero2 data={bannersData} /> */}
       <div className="hidden md:block">
         <NewHeroSection data={bannersData} />

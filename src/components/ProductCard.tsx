@@ -13,7 +13,7 @@ import ProductStatus from "./ProductStatus";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NcImage from "@/shared/NcImage/NcImage";
-import { AdminUrl } from "@/app/layout";
+import { AdminUrl, HomeUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { Rate } from "antd";
 import { Loader2Icon } from "lucide-react";
@@ -45,7 +45,7 @@ const ProductCard: FC<ProductCardProps> = ({
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
   const { customerData } = useAppSelector((state) => state.customerData);
-  const customerId = customerData?.customerData?.customer_id || null;
+  const customerId = customerData?.customer_id || null;
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
 
@@ -65,7 +65,6 @@ const ProductCard: FC<ProductCardProps> = ({
 
   const [showModalQuickView, setShowModalQuickView] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const router = useRouter();
 
   // const notifyAddTocart = ({ size }: { size?: string }) => {
@@ -163,14 +162,11 @@ const ProductCard: FC<ProductCardProps> = ({
     console.log(customerId);
 
     if (!customerId) {
-   
-      showModal()      
-      
-      
+      return
     }
     else {
       console.log("true");
-      
+
       setWishlistLoading(true);
       const {
         category,
@@ -253,8 +249,6 @@ const ProductCard: FC<ProductCardProps> = ({
         }
       }
     }
-    
-   
   }, [customerId, dispatch, inFavorite, data, setinFavorite]);
 
   const showModal = () => {
@@ -373,7 +367,7 @@ const ProductCard: FC<ProductCardProps> = ({
         item={data}
         onCloseModalQuickView={() => setShowModalQuickView(false)}
       />
-      <Modal title="" open={isModalOpen}   onCancel={handleCancel}
+      <Modal title="" open={isModalOpen} onCancel={handleCancel}
         footer={[
           <Button className="hidden" key="cancel" onClick={handleCancel}>
             Cancel

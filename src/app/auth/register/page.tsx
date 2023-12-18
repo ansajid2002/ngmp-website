@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Button, Form, Modal, Divider } from "antd";
 import {
   UserOutlined,
@@ -18,12 +18,14 @@ import { ArrowRight, LockKeyhole } from "lucide-react";
 import logo from "@/images/mainlogo.svg";
 import Image from "next/image";
 import { HomeUrl } from "@/app/layout";
+import { useAppSelector } from "@/redux/store";
 
 const Register = ({ showImage = true }) => {
   const [loading, setLoading] = useState(false);
   const [otpLoading, setisLoadingOtp] = useState(false);
   const [CustomerId, setCustomerId] = useState(null);
   const [otpModalVisible, setOtpModalVisible] = useState(false);
+  const { customerData } = useAppSelector((state) => state.customerData)
   const [form] = Form.useForm(); // Create a form instance
   const router = useRouter();
   const handleSubmit = async (values: any) => {
@@ -69,6 +71,14 @@ const Register = ({ showImage = true }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log(customerData);
+
+    if (customerData) {
+      window.location.href = HomeUrl;
+    }
+  }, [customerData])
 
   const handleOtpSubmit = async (values: any) => {
     // Once OTP is verified, you can close the modal
@@ -316,11 +326,10 @@ const Register = ({ showImage = true }) => {
                   <Button
                     type="default"
                     htmlType="submit"
-                    className={`inline-flex w-full items-center justify-center rounded-md bg-[#063b69] mt-3 px-3.5 py-5 font-semibold leading-7 text-white hover:bg-black/80 ${
-                      loading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-indigo-500"
-                    }`}
+                    className={`inline-flex w-full items-center justify-center rounded-md bg-[#063b69] mt-3 px-3.5 py-5 font-semibold leading-7 text-white hover:bg-black/80 ${loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-indigo-500"
+                      }`}
                     loading={loading}
                   >
                     {loading ? "Creating Account" : "Create Account"}
