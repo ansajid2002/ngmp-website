@@ -36,6 +36,7 @@
     "framer-motion": "^10.15.1",
     "lru-cache": "^10.0.2",
     "lucide-react": "^0.292.0",
+    "moment": "^2.29.4",
     "next": "^14.0.4",
     "next-auth": "^4.24.5",
     "next-seo": "^6.4.0",

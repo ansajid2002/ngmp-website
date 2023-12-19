@@ -58,6 +58,7 @@ import {
 import { Image, Modal, Rate } from "antd";
 import ProductSalebadge from "@/components/ProductSalebadge";
 import SellerProfileProductPage from "@/components/SellerProfileProductPage";
+import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -195,6 +196,11 @@ const ProductDetailPage = ({ searchParams }) => {
     sellerId && fetchData();
     // If you want to perform some action when singleVendors changes, do it here
   }, [sellerId]);
+
+  console.log("responseData");
+  console.log(responseData);
+  console.log("responseData");
+
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
@@ -504,16 +510,14 @@ const ProductDetailPage = ({ searchParams }) => {
                 handleAttributeSelect(variant.attribute, item);
                 setVariantActive(itemvar);
               }}
-              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${
-                variantActive === itemvar
+              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
                   ? "border-black/90 dark:border-white"
                   : "border-transparent"
-              }`}
+                }`}
             >
               <div
-                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${
-                  variantActive === itemvar && "bg-black text-white"
-                }`}
+                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && "bg-black text-white"
+                  }`}
               >
                 {item}
               </div>
@@ -889,8 +893,8 @@ const ProductDetailPage = ({ searchParams }) => {
               className="h-full w-full object-contain"
               src={
                 sellerProfile &&
-                sellerProfile.brand_logo &&
-                sellerProfile.brand_logo.images[0]
+                  sellerProfile.brand_logo &&
+                  sellerProfile.brand_logo.images[0]
                   ? `${`${AdminUrl}/uploads/vendorBrandLogo/${sellerProfile?.brand_logo?.images[0]}`}`
                   : "https://connectkaro.org/wp-content/uploads/2019/03/placeholder-profile-male-500x500.png"
               }
@@ -905,7 +909,7 @@ const ProductDetailPage = ({ searchParams }) => {
               </h2>
               <span
                 onClick={() => setIsOpenModalViewAllReviews(true)}
-                className="cursor-pointer"
+                className="cursor-pointer p-1"
               >
                 4.8
                 <Rate
@@ -1102,9 +1106,8 @@ const ProductDetailPage = ({ searchParams }) => {
                   <img
                     sizes=""
                     src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
-                    className={`w-full rounded-xl object-contain transition duration-300 ${
-                      selectedImage === image ? "ring-2 ring-primary" : ""
-                    }`}
+                    className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
+                      }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -1119,9 +1122,8 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${
-                selectedImage || responseData?.images?.[0]
-              }`}
+              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || responseData?.images?.[0]
+                }`}
               className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
               alt="Main Product Image"
               loading="lazy"
@@ -1173,7 +1175,12 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="block xl:hidden">{/* <Policy /> */}</div>
           {/* {renderDetailSection()} */}
           <hr className="border-gray-200 dark:border-gray-700" />
-          {renderReviews()}
+          {/* {renderReviews()} */}
+          {
+            responseData &&
+
+            <Reviewcomponent showmorebtn={true} product_id={responseData?.uniquepid} />
+          }
           <hr className="border-gray-200 dark:border-gray-700" />
           {/* OTHER SECTION */}
           <SectionSliderProductCard
@@ -1191,6 +1198,7 @@ const ProductDetailPage = ({ searchParams }) => {
 
       {/* MODAL VIEW ALL REVIEW */}
       <ModalViewAllReviews
+        productid={responseData?.uniquepid}
         show={isOpenModalViewAllReviews}
         onCloseModalViewAllReviews={() => setIsOpenModalViewAllReviews(false)}
       />
