@@ -1,7 +1,7 @@
 import BreadCrumb from "@/components/BreadCrumb";
 import React from "react";
 
-const page = () => {
+const Page = () => {
   return (
     <>
       <BreadCrumb label1={"Home"} label2={"About Us"} />
@@ -43,4 +43,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

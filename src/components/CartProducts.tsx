@@ -17,6 +17,10 @@ const CartProducts = ({ removeData = true }) => {
     const customerData = useAppSelector((state) => state.customerData)
     const customerId = customerData?.customerData?.customer_id || null
 
+    const AddressData = useAppSelector((state) => state.address.AddressData)
+
+    console.log(AddressData, 'shipping data');
+
     const renderProduct = (item: Product, index: number) => {
         const { ad_title, mrp, sellingprice, images, label, added_quantity, prod_slug, uniquepid } = item;
 

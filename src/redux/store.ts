@@ -5,6 +5,7 @@ import { TypedUseSelectorHook, useSelector } from "react-redux"
 import cartSlice from "./slices/cartSlice"
 import wishlistSlice from "./slices/wishlistSlice"
 import customerDataSlice from "./slices/customerData"
+import AddressDataSlice from "./slices/address"
 
 export const store = configureStore({
     reducer: {
@@ -12,7 +13,8 @@ export const store = configureStore({
         languagesReducer,
         cart: cartSlice,
         wishlist: wishlistSlice,
-        customerData: customerDataSlice
+        customerData: customerDataSlice,
+        address: AddressDataSlice
     }
 })
 

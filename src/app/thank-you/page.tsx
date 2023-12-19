@@ -1,45 +1,124 @@
 "use client";
 import { useAppSelector } from "@/redux/store";
-import { Action } from "@radix-ui/react-alert-dialog";
 import { Check } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AdminUrl } from "../layout";
 import Link from "next/link";
+import Swal from "sweetalert2";
+import { emptyCart } from "@/redux/slices/cartSlice";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 
-const page = () => {
-  const tax = 6.25;
-
+const ThankYou = () => {
+  const tax = 0;
+  const dispatch = useDispatch()
+  const router = useRouter()
   const { cartItems } = useAppSelector((store) => store.cart);
-  const { customerData } = useAppSelector((store) => store.customerData);
+  const customerData = useAppSelector((state) => state.customerData)
+  const [defaultAddress, setDefaultAddress] = useState(null);
+  const [sendedResponse, setSendedResponse] = useState(true);
+  const [orderData, setOrderData] = useState(null);
+  const id = customerData?.customerData?.customer_id || null
 
-  //   console.log(cartItems);
+  const makePayment = async () => {
+    try {
+      setSendedResponse(false)
+      const response = await fetch(`/api/Customers/InsertOrders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any other headers as needed
+        },
+        body: JSON.stringify(checkoutData),
+      });
 
-  const adjustedLength = cartItems.length - 1;
-  const totalSellingPrice = cartItems.reduce(
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      setOrderData(cartItems || [])
+      dispatch(emptyCart());
+
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  const checkoutData = [
+    {
+      orders: cartItems,
+      shipping_address: defaultAddress,
+      customerData: customerData?.customerData,
+      paymentIntent: []
+    }
+  ]
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      // Replace 'backendAddressUrl' with the actual endpoint to fetch customer addresses
+      const backendAddressUrl = `${AdminUrl}/api/getCustomersAddress/${id}`;
+
+      try {
+        const response = await fetch(backendAddressUrl);
+
+        if (response.ok) {
+          const data = await response.json();
+          // Filter addresses with non-empty 'address' before updating the state
+          const defaultAddress = data.find((address) => address.default_address === true);
+
+          // Dispatch the default address
+          if (defaultAddress) {
+            setDefaultAddress(defaultAddress)
+          }
+        } else {
+          // Handle non-2xx response
+          console.error('Failed to fetch Address:', response.statusText);
+          Swal.fire({
+            icon: 'error',
+            title: 'Fetch Error',
+            text: 'Failed to fetch customer addresses.',
+          });
+        }
+      } catch (error) {
+        // Handle network errors or other exceptions
+        console.error('Failed to fetch Address:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Fetch Error',
+          text: 'Failed to fetch customer addresses.',
+        });
+      }
+    };
+
+    // Fetch addresses from the backend when the component mounts
+    id && cartItems && fetchAddress();
+  }, [id, cartItems]);
+
+  // const { given_name_address, family_name_address, apt_address, subregion_address, city_address, country_address, region_address, zip_address, phone_address } = defaultAddress || []
+
+  useEffect(() => {
+    id && cartItems.length > 0 && defaultAddress && sendedResponse && (
+      makePayment()
+    )
+  }, [id, cartItems, defaultAddress])
+
+  const adjustedLength = orderData && orderData.length - 1;
+  const totalSellingPrice = orderData && orderData.reduce(
     (total, item) => total + parseFloat(item.sellingprice),
     0
   );
-  //   console.log(totalSellingPrice.toFixed(2), "TOTAL");
 
-  const subtotal = totalSellingPrice.toFixed(2);
-  //   console.log(subtotal, "SUB");
-  //   console.log(tax, "TAX");
+  const subtotal = totalSellingPrice && totalSellingPrice.toFixed(2);
 
   const total = parseFloat(subtotal) + parseFloat(tax);
 
-  //   console.log(total, "TOTAL");
-
-  //   const total = subtotal + tax;
-
-  //   console.log(customerData);
-
-  //   console.log(cartItems, "CARTITEMSSSS");
-
   return (
-    <div className="py-10 px-5 md:px-20">
+    orderData ? <div className="py-10 px-5 md:px-20">
       <div className="space-y-3">
         <h1>
-          Hey <span className="font-medium">{customerData.given_name}</span>,
+          Hey <span className="font-medium">{customerData?.customerData?.given_name}</span>,
         </h1>
         <h2 className="flex items-end font-medium text-[#ed642b] gap-1 md:gap-2">
           <Check size={20} />
@@ -48,7 +127,7 @@ const page = () => {
         <p>
           Thanks for shopping! Your order
           <span className="text-[#ed642b] ml-1">
-            {cartItems[0]?.ad_title}
+            {orderData && orderData[0]?.ad_title}
           </span>{" "}
           {adjustedLength > 0 && (
             <>
@@ -65,7 +144,7 @@ const page = () => {
 
         <div className="py-2">
           <h2 className="font-medium">
-            Order: <span className="text-[#ed642b]">#156615-3165151164564</span>
+            {/* Order: <span className="text-[#ed642b]">#156615-3165151164564</span> */}
           </h2>
         </div>
 
@@ -103,7 +182,7 @@ const page = () => {
         <hr />
 
         <div>
-          {cartItems?.map((item: any, index: any) => (
+          {orderData && orderData?.map((item: any, index: any) => (
             <div className="flex items-center justify-between" key={index}>
               <div className="flex gap-2 items-center justify-start">
                 <img
@@ -134,8 +213,8 @@ const page = () => {
           ))}
         </div>
       </div>
-    </div>
+    </div> : router.push('/account-order')
   );
 };
 
-export default page;
+export default ThankYou;

@@ -57,11 +57,13 @@ import {
 } from "lucide-react";
 import { Image, Modal, Rate } from "antd";
 import ProductSalebadge from "@/components/ProductSalebadge";
+import SellerProfileProductPage from "@/components/SellerProfileProductPage";
 import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sellerProfile, setSellerProfile] = useState(null);
 
   const showDetailModal = () => {
     setIsDetailModalOpen(true);
@@ -74,6 +76,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const detailhandleCancel = () => {
     setIsDetailModalOpen(false);
   };
+  // console.log(isDetailModalOpen, "isDetailModalOpen");
 
   const [seeMore, setSeeMore] = useState(false);
 
@@ -106,6 +109,7 @@ const ProductDetailPage = ({ searchParams }) => {
     useState(false);
   const [variantsData, setVariantsData] = useState(null);
   const [responseData, setResponseData] = useState(null);
+  const [sellerId, setSellerId] = useState();
   const [singleData, setsingleData] = useState(responseData);
   const [selectedAttributes, setSelectedAttributes] = useState<null>(null); // Replace 'YourAttributeType' with the actual type
   const [selectLabel, setSelectLabel] = useState<string | null>(null);
@@ -125,6 +129,8 @@ const ProductDetailPage = ({ searchParams }) => {
   const cartItems = useAppSelector((state) => state.cart.cartItems);
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
   const dispatch = useDispatch();
+
+  // console.log(responseData, "FALAMAAAA");
 
   useEffect(() => {
     const handlePutRequest = async () => {
@@ -146,7 +152,10 @@ const ProductDetailPage = ({ searchParams }) => {
         const responseData = await response.json();
 
         setResponseData(responseData?.product);
-        console.log(responseData, "DATATATATATATAT");
+        console.log(responseData?.product, "RRRRRRRRRRRRRRRRRRRRR");
+
+        setSellerId(responseData.product.vendorid);
+        // console.log(sellerId, "SELLLERDATATATATATATAT");
       } catch (error) {
         console.error("Error processing request:", error);
         // Handle error gracefully
@@ -155,6 +164,43 @@ const ProductDetailPage = ({ searchParams }) => {
 
     handlePutRequest();
   }, [searchParams]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Assuming getAllVendors accepts an ID parameter
+
+        const response = await fetch(`/api/Vendors/getProfile`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ vendorid: sellerId }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data, "SSSSSSSSSSSSSDATAA");
+          setSellerProfile(data);
+          // console.log(sellerProfile);
+
+          // setIsLoading(false);
+        } else {
+          console.error(`HTTP error! Status: ${response.status}`);
+        }
+      } catch (error) {
+        console.error("Error fetching vendors:", error);
+      }
+    };
+
+    sellerId && fetchData();
+    // If you want to perform some action when singleVendors changes, do it here
+  }, [sellerId]);
+
+  console.log("responseData");
+  console.log(responseData);
+  console.log("responseData");
+
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
@@ -371,9 +417,6 @@ const ProductDetailPage = ({ searchParams }) => {
     setIsMatchedCartProduct(matchedCartProduct);
   }, [isUniquepidMatched, cartItems, responseData]);
 
-
-
-
   const handleAttributeSelect = (attribute: any, value: any) => {
     // Create a copy of the selectedAttributes
     let updatedSelectedAttributes = { ...selectedAttributes };
@@ -467,16 +510,14 @@ const ProductDetailPage = ({ searchParams }) => {
                 handleAttributeSelect(variant.attribute, item);
                 setVariantActive(itemvar);
               }}
-              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${
-                variantActive === itemvar
+              className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
                   ? "border-black/90 dark:border-white"
                   : "border-transparent"
-              }`}
+                }`}
             >
               <div
-                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${
-                  variantActive === itemvar && "bg-black text-white"
-                }`}
+                className={`absolute flex justify-center items-center inset-0.5 rounded-full overflow-hidden z-0 ${variantActive === itemvar && "bg-black text-white"
+                  }`}
               >
                 {item}
               </div>
@@ -644,7 +685,13 @@ const ProductDetailPage = ({ searchParams }) => {
           </p>
         </div>
 
-        <div className=" lg:hidden py-10">{renderSellerProfile()}</div>
+        <div className=" lg:hidden py-10">
+          {/* <SellerProfileProductPage
+            features={responseData?.attributes_specification}
+            sellerid={sellerId}
+          /> */}
+          {renderSellerProfile()}
+        </div>
 
         <Modal
           title="Shopping security"
@@ -754,49 +801,122 @@ const ProductDetailPage = ({ searchParams }) => {
     );
   };
 
+  const renderDetailSection = () => {
+    return (
+      <div className="">
+        <h2 className="text-2xl font-semibold">Product Details</h2>
+        <div className="prose prose-sm sm:prose dark:prose-invert sm:max-w-4xl mt-7">
+          <p>
+            The patented eighteen-inch hardwood Arrowhead deck --- finely
+            mortised in, makes this the strongest and most rigid canoe ever
+            built. You cannot buy a canoe that will afford greater satisfaction.
+          </p>
+          <p>
+            The St. Louis Meramec Canoe Company was founded by Alfred Wickett in
+            1922. Wickett had previously worked for the Old Town Canoe Co from
+            1900 to 1914. Manufacturing of the classic wooden canoes in Valley
+            Park, Missouri ceased in 1978.
+          </p>
+          <ul>
+            <li>Regular fit, mid-weight t-shirt</li>
+            <li>Natural color, 100% premium combed organic cotton</li>
+            <li>
+              Quality cotton grown without the use of herbicides or pesticides -
+              GOTS certified
+            </li>
+            <li>Soft touch water based printed in the USA</li>
+          </ul>
+        </div>
+      </div>
+    );
+  };
 
   const renderReviews = () => {
     return (
-      <div className="">
+      <div className="" id="reviews">
         {/* HEADING */}
         <h2 className="text-2xl font-semibold flex items-center">
           <StarIcon className="w-7 h-7 mb-0.5" />
-          <span className="ml-1.5"> 4,87 · 14fff sgyrztd ys2 Reviews</span>
-          
+          <span className="ml-1.5"> 4,87 · 142 Reviews</span>
         </h2>
 
         {/* comment */}
-        
+        <div className="mt-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-11 gap-x-28">
+            <ReviewItem />
+            <ReviewItem
+              data={{
+                comment: `I love the charcoal heavyweight hoodie. Still looks new after plenty of washes. 
+                  If you’re unsure which hoodie to pick.`,
+                date: "December 22, 2021",
+                name: "Stiven Hokinhs",
+                starPoint: 5,
+              }}
+            />
+            <ReviewItem
+              data={{
+                comment: `The quality and sizing mentioned were accurate and really happy with the purchase. Such a cozy and comfortable hoodie. 
+                Now that it’s colder, my husband wears his all the time. I wear hoodies all the time. `,
+                date: "August 15, 2022",
+                name: "Gropishta keo",
+                starPoint: 5,
+              }}
+            />
+            <ReviewItem
+              data={{
+                comment: `Before buying this, I didn't really know how I would tell a "high quality" sweatshirt, but after opening, I was very impressed. 
+                The material is super soft and comfortable and the sweatshirt also has a good weight to it.`,
+                date: "December 12, 2022",
+                name: "Dahon Stiven",
+                starPoint: 5,
+              }}
+            />
+          </div>
+
+          <ButtonSecondary
+            onClick={() => setIsOpenModalViewAllReviews(true)}
+            className="mt-10 border border-gray-300 dark:border-gray-700 "
+          >
+            Show me all 142 reviews
+          </ButtonSecondary>
+        </div>
       </div>
     );
   };
 
   const renderSellerProfile = () => {
     return (
-      <>
+      <div>
         <div className="flex  items-center justify-start gap-3 md:gap-5">
           <div className="h-14 w-14 md:h-24 md:w-24  border-gray-200 border-2  rounded-full overflow-hidden">
             <img
               className="h-full w-full object-contain"
               src={
-                "https://connectkaro.org/wp-content/uploads/2019/03/placeholder-profile-male-500x500.png"
+                sellerProfile &&
+                  sellerProfile.brand_logo &&
+                  sellerProfile.brand_logo.images[0]
+                  ? `${`${AdminUrl}/uploads/vendorBrandLogo/${sellerProfile?.brand_logo?.images[0]}`}`
+                  : "https://connectkaro.org/wp-content/uploads/2019/03/placeholder-profile-male-500x500.png"
               }
-              // alt={singleVendors?.brand_name}
+              alt={sellerProfile?.brand_name}
             />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="flex">
-              <h2 className="text-lg md:text-2xl tracking-wide pr-2 font-medium">
+            <div className="lg:flex items-center">
+              <h2 className="text-lg md:text-2xl tracking-wide pr-2 font-medium line-clamp-1">
                 {/* {singleVendors?.brand_name || "NA"} */}
-                Pasha Shop
+                {sellerProfile?.brand_name || "NA"}
               </h2>
-              <span>
+              <span
+                onClick={() => setIsOpenModalViewAllReviews(true)}
+                className="cursor-pointer p-1"
+              >
                 4.8
                 <Rate
                   allowHalf
                   disabled
                   defaultValue={4.9}
-                  className="text-gray-900 text-sm md:text-xl ml-2"
+                  className="text-gray-900 text-sm md:text-lg ml-2"
                 />
               </span>
             </div>
@@ -804,8 +924,7 @@ const ProductDetailPage = ({ searchParams }) => {
             <div className="flex items-center justify-start">
               <div className="flex gap-1 items-center">
                 <h2 className="font-medium">
-                  {/* {singleVendors?.followers || "NA"} */}
-                  1000
+                  {sellerProfile?.followers || "NA"}
                 </h2>
                 <h3 className="text-gray-600 text-xs">Followers</h3>
               </div>
@@ -814,8 +933,7 @@ const ProductDetailPage = ({ searchParams }) => {
 
               <div className="flex gap-1 items-center">
                 <h2 className="font-medium">
-                  {/* {singleVendors?.total_sales || "NA"} */}
-                  20
+                  {sellerProfile?.total_sales || "NA"}
                 </h2>
                 <h3 className="text-gray-600 text-xs">Sold</h3>
               </div>
@@ -824,8 +942,7 @@ const ProductDetailPage = ({ searchParams }) => {
 
               <div className="flex items-center gap-1">
                 <h2 className="font-medium">
-                  {/* {singleVendors?.total_products || "NA"} */}
-                  23
+                  {sellerProfile?.total_products || "NA"}
                 </h2>
                 <h3 className="text-gray-600 text-xs">Items</h3>
               </div>
@@ -844,7 +961,7 @@ const ProductDetailPage = ({ searchParams }) => {
         </div>
 
         <div className="pt-5 font-medium text-lg flex items-center justify-between">
-          <h2>Details</h2>
+          <h2 className="text-xl">Details</h2>
           <h2 className="flex text-sm items-center gap-1">
             Report this item
             <ChevronRight size={15} />
@@ -852,58 +969,39 @@ const ProductDetailPage = ({ searchParams }) => {
         </div>
         <div className="mt-2">
           <ul className="space-y-2">
-            <li>Details : Drawstring</li>
-            <li>Patterned : ANimals</li>
-
-            {seeMore ? (
-              <>
-                <li>Sheer : No</li>
-                <li>Fabric : Medium Stretch</li>
-                <li>Collar Style : Hooded</li>
-                <li>Type : Other</li>
-                <li>Care Instructions : Machine washable, no dry clean</li>
-                <li>Material : Polyester</li>
-                <li>Fit Type : Regular</li>
-                <li>Composition : 95% Polyester,5% Spandex</li>
-                <li>Weaving Method : Knit Fabric</li>
-                <li>Tops Composition : 95% Polyester,5% Spandex</li>
-                <li>Bottoms Composition : 95% Polyester,5% Spandex</li>
-                <li
-                  className="flex gap-1 items-center cursor-pointer hover:underline"
-                  onClick={showDetailModal}
-                >
-                  Seller information <ChevronRight size={20} />
+            {Object.entries(responseData?.attributes_specification).map(
+              ([key, value]) => (
+                <li key={key} className="">
+                  <span className="font-medium capitalize mr-2">{key}:</span>
+                  {value || "NA"}
                 </li>
-                <Modal
-                  title="Seller Information"
-                  open={isDetailModalOpen}
-                  onOk={detailhandleOk}
-                  onCancel={detailhandleCancel}
-                  footer={[
-                    <h1
-                      onClick={detailhandleCancel}
-                      className="cursor-pointer bg-orange-600 text-center mx-5 md:mx-10 rounded-full p-2 text-xl text-white font-medium"
-                    >
-                      OK
-                    </h1>,
-                  ]}
-                >
-                  <div>Seller Details</div>
-                </Modal>
-              </>
-            ) : (
-              <>
-                <li
-                  className="flex items-center gap-1 text-sm text-gray-700 font-medium hover:underline cursor-pointer"
-                  onClick={() => setSeeMore(!seeMore)}
-                >
-                  See More <ChevronDown size={15} />
-                </li>
-              </>
+              )
             )}
+            <li
+              className="flex gap-1 items-center cursor-pointer hover:underline"
+              onClick={showDetailModal}
+            >
+              Seller information <ChevronRight size={20} />
+            </li>
+            <Modal
+              title="Seller Information"
+              open={isDetailModalOpen}
+              onOk={detailhandleOk}
+              onCancel={detailhandleCancel}
+              footer={[
+                <h1
+                  onClick={detailhandleCancel}
+                  className="cursor-pointer bg-orange-600 text-center mx-5 md:mx-10 rounded-full p-2 text-xl text-white font-medium"
+                >
+                  OK
+                </h1>,
+              ]}
+            >
+              <div>{sellerProfile?.vendorname}</div>
+            </Modal>
           </ul>
         </div>
-      </>
+      </div>
     );
   };
 
@@ -1008,9 +1106,8 @@ const ProductDetailPage = ({ searchParams }) => {
                   <img
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
-                    className={`w-full rounded-xl object-contain transition duration-300 ${
-                      selectedImage === image ? "ring-2 ring-primary" : ""
-                    }`}
+                    className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
+                      }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -1025,15 +1122,21 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${
-                selectedImage || responseData?.images?.[0]
-              }`}
+              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || responseData?.images?.[0]
+                }`}
               className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
               alt="Main Product Image"
               loading="lazy"
             />
           </div>
-          <div className="hidden lg:block py-10">{renderSellerProfile()}</div>
+          {/* <div className="hidden lg:block py-10">{renderSellerProfile()}</div> */}
+          <div className="hidden lg:block py-10">
+            {/* <SellerProfileProductPage
+              features={responseData?.attributes_specification}
+              sellerid={sellerId}
+            /> */}
+            {renderSellerProfile()}
+          </div>
         </div>
 
         {/* LIKE BUTTON */}
@@ -1073,7 +1176,11 @@ const ProductDetailPage = ({ searchParams }) => {
           {/* {renderDetailSection()} */}
           <hr className="border-gray-200 dark:border-gray-700" />
           {/* {renderReviews()} */}
-          <Reviewcomponent uniquepid={responseData?.uniquepid}/>
+          {
+            responseData &&
+
+            <Reviewcomponent showmorebtn={true} product_id={responseData?.uniquepid} />
+          }
           <hr className="border-gray-200 dark:border-gray-700" />
           {/* OTHER SECTION */}
           <SectionSliderProductCard
@@ -1091,6 +1198,7 @@ const ProductDetailPage = ({ searchParams }) => {
 
       {/* MODAL VIEW ALL REVIEW */}
       <ModalViewAllReviews
+        productid={responseData?.uniquepid}
         show={isOpenModalViewAllReviews}
         onCloseModalViewAllReviews={() => setIsOpenModalViewAllReviews(false)}
       />
