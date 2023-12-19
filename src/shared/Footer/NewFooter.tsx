@@ -25,21 +25,7 @@ const Footer: React.FC = () => {
       title: "Company info",
       menus: [
         { href: `${HomeUrl}/company/about-us`, label: "About Nile" },
-        // {
-        //   href: `${HomeUrl}/company/price-down`,
-        //   label: "Nile Market-place - Team Up, Price Down!",
-        // },
-        {
-          href: `${HomeUrl}/company/affiliate-influencer-program`,
-          label: "Affiliate & influencer Program",
-        },
-        {
-          href: `${HomeUrl}/company/campus-ambassador`,
-          label: "Campus ambassador",
-        },
         { href: `${HomeUrl}/company/contact-us`, label: "Contact us" },
-        { href: `${HomeUrl}/company/careers`, label: "Careers" },
-        { href: `${HomeUrl}/company/press`, label: "Press" },
       ],
     },
     {
@@ -59,14 +45,6 @@ const Footer: React.FC = () => {
           label: "Privacy & policy",
         },
         { href: `${HomeUrl}/company/shipping-info`, label: "Shipping info" },
-        {
-          href: `${HomeUrl}/company/student-discount`,
-          label: "Student discount",
-        },
-        {
-          href: `${HomeUrl}/company/recalls-product-safety-alerts`,
-          label: "Your Recalls and Product Safety Alerts",
-        },
       ],
     },
     {
@@ -74,14 +52,9 @@ const Footer: React.FC = () => {
       title: "Help",
       menus: [
         {
-          href: `${HomeUrl}/SupportCenter?query=BuyingOnNile`,
+          href: `${HomeUrl}/SupportCenter?querys=BuyingOnNile`,
           label: "Support center & FAQ",
         },
-        {
-          href: `${HomeUrl}/company/purchase-protection`,
-          label: "Nile Market-place purchase protection",
-        },
-        { href: `${HomeUrl}/company/sitemap`, label: "Sitemap" },
         { href: `${HomeUrl}/company/how-to-order`, label: "How to order" },
         { href: `${HomeUrl}/company/how-to-track`, label: "How to track" },
         { href: `${process.env.SELLERURL}/seller`, label: "Sell on Nile" },
@@ -98,15 +71,15 @@ const Footer: React.FC = () => {
         <ul className="mt-5 space-y-4">
           {menu.menus.map((item, index) => (
             <li key={index}>
-              <Link
+              <a
                 key={index}
                 className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white"
                 href={item.href}
-                // target="blank"
+                target="blank"
                 // rel="noopener noreferrer"
               >
                 {item.label}
-              </Link>
+              </a>
             </li>
           ))}
         </ul>
@@ -126,7 +99,7 @@ const Footer: React.FC = () => {
                 <h2 className="font-semibold text-neutral-700 dark:text-neutral-200 mb-5">
                   Download Our App
                 </h2>
-                <Link
+                <a
                   className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white"
                   href={"/"}
                   target="_blank"
@@ -138,7 +111,7 @@ const Footer: React.FC = () => {
                     height={200}
                     alt="Picture of the author"
                   />
-                </Link>
+                </a>
               </div>
               {/* <div className="grid grid-cols-1 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
           <h2 className="font-semibold text-center text-neutral-700 dark:text-neutral-200">

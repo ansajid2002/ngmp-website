@@ -64,7 +64,7 @@
 //       content: [
 //         {
 //           list: "Buying on Nile",
-//           link: `${HomeUrl}/SupportCenter?query=BuyingOnNile`,
+//           link: `${HomeUrl}/SupportCenter?querys=BuyingOnNile`,
 //           slug: "BuyingOnNile",
 //           components: <BuyingOnNile />,
 //         },

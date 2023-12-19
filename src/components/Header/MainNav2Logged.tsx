@@ -25,7 +25,6 @@ import SearchList from "./Search/SearchList";
 import MobileSearch from "./Search/MobileSearch";
 
 const MainNav2Logged = () => {
-
   const inputRef = createRef<HTMLInputElement>();
   const searchNode = useRef();
   const search = useSearchParams();
@@ -122,7 +121,7 @@ const MainNav2Logged = () => {
               onChange={(e) => handleSearchInput(e.target.value)}
               // onFocus={() => setFocusInput(true)}
               onClick={() => setFocusInput(true)}
-            // onBlur={() => setFocusInput(false)}
+              // onBlur={() => setFocusInput(false)}
             />
             <button type="button" onClick={() => setSearchText("")}>
               <XMarkIcon className="w-5 h-5" />
@@ -185,7 +184,7 @@ const MainNav2Logged = () => {
           <AvatarDropdown />
 
           <div className="hidden lg:block">
-            {/* <Link href={"/SupportCenter?query=BuyingOnNile"}> */}
+            {/* <Link href={"/SupportCenter?querys=BuyingOnNile"}> */}
             {/* <MessagesSquare
               strokeWidth={1}
               size={28}

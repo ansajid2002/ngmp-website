@@ -1,6 +1,6 @@
 "use client";
 import Label from "@/components/Label/Label";
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import Input from "@/shared/Input/Input";
 import Select from "@/shared/Select/Select";
@@ -9,6 +9,11 @@ import { avatarImgs } from "@/contains/fakeData";
 import Image from "next/image";
 import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
+import { Loader2 } from "lucide-react";
+import { InputNumber, Modal } from "antd";
+import Swal from "sweetalert2";
+import { updateCustomerData } from "@/redux/slices/customerData";
+import { useDispatch } from "react-redux";
 
 const AccountPage = () => {
   const customerData = useAppSelector((state) => state.customerData);
@@ -16,23 +21,244 @@ const AccountPage = () => {
     given_name = "",
     family_name = "",
     email = "",
+    address_line_1 = '',
+    address_line_2 = '',
+    city = '',
     state = "",
+    zip_code = "",
     country = "",
     picture = "",
     phone_number = "",
     google_id = "",
+    bio = '',
+    customer_id
   } = customerData?.customerData || {};
 
-  let profile_pic = "";
-  if (picture) {
-    if (google_id && google_id.trim() != "") {
-      profile_pic = picture;
+  const [loader, setloader] = useState(false);
+  const [loading, setOkButtonLoader] = useState(false);
+  const [isOTPModalVisible, setOTPModalVisible] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [profileImage, setImage] = useState('/avatarplaceholder.png');
+
+  const dispatch = useDispatch()
+  const [userData, setUserData] = useState({
+    given_name,
+    family_name,
+    email,
+    address_line_1,
+    address_line_2,
+    city,
+    state,
+    zip_code,
+    country,
+    picture,
+    phone_number,
+    bio
+  });
+
+  useEffect(() => {
+    setUserData({
+      given_name,
+      family_name,
+      email,
+      address_line_1,
+      address_line_2,
+      city,
+      state,
+      zip_code,
+      country,
+      picture,
+      phone_number,
+      bio
+    })
+  }, [customerData])
+
+  useEffect(() => {
+
+    if (picture) {
+      if (google_id && google_id.trim() !== "" || !picture.startsWith("https")) {
+        setImage(`${AdminUrl}/uploads/customerProfileImages/${picture}`);
+      } else {
+        setImage(picture);
+      }
     } else {
-      profile_pic = `${AdminUrl}/uploads/customerProfileImages/${picture}`;
+      setImage("/avatarplaceholder.png");
     }
-  } else {
-    profile_pic = "/avatarplaceholder.png";
+  }, [customerData, picture, google_id]);
+
+  console.log(profileImage, 'profi');
+
+  const handleInputChange = (fieldName: any, value: any) => {
+    setUserData((prevData) => ({
+      ...prevData,
+      [fieldName]: value,
+    }));
+  };
+
+  const handleOTPInputChange = (value) => {
+    setOtp(value)
+  };
+
+
+  const handleSubmit = async () => {
+    setOtp('')
+    setloader(true)
+    // Validate email format
+    const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    if (!emailPattern.test(userData.email)) {
+      setloader(false)
+
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/Customers/Update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userData.email,
+          family_name: userData.family_name,
+          given_name: userData.given_name,
+          customer_id,
+        }),
+      });
+
+      if (response.ok) {
+        // Request was successful
+        // Show a success message
+        // Open the OTP modal here
+        console.log(response);
+        setOTPModalVisible(true)
+      } else {
+        // Request failed
+        // Handle the error based on the response status code
+        if (response.status === 400) {
+          // Handle specific error, such as duplicate email
+          alert('Email already registered');
+        } else {
+          // Handle other errors
+          throw new Error('Failed to send OTP. Please try again.');
+        }
+      }
+      setloader(false)
+
+    } catch (error: any) {
+      // Handle any exceptions or network errors
+      alert(error.message);
+    } finally {
+      setloader(false)
+    }
+
   }
+
+  const handleVeifyOTP = async () => {
+    setOkButtonLoader(true)
+    if (/^\d{4}$/.test(otp)) {
+      // OTP is valid, proceed with sending it to the backend
+      try {
+        const response = await fetch(`/api/Customers/VerifyOtp`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            otp: otp, // Send the OTP to the backend
+            customer_id,
+            userProfile: userData, // Send the userProfile data
+          }),
+        });
+
+        if (response.ok) {
+          // Request was successful, handle success response
+          // For example, you can show a success message
+          const data = await response.json()
+          if (data && data.updatedProfile) {
+            setOTPModalVisible(false)
+            dispatch(updateCustomerData(data.updatedProfile))
+            Swal.fire({
+              title: "Profile Updated....",
+              text: data?.message,
+              icon: "success",
+            });
+          } else {
+            Swal.fire({
+              title: "Updated!",
+              text: data?.message,
+              icon: "error",
+            });
+          }
+
+        } else {
+          // Request failed, handle the error
+          throw new Error('Failed to verify OTP. Please try again.');
+        }
+      } catch (error: any) {
+        // Handle any exceptions or network errors
+        alert(error.message);
+      }
+    } else {
+      // OTP is not a 4-digit number, show an error message
+      alert('Please enter a 4-digit OTP code.');
+    }
+    setOkButtonLoader(false)
+
+  }
+
+  const handleFileChange = (event: any) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      // Do something with the file, for example, set it to state
+      setSelectedFile(file);
+
+      console.log(file);
+
+      // You can also access other file information like name, size, type, etc.
+      handleFormSubmit(file);
+
+    }
+  };
+
+  const handleFormSubmit = async (file: any) => {
+    // Create a FormData object
+    const formData = new FormData();
+
+    // Append file to FormData
+    if (file) {
+      formData.append('picture', file);
+    }
+
+    console.log(file, 'sele');
+
+    // Append other data to FormData
+    formData.append('key', customer_id);
+
+    // Send formData to the server using fetch or axios
+    try {
+      const response = await fetch(`/api/Customers/addProfilePhoto`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      // Handle the response as needed
+      if (response.ok) {
+        // Image upload was successful
+        const data = await response.json();
+        setImage(`${AdminUrl}/uploads/customerProfileImages/${data?.picture}`)
+        dispatch(updateCustomerData(data?.updatedRows[0]))
+      } else {
+        // Handle upload failure
+        console.error('Image upload failed');
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  };
+
 
   return (
     <div className={`nc-AccountPage `}>
@@ -45,13 +271,15 @@ const AccountPage = () => {
           <div className="flex-shrink-0 flex items-start">
             {/* AVATAR */}
             <div className="relative rounded-full overflow-hidden flex">
-              <Image
-                src={profile_pic}
-                alt="avatar"
-                width={128}
-                height={128}
-                className="w-32 h-32 rounded-full object-cover z-0"
-              />
+              {
+                <Image
+                  src={profileImage}
+                  alt="avatar"
+                  width={128}
+                  height={128}
+                  className="w-32 h-32 rounded-full object-cover z-0"
+                />
+              }
               <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-neutral-50 cursor-pointer">
                 <svg
                   width="30"
@@ -74,73 +302,189 @@ const AccountPage = () => {
               <input
                 type="file"
                 className="absolute inset-0 opacity-0 cursor-pointer"
+                accept="image/png, image/jpeg, image/jpg"
+                onChange={handleFileChange}
+
               />
             </div>
           </div>
           <div className="flex-grow mt-10 md:mt-0 md:pl-16 max-w-3xl space-y-6">
-            <div>
-              <Label>Full name</Label>
-              <Input
-                className="mt-1.5"
-                defaultValue={`${given_name} ${family_name}`}
-              />
-            </div>
-
-            {/* ---- */}
-
-            {/* ---- */}
-            <div>
-              <Label>Email</Label>
-              <div className="mt-1.5 flex">
-                <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
-                  <i className="text-2xl las la-envelope"></i>
-                </span>
+            <div className="grid grid-cols-2 w-full gap-2">
+              <div className="flex-1">
+                <Label>First name</Label>
                 <Input
-                  className="!rounded-l-none"
-                  placeholder={"example@email.com"}
-                  defaultValue={email}
+                  className="mt-1.5"
+                  value={`${userData?.given_name}`}
+                  onChange={(e) => handleInputChange("given_name", e.target.value)}
+
                 />
+              </div>
+              <div className="flex-1">
+                <Label>Last name</Label>
+                <Input
+                  className="mt-1.5"
+                  value={`${userData?.family_name}`}
+                  onChange={(e) => handleInputChange("family_name", e.target.value)}
+
+                />
+              </div>
+
+              <div>
+                <Label>Email</Label>
+                <div className="mt-1.5 flex">
+                  <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                    <i className="text-2xl las la-envelope"></i>
+                  </span>
+                  <Input
+                    className="!rounded-l-none"
+                    placeholder={"example@email.com"}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    value={userData.email}
+                  />
+                </div>
+              </div>
+
+              {/* ---- */}
+              <div>
+                <Label>Phone number</Label>
+                <div className="mt-1.5 flex">
+                  <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                    <i className="text-2xl las la-phone-volume"></i>
+                  </span>
+                  <Input
+                    className="!rounded-l-none"
+                    placeholder="91xxxxxxx"
+                    value={userData?.phone_number}
+                    onChange={(e) => handleInputChange("phone_number", e.target.value)}
+
+                  />
+                </div>
               </div>
             </div>
 
             {/* ---- */}
+
+
             <div>
-              <Label>Addess</Label>
+              <Label>Address Line 1</Label>
               <div className="mt-1.5 flex">
                 <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
-                  <i className="text-2xl las la-map-signs"></i>
+                  <i className="text-2xl las la-address-book"></i>
                 </span>
-                <Input
+                <Textarea
                   className="!rounded-l-none"
-                  defaultValue="New york, USA"
+                  rows={1}
+                  placeholder="Sayeed Road, 104 xyz"
+                  value={userData?.address_line_1}
+                  onChange={(e) => handleInputChange("address_line_1", e.target.value)}
+
                 />
               </div>
             </div>
-
-            {/* ---- */}
             <div>
-              <Label>Phone number</Label>
+              <Label>Address Line 2</Label>
               <div className="mt-1.5 flex">
                 <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
-                  <i className="text-2xl las la-phone-volume"></i>
+                  <i className="text-2xl las la-address-book"></i>
+                </span>
+                <Textarea
+                  className="!rounded-l-none"
+                  rows={1}
+
+                  placeholder="Mumbai, Kausa"
+                  value={userData?.address_line_2}
+                  onChange={(e) => handleInputChange("address_line_2", e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>City</Label>
+              <div className="mt-1.5 flex">
+                <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                  <i className="text-2xl las la-city"></i>
                 </span>
                 <Input
                   className="!rounded-l-none"
-                  defaultValue={phone_number}
+                  placeholder="Thane"
+                  value={userData?.city}
+                  onChange={(e) => handleInputChange("city", e.target.value)}
+
+                />
+              </div>
+            </div>
+            <div>
+              <Label>State</Label>
+              <div className="mt-1.5 flex">
+                <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                  <i className="text-2xl las la-city"></i>
+                </span>
+                <Input
+                  className="!rounded-l-none"
+                  placeholder="Maharashtra"
+                  value={userData?.state}
+                  onChange={(e) => handleInputChange("state", e.target.value)}
+
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Country</Label>
+              <div className="mt-1.5 flex">
+                <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                  <i className="text-2xl las la-city"></i>
+                </span>
+                <Input
+                  className="!rounded-l-none"
+                  placeholder="India"
+                  onChange={(e) => handleInputChange("country", e.target.value)}
+                  value={userData?.country}
                 />
               </div>
             </div>
             {/* ---- */}
             <div>
               <Label>About you</Label>
-              <Textarea className="mt-1.5" defaultValue="..." />
+              <Textarea className="mt-1.5"
+                placeholder="Tell something about your self..."
+                onChange={(e) => handleInputChange("bio", e.target.value)}
+                value={userData?.bio}
+              />
             </div>
-            <div className="pt-2">
-              <ButtonPrimary>Update account</ButtonPrimary>
+            <div className="pt-2" onClick={handleSubmit}>
+              <ButtonPrimary className="transition-all duration-150 ease-in-out">
+                {loader ? <Loader2 className="animate-spin" /> : 'Update account'}
+              </ButtonPrimary>
             </div>
           </div>
         </div>
       </div>
+      <Modal
+        title="Verify Account"
+        open={isOTPModalVisible}
+        onCancel={() => setOTPModalVisible(false)}
+        onOk={handleVeifyOTP}
+        okButtonProps={{ loading, style: { background: "blue", color: '#fff' } }}
+      >
+        <div className="col-span-2 md:col-span-4 text-center">
+          <p className="text-lg font-semibold mb-4">
+            To complete the account update, please enter the OTP sent to your registered email address.
+          </p>
+        </div>
+        <div className="flex justify-center w-full">
+          <Input
+            className="w-full justify-center flex"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => handleOTPInputChange(e.target.value)}
+          />
+        </div>
+        <div className="col-span-2 md:col-span-4 text-center mt-4">
+          <p className="text-sm text-neutral-500">
+            Can't find the OTP? Make sure to check your spam folder or request a new one.
+          </p>
+        </div>
+      </Modal>
+
     </div>
   );
 };

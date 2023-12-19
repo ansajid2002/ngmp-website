@@ -210,7 +210,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
             <span className="flex items-center justify-center gap-4 mr-2">
               <Language />
               {/* <Link
-                href={"/SupportCenter?query=BuyingOnNile"}
+                href={"/SupportCenter?querys=BuyingOnNile"}
                 onClick={onClickClose}
                 className="px-2"
               >

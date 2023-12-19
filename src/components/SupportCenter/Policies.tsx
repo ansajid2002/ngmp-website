@@ -13,8 +13,9 @@ function Icon({ id, open }) {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
-      className={`${id === open ? "rotate-180" : ""
-        } h-5 w-5 transition-transform`}
+      className={`${
+        id === open ? "rotate-180" : ""
+      } h-5 w-5 transition-transform`}
     >
       <path
         strokeLinecap="round"
@@ -34,56 +35,89 @@ const Policies = () => {
     {
       id: 1,
       value: "item-1",
-      title: "How to get help before I buy",
-      content: "Content",
+      title: "What is Nile Market place's shipping policy?",
+      content:
+        "Please visit our shipping info page to view more details about our shipping policy.",
     },
     {
       id: 2,
       value: "item-2",
-      title: "How to search for items on Nile Market-place",
-      content: "Content",
+      title: "What is Nile Market place's late delivery compensation policy?",
+      content: (
+        <>
+          <h2>
+            To learn more about our late delivery compensation policy, please
+            visit:{" "}
+            <a
+              href="/company/late-delivery-compensation"
+              target="blank"
+              className="text-orange-900"
+            >
+              late Delivery Compensation
+            </a>{" "}
+            page
+          </h2>
+        </>
+      ),
     },
     {
       id: 3,
       value: "item-3",
-      title: "How to purchase an item on Nile Market-place?",
-      content: "Content",
+      title: "What is Nile Market place's privacy policy?",
+      content: (
+        <>
+          <h2>
+            To learn more about our privacy and policy, please visit:
+            <a
+              href="/company/privacy-policy"
+              target="blank"
+              className="text-orange-900"
+            >
+              Privacy & Policy
+            </a>
+          </h2>
+        </>
+      ),
     },
     {
       id: 4,
       value: "item-4",
-      title: "I received an email about an order I did not place",
-      content: "Content",
+      title: "What is Nile Market place's return policy?",
+      content: (
+        <>
+          <h2>
+            For more information about our return and refund policy, please
+            refer to the link below:
+            <br />
+            <a
+              href="/company/return-refund-policy"
+              target="blank"
+              className="text-orange-900"
+            >
+              Return & Refund Policy
+            </a>
+          </h2>
+        </>
+      ),
     },
     {
       id: 5,
       value: "item-5",
-      title: "How to follow shops/sellers",
-      content: "Content",
-    },
-    {
-      id: 6,
-      value: "item-6",
-      title: "Tips for buying safely on Nile Market-place",
-      content: "Content",
-    },
-    {
-      id: 7,
-      value: "item-7",
-      title: "Does Nile Market-place support drop shipping?",
-      content: "Content",
-    },
-    {
-      id: 8,
-      value: "item-8",
-      title: "Does Nile Market-place accept tax exemption certificates?",
-      content: "Content",
-    },
-    {
-      id: 9,
-      value: "item-9",
-      title: "How is Nile Market-place able to offer lower prices than others?",
-      content: "Content",
+      title: "What is Nile Market place's terms and conditions policy?",
+      content: (
+        <>
+          <h2>
+            To learn more about our terms and conditions policy, please visit:
+            <a
+              href="/company/terms-conditions"
+              target="blank"
+              className="text-orange-900"
+            >
+              Terms And Conditions
+            </a>
+          </h2>
+        </>
+      ),
     },
   ];
 

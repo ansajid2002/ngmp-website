@@ -13,17 +13,19 @@ import ProductStatus from "./ProductStatus";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NcImage from "@/shared/NcImage/NcImage";
-import { AdminUrl } from "@/app/layout";
+import { AdminUrl, HomeUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { Rate } from "antd";
 import { Loader2Icon } from "lucide-react";
-import { Button, Modal } from 'antd';
+import { Button, Modal } from "antd";
 import {
   addItemToWishlist,
   removeItemFromWishlist,
 } from "@/redux/slices/wishlistSlice";
 import { useDispatch } from "react-redux";
 import SignIn from "@/app/auth/signIn/page";
+import ProductSalebadge from "./ProductSalebadge";
+import ProductOfferBadge from "./ProductOfferBadge";
 
 export interface ProductCardProps {
   className?: string;
@@ -43,7 +45,7 @@ const ProductCard: FC<ProductCardProps> = ({
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
   const { customerData } = useAppSelector((state) => state.customerData);
-  const customerId = customerData?.customerData?.customer_id || null;
+  const customerId = customerData?.customer_id || null;
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
 
@@ -63,8 +65,6 @@ const ProductCard: FC<ProductCardProps> = ({
 
   const [showModalQuickView, setShowModalQuickView] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-
   const router = useRouter();
 
   // const notifyAddTocart = ({ size }: { size?: string }) => {
@@ -162,9 +162,10 @@ const ProductCard: FC<ProductCardProps> = ({
     console.log(customerId);
 
     if (!customerId) {
-      showModal()
+      return
     }
     else {
+      console.log("true");
 
       setWishlistLoading(true);
       const {
@@ -176,7 +177,9 @@ const ProductCard: FC<ProductCardProps> = ({
         sellingprice,
         label,
       } = data;
-      const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
+      const replacecategory = category
+        .replace(/[^\w\s]/g, "")
+        .replace(/\s/g, "");
       const replacesubcategory = subcategory
         .replace(/[^\w\s]/g, "")
         .replace(/\s/g, "");
@@ -246,8 +249,6 @@ const ProductCard: FC<ProductCardProps> = ({
         }
       }
     }
-
-
   }, [customerId, dispatch, inFavorite, data, setinFavorite]);
 
   const showModal = () => {
@@ -266,7 +267,7 @@ const ProductCard: FC<ProductCardProps> = ({
   return (
     <>
       <div
-        className={`nc-ProductCard relative flex flex-col rounded-lg overflow-hidden hover:shadow-md p-1 py-2 bg-transparent ${className}`}
+        className={`nc-ProductCard relative flex flex-col overflow-hidden hover:shadow-md p-1 py-2 bg-transparent ${className}`}
       >
         <Link href={"/product-detail"} className="absolute inset-0"></Link>
 
@@ -285,6 +286,9 @@ const ProductCard: FC<ProductCardProps> = ({
                 sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
                 alt="product"
               />
+              <div className="w-full bg-white z-50 absolute left-0 bottom-0">
+                <ProductOfferBadge />
+              </div>
             </div>
           </Link>
           {discountPercentage > 50 && (
@@ -321,7 +325,6 @@ const ProductCard: FC<ProductCardProps> = ({
                 </button>
 
                 {/* /////////////////////////////button COMPONENT/////////////////////////// */}
-
               </div>
             )}
           </div>
@@ -369,7 +372,12 @@ const ProductCard: FC<ProductCardProps> = ({
           <Button className="hidden" key="cancel" onClick={handleCancel}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" className=" hidden" onClick={handleOk}>
+          <Button
+            key="submit"
+            type="primary"
+            className=" hidden"
+            onClick={handleOk}
+          >
             Submit
           </Button>,
         ]}

@@ -48,7 +48,7 @@ const renderFAQ = () => {
             {OrderIssues?.map((item: any, index: any) => (
               <li key={index}>
                 <Link
-                  href={"/SupportCenter?query=BuyingOnNile"}
+                  href={"/SupportCenter?querys=BuyingOnNile"}
                   className="flex gap-1 items-center hover:bg-gray-200 p-2 rounded-md"
                 >
                   {item}
@@ -67,7 +67,7 @@ const renderFAQ = () => {
             {ShippingDelivery?.map((item: any, index: any) => (
               <li key={index}>
                 <Link
-                  href={"/SupportCenter?query=BuyingOnNile"}
+                  href={"/SupportCenter?querys=BuyingOnNile"}
                   className="flex gap-1 items-center hover:bg-gray-200 p-2 rounded-md"
                 >
                   {item}
@@ -89,7 +89,7 @@ const renderFAQ = () => {
             {ReturnRefund?.map((item: any, index: any) => (
               <li key={index}>
                 <Link
-                  href={"/SupportCenter?query=BuyingOnNile"}
+                  href={"/SupportCenter?querys=BuyingOnNile"}
                   className="flex gap-1 md:gap-2 items-center hover:bg-gray-200 p-2 rounded-md"
                 >
                   {item}
@@ -108,7 +108,7 @@ const renderFAQ = () => {
             {ProductStock?.map((item: any, index: any) => (
               <li key={index}>
                 <Link
-                  href={"/SupportCenter?query=BuyingOnNile"}
+                  href={"/SupportCenter?querys=BuyingOnNile"}
                   className="flex gap-1 items-center hover:bg-gray-200 p-2 rounded-md"
                 >
                   {item}
@@ -130,7 +130,7 @@ const renderFAQ = () => {
             {ManagingMyAccount?.map((item: any, index: any) => (
               <li key={index}>
                 <Link
-                  href={"/SupportCenter?query=BuyingOnNile"}
+                  href={"/SupportCenter?querys=BuyingOnNile"}
                   className="flex gap-1 items-center hover:bg-gray-200 p-2 rounded-md"
                 >
                   {item}
@@ -149,7 +149,7 @@ const renderFAQ = () => {
             {PaymentPromos?.map((item: any, index: any) => (
               <li key={index}>
                 <Link
-                  href={"/SupportCenter?query=BuyingOnNile"}
+                  href={"/SupportCenter?querys=BuyingOnNile"}
                   className="flex gap-1 items-center hover:bg-gray-200 p-2 rounded-md"
                 >
                   {item}
@@ -171,7 +171,7 @@ const renderFAQ = () => {
             {YourSecurity?.map((item: any, index: any) => (
               <li key={index}>
                 <Link
-                  href={"/SupportCenter?query=BuyingOnNile"}
+                  href={"/SupportCenter?querys=BuyingOnNile"}
                   className="flex gap-1 items-center hover:bg-gray-200 p-2 rounded-md"
                 >
                   {item}
@@ -190,7 +190,7 @@ const renderFAQ = () => {
             {PoliciesOthers?.map((item: any, index: any) => (
               <li key={index}>
                 <Link
-                  href={"/SupportCenter?query=BuyingOnNile"}
+                  href={"/SupportCenter?querys=BuyingOnNile"}
                   className="flex gap-1 items-center hover:bg-gray-200 p-2 rounded-md"
                 >
                   {item}

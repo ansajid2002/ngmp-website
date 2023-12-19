@@ -764,7 +764,7 @@ const ProductDetailPage = ({ searchParams }) => {
             </span>
             <div className="md:px-5 flex flex-col gap-1 md:gap-2">
               <li className="list-disc">
-                Shop confidently on Temu knowing that if something goes wrong,
+                Shop confidently on Nile knowing that if something goes wrong,
                 we've always got your back.
               </li>
               <span className="flex text-gray-700 font-medium items-center underline">
@@ -783,7 +783,7 @@ const ProductDetailPage = ({ searchParams }) => {
                 Our customer service team is always here if you need help.
               </li>
               <div className="w-full bg-blue-gray-50 flex items-center justify-around py-3 rounded-xl">
-                <Link href={`${HomeUrl}/SupportCenter?query=BuyingOnNile`}>
+                <Link href={`${HomeUrl}/SupportCenter?querys=BuyingOnNile`}>
                   <span className="flex flex-col items-center justify-center">
                     <HelpCircle />
                     FAQs
@@ -1094,7 +1094,7 @@ const ProductDetailPage = ({ searchParams }) => {
     return (
       <>
         {/* PRODUCT GALLERY */}
-        <div className="flex flex-row md:flex-col p-2 w-full md:w-[10%] h-auto scrollbar-hidden overflow-x-auto  md:overflow-y-auto mb-2">
+        <div className="grid grid-cols-5 md:flex md:flex-col p-2 w-full md:w-[10%] h-auto scrollbar-hidden overflow-x-auto  md:overflow-y-auto mb-2">
           <>
             {responseData?.images?.map((image: string, index: number) => (
               <div
@@ -1102,9 +1102,9 @@ const ProductDetailPage = ({ searchParams }) => {
                 className="h-18 mb-2 cursor-pointer"
                 onMouseOver={() => setSelectedImage(image)}
               >
-                <div className="w-full p-1 md:aspect-w-1 md:aspect-h-1">
+                <div className="w-full h-full p-1 md:aspect-w-1 md:aspect-h-1">
                   <img
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    sizes=""
                     src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}

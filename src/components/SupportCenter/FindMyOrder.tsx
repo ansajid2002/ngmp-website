@@ -13,8 +13,9 @@ function Icon({ id, open }) {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
-      className={`${id === open ? "rotate-180" : ""
-        } h-5 w-5 transition-transform`}
+      className={`${
+        id === open ? "rotate-180" : ""
+      } h-5 w-5 transition-transform`}
     >
       <path
         strokeLinecap="round"
@@ -34,56 +35,54 @@ const FindMyOrder = () => {
     {
       id: 1,
       value: "item-1",
-      title: "How to get help before I buy",
-      content: "Content",
+      title: "Why can't i find my order in my account?",
+      content: (
+        <>
+          <h3>
+            We're sorry to know that you can't find your order. You can choose
+            the following ways to find your orders.
+          </h3>
+          <h3>1. Provide Order ID to find order</h3>
+          <h3>2. Provide phone number to find order</h3>
+          <h3>3. Provide email address to find order</h3>
+          <h3>4. Provide payment information to find order</h3>
+        </>
+      ),
     },
     {
       id: 2,
       value: "item-2",
-      title: "How to search for items on Nile Market-place",
-      content: "Content",
-    },
-    {
-      id: 3,
-      value: "item-3",
-      title: "How to purchase an item on Nile Market-place?",
-      content: "Content",
-    },
-    {
-      id: 4,
-      value: "item-4",
-      title: "I received an email about an order I did not place",
-      content: "Content",
-    },
-    {
-      id: 5,
-      value: "item-5",
-      title: "How to follow shops/sellers",
-      content: "Content",
-    },
-    {
-      id: 6,
-      value: "item-6",
-      title: "Tips for buying safely on Nile Market-place",
-      content: "Content",
-    },
-    {
-      id: 7,
-      value: "item-7",
-      title: "Does Nile Market-place support drop shipping?",
-      content: "Content",
-    },
-    {
-      id: 8,
-      value: "item-8",
-      title: "Does Nile Market-place accept tax exemption certificates?",
-      content: "Content",
-    },
-    {
-      id: 9,
-      value: "item-9",
-      title: "How is Nile Market-place able to offer lower prices than others?",
-      content: "Content",
+      title: "Where is my order iD?",
+      content: (
+        <>
+          <h3>
+            Your order number always starts with 'PO.' You may find your order
+            ID number in one of the following ways:
+          </h3>
+          <li>
+            Reference your email confirmation to find your order ID in the email
+            subject line.
+          </li>
+          <li>
+            If you enabled text message tracking for your order, you can
+            reference your past texts to see your order ID listed at the
+            beginning of each message.
+          </li>
+          <li>
+            From Nile Market Place.com, sign into your account. Click into your
+            user avatar in the top righthand corner. From the lefthand menu,
+            under 'Your orders,' click into 'All orders.' Your order ID can be
+            found directly under each order entry.
+          </li>
+          <li>
+            From the Nile Market Place mobile app, sign into your account. Click
+            into your user avatar at the bottom of your screen. Select 'Your
+            orders' from the menu and click the specific order you are having
+            trouble with. Your order ID is shown at the top of the order details
+            page.
+          </li>
+        </>
+      ),
     },
   ];
 
@@ -98,7 +97,9 @@ const FindMyOrder = () => {
           <AccordionHeader onClick={() => handleOpen(item.id)}>
             <span className="text-[1rem] font-medium">{item.title}</span>
           </AccordionHeader>
-          <AccordionBody>{item.content}</AccordionBody>
+          <AccordionBody>
+            <div className="space-y-4 p-2">{item.content}</div>
+          </AccordionBody>
         </Accordion>
       ))}
     </div>

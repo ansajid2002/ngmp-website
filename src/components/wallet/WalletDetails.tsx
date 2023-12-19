@@ -2,6 +2,7 @@ import { ChevronRight, DollarSign, FileText, Wallet } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import TransactionDetails from "./TransactionDetails";
+import AvailableToken from "../AvailableToken";
 
 const WalletDetails = () => {
   const listData = [
@@ -59,10 +60,7 @@ const WalletDetails = () => {
         </div>
         {/* ------- */}
         <div className="md:border-l-2 md:px-10 border-gray-300">
-          <h2 className=" font-medium text-[#063b69]">Available Nile Token</h2>
-          <h2 className="text-green-700 text-3xl font-bold mt-1">
-            $<span>1000.00</span>
-          </h2>
+          <AvailableToken />
         </div>
         {/* --------- */}
       </div>

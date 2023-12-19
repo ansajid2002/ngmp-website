@@ -73,6 +73,8 @@ const AccountOrder = () => {
       const response = await fetch(`${AdminUrl}/api/fetchRatings?customer_id=${customerId}`);
       if (response.ok) {
         const data = await response.json();
+        console.log(data, 'darta');
+
         setReviewData(data?.ratingsData)
 
         // dispatch(updateReviewlistener(data?.ratingsData))
@@ -87,7 +89,7 @@ const AccountOrder = () => {
 
   useEffect(() => {
     // Fetch ratings when the component mounts
-    customerId && fetchRatings();
+    customerId && !reviewItems && fetchRatings();
   }, [customerId]);
 
   const renderProductItem = (product: any, index: number) => {
@@ -106,7 +108,6 @@ const AccountOrder = () => {
       }
       return false;
     });
-
 
     return (
       <div key={index} className="md:flex p-2">
@@ -136,7 +137,7 @@ const AccountOrder = () => {
 
                   {
                     order_status === "Delivered" && <div className="md:ml-4">
-                      <StarRating selectedRating={ratingData?.rating || 0} ratingData={ratingData} item={product} />
+                      <StarRating selectedRating={ratingData?.rating} ratingData={ratingData} item={product} />
                     </div>
                   }
                 </div>

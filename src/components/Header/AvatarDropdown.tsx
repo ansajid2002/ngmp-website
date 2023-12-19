@@ -1,7 +1,7 @@
 "use client";
 import { Popover, Transition } from "@/app/headlessui";
 import { avatarImgs } from "@/contains/fakeData";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Avatar from "@/shared/Avatar/Avatar";
 import SwitchDarkMode2 from "@/shared/SwitchDarkMode/SwitchDarkMode2";
 import Link from "next/link";
@@ -27,6 +27,8 @@ import Skeleton from "react-loading-skeleton";
 
 export default function AvatarDropdown() {
   const customerData = useAppSelector((state) => state.customerData);
+  const [profileImage, setImage] = useState('/avatarplaceholder.png');
+
   const navigation = useRouter();
   const {
     given_name = "",
@@ -37,16 +39,20 @@ export default function AvatarDropdown() {
     google_id,
   } = customerData?.customerData || {};
 
-  let profile_pic = "";
-  if (picture) {
-    if (google_id && google_id.trim() != "") {
-      profile_pic = picture;
+
+
+  useEffect(() => {
+
+    if (picture) {
+      if (google_id && google_id.trim() !== "" || !picture.startsWith("https")) {
+        setImage(`${AdminUrl}/uploads/customerProfileImages/${picture}`);
+      } else {
+        setImage(picture);
+      }
     } else {
-      profile_pic = `${AdminUrl}/uploads/customerProfileImages/${picture}`;
+      setImage("/avatarplaceholder.png");
     }
-  } else {
-    profile_pic = "/avatarplaceholder.png";
-  }
+  }, [customerData, picture, google_id]);
 
   return (
     <div className="AvatarDropdown">
@@ -56,7 +62,7 @@ export default function AvatarDropdown() {
             <>
               <Popover.Button className=" bg-gray-100 rounded-full transition-all lg:px-4 lg:py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex  gap-2">
                 <Image
-                  src={profile_pic}
+                  src={profileImage}
                   alt={given_name}
                   width={30}
                   height={30}
@@ -90,13 +96,15 @@ export default function AvatarDropdown() {
                     <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
                       <div className="relative grid grid-cols-1 gap-5 bg-white dark:bg-neutral-800 py-7 px-6">
                         <div className="flex items-center space-x-3">
-                          <Avatar imgUrl={profile_pic} sizeClass="w-12 h-12" />
+                          <Avatar imgUrl={profileImage} sizeClass="w-12 h-12" />
 
                           <div className="flex-grow">
                             <h4 className="font-semibold">{`${given_name} ${family_name}`}</h4>
-                            <p className="text-xs mt-0.5">{`${state && state?.trim() !== "" ? state + "," : ""
-                              } ${country && country?.trim() !== "" ? country : ""
-                              }`}</p>
+                            <p className="text-xs mt-0.5">{`${
+                              state && state?.trim() !== "" ? state + "," : ""
+                            } ${
+                              country && country?.trim() !== "" ? country : ""
+                            }`}</p>
                           </div>
                         </div>
 
@@ -235,7 +243,7 @@ export default function AvatarDropdown() {
 
                         {/* ------------------ 2 --------------------- */}
                         <Link
-                          href={"/SupportCenter?query=BuyingOnNile"}
+                          href={"/SupportCenter?querys=BuyingOnNile"}
                           className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                           onClick={() => close()}
                         >

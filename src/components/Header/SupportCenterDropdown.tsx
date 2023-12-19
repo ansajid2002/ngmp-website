@@ -25,7 +25,7 @@ const SupportCenterDropdown = () => {
                 <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative grid grid-cols-1 gap-5 bg-white dark:bg-neutral-800 py-7 px-6">
                     <Link
-                      href={"/SupportCenter?query=BuyingOnNile"}
+                      href={"/SupportCenter?querys=BuyingOnNile"}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
                     >

@@ -13,8 +13,9 @@ function Icon({ id, open }) {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
-      className={`${id === open ? "rotate-180" : ""
-        } h-5 w-5 transition-transform`}
+      className={`${
+        id === open ? "rotate-180" : ""
+      } h-5 w-5 transition-transform`}
     >
       <path
         strokeLinecap="round"
@@ -34,56 +35,74 @@ const SizeAndFit = () => {
     {
       id: 1,
       value: "item-1",
-      title: "How to get help before I buy",
-      content: "Content",
+      title: "Your sizing is too small/large and doesn't fit me",
+      content: (
+        <>
+          <h3>
+            We are sorry that you are not happy with the fit of your item. Some
+            pieces might fit differently depending on the styles, such as
+            oversized sweatshirts and t-shirts which run bigger than the general
+            guidelines.
+          </h3>
+          <h3>
+            If you are not satisfied with your clothing item, you may return it
+            for a full refund and reorder the item in a different size, if
+            available. Almost all items are eligible for a return and refund
+            with the exception of clothing items that are worn, washed, damaged,
+            with tags, packaging or hygiene sticker removed or in incomplete
+            set.
+          </h3>
+          <h3>
+            For future orders, you may contact us if you have any questions
+            about the sizing and measurements of the products.
+          </h3>
+          <h3>
+            At Nile Market Place, inclusion and diversity is one of our core
+            values and we are constantly trying to enhance our offerings so that
+            we continue to enable our customers to enjoy the best quality,
+            flexibility, and choice in their product selection.
+          </h3>
+        </>
+      ),
     },
     {
       id: 2,
       value: "item-2",
-      title: "How to search for items on Nile Market-place",
-      content: "Content",
+      title: "Where to find plus size products",
+      content: (
+        <>
+          <h3>
+            If you're using the Nile Market Place app, you can find plus size
+            products under the "Women's Curve + Plus" category in the lefthand
+            menu of the "Categories"tab.
+          </h3>
+          <h3>
+            If you're on Nile Market Place.com, you can click "Categories" in
+            the navigation menu at the top of the page, and select "Women's
+            Curve + Plus" from the dropdown list.
+          </h3>
+        </>
+      ),
     },
     {
       id: 3,
       value: "item-3",
-      title: "How to purchase an item on Nile Market-place?",
-      content: "Content",
-    },
-    {
-      id: 4,
-      value: "item-4",
-      title: "I received an email about an order I did not place",
-      content: "Content",
-    },
-    {
-      id: 5,
-      value: "item-5",
-      title: "How to follow shops/sellers",
-      content: "Content",
-    },
-    {
-      id: 6,
-      value: "item-6",
-      title: "Tips for buying safely on Nile Market-place",
-      content: "Content",
-    },
-    {
-      id: 7,
-      value: "item-7",
-      title: "Does Nile Market-place support drop shipping?",
-      content: "Content",
-    },
-    {
-      id: 8,
-      value: "item-8",
-      title: "Does Nile Market-place accept tax exemption certificates?",
-      content: "Content",
-    },
-    {
-      id: 9,
-      value: "item-9",
-      title: "How is Nile Market-place able to offer lower prices than others?",
-      content: "Content",
+      title: "Item doesn't have my size",
+      content: (
+        <>
+          <h3>
+            We are sorry that you are not able to find the item that you want in
+            your size. At Nile Market Place, inclusion and diversity is one of
+            our core values and we are constantly trying to enhance our
+            offerings so that we continue to enable our customers to enjoy the
+            best quality, flexibility, and choice in their product selection.
+          </h3>
+          <h3>
+            If you have any specific questions about an item's size or
+            measurements, please feel free to contact us.
+          </h3>
+        </>
+      ),
     },
   ];
 
@@ -98,7 +117,9 @@ const SizeAndFit = () => {
           <AccordionHeader onClick={() => handleOpen(item.id)}>
             <span className="text-[1rem] font-medium">{item.title}</span>
           </AccordionHeader>
-          <AccordionBody>{item.content}</AccordionBody>
+          <AccordionBody>
+            <div className="space-y-4 p-2">{item.content}</div>
+          </AccordionBody>
         </Accordion>
       ))}
     </div>
