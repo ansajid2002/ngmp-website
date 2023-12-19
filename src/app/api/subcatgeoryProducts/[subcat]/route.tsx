@@ -5,13 +5,12 @@ import { NextResponse } from 'next/server';
 
 async function getSubcategoryProducts(subcat: string) {
     try {
-        const apiUrl = `${AdminUrl}/api/getProductBySubcategories?subcat=${subcat}&currency=USD`;
+        const apiUrl = `${AdminUrl}/api/getProductBySubcategories?subcat=${subcat}&currency=USD&pageNumber=1&pageSize=10`;
 
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json', // Adjust headers as needed
-                // Add any other headers you may need, such as authentication headers
+                'Content-Type': 'application/json'
             },
         });
 
