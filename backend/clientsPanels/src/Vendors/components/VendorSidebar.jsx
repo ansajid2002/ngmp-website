@@ -1,0 +1,384 @@
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { vendorLinks } from "../constants/data";
+import { Menu } from "antd";
+import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import Cookies from "js-cookie";
+
+const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
+  const [dropdown, setDropdown] = useState(false);
+  const [collapse, setcollapse] = useState(true);
+  const [selectedPage, setSelectedPage] = useState("");
+  const location = useLocation();
+  const currentUrl = location.pathname;
+  const [locationData, setLocationData] = useState({
+    city: "",
+    state: "",
+    country: "",
+    postcode: "",
+  });
+
+  const [locationRetrieved, setLocationRetrieved] = useState(true);
+
+  const checkLocationPermission = () => {
+    // Check if the location permission has been granted
+    return navigator.permissions
+      .query({ name: "geolocation" })
+      .then((permissionStatus) => permissionStatus.state === "granted");
+  };
+
+  useEffect(() => {
+    const locationDataFromCookies = Cookies.get("locationData");
+
+    // Check if location permission has been granted
+    checkLocationPermission().then((isPermissionGranted) => {
+      if (locationDataFromCookies && isPermissionGranted) {
+        // Both cookies and location permission are true, set the location
+        setLocationRetrieved(locationDataFromCookies);
+      } else {
+        // Either cookies or location permission (or both) are false, set to null
+        setLocationRetrieved(null);
+      }
+    });
+  }, [locationRetrieved]);
+
+  const [current, setCurrent] = useState("mail");
+  const navigate = useNavigate();
+
+  const LocationFunction = async () => {
+    try {
+      // Check if geolocation is available in the browser
+      if ("geolocation" in navigator) {
+        // Attempt to get the user's location
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+
+        const { latitude, longitude } = position.coords;
+        const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+
+        const response = await axios.get(url);
+        const data = response.data;
+
+        if (data) {
+          const { city, state, country, postcode } = data.address;
+          setLocationData({ city, state, country, postcode });
+          Cookies.set("locationData", JSON.stringify(data.address)); // Store the address data in cookies
+        } else {
+          throw new Error("Address data not found");
+        }
+      } else {
+        throw new Error("Geolocation is not available in this browser.");
+      }
+    } catch (error) {
+      if (error.code === error.PERMISSION_DENIED) {
+        // The user denied location access. Display a message or button
+        // to guide the user to their browser settings to reset location permissions.
+        const locationDataFromCookies = Cookies.get("locationData");
+
+        // Check if location permission has been granted
+        checkLocationPermission().then((isPermissionGranted) => {
+          if (locationDataFromCookies && isPermissionGranted) {
+            // Both cookies and location permission are true, set the location
+            setLocationRetrieved(locationDataFromCookies);
+          } else {
+            // Either cookies or location permission (or both) are false, set to null
+            setLocationRetrieved(null);
+          }
+        });
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  useEffect(() => {
+    // Check if locationData is empty before calling LocationFunction
+    if (
+      !locationRetrieved &&
+      !locationData?.city &&
+      !locationData?.state &&
+      !locationData?.country &&
+      !locationData?.postcode
+    ) {
+      LocationFunction()
+        .then((result) => {
+          setLocationData(result);
+          setLocationRetrieved(true);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          setLocationRetrieved(false);
+        });
+    } else if (!Cookies.get("locationData")) {
+      setLocationRetrieved(false);
+    }
+  }, [locationData, locationRetrieved]);
+
+  useEffect(() => {
+    vendorDatastate?.length === 0 && navigate("/Vendors/Login");
+  }, [vendorDatastate]);
+
+  const handleDropdown = (drpIndex) => {
+    setDropdown(!dropdown);
+    if (dropdown) {
+      document.getElementById(drpIndex).classList.remove("hidden");
+    } else {
+      document.getElementById(drpIndex).classList.add("hidden");
+    }
+  };
+
+  const onClick = (e) => {
+    setCurrent(e.link);
+    navigate(e.key);
+  };
+
+  const items = [
+    {
+      label:
+        vendorDatastate?.length > 0
+          ? vendorDatastate[0]?.vendorname
+          : "Profile",
+      key: "SubMenu",
+      icon: <UserOutlined />,
+      children: [
+        {
+          type: "group",
+          label: "Profile",
+          children: [
+            {
+              label: "Profile",
+              key: "/Vendors/Profile",
+              icon: <UserOutlined />,
+            },
+            // {
+            //   label: "Messages",
+            //   key: "/Messages",
+            //   icon: <MessageOutlined />,
+            // },
+            // {
+            //   label: "Help",
+            //   key: "/help",
+            //   icon: <FlagOutlined />,
+            // },
+          ],
+        },
+        {
+          type: "group",
+          label: "Auth",
+          children: [
+            // {
+            //   label: "Balance",
+            //   key: "/balance",
+            //   icon: <DollarOutlined />,
+            // },
+            // {
+            //   label: "Settings",
+            //   key: "/ettings",
+            //   icon: <SettingOutlined />,
+            // },
+            // {
+            //   label: "Lock Screen",
+            //   key: "/lockscreen",
+            //   icon: <LockOutlined />,
+            // },
+            {
+              label: "Logout",
+              key: "/Vendors/logout",
+              icon: <LogoutOutlined />,
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
+  const handleCollapse = () => {
+    setcollapse(!collapse);
+    handleCollapseAPP(!collapse);
+  };
+
+  return (
+    <>
+      {vendorDatastate == null || vendorDatastate?.length == 0 ? (
+        ""
+      ) : (
+        <>
+          <head>
+            <title>{selectedPage}</title>
+          </head>
+          <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <div className="px-3 py-3 lg:px-5 lg:pl-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center justify-start">
+                  <button
+                    data-drawer-target="logo-sidebar"
+                    data-drawer-toggle="logo-sidebar"
+                    aria-controls="logo-sidebar"
+                    type="button"
+                    onClick={handleCollapse}
+                    className="inline-flex items-center p-2 text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-300 dark:hover:text-gray-400 dark:focus:ring-gray-600"
+                  >
+                    <span className="sr-only">Open sidebar</span>
+                    <svg
+                      className="w-6 h-6"
+                      aria-hidden="true"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    </svg>
+                  </button>
+
+                  <div className="flex items-center ml-2 md:mr-24">
+                    <Link to="/" className="flex items-center">
+                      <div class="h-16 w-16 rounded-full border-4 border-gradient-blue-orange flex items-center justify-center overflow-hidden">
+                        <img
+                          src="/logo.jpg"
+                          className="h-24 object-contain  rounded-full"
+                          alt="App Logo"
+                        />
+                      </div>
+                      <div class="ml-4">
+                        <span class="text-xl font-semibold text-gradient-blue-orange">
+                          Nile Global Market-Place
+                        </span>
+                        <span class="block text-sm text-gray-500">
+                          Vendor Dashboard Panel
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+
+                <Menu
+                  onClick={onClick}
+                  selectedKeys={[current]}
+                  mode="horizontal"
+                  items={items}
+                />
+              </div>
+            </div>
+          </nav>
+
+          <aside
+            id="logo-sidebar"
+            className={`fixed top-0 z-40 transition-transform bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 ${
+              collapse
+                ? "w-64 left-0 sm:translate-x-0 transition-all duration-300 ease-in"
+                : "w-0 -left-64 sm:-translate-x-64 transition-all duration-300 ease-out"
+            } h-screen pt-24`}
+            aria-label="Sidebar"
+          >
+            <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+              <ul className="space-y-2 font-medium">
+                {vendorLinks.map((item, index) => {
+                  return (
+                    <>
+                      <h1 className="mt-5 text-gray-400">{item.title}</h1>
+                      {item.links.map((link, index) => {
+                        return (
+                          <>
+                            <li key={index}>
+                              {link.dropdown ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                    onClick={() =>
+                                      handleDropdown(`dropdown-example${index}`)
+                                    }
+                                    aria-controls={`dropdown-example${index}`}
+                                    data-collapse-toggle={`dropdown-example${index}`}
+                                  >
+                                    {link.icon}
+                                    <span
+                                      className="flex-1 ml-3 text-left whitespace-nowrap line-clamp-1"
+                                      sidebar-toggle-item
+                                    >
+                                      {link.name}
+                                    </span>
+                                    <svg
+                                      sidebar-toggle-item
+                                      className={`w-6 h-6`}
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clipRule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                                  <ul
+                                    id={`dropdown-example${index}`}
+                                    className="hidden py-2 space-y-2"
+                                  >
+                                    {link.dropList.map((drplist, indList) => {
+                                      return drplist.name != "" ? (
+                                        <li key={indList}>
+                                          <Link
+                                            to={drplist.to}
+                                            onClick={() =>
+                                              setSelectedPage(drplist.name)
+                                            }
+                                          >
+                                            <a
+                                              className={`flex items-center w-full p-2  transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 text-sm ${
+                                                currentUrl === drplist.to
+                                                  ? `text-[#EC642A]`
+                                                  : "text-gray-700"
+                                              }`}
+                                            >
+                                              {drplist.name}
+                                            </a>
+                                          </Link>
+                                        </li>
+                                      ) : (
+                                        ""
+                                      );
+                                    })}
+                                  </ul>
+                                </>
+                              ) : (
+                                <Link
+                                  to={link.to}
+                                  onClick={() => setSelectedPage(link.name)}
+                                >
+                                  <a
+                                    className={`flex items-center p-2 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                                      currentUrl === link.to
+                                        ? `text-[#EC642A]`
+                                        : "text-gray-700"
+                                    }`}
+                                  >
+                                    {link.icon}
+                                    <span className="ml-3">{link.name}</span>
+                                  </a>
+                                </Link>
+                              )}
+                            </li>
+                          </>
+                        );
+                      })}
+                    </>
+                  );
+                })}
+              </ul>
+            </div>
+          </aside>
+        </>
+      )}
+    </>
+  );
+};
+
+export default VendorSidebar;
