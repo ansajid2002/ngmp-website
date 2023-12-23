@@ -162,9 +162,8 @@ const ProductCard: FC<ProductCardProps> = ({
     console.log(customerId);
 
     if (!customerId) {
-      return
-    }
-    else {
+      return;
+    } else {
       console.log("true");
 
       setWishlistLoading(true);
@@ -286,7 +285,7 @@ const ProductCard: FC<ProductCardProps> = ({
                 sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
                 alt="product"
               />
-              <div className="w-full bg-white z-50 absolute left-0 bottom-0">
+              <div className="w-full bg-white z-1 absolute left-0 bottom-0">
                 <ProductOfferBadge />
               </div>
             </div>
@@ -367,7 +366,10 @@ const ProductCard: FC<ProductCardProps> = ({
         item={data}
         onCloseModalQuickView={() => setShowModalQuickView(false)}
       />
-      <Modal title="" open={isModalOpen} onCancel={handleCancel}
+      <Modal
+        title=""
+        open={isModalOpen}
+        onCancel={handleCancel}
         footer={[
           <Button className="hidden" key="cancel" onClick={handleCancel}>
             Cancel

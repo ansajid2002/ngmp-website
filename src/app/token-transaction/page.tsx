@@ -8,13 +8,18 @@ import { AdminUrl } from "../layout";
 import Skeleton from "react-loading-skeleton";
 import Link from "next/link";
 import TokenTransferChat from "@/components/wallet/TokenTransferChat";
+import { useAppSelector } from "@/redux/store";
 
 const Page = () => {
+  const [singleUser, setSingleUser] = useState(null);
   const [user, setUser] = React.useState("");
   const onChange = ({ target }) => setUser(target.value);
   const [approvedCustomers, setApprovedCustomers] = useState(null);
   const [filteredCustomers, setFilteredCustomers] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const customerData = useAppSelector((state) => state.customerData);
+
+  // console.log(customerData.customerData.email, "PROFILE DATAAAAAAAAAAAAAA");
 
   const skely = [1, 2, 3, 4, 5];
 
@@ -33,7 +38,7 @@ const Page = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data, "DATAA BOLYE");
+          console.log(data, "DATAA BOTYE");
           setApprovedCustomers(data);
         }
 
@@ -55,14 +60,34 @@ const Page = () => {
           .toLowerCase()
           .includes(user.toLowerCase())
       );
-      setFilteredCustomers(filteredData);
+
+      // Exclude specific email address
+      // const excludedEmail = "danishshaikh.st@gmail.com";
+      const filteredWithoutExcludedEmail = filteredData.filter(
+        (item: any) =>
+          item.email.toLowerCase() !==
+          customerData.customerData.email.toLowerCase()
+      );
+
+      setFilteredCustomers(filteredWithoutExcludedEmail);
     }
   }, [user, approvedCustomers]);
 
+  // useEffect(() => {
+  //   if (approvedCustomers) {
+  //     const filteredData = approvedCustomers.filter((item) =>
+  //       `${item.family_name} ${item.given_name} ${item.email}`
+  //         .toLowerCase()
+  //         .includes(user.toLowerCase())
+  //     );
+  //     setFilteredCustomers(filteredData);
+  //   }
+  // }, [user, approvedCustomers]);
+
   return (
     <div className="md:px-10 pt-5 bg-gradient-to-b from-[#063B69]">
-      <div className="m-3 bg-white px-4 py-5 md:p-10 rounded-t-3xl flex">
-        <div className="w-[40%]">
+      <div className="m-3 bg-white px-4 py-5 md:p-10 rounded-t-3xl lg:flex">
+        <div className="lg:w-[45%] mb-10 lg:mb-0">
           {/* ----------- */}
           <div>
             <AvailableToken />
@@ -75,7 +100,7 @@ const Page = () => {
             </div>
           </div>
           {/* ----------- */}
-          <div className="relative flex w-full max-w-[24rem] ">
+          <div className="relative flex w-full max-w-[28rem] ">
             <Input
               type="text"
               label="Search Nile User"
@@ -102,7 +127,7 @@ const Page = () => {
           </div>
 
           {/* ------------ */}
-          <div className=" h-52 max-w-[24rem] overflow-hidden overflow-y-scroll scroll-smooth scroll">
+          <div className=" h-48 lg:h-52 max-w-[28rem] overflow-hidden overflow-y-scroll scroll-smooth scroll">
             {isLoading ? (
               <>
                 {skely.map(() => (
@@ -118,42 +143,39 @@ const Page = () => {
             ) : (
               <>
                 {filteredCustomers?.map((item: any, index: any) => (
-                  <div>
-                    <Link
-                      href={`/token-transaction?query=${item.customer_id}`}
-                      className="flex gap-3 items-center hover:bg-gray-100 p-2 rounded-lg border-b"
-                    >
-                      <div className="h-9 w-9 rounded-full overflow-hidden">
-                        <Image
-                          alt="User Profile"
-                          src={
-                            (item &&
-                              item.picture &&
-                              `${AdminUrl}/uploads/customerProfileImages/${item.picture}`) ||
-                            "/avatarplaceholder.png"
-                          }
-                          width={100}
-                          height={100}
-                        />
-                      </div>
-                      <div className="leading-tight">
-                        <h2 className="text-[1rem] font-medium">
-                          {item.family_name} {item.given_name}
-                        </h2>
-                        <h3 className="text-[0.8rem] font-medium text-gray-700">
-                          {item.email}
-                        </h3>
-                      </div>
-                    </Link>
+                  <div
+                    className="flex gap-3 items-center cursor-pointer hover:bg-gray-100 p-2 rounded-lg border-b"
+                    onClick={() => setSingleUser(item)}
+                  >
+                    <div className="h-9 w-9 rounded-full overflow-hidden">
+                      <Image
+                        alt="User Profile"
+                        className="h-full w-full object-cover"
+                        src={
+                          (item &&
+                            item.picture &&
+                            `${AdminUrl}/uploads/customerProfileImages/${item.picture}`) ||
+                          "/avatarplaceholder.png"
+                        }
+                        width={100}
+                        height={100}
+                      />
+                    </div>
+                    <div className="leading-tight">
+                      <h2 className="text-[1rem] font-medium">
+                        {item.family_name} {item.given_name}
+                      </h2>
+                      <h3 className="text-[0.8rem] font-medium text-gray-700">
+                        {item.email}
+                      </h3>
+                    </div>
                   </div>
                 ))}
               </>
             )}
           </div>
         </div>
-        <div className="w-[60%] border rounded-xl shadow-md">
-          <TokenTransferChat />
-        </div>
+        <TokenTransferChat customerData={singleUser} />
       </div>
     </div>
   );

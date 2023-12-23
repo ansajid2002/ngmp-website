@@ -23,25 +23,23 @@ export interface NavItemType {
   children?: any[];
   type?: "dropdown" | "megaMenu" | "none";
   isNew?: boolean;
-} 
+}
 
 export interface NavigationItemProps {
   menuItem: NavItemType;
-  featuredData:any
+  featuredData: any;
 }
 
-const NavigationItem: FC<NavigationItemProps> = ({ menuItem,featuredData }) => {
-
-  
-  
+const NavigationItem: FC<NavigationItemProps> = ({
+  menuItem,
+  featuredData,
+}) => {
   const [menuCurrentHovers, setMenuCurrentHovers] = useState<string[]>([]);
   const [hoveredItem, setHoveredItem] = useState(featuredData);
   const [categoryTitle, setCategoryTitle] = useState("Featured Category");
   const { languageCode } = useAppSelector((store) => store.languagesReducer);
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
-  
-  
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -100,17 +98,17 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem,featuredData }) => {
   }, [customerId, dispatch]);
 
   // ===================== MENU MEGAMENU =====================
-  const renderMegaMenu = (menu: NavItemType,featuredData:any) => {
+  const renderMegaMenu = (menu: NavItemType, featuredData: any) => {
     return (
       <li
         className={`menu-item flex-shrink-0 menu-megamenu menu-megamenu--large `}
         onMouseLeave={() => onMouseLeaveMenu(menu.id)}
       >
         {renderMainItem(menu)}
-        <div className="flex justify-center invisible bg-black/50 h-[100vh] scrollbar-hidden  sub-menu absolute top-full inset-x-0 transform z-50">
+        <div className="flex justify-center invisible bg-black/50 h-[100vh]  sub-menu absolute top-full inset-x-0 transform z-50">
           <div></div>
           <div className=" bg-white  flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
-            <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto scrollbar-hidden">
+            <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto ">
               <div className="text-sm border-none border-gray-200 dark:border-gray-700">
                 <div>
                   <div
@@ -119,8 +117,6 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem,featuredData }) => {
                       categoryTitle === "Featured Category" && "bg-[#00000010]"
                     }`}
                     onMouseEnter={() => {
-
-                      
                       setHoveredItem(featuredData);
                       setCategoryTitle("Featured Category");
                     }}
@@ -165,7 +161,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem,featuredData }) => {
               </div>
             </div>
             {hoveredItem && (
-              <div className="mt-8 w-2/3 overflow-y-scroll scrollbar-hidden">
+              <div className="mt-8 w-2/3 overflow-y-scroll">
                 {categoryTitle && (
                   <h1 className="text-2xl font-semibold text-center mb-12">
                     {categoryTitle}
@@ -174,10 +170,9 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem,featuredData }) => {
                 <div className="flex   flex-wrap ">
                   {hoveredItem &&
                     hoveredItem?.map((singlesubcat: any) => {
-
                       const imageUrl = singlesubcat.subcategory_image_url
-  ? `${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`
-  :   "/notfound.png";
+                        ? `${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`
+                        : "/notfound.png";
                       return (
                         <div className="mx-4 w-[140px] mb-4 ">
                           <Link
@@ -386,7 +381,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem,featuredData }) => {
     case "dropdown":
       return renderDropdownMenu(menuItem);
     case "megaMenu":
-      return renderMegaMenu(menuItem,featuredData);
+      return renderMegaMenu(menuItem, featuredData);
     default:
       return (
         <li className="menu-item flex-shrink-0 ">{renderMainItem(menuItem)}</li>
