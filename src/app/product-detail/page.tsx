@@ -511,8 +511,8 @@ const ProductDetailPage = ({ searchParams }) => {
                 setVariantActive(itemvar);
               }}
               className={`relative flex-1 max-w-[75px] h-10 rounded-full border-2 cursor-pointer ${variantActive === itemvar
-                  ? "border-black/90 dark:border-white"
-                  : "border-transparent"
+                ? "border-black/90 dark:border-white"
+                : "border-transparent"
                 }`}
             >
               <div
@@ -889,7 +889,7 @@ const ProductDetailPage = ({ searchParams }) => {
       <div>
         <div className="flex  items-center justify-start gap-3 md:gap-5">
           <div className="h-14 w-14 md:h-24 md:w-24  border-gray-200 border-2  rounded-full overflow-hidden">
-            <img
+            <Image
               className="h-full w-full object-contain"
               src={
                 sellerProfile &&
@@ -903,10 +903,12 @@ const ProductDetailPage = ({ searchParams }) => {
           </div>
           <div className="flex flex-col gap-1">
             <div className="lg:flex items-center">
-              <h2 className="text-lg md:text-2xl tracking-wide pr-2 font-medium line-clamp-1">
-                {/* {singleVendors?.brand_name || "NA"} */}
-                {sellerProfile?.brand_name || "NA"}
-              </h2>
+              <Link href={`/Channel/Shops?vendorid=${sellerProfile?.id}`}>
+                <h2 className="text-lg md:text-2xl tracking-wide pr-2 font-medium line-clamp-1">
+                  {/* {singleVendors?.brand_name || "NA"} */}
+                  {sellerProfile?.brand_name || "NA"}
+                </h2>
+              </Link>
               <span
                 onClick={() => setIsOpenModalViewAllReviews(true)}
                 className="cursor-pointer p-1"
@@ -1200,6 +1202,7 @@ const ProductDetailPage = ({ searchParams }) => {
       <ModalViewAllReviews
         productid={responseData?.uniquepid}
         show={isOpenModalViewAllReviews}
+        shopShow={true}
         onCloseModalViewAllReviews={() => setIsOpenModalViewAllReviews(false)}
       />
     </div>

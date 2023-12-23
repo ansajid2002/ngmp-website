@@ -47,22 +47,6 @@ const AccountOrder = () => {
     }
   };
 
-  const renderOrderGroup = (orderId: string, orders: any[]) => {
-    return (
-      <div key={orderId}>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 sm:p-8 bg-gray-50 dark:bg-gray-500/5">
-          <div>
-            <p className="text-lg font-semibold">Order #{orderId}</p>
-          </div>
-          <div className="mt-3 sm:mt-0"></div>
-        </div>
-        <div className="p-2 md:p-4">
-          {orders.map((order, index) => renderProductItem(order, index))}
-        </div>
-      </div>
-    );
-  };
-
   useEffect(() => {
     getAllCustomerOrder()
   }, [customerId])
@@ -73,7 +57,6 @@ const AccountOrder = () => {
       const response = await fetch(`${AdminUrl}/api/fetchRatings?customer_id=${customerId}`);
       if (response.ok) {
         const data = await response.json();
-        console.log(data, 'darta');
 
         setReviewData(data?.ratingsData)
 
@@ -92,6 +75,24 @@ const AccountOrder = () => {
     customerId && !reviewItems && fetchRatings();
   }, [customerId]);
 
+
+  const renderOrderGroup = (orderId: string, orders: any[]) => {
+
+    return (
+      <div key={orderId}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 sm:p-8 bg-gray-50 dark:bg-gray-500/5">
+          <div>
+            <p className="text-lg font-semibold">Order #{orderId}</p>
+          </div>
+          <div className="mt-3 sm:mt-0"></div>
+        </div>
+        <div className="p-2 md:p-4">
+          {orders.map((order, index) => renderProductItem(order, index))}
+        </div>
+      </div>
+    );
+  };
+
   const renderProductItem = (product: any, index: number) => {
     const { product_image, product_name, order_id, total_amount, quantity, order_status, label, product_uniqueid } = product;
 
@@ -106,11 +107,13 @@ const AccountOrder = () => {
         // Check if the product_uniqueid matches
         return true;
       }
-      return false;
+      return false
     });
 
+    console.log(ratingData, index);
+
     return (
-      <div key={index} className="md:flex p-2">
+      <div key={product_uniqueid + order_id + index} className="md:flex p-2">
         <div className="relative h-24 w-16 sm:w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
           <Image
             fill
@@ -134,9 +137,8 @@ const AccountOrder = () => {
 
                 <div className="md:flex gap-2 md:gap-4 items-center">
                   <h1 className={`text-lg font-semibold ${order_status === "Delivered" && "text-green-700"}`}>{order_status}</h1>
-
                   {
-                    order_status === "Delivered" && <div className="md:ml-4">
+                    order_status === 'Delivered' && <div className="md:ml-4">
                       <StarRating selectedRating={ratingData?.rating} ratingData={ratingData} item={product} />
                     </div>
                   }
@@ -173,9 +175,19 @@ const AccountOrder = () => {
   };
 
   const renderOrder = () => {
+    if (loading) {
+      return <p>Loading...</p>; // Add a loading state or handle it as you prefer
+    }
+
+    if (!Customerorder || !reviewItems) {
+      return <p>No order or review data available.</p>; // Handle the case when there is no order or review data
+    }
+
     return (
       <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden z-0">
-        {Customerorder && Object.keys(Customerorder).map((orderId) => renderOrderGroup(orderId, Customerorder[orderId]))}
+        {Object.keys(Customerorder).map((orderId) =>
+          renderOrderGroup(orderId, Customerorder[orderId])
+        )}
       </div>
     );
   };

@@ -13,9 +13,6 @@ const SingleVendors = () => {
 
   const params = useSearchParams();
   const vendorid = params.get("vendorid");
-  // console.log(vendorId);
-
-  // console.log(singleVendors, "SSSSS");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,9 +29,7 @@ const SingleVendors = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data, "DATAA");
           setSingleVendors(data);
-          console.log(singleVendors);
         }
 
         // setSingleVendors(...filteredVendors);
@@ -94,8 +89,8 @@ const SingleVendors = () => {
                   className="h-full w-full object-contain"
                   src={
                     singleVendors &&
-                    singleVendors.brand_logo &&
-                    singleVendors.brand_logo.images[0]
+                      singleVendors.brand_logo &&
+                      singleVendors.brand_logo.images[0]
                       ? `${`${AdminUrl}/uploads/vendorBrandLogo/${singleVendors?.brand_logo?.images[0]}`}`
                       : "https://connectkaro.org/wp-content/uploads/2019/03/placeholder-profile-male-500x500.png"
                   }
@@ -150,7 +145,7 @@ const SingleVendors = () => {
 
           <hr className="my-5" />
 
-          <SingleVendorsDetails data={singleVendors?.total_products} />
+          <SingleVendorsDetails data={singleVendors} />
         </div>
       )}
     </>

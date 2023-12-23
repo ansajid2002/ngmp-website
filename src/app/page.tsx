@@ -152,9 +152,9 @@ export const getFeaturedData = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    const data = await response.json();    
+    const data = await response.json();
     return data;
-    
+
   } catch (error) {
     console.error("Error:", error);
   }
@@ -180,22 +180,16 @@ export const getAllVendors = async () => {
   }
 };
 
-export const getReviewData = async (product_id:any) => {
-  if (product_id === null || product_id === undefined) {
-    // Handle the case when customerId or product_id is null or undefined, such as displaying an error message or taking appropriate action.
-    return;
-  }
-
+export const getReviewData = async (product_id: any, vendorId: any) => {
   try {
-    const response = await fetch(`${AdminUrl}/api/fetchRatings?product_id=${product_id}`);
+    const response = await fetch(`${AdminUrl}/api/fetchRatings?product_id=${product_id}&vendorid=${vendorId}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log(data,"REVIEW DATA");
-    
+
     return data;
   } catch (error) {
     console.error('Error:', error);

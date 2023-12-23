@@ -5,16 +5,22 @@ import SortOrderFilter from "@/components/SectionGridMoreExplore/SortOrderFilter
 import React, { FC, Fragment } from "react";
 import ButtonClose from "@/shared/ButtonClose/ButtonClose";
 import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
+import ShopReviewComponent from "@/components/reviewsandrating/ShopReviewComponent";
 
 export interface ModalViewAllReviewsProps {
   show: boolean;
+  productid: any,
+  shopShow: boolean,
   onCloseModalViewAllReviews: () => void;
+  vendorID: any
 }
 
 const ModalViewAllReviews: FC<ModalViewAllReviewsProps> = ({
   show,
   productid,
   onCloseModalViewAllReviews,
+  shopShow = false,
+  vendorID
 }) => {
   return (
     <Transition appear show={show} as={Fragment}>
@@ -54,16 +60,18 @@ const ModalViewAllReviews: FC<ModalViewAllReviewsProps> = ({
           >
             <div className="inline-block py-8 h-screen w-full max-w-5xl">
               <div className="inline-flex pb-2 flex-col w-full text-left align-middle transition-all transform overflow-hidden rounded-2xl bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl h-full">
-                <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
-                  
-                  <span className="absolute left-3 top-1">
+                <div className="relative flex flex-shrink-0 items-center px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
+                  <div className="w-6">
                     <ButtonClose onClick={onCloseModalViewAllReviews} />
-                  </span>
+                  </div>
+                  <div className="flex-1">
+                    <h1>{shopShow ? 'Shop Review' : 'View All Review'}</h1>
+                  </div>
                 </div>
-                 
+
                 <div className="px-8 py-8 border-t border-gray-200 dark:border-gray-700 overflow-auto gap-x-14 gap-y-10">
                   {/* <ReviewItem /> */}
-                  <Reviewcomponent product_id={productid}/>
+                  <Reviewcomponent product_id={productid} shopShow={shopShow} vendorID={vendorID} />
                 </div>
               </div>
             </div>
