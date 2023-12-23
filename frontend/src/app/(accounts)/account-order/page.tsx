@@ -6,24 +6,29 @@ import StarRating from "@/components/StarRating";
 import { PRODUCTS } from "@/data/data";
 import { useAppSelector } from "@/redux/store";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Skeleton from "react-loading-skeleton";
 
 const AccountOrder = () => {
   // const { cartItems } = useAppSelector((store) => store.cart);
   const customerData = useAppSelector((state) => state.customerData);
-  const [Customerorder, setCustomerOrders] = useState(null)
-  const [reviewItems, setReviewData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const customerId = customerData?.customerData?.customer_id || null
+  const [Customerorder, setCustomerOrders] = useState(null);
+  const [reviewItems, setReviewData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const customerId = customerData?.customerData?.customer_id || null;
+
   const getAllCustomerOrder = async () => {
     if (customerId === null || customerId === undefined) {
       // Handle the case when customerId is null or undefined, such as displaying an error message or taking appropriate action.
       return;
     }
     try {
-      const response = await fetch(`${AdminUrl}/api/getAllCustomerOrder/${customerId}`);
+      const response = await fetch(
+        `${AdminUrl}/api/getAllCustomerOrder/${customerId}`
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -41,40 +46,39 @@ const AccountOrder = () => {
       }, {});
 
       setCustomerOrders(groupedOrders);
-
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
   useEffect(() => {
-    getAllCustomerOrder()
-  }, [customerId])
+    getAllCustomerOrder();
+  }, [customerId]);
 
   const fetchRatings = async () => {
     try {
-
-      const response = await fetch(`${AdminUrl}/api/fetchRatings?customer_id=${customerId}`);
+      const response = await fetch(
+        `${AdminUrl}/api/fetchRatings?customer_id=${customerId}`
+      );
       if (response.ok) {
         const data = await response.json();
+        console.log(data, "darta");
 
-        setReviewData(data?.ratingsData)
+        setReviewData(data?.ratingsData);
 
         // dispatch(updateReviewlistener(data?.ratingsData))
       } else {
-        console.error('Failed to fetch ratings:', response.status);
+        console.error("Failed to fetch ratings:", response.status);
       }
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
-      console.error('Error fetching ratings:', error);
+      console.error("Error fetching ratings:", error);
     }
   };
 
   useEffect(() => {
-    // Fetch ratings when the component mounts
     customerId && !reviewItems && fetchRatings();
   }, [customerId]);
-
 
   const renderOrderGroup = (orderId: string, orders: any[]) => {
 
@@ -94,23 +98,33 @@ const AccountOrder = () => {
   };
 
   const renderProductItem = (product: any, index: number) => {
-    const { product_image, product_name, order_id, total_amount, quantity, order_status, label, product_uniqueid } = product;
+    const {
+      product_image,
+      product_name,
+      order_id,
+      total_amount,
+      quantity,
+      order_status,
+      label,
+      product_uniqueid,
+    } = product;
 
-    const ratingData = reviewItems && reviewItems.find((ratingItem: any) => {
-      // Convert the product_uniqueid to an integer for comparison
-      const itemProductUniqueId = parseInt(ratingItem.product_uniqueid, 10);
+    const ratingData =
+      reviewItems &&
+      reviewItems.find((ratingItem: any) => {
+        // Convert the product_uniqueid to an integer for comparison
+        const itemProductUniqueId = parseInt(ratingItem.product_uniqueid, 10);
 
-      if (label && ratingItem.label === label) {
-        // Check if the label matches
-        return true;
-      } else if (itemProductUniqueId === product_uniqueid) {
-        // Check if the product_uniqueid matches
-        return true;
-      }
-      return false
-    });
+        if (label && ratingItem.label === label) {
+          // Check if the label matches
+          return true;
+        } else if (itemProductUniqueId === product_uniqueid) {
+          // Check if the product_uniqueid matches
+          return true;
+        }
+        return false
+      });
 
-    console.log(ratingData, index);
 
     return (
       <div key={product_uniqueid + order_id + index} className="md:flex p-2">
@@ -145,8 +159,8 @@ const AccountOrder = () => {
                 </div>
               </div>
               <Prices
-                price={''}
-                sellingprice={total_amount || ''}
+                price={""}
+                sellingprice={total_amount || ""}
                 className="mt-0.5 ml-2"
               />
             </div>
@@ -185,19 +199,77 @@ const AccountOrder = () => {
 
     return (
       <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden z-0">
-        {Object.keys(Customerorder).map((orderId) =>
-          renderOrderGroup(orderId, Customerorder[orderId])
-        )}
+        {Customerorder &&
+          Object.keys(Customerorder).map((orderId) =>
+            renderOrderGroup(orderId, Customerorder[orderId])
+          )}
       </div>
     );
   };
 
   return (
-    <div className="space-y-10 sm:space-y-12">
-      {/* HEADING */}
-      <h2 className="text-2xl sm:text-3xl font-semibold">Order History</h2>
-      {renderOrder()}
-    </div>
+    <>
+      {loading ? (
+        <>
+          <div className="hidden lg:block">
+            {Array(3)
+              .fill(null)
+              .map(() => (
+                <div className="flex gap-5 py-1 items-center">
+                  <Skeleton height={100} width={100} />
+                  <div>
+                    <Skeleton height={40} width={500} />
+                    <Skeleton height={20} width={300} />
+                    <Skeleton height={20} width={200} />
+                  </div>
+                </div>
+              ))}
+          </div>
+          <div className="lg:hidden">
+            {Array(3)
+              .fill(null)
+              .map(() => (
+                <div className="flex gap-3 py-1 items-center">
+                  <Skeleton height={80} width={80} />
+                  <div>
+                    <Skeleton height={30} width={200} />
+                    <Skeleton height={20} width={150} />
+                    <Skeleton height={20} width={100} />
+                  </div>
+                </div>
+              ))}
+          </div>
+        </>
+      ) : (
+        <div className="space-y-10 sm:space-y-12">
+          {/* HEADING */}
+          {Customerorder && Object.keys(Customerorder).length !== 0 ? (
+            <h2 className="text-2xl sm:text-3xl font-semibold">
+              Order History
+            </h2>
+          ) : (
+            <></>
+          )}
+
+          {Customerorder && Object.keys(Customerorder).length !== 0 ? (
+            renderOrder()
+          ) : (
+            <div>
+              <h2 className=" text-2xl text-gray-600 lg:flex gap-2 items-center font-bold capitalize">
+                You haven't placed any orders yet!{" "}
+                <Link
+                  href={"/Channel/new-arrivals"}
+                  className="text-[#ed642b] font-bold flex gap-1 items-center"
+                >
+                  Shop Now
+                  <ChevronRight size={20} className="mt-1.5" strokeWidth={3} />
+                </Link>
+              </h2>
+            </div>
+          )}
+        </div>
+      )}
+    </>
   );
 };
 
