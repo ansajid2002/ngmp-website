@@ -29,15 +29,12 @@ const uploadExcel = multer({ storage: storageExcel });
 app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, res) => {
     const { jsonData, currentDateTime, vendorId } = req.body;
 
-    console.log(JSON.parse(jsonData));
     try {
         const jsonDataArray = JSON.parse(jsonData);
-        const totalRecords = jsonDataArray.length;
 
-        const values = await Promise.all(
+        await Promise.all(
             jsonDataArray.map(async (data, index) => {
                 const createdAt = new Date().toISOString();
-                const skuid = data.key17 || ''
                 const imageUrl = data.key8?.text || data.key8;
                 let imageFileName = "";
 
@@ -66,108 +63,176 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                     console.error("Error downloading image:", error);
                 }
 
-                const columnValues = [
-                    data.key1 || "",
-                    data.key2 || "",
-                    data.key3 || "",
-                    data.key4 || "",
-                    data.key5 || 0,
-                    data.key6 || "",
-                    data.key7 || "",
-                    data.key9 || "",
-                    data.city || "",
-                    data.state || "",
-                    data.country || "",
-                    data.vendorid || 0,
-                    createdAt || "",
-                    `{${imageFileName || ""}}`,
-                    0,
-                    data.uniquepid || "",
-                    data.key10 || 0,
-                    data.key11 || "",
-                    data.key12 || "",
-                    data.key13 || "",
-                    data.key14 || "",
-                    data.key15 || "",
-                    data.key16 || "",
-                    data.key17 || "",
-                    data.key18 || 0,
-                    "Simple",
-                    data.key19 || "",
-                    data.key6?.replace(/\s+/g, "").replace(/^\s+|\s+$/g, "") || "",
-                    data.key7?.replace(/\s+/g, "").replace(/^\s+|\s+$/g, "") || "",
-                    slug(data.key1 || ""),
-                ];
+                const existingProduct = await pool.query(
+                    'SELECT * FROM products WHERE skuid = $1 AND vendorid = $2',
+                    [data.key17, data.vendorid]
+                );
 
+                if (existingProduct.rows.length > 0) {
+                    console.log('exis', index);
+                    // Update the existing row
+                    const query = `
+                        UPDATE products SET 
+                            ad_title = $1,
+                            additionaldescription = $2,
+                            brand = $3,
+                            currency_symbol = $4,
+                            mrp = $5,
+                            category = $6,
+                            subcategory = $7,
+                            condition = $8,
+                            city = $9,
+                            state = $10,
+                            country = $11,
+                            vendorid = $12,
+                            updated_at_product = $13,
+                            images = $14,
+                            status = $15,
+                            uniquepid = $16,
+                            sellingprice = $17,
+                            manufacturername = $18,
+                            packerdetails = $19,
+                            salespackage = $20,
+                            searchkeywords = $21,
+                            keyfeatures = $22,
+                            videourl = $23,
+                            skuid = $24,
+                            quantity = $25,
+                            isvariant = $26,
+                            countryoforigin = $27,
+                            slug_cat = $28,
+                            slug_subcat = $29,
+                            prod_slug = $30
+                        WHERE skuid = $24 AND vendorid = $12
+                    `;
 
-                return columnValues;
+                    const flattenedValues = [
+                        data.key1 || "",
+                        data.key2 || "",
+                        data.key3 || "",
+                        data.key4 || "",
+                        data.key5 || 0,
+                        existingProduct.rows[0].category || "",
+                        existingProduct.rows[0].subcategory || "",
+                        data.key9 || "",
+                        data.city || "",
+                        data.state || "",
+                        data.country || "",
+                        data.vendorid || 0,
+                        createdAt || "",
+                        `{${imageFileName || ""}}`,
+                        0,
+                        existingProduct.rows[0].uniquepid || "",
+                        data.key10 || 0,
+                        data.key11 || "",
+                        data.key12 || "",
+                        data.key13 || "",
+                        data.key14 || "",
+                        data.key15 || "",
+                        data.key16 || "",
+                        data.key17 || "",
+                        data.key18 || 0,
+                        "Simple",
+                        data.key19 || "",
+                        data.category,
+                        data.subcatgeory,
+                        slug(data.key1 || "")
+                    ];
+
+                    await pool.query(query, flattenedValues);
+                } else {
+                    console.log('insert', index);
+
+                    const columnNames = [
+                        "ad_title",
+                        "additionaldescription",
+                        "brand",
+                        "currency_symbol",
+                        "mrp",
+                        "category",
+                        "subcategory",
+                        "condition",
+                        "city",
+                        "state",
+                        "country",
+                        "vendorid",
+                        "updated_at_product",
+                        "images",
+                        "status",
+                        "uniquepid",
+                        "sellingprice",
+                        "manufacturername",
+                        "packerdetails",
+                        "salespackage",
+                        "searchkeywords",
+                        "keyfeatures",
+                        "videourl",
+                        "skuid",
+                        "quantity",
+                        "isvariant",
+                        "countryoforigin",
+                        "slug_cat",
+                        "slug_subcat",
+                        "prod_slug",
+                    ];
+
+                    // Insert a new row
+                    const query = `
+                        INSERT INTO products ("${columnNames.join('", "')}") 
+                        VALUES (
+                            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                            $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
+                            $21, $22, $23, $24, $25, $26, $27, $28, $29, $30
+                        )
+                    `;
+
+                    const flattenedValues = [
+                        data.key1 || "",
+                        data.key2 || "",
+                        data.key3 || "",
+                        data.key4 || "",
+                        data.key5 || 0,
+                        data.category || "",
+                        data.subcatgeory || "",
+                        data.key9 || "",
+                        data.city || "",
+                        data.state || "",
+                        data.country || "",
+                        data.vendorid || 0,
+                        createdAt || "",
+                        `{${imageFileName || ""}}`,
+                        0,
+                        data.uniquepid || null,
+                        data.key10 || 0,
+                        data.key11 || "",
+                        data.key12 || "",
+                        data.key13 || "",
+                        data.key14 || "",
+                        data.key15 || "",
+                        data.key16 || "",
+                        data.key17 || "",
+                        data.key18 || 0,
+                        "Simple",
+                        data.key19 || "",
+                        data.category,
+                        data.subcatgeory,
+                        slug(data.key1 || "")
+                    ];
+
+                    await pool.query(query, flattenedValues);
+                }
             })
         );
-
-        const columnNames = [
-            "ad_title",
-            "additionaldescription",
-            "brand",
-            "currency_symbol",
-            "mrp",
-            "category",
-            "subcategory",
-            "condition",
-            "city",
-            "state",
-            "country",
-            "vendorid",
-            "updated_at_product",
-            "images",
-            "status",
-            "uniquepid",
-            "sellingprice",
-            "manufacturername",
-            "packerdetails",
-            "salespackage",
-            "searchkeywords",
-            "keyfeatures",
-            "videourl",
-            "skuid",
-            "quantity",
-            "isvariant",
-            "countryoforigin",
-            "slug_cat",
-            "slug_subcat",
-            "prod_slug",
-        ];
-
-        const conflictColumns = ["skuid", "vendorid"];
-        const conflictCondition = conflictColumns.map(column => `"${column}"=EXCLUDED."${column}"`).join(", ");
-
-        const query = `
-            INSERT INTO products ("${columnNames.join('", "')}") 
-            VALUES ${values
-                .map(
-                    (_, index) =>
-                        `(${columnNames
-                            .map(
-                                (_, columnIndex) =>
-                                    `$${index * columnNames.length + columnIndex + 1}`
-                            )
-                            .join(", ")})`
-                )
-                .join(", ")}
-            ON CONFLICT (${conflictColumns.join(', ')}) DO UPDATE SET ${conflictCondition}
-        `;
-
-        const flattenedValues = values.flat();
 
         const filenameExcel = req.file.filename
         const queryExcel = "INSERT INTO media_library(title, file_path, creation_date, vendor_id) VALUES ('Bulk Uploaded', $1, $2, $3)"
         const valuesExcel = [filenameExcel, currentDateTime, vendorId]
-        await pool.query(query, flattenedValues);
         await pool.query(queryExcel, valuesExcel);
+        return res.status(200).json({ message: "Data uploaded successfully" });
 
-        res.status(200).json({ message: "Data uploaded successfully" });
     } catch (error) {
         console.error("Error uploading data:", error);
-        res.status(500).json({ error: "Error uploading data" });
+        res.status(500).json({ error: error.message });
     }
 });
 

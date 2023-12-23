@@ -13,7 +13,7 @@ import { FiEdit3 } from "react-icons/fi";
 import Cookies from "js-cookie";
 import { FaDesktop, FaHandPaper, FaHandRock, FaMobile, FaUserCheck } from "react-icons/fa";
 
-export const AdminUrl = "https://admin.nilegmp.com";
+export const AdminUrl = "http://localhost:3001";
 
 export const links = [
   {

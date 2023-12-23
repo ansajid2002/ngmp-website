@@ -3,7 +3,7 @@ const app = express();
 const router = express.Router();
 
 const pool = require("./config");
-const port = 3445;
+const port = 3001;
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");

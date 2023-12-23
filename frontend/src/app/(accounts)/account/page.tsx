@@ -87,8 +87,6 @@ const AccountPage = () => {
     }
   }, [customerData, picture, google_id]);
 
-  console.log(profileImage, 'profi');
-
   const handleInputChange = (fieldName: any, value: any) => {
     setUserData((prevData) => ({
       ...prevData,

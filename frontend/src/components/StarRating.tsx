@@ -10,6 +10,9 @@ const StarRating = ({ enable = true, selectedRating, ratingData, item }) => {
     const [visible, setModalVisible] = useState(false)
     const { vendor_id, customer_id, product_uniqueid, label } = item
     const handleStarClick = async (newRating, type) => {
+        if (!customer_id) {
+            return alert("Kindly Login to add review...")
+        }
         setRating(newRating);
         // onRatingChange(newRating); // Notify the parent component
 
@@ -53,6 +56,7 @@ const StarRating = ({ enable = true, selectedRating, ratingData, item }) => {
             message.error(error.message);
         }
     };
+
 
     return (
         <div>

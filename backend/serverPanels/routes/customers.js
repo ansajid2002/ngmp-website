@@ -872,6 +872,7 @@ app.post("/EditProfileAfterVerification", async (req, res) => {
 app.post("/ResetCustomerPassword", async (req, res) => {
   try {
     const { email } = req.body;
+
     // Check if the provided email exists in the customers table
     const customer = await pool.query("SELECT google_id, facebook_id FROM customers WHERE email = $1", [email]);
 

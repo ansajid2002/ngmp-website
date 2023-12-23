@@ -49,6 +49,7 @@ const TabsCategory = ({ categoriesdata }) => {
     fetchSubcategoryProducts();
   }, [activeTab]);
 
+
   return (
     <>
       <Tabs

@@ -1,13 +1,6 @@
 import { AdminUrl } from "@/app/layout";
-import formidable from "formidable";
-import { Goldman } from "next/font/google";
 import { NextRequest } from "next/server";
 
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
 
 export async function POST(request: NextRequest) {
     // var form = formidable({});
@@ -22,8 +15,6 @@ export async function POST(request: NextRequest) {
             method: 'POST',
             body: formData,
         });
-
-        // Rest of your code...
 
 
         if (response.ok) {

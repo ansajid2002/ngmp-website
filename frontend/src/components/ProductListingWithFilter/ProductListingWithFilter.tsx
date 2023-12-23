@@ -28,7 +28,7 @@ const ProductListingWithFilter = ({ searchTerm }: any) => {
                         const newItems = await response.json();
 
                         const newProducts = newItems.products; // Extract products from newItems
-                        const total = newItems.totalProducts; // Extract totalProducts count
+                        const total = newItems.totalCount; // Extract totalProducts count
                         console.log(getSearchedProducts, newProducts);
 
                         if (newProducts.length > 0) {

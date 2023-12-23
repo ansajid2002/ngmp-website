@@ -2,27 +2,26 @@ const nodemailer = require("nodemailer");
 
 // Create a function to send emails
 const sendEmail = async (toEmail, subject, htmlContent) => {
-	console.log(toEmail);
   try {
-    // let transporter = nodemailer.createTransport({
-    //   name: 'nilegmp.com',
-    //   host: "smtp-relay.gmail.com",
-    //   port: 587,
-    //   secure: false, // true for 465, false for other ports
-    //   ignoreTLS: true,
-    // });
-
-    // For Localhost 
     let transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "ks615044@gmail.com", // Update with your Gmail email
-        pass: "vbgabjbjxwyahlji", // Update with your Gmail password or an app-specific password
-      },
+      name: 'nilegmp.com',
+      host: "smtp-relay.gmail.com",
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      ignoreTLS: true,
     });
 
+    // For Localhost 
+    // let transporter = nodemailer.createTransport({
+    //   service: "gmail",
+    //   auth: {
+    //     user: "ks615044@gmail.com", // Update with your Gmail email
+    //     pass: "vbgabjbjxwyahlji", // Update with your Gmail password or an app-specific password
+    //   },
+    // });
+
     let message = {
-      from: '"Nile Market-Place" <info@nilegmp.com>', // Add both name and email address
+      from: '"Nile Market-Place" <Info@nilegmp.com>', // Add both name and email address
       to: toEmail,
       subject: subject,
       html: htmlContent,

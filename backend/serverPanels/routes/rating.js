@@ -87,18 +87,26 @@ app.get('/fetchRatings', async (req, res) => {
     const customer_id = req.query.customer_id;
     const product_id = req.query.product_id;
     const vendorId = req.query.vendorid;
+    const rate_id = req.query.rate_id;
 
-
+    console.log(req.query);
     try {
         let ratingsData;
 
         if (customer_id && !vendorId) {
+            console.log('customer_id');
             // Fetch ratings by customer_id
             ratingsData = await pool.query('SELECT * FROM ratings_and_reviews WHERE customer_id = $1 AND product_uniqueid != $2', [customer_id, 'vendor']);
+        } else if (rate_id) {
+            console.log('rate_id');
+            // Fetch ratings by product_id
+            ratingsData = await pool.query('SELECT * FROM ratings_and_reviews WHERE id = $1', [rate_id]);
         } else if (product_id && product_id !== 'null') {
+            console.log('product_id');
             // Fetch ratings by product_id
             ratingsData = await pool.query('SELECT * FROM ratings_and_reviews WHERE product_uniqueid = $1', [product_id]);
         } else if (vendorId && customer_id) {
+            console.log('vendorId');
             // Fetch ratings by vendor_id
             ratingsData = await pool.query('SELECT * FROM ratings_and_reviews WHERE vendor_id = $1 AND customer_id = $2 AND product_uniqueid = $3', [parseInt(vendorId), customer_id, 'vendor']);
         } else {
@@ -142,7 +150,7 @@ app.get('/fetchRatings', async (req, res) => {
 
 
 app.post('/addReview', async (req, res) => {
-    const { id, reviewText, customer_id } = req.body;
+    const { id, reviewText, customer_id, vendor_id } = req.body;
 
     try {
         // Check if a review with the provided 'id' exists
@@ -161,6 +169,18 @@ app.post('/addReview', async (req, res) => {
             [reviewText, id]
         );
 
+        if (vendor_id) {
+            // Update with both id and vendor_id
+            updateQuery = 'UPDATE ratings_and_reviews SET review_text = $1 WHERE vendor_id = $2 AND customer_id = $3 AND product_uniqueid = $4';
+            updateValues = [reviewText, vendor_id, customer_id, 'vendor'];
+        } else {
+            // Update only with id
+            updateQuery = 'UPDATE ratings_and_reviews SET review_text = $1 WHERE id = $2';
+            updateValues = [reviewText, id];
+        }
+
+        console.log(updateQuery);
+        console.log(updateValues);
 
         // Query and return all ratings based on customer_id
         const ratings = await pool.query(
@@ -175,6 +195,7 @@ app.post('/addReview', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while processing the request' });
     }
 });
+
 
 const imgReviews = multer.diskStorage({
     destination: (req, file, callback) => {

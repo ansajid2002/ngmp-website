@@ -1635,7 +1635,7 @@ app.get("/searchProducts", async (req, res) => {
 
     // Use parameterized query to prevent SQL injection
     const query = {
-      text: 'SELECT ad_title AS searchkeywords FROM products WHERE ad_title ILIKE $1 OR additionaldescription ILIKE $1',
+      text: 'SELECT ad_title AS searchkeywords FROM products WHERE (ad_title ILIKE $1 OR additionaldescription ILIKE $1) AND status = 1',
       values: [`%${searchTerm}%`],
     };
 
@@ -1669,11 +1669,14 @@ app.get("/getSearchedProducts", async (req, res) => {
         FROM 
           products 
         WHERE 
-          ad_title ILIKE $1 OR 
+          (ad_title ILIKE $1 OR 
           additionaldescription ILIKE $1 OR 
-          searchkeywords ILIKE $1`,
+          searchkeywords ILIKE $1) AND 
+          status = 1
+      `,
       values: [`%${searchTerm}%`],
     };
+
 
     const countResult = await pool.query(countQuery);
     const totalCount = countResult.rows[0].total_count;
@@ -1686,12 +1689,15 @@ app.get("/getSearchedProducts", async (req, res) => {
         FROM 
           products 
         WHERE 
-          ad_title ILIKE $1 OR 
+          (ad_title ILIKE $1 OR 
           additionaldescription ILIKE $1 OR 
-          searchkeywords ILIKE $1
-        LIMIT $2 OFFSET $3`,
+          searchkeywords ILIKE $1) AND 
+          status = 1
+        LIMIT $2 OFFSET $3
+      `,
       values: [`%${searchTerm}%`, limit, (page - 1) * limit],
     };
+
 
     const result = await pool.query(query);
     const products = result.rows;

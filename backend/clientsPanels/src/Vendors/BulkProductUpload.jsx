@@ -134,6 +134,8 @@ const BulkProductUpload = ({ vendorDatastate }) => {
           ...locationData,
           vendorid,
           uniquepid, // Include the generated unique ID
+          category: selectedCategory?.category_name.trim() || '',
+          subcatgeory: SelectedSubcategory?.subcategory_name.trim() || ''
         };
 
         // Check if keys from key1 to key16 are all undefined
@@ -323,7 +325,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
       if (!response.ok) {
         const responseData = await response.json();
-        console.error("Backend error:", responseData.error);
+
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -332,9 +334,10 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         return;
       }
 
-      const responseData = await response.json();
-      console.log("Backend response:", responseData);
+      await response.json();
+
       loadingSwal.close();
+
       Swal.fire({
         icon: "success",
         title: "Success",
@@ -346,7 +349,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Error uploading data. Please try again later.",
+        text: error.message,
       });
     }
   };
@@ -420,103 +423,121 @@ const BulkProductUpload = ({ vendorDatastate }) => {
       ) : (
         <>
           <div className="bg-white rounded p-6">
-            {/* <div className="mb-4">
+            <div className="mb-8 mt-4">
               <h1 className="font-bold text-2xl mb-5 text-gray-700">
                 Choose Category
               </h1>
-              <div className="grid grid-cols-3">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {categories.map((category) => (
                   <div
                     key={category.category_id}
                     onClick={() => handleCategoryChange(category)}
-                    className={`py-2 px-3 cursor-pointer rounded ${selectedCategory === category
+                    className={`py-4 px-3 cursor-pointer rounded ${selectedCategory === category
                       ? "bg-slate-200 text-black transition-all"
                       : "hover:bg-gray-100"
-                      } mr-2 mb-2 flex h-18 items-center`}
+                      } flex flex-col items-center justify-center`}
                     title={`${category.category_name}`}
                   >
-                    <img
-                      src={`${AdminUrl}/uploads/CatgeoryImages/${category.category_image_url}`}
-                      alt={`${category.category_name}`}
-                      width={30}
-                    />
-                    <p className="font-medium ml-2">
-                      {category.category_name}
-                    </p>
+                    {/* Image */}
+                    <div className="h-24 mb-2">
+                      <img
+                        src={`${AdminUrl}/uploads/CatgeoryImages/${category.category_image_url}`}
+                        alt={`${category.category_name}`}
+                        className="w-full h-24 border border-gray-300 rounded-lg object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null; // Reset the event handler to avoid infinite loops
+                          e.target.src = '/noimage.jpg'; // Provide the path to your alternative image
+                        }}
+                      />
+                    </div>
+                    {/* Text */}
+                    <p className="font-medium text-center text-lg">{category.category_name}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="mb-4">
+            <div className="mb-8">
               {FilteredSubcategories && (
                 <h1 className="font-bold text-2xl mb-5 text-gray-700">
                   Select SubCategory
                 </h1>
               )}
-              <div className="flex flex-wrap">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {FilteredSubcategories &&
                   FilteredSubcategories.map((subcat) => (
                     <div
                       key={subcat.subcategory_id}
                       onClick={() => handleSubcategoryChange(subcat)}
-                      className={`py-2 px-3 cursor-pointer rounded ${SelectedSubcategory === subcat
+                      className={`py-4 px-3 cursor-pointer rounded ${SelectedSubcategory === subcat
                         ? "bg-slate-200 text-black transition-all"
                         : "hover:bg-gray-100"
-                        } mr-2 mb-2 h-18 flex justify-center items-center`}
+                        } flex flex-col items-center`}
                       title={`${subcat.subcategory_name}`}
-
                     >
-                      <img
-                        src={`${AdminUrl}/uploads/SubcategoryImages/${subcat.subcategory_image_url}`}
-                        alt=""
-                        width={40}
-                      />
-                      <p className="font-semibold ml-2">
-                        {subcat.subcategory_name}
-                      </p>
+                      {/* Image */}
+                      <div className="h-24 mb-2">
+
+                        <img
+                          src={`${AdminUrl}/uploads/SubcategoryImages/${subcat.subcategory_image_url}`}
+                          alt=""
+                          className="w-full h-24 border border-gray-300 rounded-lg object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null; // Reset the event handler to avoid infinite loops
+                            e.target.src = '/noimage.jpg'; // Provide the path to your alternative image
+                          }}
+                        />
+                      </div>
+
+
+                      {/* Text */}
+                      <p className="font-semibold text-center text-lg">{subcat.subcategory_name}</p>
                     </div>
                   ))}
               </div>
-            </div> */}
+            </div>
 
-            <Title
-              level={3}
-              className="font-bold text-2xl mb-5 text-gray-700"
-            >
-              Bulk Product Upload
-            </Title>
-            <div className="mb-4 w-full overflow-hidden">
-              <Upload
-                accept=".xlsx"
-                className="w-full"
-                beforeUpload={() => false}
-                onChange={(info) => handleFileUpload(info.file)}
-              >
-                <Button
-                  style={{ width: "80vw" }} // Set the width to 100% to make the button full-width
-                  className="h-48 text-xl"
-                  icon={<UploadOutlined />}
+            {
+              SelectedSubcategory && <>
+                <Title
+                  level={3}
+                  className="font-bold text-2xl mb-5 text-gray-700"
                 >
-                  Upload Excel File
-                </Button>
-              </Upload>
-              <Button
-                type="button"
-                onClick={handleUpload}
-                disabled={!jsonData && jsonData?.length > 0}
-                className={`flex mt-4 items-center ml-2 transition-all duration-300 ${jsonData
-                  ? "bg-blue-500 hover:bg-blue-600 text-white transform hover:scale-105"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
-              >
-                <UploadOutlined className="mr-1" />
-                Upload
-              </Button>
-            </div>
-            <div className={jsonData ? "hidden" : ""}>
-              <DownloadSampleExcel />
-            </div>
+                  Bulk Product Upload
+                </Title>
+                <div className="mb-4 w-full overflow-hidden">
+                  <Upload
+                    accept=".xlsx"
+                    className="w-full"
+                    beforeUpload={() => false}
+                    onChange={(info) => handleFileUpload(info.file)}
+                  >
+                    <Button
+                      style={{ width: "80vw" }} // Set the width to 100% to make the button full-width
+                      className="h-48 text-xl"
+                      icon={<UploadOutlined />}
+                    >
+                      Upload Excel File
+                    </Button>
+                  </Upload>
+                  <Button
+                    type="button"
+                    onClick={handleUpload}
+                    disabled={!jsonData && jsonData?.length > 0}
+                    className={`flex mt-4 items-center ml-2 transition-all duration-300 ${jsonData
+                      ? "bg-blue-500 hover:bg-blue-600 text-white transform hover:scale-105"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
+                  >
+                    <UploadOutlined className="mr-1" />
+                    Upload
+                  </Button>
+                </div>
+                <div className={jsonData ? "hidden" : ""}>
+                  <DownloadSampleExcel />
+                </div>
+              </>
+            }
 
             {jsonData && jsonData?.length > 0 && (
               <div>

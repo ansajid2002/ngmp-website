@@ -23,19 +23,25 @@ export interface NavItemType {
   children?: any[];
   type?: "dropdown" | "megaMenu" | "none";
   isNew?: boolean;
-}
+} 
 
 export interface NavigationItemProps {
   menuItem: NavItemType;
+  featuredData:any
 }
 
-const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
+const NavigationItem: FC<NavigationItemProps> = ({ menuItem,featuredData }) => {
+
+  
+  
   const [menuCurrentHovers, setMenuCurrentHovers] = useState<string[]>([]);
-  const [hoveredItem, setHoveredItem] = useState([]);
+  const [hoveredItem, setHoveredItem] = useState(featuredData);
   const [categoryTitle, setCategoryTitle] = useState("Featured Category");
   const { languageCode } = useAppSelector((store) => store.languagesReducer);
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
+  
+  
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -94,7 +100,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
   }, [customerId, dispatch]);
 
   // ===================== MENU MEGAMENU =====================
-  const renderMegaMenu = (menu: NavItemType) => {
+  const renderMegaMenu = (menu: NavItemType,featuredData:any) => {
     return (
       <li
         className={`menu-item flex-shrink-0 menu-megamenu menu-megamenu--large `}
@@ -113,7 +119,9 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                       categoryTitle === "Featured Category" && "bg-[#00000010]"
                     }`}
                     onMouseEnter={() => {
-                      setHoveredItem([]);
+
+                      
+                      setHoveredItem(featuredData);
                       setCategoryTitle("Featured Category");
                     }}
                   >
@@ -143,7 +151,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                       {/* <Image
                         className="rounded-full mr-3"
                         width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} /> */}
-                      <p className="font-medium text-black/70 dark:text-neutral-200 text-base ">
+                      <p className="font-medium text-black/70 dark:text-neutral-200 text-base">
                         {item.category_name}
                       </p>
                       <ChevronRightIcon
@@ -166,6 +174,10 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                 <div className="flex   flex-wrap ">
                   {hoveredItem &&
                     hoveredItem?.map((singlesubcat: any) => {
+
+                      const imageUrl = singlesubcat.subcategory_image_url
+  ? `${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`
+  :   "/notfound.png";
                       return (
                         <div className="mx-4 w-[140px] mb-4 ">
                           <Link
@@ -184,7 +196,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                                 className="mx-auto h-full w-full object-contain rounded-full border border-gray-300  transition hover:scale-105"
                                 width={150}
                                 height={150}
-                                src={`${AdminUrl}/uploads/SubcategoryImages/${singlesubcat.subcategory_image_url}`}
+                                src={imageUrl}
                                 alt={singlesubcat.subcategory_name}
                               />
                             </div>
@@ -374,7 +386,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     case "dropdown":
       return renderDropdownMenu(menuItem);
     case "megaMenu":
-      return renderMegaMenu(menuItem);
+      return renderMegaMenu(menuItem,featuredData);
     default:
       return (
         <li className="menu-item flex-shrink-0 ">{renderMainItem(menuItem)}</li>
