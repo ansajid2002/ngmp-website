@@ -19,6 +19,7 @@ const AccountOrder = () => {
   const [reviewItems, setReviewData] = useState(null);
   const [loading, setLoading] = useState(true);
   const customerId = customerData?.customerData?.customer_id || null;
+
   const getAllCustomerOrder = async () => {
     if (customerId === null || customerId === undefined) {
       // Handle the case when customerId is null or undefined, such as displaying an error message or taking appropriate action.
@@ -76,10 +77,8 @@ const AccountOrder = () => {
   };
 
   useEffect(() => {
-    // Fetch ratings when the component mounts
     customerId && !reviewItems && fetchRatings();
   }, [customerId]);
-
 
   const renderOrderGroup = (orderId: string, orders: any[]) => {
 
@@ -126,7 +125,6 @@ const AccountOrder = () => {
         return false
       });
 
-    console.log(ratingData, index);
 
     return (
       <div key={product_uniqueid + order_id + index} className="md:flex p-2">
