@@ -29,6 +29,14 @@ const AcceptReject = () => {
   const [variantsValueArray, setVariantsValueArray] = useState([]);
   const [FilteredVariantData, setFilteredVariantData] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [totalvendors, settotalVendors] = useState(0);
+  const [vendorPage, setvendorPage] = useState(1);
+  const [vendorPageSize, setvendorPageSize] = useState(5);
+  const [vendorProducts, setVendorProducts] = useState(null);
+  const [vendorTotalProducts, setVendorTotalProducts] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [vendorInfo, setVendorInfo] = useState([]);
 
   useEffect(() => {
     fetchVariantProducts()
@@ -77,7 +85,7 @@ const AcceptReject = () => {
   useEffect(() => {
     const fetchRejectedProducts = async () => {
       try {
-        const response = await fetch(`${AdminUrl}/api/rejected-products`);
+        const response = await fetch(`${AdminUrl}/api/rejected-products?vendorPage=${vendorPage}&vendorPageSize=${vendorPageSize}`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -85,7 +93,7 @@ const AcceptReject = () => {
 
         // Group products by vendorId and create products array
         const productsByVendor = {};
-        data.forEach((product) => {
+        data?.rejectedVendors.forEach((product) => {
           const { vendorid, ...productData } = product;
           if (!productsByVendor[vendorid]) {
             productsByVendor[vendorid] = {
@@ -94,11 +102,13 @@ const AcceptReject = () => {
               products: [],
             };
           }
-          productsByVendor[vendorid].products.push(productData);
+          // productsByVendor[vendorid].products.push(productData);
         });
 
         const modifiedData = Object.values(productsByVendor);
         setRejectedProducts(modifiedData);
+        ;
+        settotalVendors(parseInt(data?.totalvendors) || 0)
         setExpandedRowKeys(data.map((product) => product.vendorid));
       } catch (error) {
         console.error("Error fetching rejected products:", error);
@@ -108,8 +118,30 @@ const AcceptReject = () => {
     !rejectedProducts && fetchRejectedProducts();
   }, []);
 
+  const getVendorChunkProducts = async (vendorId, page, pageSize) => {
+    try {
+      setvendorPage(1)
+      setvendorPageSize(10)
+      const response = await fetch(`${AdminUrl}/api/getVendorProductsAR?vendorid=${vendorId}&page=${page}&pageSize=${pageSize}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      if (response.ok) {
+        const data = await response.json();
+        setVendorInfo(data?.vendor || [])
+        return data
+      } else {
+        return null
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   const openVendorProfileModal = (vendor, rejectedProducts) => {
-    setSelectedVendor({ ...vendor, rejectedProducts });
+    console.log(vendorInfo, 'vend');
+    setSelectedVendor({ vendor: vendorInfo, rejectedProducts });
     setVendorProfileModalVisible(true);
   };
 
@@ -226,17 +258,17 @@ const AcceptReject = () => {
               {record.vendorname}
             </p>
             <div className="flex gap-2">
-              <p>{record?.products?.length || 0} {record?.products?.length > 1 ? 'Products' : 'Product'}</p>
+              {/* <p>{record?.products?.length || 0} {record?.products?.length > 1 ? 'Products' : 'Product'}</p> */}
               <p> (VID: {record.vendorid})</p>
               <Button onClick={() => {
                 // Assume record.products is an array of objects
-                const products = record.products;
 
                 // Create an array to store unique pids
                 const uniquePidsArray = [];
 
+                console.log(vendorProducts[record.vendorid]);
                 // Iterate through each product in the array
-                products.forEach((product) => {
+                vendorProducts && vendorProducts[record.vendorid].forEach((product) => {
                   const pid = product.uniquepid;
                   uniquePidsArray.push(pid);
                 });
@@ -364,7 +396,7 @@ const AcceptReject = () => {
       render: (_, record) => (
         <Button
           className="transition transform hover:scale-105"
-          onClick={() => openVendorProfileModal(record, rejectedProducts)}
+          onClick={() => openVendorProfileModal(record, vendorProducts[[record.vendorid]])}
         >
           Vendor Profile
         </Button>
@@ -372,11 +404,11 @@ const AcceptReject = () => {
     },
     {
       title: "Status",
-      dataIndex: "productstatus",
-      key: "productstatus",
-      render: (productstatus, record) => {
+      dataIndex: "status",
+      key: "status",
+      render: (status, record) => {
         let icon, color;
-        switch (productstatus) {
+        switch (status) {
           case 0:
             icon = <FiClock className="text-orange-600" />;
             color = "text-orange-600";
@@ -400,7 +432,7 @@ const AcceptReject = () => {
         return (
           <span className={`flex items-center ${color}`}>
             {icon}
-            <span className="ml-1">{statusMap[productstatus]}</span>
+            <span className="ml-1">{statusMap[status]}</span>
           </span>
         );
       },
@@ -610,7 +642,6 @@ const AcceptReject = () => {
     setSelectedRowKeys([...uniqueSelectedRowKeys]);
   };
 
-
   const flattenedUniqueIds = rejectedProducts && rejectedProducts.flatMap((product) =>
     product.products.map((p) => p.uniquepid)
   );
@@ -636,7 +667,6 @@ const AcceptReject = () => {
     // Assuming the backend endpoint is 'http://your-backend-api.com/bulkProductApprove'
   };
 
-  console.log(selectedRowKeys.length, uniqueIdsLength);
   return (
     <div className="sm:p-4 sm:ml-64">
       <div className="lg:w-1/2 md:w-3/4 sm:w-full p-2">
@@ -652,10 +682,11 @@ const AcceptReject = () => {
       <Table
         columns={columns.slice(0, -11)}
         dataSource={rejectedProducts || []}
+        pagination={false}
         title={() => (
           <>
             <div className="flex items-center">
-              <Checkbox
+              {/* <Checkbox
                 checked={selectedRowKeys.length - 1 === uniqueIdsLength}
                 indeterminate={
                   selectedRowKeys.length > 0 &&
@@ -664,7 +695,7 @@ const AcceptReject = () => {
                 onChange={handleSelectAllRows}
               >
                 Select All
-              </Checkbox>
+              </Checkbox> */}
               <Button
                 className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
                 onClick={handleApproveProduct}
@@ -684,39 +715,64 @@ const AcceptReject = () => {
         )}
         expandable={{
           expandedRowKeys: expandedRowKeys,
-          onExpand: (expanded, record) => {
+          onExpand: async (expanded, record) => {
+            console.log(record, expanded);
             if (expanded) {
-              setExpandedRowKeys((prevKeys) => [...prevKeys, record.vendorid]);
+              // Fetch vendor products for the expanded row
+              const vendorProduct = await getVendorChunkProducts(record.vendorid, 1, 10);
+              setExpandedRowKeys([record.vendorid]);
+              setVendorProducts({ [record.vendorid]: vendorProduct?.products || [] });
+              setVendorTotalProducts({ [record.vendorid]: parseInt(vendorProduct?.totalProducts) || 0 });
             } else {
-              setExpandedRowKeys((prevKeys) =>
-                prevKeys.filter((key) => key !== record.vendorid)
-              );
+              // Collapse all rows
+              setExpandedRowKeys([]);
+              setVendorProducts({});
+              setVendorTotalProducts(0)
             }
           },
           expandedRowRender: (record) => (
             <>
               <Table
                 columns={columns.slice(1)} // Exclude the Vendor Name column
-                dataSource={record.products}
+                dataSource={vendorProducts[record.vendorid] || []}
                 rowKey="productId"
-              // pagination={false}
+                pagination={false}
               />
-              <Pagination
-                total={5}
-                showSizeChanger
-                showQuickJumper
-                defaultCurrent={2}
-                showTotal={(total) => `Total ${total} items`}
-                responsive={true}
-                onChange={(page, pageSize) => {
-                  console.log();
-                }}
-              />
+              <div className="p-5 flex justify-end">
+                <Pagination
+                  total={vendorTotalProducts[record.vendorid] || 0}
+                  showSizeChanger
+                  showQuickJumper
+                  defaultCurrent={2}
+                  showTotal={(total) => `Total ${total} items`}
+                  responsive={true}
+                  current={1}
+                  onChange={async (page, pageSize) => {
+                    const vendorProduct = await getVendorChunkProducts(record.vendorid, page, pageSize);
+                    setVendorProducts({ [record.vendorid]: vendorProduct?.products || [] });
+                  }}
+                />
+              </div>
             </>
           ),
         }}
         rowKey="vendorid"
       />
+
+      <div className="p-5 flex justify-center">
+        <Pagination
+          total={totalvendors || 0}
+          showSizeChanger
+          showQuickJumper
+          defaultCurrent={2}
+          current={1}
+          showTotal={(total) => `Total ${total} items`}
+          responsive={true}
+          onChange={(page, pageSize) => {
+            console.log(page, pageSize);
+          }}
+        />
+      </div>
 
       <Modal
         title="Full Description"
@@ -872,7 +928,7 @@ const AcceptReject = () => {
           </ul>
         </div>
       </Modal>
-    </div>
+    </div >
   );
 };
 

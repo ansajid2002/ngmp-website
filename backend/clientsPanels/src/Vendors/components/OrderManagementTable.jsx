@@ -20,6 +20,7 @@ import {
 import {
   FaCheck,
   FaClock,
+  FaCross,
   FaExchangeAlt,
   FaFilePdf,
   FaMapPin,
@@ -47,6 +48,7 @@ import { DateTime } from 'luxon';
 import moment from "moment";
 import CreateShip from "./CreateShip";
 import { FiMap } from "react-icons/fi";
+import { websiteUrl } from "../../App";
 
 const OrderManagementTable = ({
   vendorDatastate,
@@ -55,8 +57,10 @@ const OrderManagementTable = ({
   isCurrencyloading,
 }) => {
   const [productModalVisible, setProductModalVisible] = useState(false);
+  const [customerModalVisible, setCustomerModalVisible] = useState(false);
   const [showCalendar, setshowCalendar] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [vendorOrder, setvendorOrder] = useState([]);
   const [FilteredOrder, setFilteredOrder] = useState([]);
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
@@ -64,7 +68,7 @@ const OrderManagementTable = ({
   const [filteredDateRange, setFilteredDateRange] = useState(null);
   const [ShipmentModal, setShipmentModal] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-
+  console.log(type, "Type");
   const vendorId = vendorDatastate?.[0].id;
   const { confirm } = Modal; // Import the Modal component
 
@@ -98,6 +102,10 @@ const OrderManagementTable = ({
   const showProductDetailsModal = (product) => {
     setSelectedProduct(product);
     setProductModalVisible(true);
+  };
+  const showCustomerDetailsModal = (product) => {
+    setSelectedCustomer(product);
+    setCustomerModalVisible(true);
   };
 
   const callVendorProductOrder = async () => {
@@ -217,6 +225,15 @@ const OrderManagementTable = ({
       dataIndex: "orderid",
       key: "orderid",
       width: 80,
+      render: (orderid, record) => {
+
+
+        return (
+          <Button type="link" onClick={() => showProductDetailsModal(record)}>
+            {orderid}
+          </Button>
+        );
+      },
     },
     {
       title: "Product Name",
@@ -224,28 +241,59 @@ const OrderManagementTable = ({
       key: "product_name",
       width: 100,
       render: (product_name, record) => {
-        // Split the product name into words
-        const words = product_name.split(' ');
-
-        // Display the first 5 words
-        const truncatedName = words.slice(0, 5).join(' ');
-
-        // Add ellipsis if the product name has more than 5 words
-        const displayText = words.length > 5 ? truncatedName + '...' : truncatedName;
-
         return (
-          <Button type="link" onClick={() => showProductDetailsModal(record)}>
-            {displayText}
-          </Button>
+          <a
+            href={`${websiteUrl}/product-detail?product=${record.prod_slug}&uniqueid=${record.product_uniqueid}`}
+            target="_blank"
+            className="line-clamp-2 min-w-[100px]"
+          >
+            {product_name}
+          </a>
+        );
+
+      },
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+      width: 100,
+      render: (quantity, record) => {
+        return (
+
+          <h1 className="text-center font-bold">{`${quantity}`}</h1>
         );
       },
     },
+    {
+      title: "Total Amount",
+      dataIndex: "total_amount",
+      key: "total_amount",
+      width: 150,
+      render: (total_amount, record) =>
+        <>
+          <p className=" font-sans text-sm font-bold">{`$${total_amount}`}</p>
+        </>
+    },
+    {
+      title: "Customer Info",
+      dataIndex: "customer_info",
+      key: "customer_info",
+      width: 150,
+      render: (customer_info, record) => {
+        return (
 
+          <p onClick={() => showCustomerDetailsModal(record)} className=" font-sans text-left text-sm font-semibold cursor-pointer hover:text-gray-400 min-w-[100px] line-clamp-2">{`${record.first_name} ${record.last_name}`}
+          </p>
+        )
+      }
+
+    },
     {
       title: "Order Date",
       dataIndex: "created_at",
       key: "created_at",
-      width: 200,
+      width: 250,
       sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at),
       render: (created_at) => {
         const formattedDate = new Date(created_at).toLocaleDateString("en-US", {
@@ -257,20 +305,10 @@ const OrderManagementTable = ({
           hour12: true,
         });
 
-        return <p>{formattedDate}</p>;
+        return <p className="text-[12px]">{formattedDate}</p>;
       },
     },
-    {
-      title: "Total Amount",
-      dataIndex: "total_amount",
-      key: "total_amount",
-      width: 150,
-      render: (total_amount, record) =>
-        <>
-          <p className=" font-sans text-sm font-bold">{`${record.currency_symbol} ${total_amount}`}</p>
-          <p className="text-sm font-medium font-sans text-gray-500">{record.quantity} qty</p>
-        </>
-    },
+
     {
       title: "Status",
       dataIndex: "order_status",
@@ -337,6 +375,7 @@ const OrderManagementTable = ({
       ),
     },
   ];
+
 
   const handleShipmentModal = (record) => {
     setShipmentModal(true)
@@ -646,7 +685,7 @@ const OrderManagementTable = ({
 
     return (
       <Table
-        columns={columns.slice(0, -9)}
+        columns={columns.slice(0, -11)}
         dataSource={Object.entries(groupedOrders).map(
           ([orderDate, orders]) => ({
             created_at: orderDate,
@@ -933,7 +972,7 @@ const OrderManagementTable = ({
 
       <Modal
         title="Product Details"
-        visible={productModalVisible}
+        open={productModalVisible}
         onCancel={() => setProductModalVisible(false)}
         footer={null}
         width={1000} // Set an appropriate width for the modal
@@ -1062,8 +1101,46 @@ const OrderManagementTable = ({
           </div>
         )}
       </Modal>
+      <Modal
+        title=""
+        open={customerModalVisible}
+        onCancel={() => setCustomerModalVisible(false)}
+        footer={null}
+        width={500} // Set an appropriate width for the modal
 
-      <Modal visible={ShipmentModal} onCancel={() => setShipmentModal(false)} title="Create Shipment" width={1000}>
+      >
+        {selectedCustomer && (
+          <div className=" gap-4 relative">
+
+            <div className="h-full md:h-[80vh] overflow-y-auto">
+
+              <div className="mt-4">
+                <h4 className="text-lg font-semibold mb-2">Customer Information</h4>
+
+                <Descriptions column={1} bordered>
+                  <Descriptions.Item label="Email">{selectedCustomer.email}</Descriptions.Item>
+                  <Descriptions.Item label="Phone Number">{selectedCustomer.phone_number}</Descriptions.Item>
+                  <Descriptions.Item label="Name">
+                    {`${selectedCustomer.first_name} ${selectedCustomer.last_name}`}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Country">{selectedCustomer.selected_country}</Descriptions.Item>
+                  <Descriptions.Item label="City">{selectedCustomer.selected_city}</Descriptions.Item>
+                  <Descriptions.Item label="State">{selectedCustomer.selected_state}</Descriptions.Item>
+                  <Descriptions.Item label="Zip Code">{selectedCustomer.zip_code}</Descriptions.Item>
+                  <Descriptions.Item label="Apartment">{selectedCustomer.apartment}</Descriptions.Item>
+                  <Descriptions.Item label="Full Address">{fullAddress}
+                    <Button type="default" onClick={viewOnMap} className="mt-2 flex justify-center items-center gap-2">
+                      <FiMap color="green" /> View on Map
+                    </Button>
+                  </Descriptions.Item>
+                </Descriptions>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      <Modal open={ShipmentModal} onCancel={() => setShipmentModal(false)} title="Create Shipment" width={1000}>
         <CreateShip product={selectedProduct} />
       </Modal>
     </div>

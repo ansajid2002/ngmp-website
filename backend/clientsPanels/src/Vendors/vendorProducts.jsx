@@ -154,7 +154,6 @@ const VendorProducts = ({ vendorDatastate }) => {
   );
 
 
-
   useEffect(() => {
     callVendorProducts(UploadImages);
   }, [callVendorProducts, UploadImages, id, subcatNameBackend]);
@@ -722,7 +721,8 @@ const VendorProducts = ({ vendorDatastate }) => {
   };
 
   const handleTabChangeforTable = (key, subcatname) => {
-    console.log(subcatname, 'sub');
+    setPage(1)
+    setPageSize(10)
     setchangeSubcatTabs(key);
     setSelectedRowKeys([]);
     setsubcatNameBackend(subcatname?.replace(/[\s'"]/g, ""));
@@ -1872,7 +1872,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                         )}
                         className="w-full mt-10"
                       />
-                      <div className="p-2 py-5 flex justify-end">
+                      <div className="p-2 py-5 flex justify-end sticky top-0">
                         <Pagination
                           total={totalProduct}
                           showSizeChanger

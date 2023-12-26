@@ -800,101 +800,101 @@ export default function OrderMetrics({ vendorDatastate, type }) {
     SalesByMonth,
   ]);
 
-  useEffect(() => {
-    const fetchConversionRates = async (toCurrency) => {
-      try {
-        const response = await fetch(
-          `${AdminUrl}/api/scrape-exchange-rate?from=${'USD'}&to=${toCurrency}`
-        );
+  // useEffect(() => {
+  //   const fetchConversionRates = async (toCurrency) => {
+  //     try {
+  //       const response = await fetch(
+  //         `${AdminUrl}/api/scrape-exchange-rate?from=${'USD'}&to=${toCurrency}`
+  //       );
 
-        if (response.ok) {
-          const data = await response.json();
-          return parseFloat(data.exchangeRate);
-        } else {
-          console.error(
-            `Error fetching data for ${toCurrency}:`,
-            response.statusText
-          );
-          return 1; // Set default rate as 1 in case of error
-        }
-      } catch (error) {
-        console.error("Error fetching conversion rates:", error);
-        return 1; // Set default rate as 1 in case of error
-      }
-    };
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         return parseFloat(data.exchangeRate);
+  //       } else {
+  //         console.error(
+  //           `Error fetching data for ${toCurrency}:`,
+  //           response.statusText
+  //         );
+  //         return 1; // Set default rate as 1 in case of error
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching conversion rates:", error);
+  //       return 1; // Set default rate as 1 in case of error
+  //     }
+  //   };
 
-    const updateConversionRates = async () => {
-      try {
-        setisCurrencyloading(true);
-        const currencies = ["USD", "EUR", "ETB", "SOS", "KES", "INR"]; // List of all currencies except USD
+  //   // const updateConversionRates = async () => {
+  //   //   try {
+  //   //     setisCurrencyloading(true);
+  //   //     const currencies = ["USD", "EUR", "ETB", "SOS", "KES", "INR"]; // List of all currencies except USD
 
-        const promises = currencies.map(async (currency) => {
-          const conversionRate = await fetchConversionRates(currency);
-          return [currency, conversionRate];
-        });
+  //   //     const promises = currencies.map(async (currency) => {
+  //   //       const conversionRate = await fetchConversionRates(currency);
+  //   //       return [currency, conversionRate];
+  //   //     });
 
-        const conversionRateData = await Promise.all(promises);
+  //   //     const conversionRateData = await Promise.all(promises);
 
-        // Convert the array of data into an object
-        const updatedConversionRates = Object.fromEntries(conversionRateData);
+  //   //     // Convert the array of data into an object
+  //   //     const updatedConversionRates = Object.fromEntries(conversionRateData);
 
-        // Check if all conversion rates are 1
-        const allRatesAreOne = conversionRateData.every(
-          ([, rate]) => rate === 1
-        );
+  //   //     // Check if all conversion rates are 1
+  //   //     const allRatesAreOne = conversionRateData.every(
+  //   //       ([, rate]) => rate === 1
+  //   //     );
 
-        if (!allRatesAreOne) {
-          const conversionRatesCookie = Cookies.get("conversionRatesSales");
-          if (conversionRatesCookie) {
-            // If the cookie is set, parse it and set the state from the cookie value
-            const parsedConversionRates = JSON.parse(conversionRatesCookie);
-            setConversionRates(parsedConversionRates);
-          } else {
-            // If the cookie is not set, store the updatedConversionRates object as a JSON string in the cookie
-            Cookies.set(
-              "conversionRatesSales",
-              JSON.stringify(updatedConversionRates),
-              { expires: 1 } // Set the cookie to expire after 1 day
-            );
-            setConversionRates(updatedConversionRates);
-          }
+  //   //     if (!allRatesAreOne) {
+  //   //       const conversionRatesCookie = Cookies.get("conversionRatesSales");
+  //   //       if (conversionRatesCookie) {
+  //   //         // If the cookie is set, parse it and set the state from the cookie value
+  //   //         const parsedConversionRates = JSON.parse(conversionRatesCookie);
+  //   //         setConversionRates(parsedConversionRates);
+  //   //       } else {
+  //   //         // If the cookie is not set, store the updatedConversionRates object as a JSON string in the cookie
+  //   //         Cookies.set(
+  //   //           "conversionRatesSales",
+  //   //           JSON.stringify(updatedConversionRates),
+  //   //           { expires: 1 } // Set the cookie to expire after 1 day
+  //   //         );
+  //   //         setConversionRates(updatedConversionRates);
+  //   //       }
 
-          setisCurrencyloading(false);
-        } else {
-          Modal.error({
-            title: "Conversion Issue",
-            content: (
-              <div style={{ fontSize: "16px", lineHeight: "1.5" }}>
-                <p>
-                  We apologize for the inconvenience, but there is currently an
-                  issue with converting all currencies to USD.
-                </p>
-                <p>
-                  Our team is working to resolve this problem. In the meantime,
-                  we recommend refreshing the page.
-                </p>
-              </div>
-            ),
-            okButtonProps: { style: { display: "none" } }, // Hide the OK button
-          });
-        }
-      } catch (error) {
-        console.error("Error updating conversion rates:", error);
-      }
-    };
+  //   //       setisCurrencyloading(false);
+  //   //     } else {
+  //   //       Modal.error({
+  //   //         title: "Conversion Issue",
+  //   //         content: (
+  //   //           <div style={{ fontSize: "16px", lineHeight: "1.5" }}>
+  //   //             <p>
+  //   //               We apologize for the inconvenience, but there is currently an
+  //   //               issue with converting all currencies to USD.
+  //   //             </p>
+  //   //             <p>
+  //   //               Our team is working to resolve this problem. In the meantime,
+  //   //               we recommend refreshing the page.
+  //   //             </p>
+  //   //           </div>
+  //   //         ),
+  //   //         okButtonProps: { style: { display: "none" } }, // Hide the OK button
+  //   //       });
+  //   //     }
+  //   //   } catch (error) {
+  //   //     console.error("Error updating conversion rates:", error);
+  //   //   }
+  //   // };
 
-    // Check if the "conversionRatesSales" cookie is already set
-    const conversionRatesCookie = Cookies.get("conversionRatesSales");
-    if (!conversionRatesCookie) {
-      // If the cookie is not set, call updateConversionRates
-      updateConversionRates();
-    } else {
-      // If the cookie is set, parse it and set the state from the cookie value
-      const parsedConversionRates = JSON.parse(conversionRatesCookie);
-      setConversionRates(parsedConversionRates);
-      setisCurrencyloading(false);
-    }
-  }, []);
+  //   // Check if the "conversionRatesSales" cookie is already set
+  //   const conversionRatesCookie = Cookies.get("conversionRatesSales");
+  //   if (!conversionRatesCookie) {
+  //     // If the cookie is not set, call updateConversionRates
+  //     updateConversionRates();
+  //   } else {
+  //     // If the cookie is set, parse it and set the state from the cookie value
+  //     const parsedConversionRates = JSON.parse(conversionRatesCookie);
+  //     setConversionRates(parsedConversionRates);
+  //     setisCurrencyloading(false);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const fetchOrders = async () => {

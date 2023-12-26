@@ -414,6 +414,7 @@ app.post("/allVendorProducts", async (req, res) => {
       values = [id, subcatNameBackend, pageSize, offset];
     }
 
+
     // Query to get the total count of products
     const totalCountQuery = "SELECT COUNT(*) FROM products WHERE vendorid = $1";
     const totalCountValues = [id];
@@ -998,39 +999,119 @@ app.post("/removeImage", async (req, res) => {
 });
 
 // Fetch rejected products from a specific category
-const fetchRejectedProducts = async () => {
+const fetchRejectedVendors = async (page, pageSize) => {
   try {
+    const offset = (page - 1) * pageSize;
+
+    // Fetch total count of distinct vendors from the products table
+    const totalVendorsQuery = `
+      SELECT COUNT(DISTINCT vendorid) AS totalVendors
+      FROM products;
+    `;
+
+    const totalVendorsResult = await pool.query(totalVendorsQuery);
+    const totalVendors = totalVendorsResult.rows[0];
+
+    // Fetch rejected vendors along with product details
     const query = `
-            SELECT p.*, v.*, p.status AS productstatus, v.status AS vendorstatus
-            FROM products AS p
-            JOIN vendors AS v ON p.vendorid = v.id;
-        `;
-    const result = await pool.query(query);
-    return result.rows;
+      WITH VendorsWithRowNumber AS (
+        SELECT
+          v.*,
+          ROW_NUMBER() OVER (ORDER BY v.id) AS vendor_row_number
+        FROM
+          vendors AS v
+      )
+      SELECT DISTINCT ON (v.id)
+        v.*,
+        p.*,
+        p.status AS productstatus,
+        ROW_NUMBER() OVER (PARTITION BY p.vendorid ORDER BY p.id) AS product_row_number
+      FROM
+        VendorsWithRowNumber v
+        LEFT JOIN products p ON v.id = p.vendorid
+      ORDER BY v.id, p.id
+      OFFSET $1
+      LIMIT $2;
+    `;
+
+    const result = await pool.query(query, [offset, pageSize]);
+    const rejectedVendors = result.rows;
+
+    return {
+      totalVendors,
+      rejectedVendors,
+    };
   } catch (error) {
     throw error;
   }
 };
 
-// Fetch rejected products for all categories
+// Fetch rejected vendors for all categories
 app.get("/rejected-products", async (req, res) => {
   try {
-    const allRejectedProducts = [];
+    const { vendorPage, vendorPageSize } = req.query
+    const { totalVendors, rejectedVendors } = await fetchRejectedVendors(vendorPage, vendorPageSize);
 
-    const rejectedProducts = await fetchRejectedProducts();
-    allRejectedProducts.push(...rejectedProducts);
-
-    const modifiedRejectedProducts = allRejectedProducts.map((product) => ({
-      ...product,
-      key: product.id,
+    const modifiedRejectedVendors = rejectedVendors.map((vendor) => ({
+      ...vendor,
+      key: vendor.id,
     }));
 
-    res.json(modifiedRejectedProducts);
+    res.json({ ...totalVendors, rejectedVendors: modifiedRejectedVendors });
   } catch (error) {
-    console.error("Error fetching rejected products:", error);
+    console.error("Error fetching rejected vendors:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.get('/getVendorProductsAR', async (req, res) => {
+  try {
+    const { vendorid, page = 1, pageSize = 10 } = req.query;
+
+    const offset = (page - 1) * pageSize;
+    const limit = pageSize;
+
+    // First, get the total count of products for the vendor
+    const countQuery = "SELECT COUNT(*) FROM products WHERE vendorid = $1";
+    const countValues = [vendorid];
+    const countResult = await pool.query(countQuery, countValues);
+    const totalProducts = countResult.rows[0].count;
+
+    // Now, fetch the paginated products along with vendor information (excluding password)
+    const productsQuery = `
+      SELECT p.*
+      FROM products p
+      WHERE p.vendorid = $1
+      OFFSET $2
+      LIMIT $3;
+    `;
+
+    const vendorQuery = `
+      SELECT *
+      FROM vendors v
+      WHERE v.id = $1;
+    `;
+
+    const productsValues = [vendorid, offset, limit];
+    const vendorValues = [vendorid];
+
+    const productsResult = await pool.query(productsQuery, productsValues);
+    const vendorResult = await pool.query(vendorQuery, vendorValues);
+
+    const products = productsResult.rows;
+    const vendor = vendorResult.rows;
+    for (let index = 0; index < vendor.length; index++) {
+      delete vendor[index].password
+    }
+    res.json({ totalProducts, vendor: vendor?.[0] || [], products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 
 app.post("/reject-product-reason", async (req, res) => {
   try {

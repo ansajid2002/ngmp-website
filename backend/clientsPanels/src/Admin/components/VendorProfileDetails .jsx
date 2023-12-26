@@ -8,15 +8,12 @@ import { AdminUrl } from '../constant';
 
 
 const VendorProfileDetails = ({ vendor }) => {
-    const vendorProductData = vendor.rejectedProducts.filter(rp => rp.vendorid === vendor.id);
+    const vendorProductData = vendor.rejectedProducts
     const navigate = useNavigate()
-
     const statusMappings = {
         0: { icon: <FiClock />, color: 'orange', label: 'Pending' }, // Pending
-        1: { icon: <FiCheckCircle />, color: 'green', label: 'Active' }, // Active
-        2: { icon: <FiTrash2 />, color: 'red', label: 'Blocked' }, // Blocked
-        3: { icon: <FiCheckCircle />, color: 'green', label: 'Approved' }, // Approved
-        4: { icon: <FiXCircle />, color: 'red', label: 'Rejected' }, // Rejected
+        1: { icon: <FiCheckCircle />, color: 'green', label: 'Approved' }, // Approved
+        2: { icon: <FiXCircle />, color: 'red', label: 'Rejected' }, // Rejected
     };
 
     const columns = [
@@ -26,22 +23,22 @@ const VendorProfileDetails = ({ vendor }) => {
             key: 'ad_title',
             width: 350,
             render: (_, record) => {
-                let description = record.description;
-                let words = description?.split(' ');
+                let additionaldescription = record.additionaldescription;
+                let words = additionaldescription?.split(' ');
 
-                if (description?.length <= 10) {
+                if (additionaldescription?.length <= 10) {
                     return (
                         <>
                             <p className='text-lg font-semibold text-justify'>{record.ad_title}</p>
-                            <p className='text-sm text-gray-400 text-justify'>{description}</p>
+                            <p className='text-sm text-gray-400 text-justify'>{additionaldescription}</p>
                         </>
                     );
                 } else {
-                    let shortDescription = words?.slice(0, 10)?.join(' ');
+                    let shortadditionaldescription = words?.slice(0, 10)?.join(' ');
                     return (
                         <>
                             <p className='text-lg font-semibold text-justify'>{record.ad_title}</p>
-                            <p className='text-sm text-gray-400 text-justify'>{shortDescription}... <span className='text-[12px] cursor-pointer text-blue-500' type onClick={() => openModal(description)}>Read More</span></p>
+                            <p className='text-sm text-gray-400 text-justify'>{shortadditionaldescription}... <span className='text-[12px] cursor-pointer text-blue-500' type onClick={() => { }}>Read More</span></p>
 
                         </>
                     );
@@ -50,8 +47,8 @@ const VendorProfileDetails = ({ vendor }) => {
         },
         {
             title: 'Status',
-            dataIndex: 'productstatus',
-            key: 'productstatus',
+            dataIndex: 'status',
+            key: 'status',
             render: status => {
                 const statusInfo = statusMappings[status] || {};
                 const { icon, color } = statusInfo;
@@ -107,64 +104,64 @@ const VendorProfileDetails = ({ vendor }) => {
                 <Descriptions.Item
                     label="Vendor Name"
                 >
-                    {vendor?.vendor_profile_picture_url ? (
+                    {vendor?.vendor?.vendor_profile_picture_url ? (
                         <img
-                            src={`${AdminUrl}/uploads/vendorProfile/${vendor?.vendor_profile_picture_url?.images?.[0]}`}
+                            src={`${AdminUrl}/uploads/vendorProfile/${vendor?.vendor?.vendor_profile_picture_url?.images?.[0]}`}
                             alt="Vendor Profile"
                             style={{ width: '64px', height: '64px', borderRadius: '50%' }}
                         />
                     ) : (
                         <Avatar size={64} icon={<AiOutlineUser />} className='flex justify-center items-center flex-row' />
                     )}
-                    <p className='mt-2'>{vendor.vendorname} (VID: {vendor.id})</p>
+                    <p className='mt-2'>{vendor?.vendor.vendorname} (VID: {vendor.id})</p>
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Created At"
                 >
-                    {vendor.registration_date}
+                    {vendor?.vendor.registration_date}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Email"
                 >
-                    {vendor.email || 'N/A'}
+                    {vendor?.vendor.email || 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Mobile Number"
                 >
-                    {vendor.mobile_number || 'N/A'}
+                    {vendor?.vendor.mobile_number || 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Business Model"
                 >
-                    {vendor.business_model || 'N/A'}
+                    {vendor?.vendor.business_model || 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Brand Name"
                 >
-                    {vendor.brand_name || 'N/A'}
+                    {vendor?.vendor.brand_name || 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Company Name"
                 >
-                    {vendor.company_name || 'N/A'}
+                    {vendor?.vendor.company_name || 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Company Address"
                 >
-                    {vendor.company_address || 'N/A'}
+                    {vendor?.vendor.company_address || 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item
                     label="Bank Name"
                 >
-                    {vendor.bank_name || 'N/A'}
+                    {vendor?.vendor.bank_name || 'N/A'}
                 </Descriptions.Item>
                 {/* Add more items as needed */}
             </Descriptions>
 
-            <h2 className="text-xl font-semibold mt-6 mb-4">All Products ({vendorProductData[0]?.products?.length})</h2>
+            <h2 className="text-xl font-semibold mt-6 mb-4">All Products ({vendorProductData?.length})</h2>
             <Table
                 columns={columns}
-                dataSource={vendorProductData[0]?.products || []}
+                dataSource={vendorProductData || []}
                 pagination={false}
             />
 

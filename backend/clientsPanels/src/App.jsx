@@ -57,7 +57,7 @@ import AdminChatwithCustomers from "./Admin/pages/Chats/AdminChatwithCustomers";
 import Wallets from "./Admin/pages/Wallets";
 import MediaLibrary from "./Vendors/MediaLibrary";
 
-
+export const websiteUrl = "https://stg.nilegmp.com/"
 
 function AdminRoutes() {
   const [superad, setsuperadmin] = useState(false);

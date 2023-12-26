@@ -17,32 +17,35 @@ app.post("/VendorProductOrder", async (req, res) => {
   const { type, vendorId } = req.body;
   try {
     let query = `
-      SELECT vpo.*, cda.*
+      SELECT vpo.*, cda.*, p.*
       FROM vendorproductorder vpo
       LEFT JOIN customer_delivery_address cda ON vpo.order_id = cda.unique_order_id
+      LEFT JOIN products p ON vpo.product_uniqueid = p.uniquepid
     `;
 
-    if (type === "admin") {
-      // If the type is "admin," fetch all data without specifying a vendor_id
-      query += ";";
-    } else {
+    if (type !== "admin") {
       // If the type is not "admin," fetch data for the specified vendor_id
       query += " WHERE vpo.vendor_id = $1;";
+    } else {
+      // If the type is "admin," fetch all data without specifying a vendor_id
+      query += ";";
     }
 
     const { rows } = await pool.query(
       query,
-      type === "admin" ? [] : [vendorId]
+      type !== "admin" ? [vendorId] : []
     );
 
-    // Fetch vendor details for each vendor_id
+    // Fetch additional details from the vendors table for each vendor_id
     const rowsWithVendorProfiles = await Promise.all(
       rows.map(async (row) => {
         const vendorDetails = await pool.query(
-          "SELECT brand_name,email,country_code,mobile_number,status,vendor_profile_picture_url,brand_logo,vendorname, company_city, company_zip_code, company_state, company_country, shipping_address  FROM vendors WHERE id = $1;",
+          "SELECT brand_name, email, country_code, mobile_number, status, vendor_profile_picture_url, brand_logo, vendorname, company_city, company_zip_code, company_state, company_country, shipping_address FROM vendors WHERE id = $1;",
           [row.vendor_id]
         );
-        const vendorProfile = vendorDetails.rows[0] || {}; // Assuming vendor_id is unique
+
+        const vendorProfile = vendorDetails.rows[0] || {};
+
         return { ...row, vendorProfile };
       })
     );
@@ -53,8 +56,6 @@ app.post("/VendorProductOrder", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 function generateRandomOrderID(length) {
   // Generate a random number with the specified length
