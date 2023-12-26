@@ -5,14 +5,14 @@ import { FiSend } from 'react-icons/fi';
 import moment from 'moment';
 
 const ChatScreen = ({ customerData, vendorDatastate, onSend }) => {
-    const { picture, given_name, family_name, customer_id } = customerData || {}
+    const { picture = '', given_name = '', family_name = '', customer_id = null } = customerData || {}
     const [message, setMessage] = useState('');
     const [conversations, setConversationMessage] = useState([]);
     const [loader, setLoader] = useState(false);
     const flatListRef = useRef(null);
     const [inputRows, setInputRows] = useState(1);
 
-    const vendorId = vendorDatastate?.[0]?.id
+    const vendorId = vendorDatastate?.[0]?.id || null
 
     const handleMessageChange = (e) => {
         setMessage(e.target.value);
@@ -37,11 +37,12 @@ const ChatScreen = ({ customerData, vendorDatastate, onSend }) => {
 
     useEffect(() => {
         fetchConversations(true);
-    }, [customer_id]);
+    }, [customer_id, vendorId]);
 
     const fetchConversations = async (addLoader) => {
         setLoader(addLoader)
         try {
+            if (!vendorId && !customer_id) return
             const response = await fetch(`${AdminUrl}/api/getConversationMessages`, {
                 method: 'POST',
                 headers: {
@@ -72,10 +73,7 @@ const ChatScreen = ({ customerData, vendorDatastate, onSend }) => {
     };
 
     const handleSendMessage = async () => {
-        if (message.trim() === '') {
-            return; // Do not send empty conversations
-        }
-
+        if (message.trim() === '') return;
         try {
             // Send message to backend
             const response = await fetch(`${AdminUrl}/api/sendInboxMessages`, {

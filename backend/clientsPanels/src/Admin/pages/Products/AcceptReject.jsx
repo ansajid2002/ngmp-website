@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Image, Input, Modal, Tooltip, Checkbox } from "antd";
+import { Table, Button, Image, Input, Modal, Tooltip, Checkbox, Pagination } from "antd";
 import {
   AiOutlineCheckCircle,
   AiOutlineCloseCircle,
@@ -13,7 +13,7 @@ import moment from "moment";
 import axios from "axios";
 
 const AcceptReject = () => {
-  const [rejectedProducts, setRejectedProducts] = useState([]);
+  const [rejectedProducts, setRejectedProducts] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -104,59 +104,9 @@ const AcceptReject = () => {
         console.error("Error fetching rejected products:", error);
       }
     };
-    fetchRejectedProducts();
+
+    !rejectedProducts && fetchRejectedProducts();
   }, []);
-
-  const handleSearch = (selectedKeys, confirm) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-  };
-
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText("");
-  };
-
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm)}
-          style={{ width: 188, marginBottom: 8, display: "block" }}
-        />
-        <Button
-          type="button"
-          onClick={() => handleSearch(selectedKeys, confirm)}
-          size="small"
-          style={{ width: 90, marginRight: 8 }}
-        >
-          Search
-        </Button>
-        <Button
-          onClick={() => handleReset(clearFilters)}
-          size="small"
-          style={{ width: 90 }}
-        >
-          Reset
-        </Button>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <AiOutlineSearch style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-  });
 
   const openVendorProfileModal = (vendor, rejectedProducts) => {
     setSelectedVendor({ ...vendor, rejectedProducts });
@@ -172,7 +122,6 @@ const AcceptReject = () => {
     0: "Pending",
     1: "Approved",
     2: "Rejected",
-    3: "Sold",
   };
 
   const renderDescription = (record, openModal) => {
@@ -220,11 +169,9 @@ const AcceptReject = () => {
 
       return (
         <Tooltip
-          title={`${currency_symbol} ${
-            filteredVariants[0]?.variant_sellingprice
-          } -  ${currency_symbol} ${
-            filteredVariants[filteredVariants.length - 1]?.variant_sellingprice
-          }`}
+          title={`${currency_symbol} ${filteredVariants[0]?.variant_sellingprice
+            } -  ${currency_symbol} ${filteredVariants[filteredVariants.length - 1]?.variant_sellingprice
+            }`}
         >
           <div className="w-[150px]">
             <p className="md:text-sm font-semibold tracking-wide line-clamp-1">
@@ -272,13 +219,47 @@ const AcceptReject = () => {
       dataIndex: "vendorname",
       key: "vendorname",
       render: (_, record) => {
+
         return (
-          <p className="font-bold text-xl">
-            {record.vendorname} (VID: {record.vendorid})
-          </p>
+          <>
+            <p className="font-bold text-xl">
+              {record.vendorname}
+            </p>
+            <div className="flex gap-2">
+              <p>{record?.products?.length || 0} {record?.products?.length > 1 ? 'Products' : 'Product'}</p>
+              <p> (VID: {record.vendorid})</p>
+              <Button onClick={() => {
+                // Assume record.products is an array of objects
+                const products = record.products;
+
+                // Create an array to store unique pids
+                const uniquePidsArray = [];
+
+                // Iterate through each product in the array
+                products.forEach((product) => {
+                  const pid = product.uniquepid;
+                  uniquePidsArray.push(pid);
+                });
+
+                // Check if any of the unique IDs are already selected
+                const isAnySelected = uniquePidsArray.some(pid => selectedRowKeys.includes(pid));
+
+                if (isAnySelected) {
+                  // If any unique ID is selected, unselect all
+                  setSelectedRowKeys([]);
+                } else {
+                  // If none of the unique IDs is selected, select all
+                  setSelectedRowKeys(uniquePidsArray);
+                }
+              }}>
+                {'Select All Products'}
+              </Button>
+
+
+            </div>
+          </>
         );
       },
-      ...getColumnSearchProps("vendorname"), // Apply search filter
     },
     {
       title: "",
@@ -427,7 +408,6 @@ const AcceptReject = () => {
         { text: "Pending", value: 0 },
         { text: "Approved", value: 1 },
         { text: "Rejected", value: 2 },
-        { text: "Sold", value: 3 },
       ],
       onFilter: (value, record) => record.productstatus === value,
       sorter: (a, b) => a.productstatus - b.productstatus,
@@ -615,20 +595,30 @@ const AcceptReject = () => {
   };
 
   const handleRowSelect = (selectedId) => {
-    if (selectedRowKeys.includes(selectedId)) {
-      setSelectedRowKeys(selectedRowKeys.filter((id) => id !== selectedId));
+    // Convert selectedRowKeys to Set for easy handling of unique values
+    const uniqueSelectedRowKeys = new Set(selectedRowKeys);
+
+    if (uniqueSelectedRowKeys.has(selectedId)) {
+      // Agar selectedId mojood hai, toh use remove karo
+      uniqueSelectedRowKeys.delete(selectedId);
     } else {
-      setSelectedRowKeys([...selectedRowKeys, selectedId]);
+      // Agar selectedId mojood nahi hai, toh use add karo
+      uniqueSelectedRowKeys.add(selectedId);
     }
+
+    // Convert Set back to array and update state
+    setSelectedRowKeys([...uniqueSelectedRowKeys]);
   };
 
-  const flattenedUniqueIds = rejectedProducts.flatMap((product) =>
+
+  const flattenedUniqueIds = rejectedProducts && rejectedProducts.flatMap((product) =>
     product.products.map((p) => p.uniquepid)
   );
+
   const uniqueIdsLength = Array.from(new Set(flattenedUniqueIds)).length;
 
   const handleSelectAllRows = () => {
-    if (selectedRowKeys.length === uniqueIdsLength) {
+    if (selectedRowKeys.length - 1 === uniqueIdsLength) {
       setSelectedRowKeys([]);
     } else {
       setSelectedRowKeys(
@@ -646,6 +636,7 @@ const AcceptReject = () => {
     // Assuming the backend endpoint is 'http://your-backend-api.com/bulkProductApprove'
   };
 
+  console.log(selectedRowKeys.length, uniqueIdsLength);
   return (
     <div className="sm:p-4 sm:ml-64">
       <div className="lg:w-1/2 md:w-3/4 sm:w-full p-2">
@@ -660,12 +651,12 @@ const AcceptReject = () => {
 
       <Table
         columns={columns.slice(0, -11)}
-        dataSource={rejectedProducts}
+        dataSource={rejectedProducts || []}
         title={() => (
           <>
             <div className="flex items-center">
               <Checkbox
-                checked={selectedRowKeys.length === uniqueIdsLength}
+                checked={selectedRowKeys.length - 1 === uniqueIdsLength}
                 indeterminate={
                   selectedRowKeys.length > 0 &&
                   selectedRowKeys.length < uniqueIdsLength
@@ -703,12 +694,25 @@ const AcceptReject = () => {
             }
           },
           expandedRowRender: (record) => (
-            <Table
-              columns={columns.slice(1)} // Exclude the Vendor Name column
-              dataSource={record.products}
-              rowKey="productId"
-              pagination={false}
-            />
+            <>
+              <Table
+                columns={columns.slice(1)} // Exclude the Vendor Name column
+                dataSource={record.products}
+                rowKey="productId"
+              // pagination={false}
+              />
+              <Pagination
+                total={5}
+                showSizeChanger
+                showQuickJumper
+                defaultCurrent={2}
+                showTotal={(total) => `Total ${total} items`}
+                responsive={true}
+                onChange={(page, pageSize) => {
+                  console.log();
+                }}
+              />
+            </>
           ),
         }}
         rowKey="vendorid"

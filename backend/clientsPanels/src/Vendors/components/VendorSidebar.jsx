@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { vendorLinks } from "../constants/data";
-import { Menu } from "antd";
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import { Popover, Transition } from '@headlessui/react'
+import { UserCircleIcon } from '@heroicons/react/24/outline'
+import { FiLogOut, FiSettings } from 'react-icons/fi';
+import { ChevronDownIcon, PhoneIcon } from '@heroicons/react/20/solid'
+import { Avatar, Button, Image } from 'antd'
+
 import Cookies from "js-cookie";
+import { AdminUrl } from "../../Admin/constant";
+import { IoIosNotificationsOutline, IoMdNotificationsOutline } from "react-icons/io";
 
 const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
   const [dropdown, setDropdown] = useState(false);
@@ -43,7 +50,7 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
   }, [locationRetrieved]);
 
   const [current, setCurrent] = useState("mail");
-  const navigate = useNavigate();
+  const navigation = useNavigate();
 
   const LocationFunction = async () => {
     try {
@@ -198,6 +205,17 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
     handleCollapseAPP(!collapse);
   };
 
+  const solutions = [
+    { name: 'Profile', description: 'Manage your Vendor profile', href: '/Vendors/Profile', icon: UserCircleIcon },
+    // { name: 'Settings', description: "Manage your default Settings", href: '/Vendors/Settings', icon: FiSettings },
+    // { name: 'Integrations', description: 'Connect with third-party tools', href: '#', icon: SquaresPlusIcon },
+  ]
+  const callsToAction = [
+    { name: 'Logout', href: '/Vendors/Logout', icon: FiLogOut },
+    // { name: 'Contact', href: 'tel:9167263576', icon: PhoneIcon },
+  ]
+
+  console.log(vendorDatastate);
   return (
     <>
       {vendorDatastate == null || vendorDatastate?.length == 0 ? (
@@ -257,23 +275,86 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
                   </div>
                 </div>
 
-                <Menu
+                {/* <Menu
                   onClick={onClick}
                   selectedKeys={[current]}
                   mode="horizontal"
                   items={items}
-                />
+                /> */}
+
+
+                <div className="flex gap-5 justify-center items-center">
+                  <Link to={'/Vendors/Notifications'} class="relative inline-flex items-center text-sm font-medium text-center text-gray-700 ">
+                    <IoIosNotificationsOutline className="text-4xl" />
+                    <span class="sr-only">Notifications</span>
+                    <div class="absolute  inline-flex items-center justify-center w-3 h-3 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full top-1 right-3 animate-ping dark:border-gray-900"></div>
+                  </Link>
+
+                  <Popover className="relative">
+                    <Popover.Button className="inline-flex items-center gap-2 text-sm font-semibold leading-6 text-gray-900">
+                      <Image width={35} height={35} className="rounded-full" src={`${AdminUrl}/uploads/vendorProfile/${vendorDatastate?.[0]?.vendor_profile_picture_url?.images?.[0]}`} />
+                      <div className="flex flex-col relative">
+                        <p className="mb-4 font-bold line-clamp-1">{vendorDatastate[0]?.email}</p>
+                        <p className="absolute top-5 line-clamp-1">{vendorDatastate?.[0]?.brand_name}</p>
+                      </div>
+                      {/* <ChevronDownIcon className="h-5 w-5" aria-hidden="true" /> */}
+                    </Popover.Button>
+
+                    <Transition
+                      enter="transition ease-out duration-200"
+                      enterFrom="opacity-0 translate-y-1"
+                      enterTo="opacity-100 translate-y-0"
+                      leave="transition ease-in duration-150"
+                      leaveFrom="opacity-100 translate-y-0"
+                      leaveTo="opacity-0 translate-y-1"
+                    >
+                      <Popover.Panel className="absolute right-0 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ">
+                        <div className="w-screen max-w-md flex-auto overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
+                          <div className="p-4">
+                            {solutions.map((item) => (
+                              <div key={item.name} className="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
+                                <div className="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                                  <item.icon className="h-6 w-6 text-gray-600 group-hover:text-indigo-600" aria-hidden="true" />
+                                </div>
+                                <div>
+                                  <Link to={item.href} >
+                                    <a className="font-semibold text-gray-900">
+                                      {item.name}
+                                      <span className="absolute inset-0" />
+                                    </a>
+                                  </Link>
+                                  <p className="mt-1 text-gray-600">{item.description}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
+                            {callsToAction.map((item) => (
+                              <Link
+                                key={item.name}
+                                to={item.name == 'Logout' ? item.href : ''}
+                                className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
+                              >
+                                <item.icon className="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
+                                {item.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </Popover.Panel>
+                    </Transition>
+                  </Popover>
+                </div>
               </div>
             </div>
           </nav>
 
           <aside
             id="logo-sidebar"
-            className={`fixed top-0 z-40 transition-transform bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 ${
-              collapse
-                ? "w-64 left-0 sm:translate-x-0 transition-all duration-300 ease-in"
-                : "w-0 -left-64 sm:-translate-x-64 transition-all duration-300 ease-out"
-            } h-screen pt-24`}
+            className={`fixed top-0 z-40 transition-transform bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 ${collapse
+              ? "w-64 left-0 sm:translate-x-0 transition-all duration-300 ease-in"
+              : "w-0 -left-64 sm:-translate-x-64 transition-all duration-300 ease-out"
+              } h-screen pt-24`}
             aria-label="Sidebar"
           >
             <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
@@ -332,11 +413,10 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
                                             }
                                           >
                                             <a
-                                              className={`flex items-center w-full p-2  transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 text-sm ${
-                                                currentUrl === drplist.to
-                                                  ? `text-[#EC642A]`
-                                                  : "text-gray-700"
-                                              }`}
+                                              className={`flex items-center w-full p-2  transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 text-sm ${currentUrl === drplist.to
+                                                ? `text-[#EC642A]`
+                                                : "text-gray-700"
+                                                }`}
                                             >
                                               {drplist.name}
                                             </a>
@@ -354,11 +434,10 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
                                   onClick={() => setSelectedPage(link.name)}
                                 >
                                   <a
-                                    className={`flex items-center p-2 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                                      currentUrl === link.to
-                                        ? `text-[#EC642A]`
-                                        : "text-gray-700"
-                                    }`}
+                                    className={`flex items-center p-2 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${currentUrl === link.to
+                                      ? `text-[#EC642A]`
+                                      : "text-gray-700"
+                                      }`}
                                   >
                                     {link.icon}
                                     <span className="ml-3">{link.name}</span>

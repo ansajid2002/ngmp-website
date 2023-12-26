@@ -121,7 +121,6 @@ const AdminChatwithCustomers = () => {
         setFilteredVendors(filteredVendors); // Assuming you have a state variable for filtered vendors
     };
 
-
     return (
         <div className="lg:flex h-[85vh] sm:ml-72">
 
@@ -170,8 +169,8 @@ const AdminChatwithCustomers = () => {
                             conversations?.length > 0
                                 ? (
                                     conversations.map((item, index) => {
-                                        const { given_name, family_name, picture, customer_id } = item?.CustomerDetails
-                                        const { content, timestamp } = item?.lastMessages[index]
+                                        const { given_name = '', family_name = '', picture = '', customer_id = null } = item?.CustomerDetails || {}
+                                        const { content = '', timestamp = '' } = item?.lastMessages[index] || {}
                                         return <div key={index} onClick={() => handleCustomerChat(item?.CustomerDetails)} className={`flex gap-3  items-center cursor-pointer hover:bg-gray-300 p-4 transition-all duration-150 ease-in-out ${customer_id === CustomerState?.customer_id && 'bg-gray-200'}`}>
                                             <Image width={50} className='rounded-full' src={`${AdminUrl}/uploads/customerProfileImages/${picture}`} />
                                             <div className='flex-1'>

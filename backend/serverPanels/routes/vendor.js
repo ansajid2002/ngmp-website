@@ -359,36 +359,78 @@ app.post("/getVendorData", async (req, res) => {
   }
 });
 
-app.post("/allVendorProducts", async (req, res) => {
+app.get("/getSubcategoryofProductExists", async (req, res) => {
   try {
-    const { id } = req.body;
-    const subcatNameBackend = req.body.subcatNameBackend;
+    const { id } = req.query;
 
-    let query;
-    let values;
-
-    if (subcatNameBackend === "all") {
-      // Query to fetch all products for the given vendor without subcategory filter
-      query = "SELECT * FROM products WHERE vendorid = $1";
-      values = [id];
-    } else {
-      // Query to fetch products for the given vendor and specific subcategory
-      const subcatReplaced = subcatNameBackend
-        .replace(/[^\w\s]/g, "")
-        .replace(/\s/g, "");
-      query = "SELECT * FROM products WHERE vendorid = $1 AND slug_subcat = $2";
-      values = [id, subcatReplaced];
+    // Validate id (replace it with your validation logic)
+    if (!id) {
+      return res.status(400).json({ error: "Invalid vendor_id" });
     }
 
-    const result = await pool.query(query, values);
+    // Query to get distinct subcategories and their product counts for a specific vendor
+    const query = `
+      SELECT
+      subcategory,
+      slug_subcat AS slug_subcat,
+        COUNT(*) AS total_products
+      FROM
+        products
+      WHERE
+        vendorid = $1
+      GROUP BY
+      slug_subcat, subcategory
+    `;
 
-    const products = result.rows;
-    res.status(200).json({ products });
+    const result = await pool.query(query, [id]);
+
+    // Extract the subcategories and their counts from the query result
+    const subcategoriesWithCounts = result.rows;
+
+    res.status(200).json(subcategoriesWithCounts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.post("/allVendorProducts", async (req, res) => {
+  try {
+    const { id, page = 1, pageSize = 10 } = req.body;
+    const subcatNameBackend = req.body.subcatNameBackend;
+
+    let query;
+    let values;
+
+    const offset = (page - 1) * pageSize;
+
+    if (subcatNameBackend === "all") {
+      // Query to fetch products for the given vendor without subcategory filter
+      query = "SELECT * FROM products WHERE vendorid = $1 LIMIT $2 OFFSET $3";
+      values = [id, pageSize, offset];
+    } else {
+      // Query to fetch products for the given vendor and specific subcategory
+      query = "SELECT * FROM products WHERE vendorid = $1 AND slug_subcat = $2 LIMIT $3 OFFSET $4";
+      values = [id, subcatNameBackend, pageSize, offset];
+    }
+
+    // Query to get the total count of products
+    const totalCountQuery = "SELECT COUNT(*) FROM products WHERE vendorid = $1";
+    const totalCountValues = [id];
+    const totalCountResult = await pool.query(totalCountQuery, totalCountValues);
+    const totalProducts = totalCountResult.rows[0].count;
+
+    const result = await pool.query(query, values);
+
+    const products = result.rows;
+    res.status(200).json({ products, total: totalProducts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 app.post("/deleteSellerAdmin", async (req, res) => {
   try {
@@ -1635,7 +1677,7 @@ app.get("/searchProducts", async (req, res) => {
 
     // Use parameterized query to prevent SQL injection
     const query = {
-      text: 'SELECT ad_title AS searchkeywords FROM products WHERE (ad_title ILIKE $1 OR additionaldescription ILIKE $1) AND status = 1',
+      text: 'SELECT ad_title AS searchkeywords FROM products WHERE (ad_title ILIKE $1 OR additionaldescription ILIKE $1) AND status = 1 LIMIT 10',
       values: [`%${searchTerm}%`],
     };
 

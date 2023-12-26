@@ -69,6 +69,7 @@ const ChatwithCustomers = ({ vendorDatastate }) => {
         fetchConversations();
     }, 5000);
 
+    console.log(conversations);
     return (
         <div className="lg:flex h-[85vh] border">
 
@@ -79,16 +80,16 @@ const ChatwithCustomers = ({ vendorDatastate }) => {
                     !conversations ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => renderSkeleton(index)) :
                         conversations?.length > 0
                             ? (
-                                conversations.map((item, index) => {
-                                    const { given_name, family_name, picture, customer_id } = item?.CustomerDetails
-                                    const { content, timestamp } = item?.lastMessages[index]
-                                    return <div key={index} onClick={() => handleCustomerChat(item?.CustomerDetails)} className={`flex gap-3 overflow-hidden  items-center cursor-pointer hover:bg-gray-300 p-4 transition-all duration-150 ease-in-out ${customer_id === CustomerState?.customer_id && 'bg-gray-200'}`}>
-                                        <Image width={50} className='rounded-full' src={`${AdminUrl}/uploads/customerProfileImages/${picture}`} />
-                                        <div className='flex-1'>
+                                conversations && conversations.map((item, index) => {
+                                    const { given_name = '', family_name = '', picture = '', customer_id = '' } = item?.CustomerDetails || {}
+                                    const { content = '', timestamp = '' } = item?.lastMessages[index] || {}
+                                    return <div key={index} onClick={() => handleCustomerChat(item?.CustomerDetails)} className={`flex gap-3 overflow-hidden  items-center cursor-pointer hover:bg-gray-300 px-2 py-2 transition-all duration-150 ease-in-out ${customer_id === CustomerState?.customer_id && 'bg-gray-200'}`}>
+                                        <Image width={50} height={50} className='rounded-full' src={`${AdminUrl}/uploads/customerProfileImages/${picture}`} />
+                                        <div className='flex-1 w-full'>
                                             <h1 className='font-semibold'>{given_name} {family_name}</h1>
-                                            <div className='flex justify-between w-full overflow-hidden'>
-                                                <p className='text-sm text-gray-500 w-1/3 line-clamp-1'>{lastMessages.trim() != '' && updateCustomerId === customer_id ? lastMessages : content}</p>
-                                                <p className='text-sm text-gray-500 flex-1 justify-end'>{moment(timestamp).calendar()}</p>
+                                            <div className='flex justify-between w-full overflow-hidden '>
+                                                <p className='text-sm text-gray-500 w-1/2 line-clamp-1 overflow-hidden'>{lastMessages.trim() != '' && updateCustomerId === customer_id ? lastMessages : content}</p>
+                                                <p className='text-sm text-gray-500  justify-end'>{moment(timestamp).calendar()}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -105,7 +106,7 @@ const ChatwithCustomers = ({ vendorDatastate }) => {
             <div className="flex-grow flex-1 max-md:h-[50vh]">
                 {/* Add your chat screen content here */}
                 {
-                    CustomerState ? <ChatScreen customerData={CustomerState} vendorDatastate={vendorDatastate} onSend={handleLastMessage} /> :
+                    CustomerState && vendorDatastate ? <ChatScreen customerData={CustomerState} vendorDatastate={vendorDatastate} onSend={handleLastMessage} /> :
                         <div className='flex justify-center items-center h-screen'>
                             <p>Choose Customer to Start Conversation</p>
                         </div>

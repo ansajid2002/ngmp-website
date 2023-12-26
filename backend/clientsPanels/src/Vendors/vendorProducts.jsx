@@ -19,6 +19,7 @@ import {
   InputNumber,
   AutoComplete,
   Typography,
+  Pagination,
 } from "antd";
 
 const { Step } = Steps;
@@ -96,6 +97,11 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [VariantModalShow, setVariantModalShow] = useState(false);
   const [RowVariants, setRowVariants] = useState([]);
   const [Allproducts, setAllProducts] = useState([]);
+  const [SubcategoryCount, setSubcategoryCount] = useState(null);
+  const [totalProduct, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
 
   const id = vendorDatastate?.[0].id;
 
@@ -116,7 +122,7 @@ const VendorProducts = ({ vendorDatastate }) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id, subcatNameBackend }),
+          body: JSON.stringify({ id, subcatNameBackend, page, pageSize }),
         });
 
         if (response.ok) {
@@ -131,7 +137,8 @@ const VendorProducts = ({ vendorDatastate }) => {
             };
           });
           setProducts(products);
-          setAllProducts(sortedProducts);
+          setTotalCount(data?.total || 0)
+          setAllProducts(products);
           if (updatedImages !== undefined) setUploadImages(updatedImages);
         } else {
           // Handle error response
@@ -143,46 +150,32 @@ const VendorProducts = ({ vendorDatastate }) => {
         console.error("Error fetching vendor products:", error);
       }
     },
-    [id, subcatNameBackend, setProducts, setUploadImages]
+    [id, subcatNameBackend, setProducts, setUploadImages, page, pageSize]
   );
 
-  const callAllVendorProducts = useCallback(
-    async (updatedImages) => {
-      try {
-        const response = await fetch(`${AdminUrl}/api/allVendorProducts`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id, subcatNameBackend: "all" }),
-        });
 
-        if (response.ok) {
-          // Handle successful response
-          const data = await response.json();
-          const sortedProducts = data.products.sort((a, b) => a.id - b.id);
-
-          setAllProducts(sortedProducts);
-          if (updatedImages !== undefined) setUploadImages(updatedImages);
-        } else {
-          // Handle error response
-          console.error("Error fetching vendor products:", response.statusText);
-          setProducts([]);
-        }
-      } catch (error) {
-        // Handle error
-        console.error("Error fetching vendor products:", error);
-      }
-    },
-    [id]
-  );
 
   useEffect(() => {
-
     callVendorProducts(UploadImages);
-    callAllVendorProducts(UploadImages);
-  }, [callVendorProducts, callAllVendorProducts, UploadImages]);
+  }, [callVendorProducts, UploadImages, id, subcatNameBackend]);
 
+  useEffect(() => {
+    const fetchSubcategorywithCount = async () => {
+      try {
+        if (!id) return
+        const response = await fetch(`${AdminUrl}/api/getSubcategoryofProductExists?id=${id}`);
+
+        if (response.ok) {
+          const dataResponse = await response.json()
+          setSubcategoryCount(dataResponse);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchSubcategorywithCount()
+  }, [id])
   // Use useMemo to create a memoized version of products for improved performance
   const memoizedProducts = useMemo(() => {
     // Perform any additional memoization logic if needed
@@ -729,6 +722,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   };
 
   const handleTabChangeforTable = (key, subcatname) => {
+    console.log(subcatname, 'sub');
     setchangeSubcatTabs(key);
     setSelectedRowKeys([]);
     setsubcatNameBackend(subcatname?.replace(/[\s'"]/g, ""));
@@ -1750,7 +1744,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       ) : (
         <>
           <h1 className="text-4xl text-gray-700 font-bold mb-2">
-            All Products ({Allproducts?.length})
+            All Products ({totalProduct})
           </h1>
           <nav
             aria-label="Breadcrumbs"
@@ -1818,7 +1812,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                     onChange={async (selectedTabKey) => {
                       const selectedSubcategory =
                         selectedTabKey != "all"
-                          ? subcategories[selectedTabKey]?.subcategory_name
+                          ? SubcategoryCount[selectedTabKey]?.subcategory
                           : "all";
 
                       try {
@@ -1837,13 +1831,13 @@ const VendorProducts = ({ vendorDatastate }) => {
                   >
                     {/* Add an "All Products" tab */}
                     <TabPane
-                      tab={`All Products (${Allproducts.length})`}
+                      tab={`All Products (${totalProduct})`}
                       key="all"
                     >
                       <Table
                         columns={columns}
                         dataSource={memoizedProducts}
-                        pagination={true}
+                        pagination={false}
                         rowClassName={(record) =>
                           selectedRowKeys.includes(record.id)
                             ? "selected-row"
@@ -1878,63 +1872,87 @@ const VendorProducts = ({ vendorDatastate }) => {
                         )}
                         className="w-full mt-10"
                       />
+                      <div className="p-2 py-5 flex justify-end">
+                        <Pagination
+                          total={totalProduct}
+                          showSizeChanger
+                          showQuickJumper
+                          defaultCurrent={2}
+                          showTotal={(total) => `Total ${total} items`}
+                          responsive={true}
+                          onChange={(page, pageSize) => {
+                            setPage(page)
+                            setPageSize(pageSize)
+                          }}
+                        />
+                      </div>
                     </TabPane>
 
-                    {subcategories.map((subcat, index) => {
-                      const matchingProducts = Allproducts.filter(
-                        (product) =>
-                          product.slug_subcat ===
-                          subcat.subcategory_name
-                            .replace(/[^\w\s]/g, "")
-                            .replace(/\s/g, "")
-                      );
-
-                      return (
-                        <TabPane
-                          tab={`${subcat.subcategory_name} (${matchingProducts.length})`}
-                          key={index}
-                        >
-                          <Table
-                            columns={columns}
-                            dataSource={memoizedProducts}
-                            pagination={true}
-                            rowClassName={(record) =>
-                              selectedRowKeys.includes(record.id)
-                                ? "selected-row"
-                                : ""
-                            }
-                            title={() => (
-                              <>
-                                <div className="flex items-center">
-                                  <Checkbox
-                                    checked={
-                                      selectedRowKeys.length ===
-                                      memoizedProducts.length
-                                    }
-                                    indeterminate={
-                                      selectedRowKeys.length > 0 &&
-                                      selectedRowKeys.length <
-                                      memoizedProducts.length
-                                    }
-                                    onChange={handleSelectAllRows}
-                                  >
-                                    Select All
-                                  </Checkbox>
-                                  <Button
-                                    className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
-                                    onClick={handleDeleteSelected}
-                                    disabled={selectedRowKeys.length === 0}
-                                  >
-                                    Delete ({selectedRowKeys?.length})
-                                  </Button>
-                                </div>
-                              </>
-                            )}
-                            className="w-full mt-10"
-                          />
-                        </TabPane>
-                      );
+                    {SubcategoryCount && SubcategoryCount.map((subcat, index) => {
+                      // Check if matchingProducts have at least one product
+                      if (SubcategoryCount.length > 0) {
+                        return (
+                          <TabPane
+                            tab={`${subcat.subcategory} (${subcat.total_products})`}
+                            key={index}
+                          >
+                            <Table
+                              columns={columns}
+                              dataSource={memoizedProducts}
+                              pagination={false}
+                              rowClassName={(record) =>
+                                selectedRowKeys.includes(record.id) ? "selected-row" : ""
+                              }
+                              title={() => (
+                                <>
+                                  <div className="flex items-center">
+                                    <Checkbox
+                                      checked={
+                                        selectedRowKeys.length === memoizedProducts.length
+                                      }
+                                      indeterminate={
+                                        selectedRowKeys.length > 0 &&
+                                        selectedRowKeys.length <
+                                        memoizedProducts.length
+                                      }
+                                      onChange={handleSelectAllRows}
+                                    >
+                                      Select All
+                                    </Checkbox>
+                                    <Button
+                                      className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
+                                      onClick={handleDeleteSelected}
+                                      disabled={selectedRowKeys.length === 0}
+                                    >
+                                      Delete ({selectedRowKeys?.length})
+                                    </Button>
+                                  </div>
+                                </>
+                              )}
+                              className="w-full mt-10"
+                            />
+                            <div className="p-2 py-5 flex justify-end">
+                              <Pagination
+                                total={subcat?.total_products || 0}
+                                showSizeChanger
+                                showQuickJumper
+                                defaultCurrent={2}
+                                showTotal={(total) => `Total ${total} items`}
+                                responsive={true}
+                                onChange={(page, pageSize) => {
+                                  setPage(page)
+                                  setPageSize(pageSize)
+                                }}
+                              />
+                            </div>
+                          </TabPane>
+                        );
+                      } else {
+                        // If matchingProducts have no products, don't render TabPane
+                        return null;
+                      }
                     })}
+
                   </Tabs>
                 </div>
                 {isLoading && (

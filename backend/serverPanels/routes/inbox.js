@@ -141,14 +141,15 @@ app.post('/conversationsListforVendors', async (req, res) => {
 
         // Fetch the last message for each conversation
         const lastMessagesQuery = `
-        SELECT DISTINCT ON (conversation_id) *
-        FROM messages
-        WHERE conversation_id IN (${vendorConversation.map((_, index) => `$${index + 1}`).join(', ')})
-        ORDER BY conversation_id, timestamp DESC;
-    `;
+            SELECT DISTINCT ON (conversation_id) *
+            FROM messages
+            WHERE conversation_id IN (${vendorConversation.map((_, index) => `$${index + 1}`).join(', ')})
+            ORDER BY conversation_id, timestamp DESC;
+        `;
 
         const lastMessagesResult = await pool.query(lastMessagesQuery, [...vendorConversation.map(conversation => conversation.conversation_id)]);
         const lastMessages = lastMessagesResult.rows;
+
 
         // Associate each conversation with its vendor details and last message
         const data = vendorConversation.map(conversation => {
