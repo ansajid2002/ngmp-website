@@ -397,8 +397,9 @@ app.get("/getSubcategoryofProductExists", async (req, res) => {
 app.post("/allVendorProducts", async (req, res) => {
   try {
     const { id, page = 1, pageSize = 10 } = req.body;
-    const subcatNameBackend = req.body.subcatNameBackend;
+    const subcatNameBackend = req.body.subcatNameBackend.replace(/[^\w\s]/g, "").replace(/\s/g, "");
 
+    console.log(subcatNameBackend);
     let query;
     let values;
 
@@ -406,14 +407,13 @@ app.post("/allVendorProducts", async (req, res) => {
 
     if (subcatNameBackend === "all") {
       // Query to fetch products for the given vendor without subcategory filter
-      query = "SELECT * FROM products WHERE vendorid = $1 LIMIT $2 OFFSET $3";
+      query = "SELECT *, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 ORDER BY updated_at_product DESC LIMIT $2 OFFSET $3";
       values = [id, pageSize, offset];
     } else {
       // Query to fetch products for the given vendor and specific subcategory
-      query = "SELECT * FROM products WHERE vendorid = $1 AND slug_subcat = $2 LIMIT $3 OFFSET $4";
+      query = "SELECT *, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 AND slug_subcat = $2 ORDER BY updated_at_product DESC LIMIT $3 OFFSET $4";
       values = [id, subcatNameBackend, pageSize, offset];
     }
-
 
     // Query to get the total count of products
     const totalCountQuery = "SELECT COUNT(*) FROM products WHERE vendorid = $1";
@@ -430,6 +430,58 @@ app.post("/allVendorProducts", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.post("/deleteVariant", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    // Perform the deletion in the database
+    const deleteQuery = "DELETE FROM variantproducts WHERE variant_id = $1";
+    await pool.query(deleteQuery, [id]);
+
+    res.status(200).json({ message: "Variant deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error deleting variant" });
+  }
+});
+
+app.post("/updateEditVariant", async (req, res) => {
+  try {
+    const { variant_id, variant_mrp, variant_sellingprice, variant_skuid, variant_quantity } = req.body;
+
+    // Check if the SKU already exists
+    const skuCheckQuery = "SELECT COUNT(*) FROM variantproducts WHERE variant_skuid = $1 AND variant_id <> $2";
+    const skuCheckValues = [variant_skuid, variant_id];
+    const skuCheckResult = await pool.query(skuCheckQuery, skuCheckValues);
+    const skuCount = skuCheckResult.rows[0].count;
+
+    if (skuCount > 0) {
+      // SKU already exists, return an error response
+      return res.status(400).json({ error: "SKU already exists in the database" });
+    }
+
+    // Perform the update in the database
+    const updateQuery = `
+      UPDATE variantproducts
+      SET
+        variant_mrp = $1,
+        variant_sellingprice = $2,
+        variant_skuid = $3,
+        variant_quantity = $4
+      WHERE variant_id = $5
+    `;
+    const updateValues = [variant_mrp, variant_sellingprice, variant_skuid, variant_quantity, variant_id];
+
+    await pool.query(updateQuery, updateValues);
+
+    res.status(200).json({ message: "Variant updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error updating variant" });
+  }
+});
+
 
 
 
@@ -534,26 +586,25 @@ app.post("/addVendorProduct", async (req, res) => {
       prodSlug,
     ];
 
-    const productInsertResult = await pool.query(
-      productInsertQuery,
-      productInsertValues
-    );
+
 
     if (productData.FilteredVariantData.length > 0) {
+      // To store the conflicting SKUs
+      const conflictingSKUs = [];
+
       // Insert variants into another table if FilteredVariantData is not empty
       for (const variant of productData.FilteredVariantData) {
         // Check if the SKU exists in the variants table
         const isMatch = await checkSkuidExists(variant.sku);
 
         if (isMatch) {
-          // SKU already exists in the variants table, return an error
-          return res
-            .status(400)
-            .json({ error: "SKU already exists in variants" });
+          // SKU already exists in the variants table, add it to the list of conflicts
+          conflictingSKUs.push(variant.sku);
         } else {
+
           // Insert a new record into the variants table
           const variantInsertQuery = `
-            INSERT INTO variantproducts (label, product_uniqueid, variant_mrp, variant_sellingprice, variant_skuid, variant_quantity, variantsvalues, vendori_id,variant_category, variant_subcategory)
+            INSERT INTO variantproducts (label, product_uniqueid, variant_mrp, variant_sellingprice, variant_skuid, variant_quantity, variantsvalues, vendori_id, variant_category, variant_subcategory)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING *;
           `;
@@ -574,7 +625,19 @@ app.post("/addVendorProduct", async (req, res) => {
           await pool.query(variantInsertQuery, variantInsertValues);
         }
       }
+
+      // If there are conflicting SKUs, return an error with the list of conflicting SKUs
+      if (conflictingSKUs.length > 0) {
+        return res
+          .status(400)
+          .json({ error: "Some SKUs already exist in variants", conflictingSKUs });
+      }
     }
+
+    const productInsertResult = await pool.query(
+      productInsertQuery,
+      productInsertValues
+    );
 
     res.status(200).json({
       status: 200,
@@ -826,9 +889,7 @@ app.post("/deleteProducts", async (req, res) => {
   const { productIds } = req.body;
   try {
     // Fetch image filenames from the database
-    const imageQuery = `SELECT images FROM products WHERE id IN (${productIds.join(
-      ", "
-    )})`;
+    const imageQuery = `SELECT images FROM products WHERE id IN (${productIds.join(", ")})`;
     const imageResult = await pool.query(imageQuery);
     const imageFilenames = imageResult.rows.map((row) => row.images);
 
@@ -838,7 +899,7 @@ app.post("/deleteProducts", async (req, res) => {
     // Execute the query
     await pool.query(query);
 
-    // Unlink images from folder
+    // Unlink images from folder if they exist
     imageFilenames.length > 0 &&
       imageFilenames.forEach((filenamesArray) => {
         filenamesArray.forEach((filename) => {
@@ -849,7 +910,11 @@ app.post("/deleteProducts", async (req, res) => {
             "UploadedProductsFromVendors",
             filename
           );
-          fs.unlinkSync(imagePath); // Unlink the image file
+
+          // Check if the image file exists before unlinking
+          if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath); // Unlink the image file
+          }
         });
       });
 
@@ -859,6 +924,7 @@ app.post("/deleteProducts", async (req, res) => {
     res.status(500).json({ error: "Error deleting products" });
   }
 });
+
 
 // Multer configuration for file upload
 const storage = multer.diskStorage({
@@ -1025,10 +1091,11 @@ const fetchRejectedVendors = async (page, pageSize) => {
         v.*,
         p.*,
         p.status AS productstatus,
-        ROW_NUMBER() OVER (PARTITION BY p.vendorid ORDER BY p.id) AS product_row_number
+        ROW_NUMBER() OVER (PARTITION BY p.vendorid ORDER BY p.id) AS product_row_number,
+        COUNT(*) OVER (PARTITION BY v.id) AS vendor_row_count
       FROM
         VendorsWithRowNumber v
-        LEFT JOIN products p ON v.id = p.vendorid
+        INNER JOIN products p ON v.id = p.vendorid
       ORDER BY v.id, p.id
       OFFSET $1
       LIMIT $2;
@@ -1045,6 +1112,8 @@ const fetchRejectedVendors = async (page, pageSize) => {
     throw error;
   }
 };
+
+
 
 // Fetch rejected vendors for all categories
 app.get("/rejected-products", async (req, res) => {

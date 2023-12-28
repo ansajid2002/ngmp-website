@@ -99,6 +99,7 @@ const AcceptReject = () => {
             productsByVendor[vendorid] = {
               vendorid,
               vendorname: product.vendorname,
+              totalProductsVendor: parseInt(product.vendor_row_count) || 0,
               products: [],
             };
           }
@@ -107,7 +108,7 @@ const AcceptReject = () => {
 
         const modifiedData = Object.values(productsByVendor);
         setRejectedProducts(modifiedData);
-        ;
+
         settotalVendors(parseInt(data?.totalvendors) || 0)
         setExpandedRowKeys(data.map((product) => product.vendorid));
       } catch (error) {
@@ -192,7 +193,7 @@ const AcceptReject = () => {
 
     if (isvariant === "Variant") {
       const filteredVariants = variantsFetchFinal
-        .filter((variant) => variant.product_uniqueid === uniquepid)
+        .filter((variant) => parseInt(variant.product_uniqueid) === uniquepid)
         .sort(
           (a, b) =>
             parseFloat(a?.variant_sellingprice) -
@@ -251,14 +252,15 @@ const AcceptReject = () => {
       dataIndex: "vendorname",
       key: "vendorname",
       render: (_, record) => {
-
+        console.log(record);
         return (
           <>
             <p className="font-bold text-xl">
               {record.vendorname}
             </p>
             <div className="flex gap-2">
-              {/* <p>{record?.products?.length || 0} {record?.products?.length > 1 ? 'Products' : 'Product'}</p> */}
+              <p>{record?.totalProductsVendor || 0} {record?.totalProductsVendor > 1 ? 'Products' : 'Product'}</p>
+
               <p> (VID: {record.vendorid})</p>
               <Button onClick={() => {
                 // Assume record.products is an array of objects
@@ -743,10 +745,9 @@ const AcceptReject = () => {
                   total={vendorTotalProducts[record.vendorid] || 0}
                   showSizeChanger
                   showQuickJumper
-                  defaultCurrent={2}
+                  defaultCurrent={1}
                   showTotal={(total) => `Total ${total} items`}
                   responsive={true}
-                  current={1}
                   onChange={async (page, pageSize) => {
                     const vendorProduct = await getVendorChunkProducts(record.vendorid, page, pageSize);
                     setVendorProducts({ [record.vendorid]: vendorProduct?.products || [] });

@@ -43,6 +43,7 @@
     "react-icons": "^4.3.1",
     "react-image-crop": "^10.1.5",
     "react-input-mask": "^2.0.4",
+    "react-loading-skeleton": "^3.3.1",
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.13.0",
     "react-tooltip": "^5.18.1",

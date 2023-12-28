@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ExcelJS from "exceljs"; // Import the exceljs library
-import { Table, Button, Upload, Typography, message, Alert, Modal, Image } from "antd";
+import { Table, Button, Upload, Typography, message, Alert, Modal, Image, Checkbox } from "antd";
 import { UploadOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { AdminUrl } from "../Admin/constant";
 import Swal from "sweetalert2";
-import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import DownloadSampleExcel from "./components/DownloadSampleExcel";
 import AuthCheck from "./components/AuthCheck";
 import axios from "axios";
+import { AiOutlineLoading } from "react-icons/ai";
 
 const { Title } = Typography;
 const BulkProductUpload = ({ vendorDatastate }) => {
@@ -22,7 +22,9 @@ const BulkProductUpload = ({ vendorDatastate }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [FilteredSubcategories, setFilteredSubcategories] = useState(null);
   const [selectedExcel, setSelectedExcel] = useState(null);
-
+  const [loading, setLoading] = useState(false);
+  const [checkImage, setCheckImage] = useState(false);
+  console.log(checkImage);
   const [locationData, setLocationData] = useState({
     city: "",
     state: "",
@@ -77,6 +79,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
   const handleFileUpload = async (file) => {
     try {
+      setLoading(true)
       const arrayBuffer = await file.arrayBuffer(); // Convert the file to ArrayBuffer
       setSelectedExcel(file)
       const workbook = new ExcelJS.Workbook();
@@ -150,6 +153,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
       }, []);
 
+      setLoading(false)
       setJsonData(sheetData);
     } catch (error) {
       console.error("Error reading the uploaded file:", error);
@@ -288,6 +292,10 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
   const handleUpload = async () => {
     try {
+      if (!jsonData) {
+        return
+      }
+      const batchSize = 100; // Set the batch size
       const subcategory = jsonData[0]?.key7;
 
       if (!subcategory) {
@@ -295,55 +303,70 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         return;
       }
 
-      const dataToSend = new FormData();
-      const currentDate = new Date();
+      const totalRequests = Math.ceil(jsonData.length / batchSize);
+      let successCount = 0;
 
-      dataToSend.append("jsonData", JSON.stringify(jsonData));
-      dataToSend.append("subcategory", subcategory);
-      dataToSend.append("selectedExcel", selectedExcel);
-      dataToSend.append("currentDateTime", currentDate.toISOString());
-      dataToSend.append("vendorId", vendorid);
-
-
-      // Show loading message using Swal with a minimum timer of 3 seconds
+      // Show loading message using Swal
       const loadingSwal = Swal.fire({
         title: "Uploading Data",
-        text: "Please wait...",
+        text: "Initializing...",
         allowOutsideClick: false,
+        showConfirmButton: false, // Hide the "Ok" button
         didOpen: () => {
           Swal.showLoading();
-          // setTimeout(() => {
-          //   loadingSwal.close();
-          // }, 3000); // Minimum timer of 3 seconds
         },
       });
 
-      const response = await fetch(`${AdminUrl}/api/BulkProductUpload`, {
-        method: "POST",
-        body: dataToSend,
-      });
+      for (let batchIndex = 0; batchIndex < totalRequests; batchIndex++) {
+        const startIdx = batchIndex * batchSize;
+        const endIdx = Math.min(startIdx + batchSize, jsonData.length);
+        const batchData = jsonData.slice(startIdx, endIdx);
 
-      if (!response.ok) {
-        const responseData = await response.json();
+        const dataToSend = new FormData();
+        const currentDate = new Date();
 
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Error uploading data. " + responseData.error,
+        dataToSend.append("jsonData", JSON.stringify(batchData));
+        dataToSend.append("subcategory", subcategory);
+        dataToSend.append("selectedExcel", selectedExcel);
+        dataToSend.append("currentDateTime", currentDate.toISOString());
+        dataToSend.append("vendorId", vendorid);
+        dataToSend.append("excludeImage", checkImage);
+
+        const response = await fetch(`${AdminUrl}/api/BulkProductUpload`, {
+          method: "POST",
+          body: dataToSend,
         });
-        return;
+
+        if (!response.ok) {
+          const responseData = await response.json();
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Error uploading data. " + responseData.error,
+          });
+          return;
+        }
+
+        successCount += 1;
+
+        // Update loading message in real-time
+        loadingSwal.update({
+          title: "Uploading Data",
+          text: `${startIdx + 1} - ${endIdx} of ${jsonData.length} products`,
+        });
       }
 
-      await response.json();
-
+      // Close the loading Swal after all batches are processed
       loadingSwal.close();
 
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: "Data uploaded successfully.",
+        text: `Data uploaded successfully. (${successCount} batches)`,
       });
+
       setJsonData(null); // Clear jsonData after successful upload
+      setCheckImage(false)
     } catch (error) {
       console.error("Error uploading data to the backend:", error);
       Swal.fire({
@@ -353,6 +376,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
       });
     }
   };
+
 
   const categoryFunction = async () => {
     try {
@@ -414,6 +438,11 @@ const BulkProductUpload = ({ vendorDatastate }) => {
     setJsonData(null);
   };
 
+
+  const handleCheckboxChange = (e) => {
+    setCheckImage(e.target.checked);
+  };
+
   return vendorDatastate && vendorDatastate.length > 0 ? (
     <>
       {!vendorDatastate?.[0].email_verification_status ||
@@ -427,7 +456,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
               <h1 className="font-bold text-2xl mb-5 text-gray-700">
                 Choose Category
               </h1>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 {categories.map((category) => (
                   <div
                     key={category.category_id}
@@ -505,88 +534,99 @@ const BulkProductUpload = ({ vendorDatastate }) => {
                 >
                   Bulk Product Upload
                 </Title>
-                <div className="mb-4 w-full overflow-hidden">
-                  <Upload
-                    accept=".xlsx"
-                    className="w-full"
-                    beforeUpload={() => false}
-                    onChange={(info) => handleFileUpload(info.file)}
-                  >
-                    <Button
-                      style={{ width: "80vw" }} // Set the width to 100% to make the button full-width
-                      className="h-48 text-xl"
-                      icon={<UploadOutlined />}
-                    >
-                      Upload Excel File
-                    </Button>
-                  </Upload>
+                <Upload
+                  accept=".xlsx"
+                  className="w-full"
+                  beforeUpload={() => false}
+                  onChange={(info) => handleFileUpload(info.file)}
+                >
                   <Button
-                    type="button"
-                    onClick={handleUpload}
-                    disabled={!jsonData && jsonData?.length > 0}
-                    className={`flex mt-4 items-center ml-2 transition-all duration-300 ${jsonData
-                      ? "bg-blue-500 hover:bg-blue-600 text-white transform hover:scale-105"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      }`}
+                    style={{ width: "80vw" }} // Set the width to 100% to make the button full-width
+                    className="h-48 text-xl"
+                    icon={<UploadOutlined />}
                   >
-                    <UploadOutlined className="mr-1" />
-                    Upload
+                    Upload Excel File
                   </Button>
-                </div>
+                </Upload>
+
+
                 <div className={jsonData ? "hidden" : ""}>
                   <DownloadSampleExcel />
                 </div>
               </>
             }
 
-            {jsonData && jsonData?.length > 0 && (
-              <div>
-                <div className="py-4">
-                  <h1 className="text-xl font-semibold tracking-wider">Total Products: {jsonData?.length}</h1>
-                </div>
-                <div className="bg-white rounded shadow overflow-x-auto mb-4">
-                  <Table
-                    pagination={false}
-                    columns={columns}
-                    dataSource={jsonData}
+            {
+              jsonData && jsonData?.length > 0 && (
+                <div>
+                  <div className="py-4">
+                    <h1 className="text-xl font-semibold tracking-wider">Total Products: {jsonData?.length}</h1>
+                  </div>
+                  <div className="bg-white rounded shadow overflow-x-auto mb-4">
+                    <Table
+                      pagination={true}
+                      columns={columns}
+                      dataSource={jsonData}
+                    />
+                  </div>
+                  <Alert
+                    type="info"
+                    message={
+                      <div className="flex items-start">
+                        <InfoCircleOutlined className="text-blue-500 mr-4 mt-1" />
+                        <div>
+                          <p className="mb-2">Review and Confirm Details</p>
+                          <p className="text-gray-600 mb-4">
+                            You have selected category "
+                            <strong>{jsonData[0]?.key6}</strong>" and
+                            subcategory "<strong>{jsonData[0]?.key7}</strong>
+                            ". Before proceeding, please review and confirm
+                            the details extracted from the Excel file below.
+                            If any discrepancies are found, make the necessary
+                            edits in the Excel file and then proceed.
+                          </p>
+                          <ul className="list-disc ml-8 mt-2">
+                            <li>Product titles and descriptions</li>
+                            <li>Brands, currencies, and prices</li>
+                            <li>
+                              Category, subcategory, city, state, and country
+                              information
+                            </li>
+                          </ul>
+                          <p className="text-gray-600 mt-4">
+                            Once you have reviewed and confirmed the details,
+                            click the <strong>"Upload"</strong> button above
+                            to proceed.
+                          </p>
+                        </div>
+                      </div>
+                    }
+                    className="mb-4"
                   />
                 </div>
-                <Alert
-                  type="info"
-                  message={
-                    <div className="flex items-start">
-                      <InfoCircleOutlined className="text-blue-500 mr-4 mt-1" />
-                      <div>
-                        <p className="mb-2">Review and Confirm Details</p>
-                        <p className="text-gray-600 mb-4">
-                          You have selected category "
-                          <strong>{jsonData[0]?.key6}</strong>" and
-                          subcategory "<strong>{jsonData[0]?.key7}</strong>
-                          ". Before proceeding, please review and confirm
-                          the details extracted from the Excel file below.
-                          If any discrepancies are found, make the necessary
-                          edits in the Excel file and then proceed.
-                        </p>
-                        <ul className="list-disc ml-8 mt-2">
-                          <li>Product titles and descriptions</li>
-                          <li>Brands, currencies, and prices</li>
-                          <li>
-                            Category, subcategory, city, state, and country
-                            information
-                          </li>
-                        </ul>
-                        <p className="text-gray-600 mt-4">
-                          Once you have reviewed and confirmed the details,
-                          click the <strong>"Upload"</strong> button above
-                          to proceed.
-                        </p>
-                      </div>
-                    </div>
-                  }
-                  className="mb-4"
-                />
+              )
+
+            }
+
+            {loading ? <div className="mt-2 flex justify-center"><p>Loading Excel Data...</p></div> : <div className="my-4 gap-4 w-full overflow-hidden flex items-center">
+              <div>
+                <Checkbox id="check" onChange={handleCheckboxChange} />
+                <label htmlFor="check" className="ml-2">Do not update Images</label>
               </div>
-            )}
+
+              <Button
+                type="button"
+                onClick={handleUpload}
+                disabled={!jsonData && jsonData?.length > 0}
+                className={`flex  items-center ml-2 transition-all duration-300 ${jsonData
+                  ? "bg-blue-500 hover:bg-blue-600 text-white transform hover:scale-105"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+              >
+                <UploadOutlined className="mr-1" />
+                Upload
+              </Button>
+            </div>}
 
           </div>
 

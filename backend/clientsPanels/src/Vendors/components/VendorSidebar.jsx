@@ -123,7 +123,7 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
   }, [locationData, locationRetrieved]);
 
   useEffect(() => {
-    vendorDatastate?.length === 0 && navigate("/Vendors/Login");
+    vendorDatastate?.length === 0 && navigation("/Vendors/Login");
   }, [vendorDatastate]);
 
   const handleDropdown = (drpIndex) => {
@@ -140,65 +140,6 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
     navigate(e.key);
   };
 
-  const items = [
-    {
-      label:
-        vendorDatastate?.length > 0
-          ? vendorDatastate[0]?.vendorname
-          : "Profile",
-      key: "SubMenu",
-      icon: <UserOutlined />,
-      children: [
-        {
-          type: "group",
-          label: "Profile",
-          children: [
-            {
-              label: "Profile",
-              key: "/Vendors/Profile",
-              icon: <UserOutlined />,
-            },
-            // {
-            //   label: "Messages",
-            //   key: "/Messages",
-            //   icon: <MessageOutlined />,
-            // },
-            // {
-            //   label: "Help",
-            //   key: "/help",
-            //   icon: <FlagOutlined />,
-            // },
-          ],
-        },
-        {
-          type: "group",
-          label: "Auth",
-          children: [
-            // {
-            //   label: "Balance",
-            //   key: "/balance",
-            //   icon: <DollarOutlined />,
-            // },
-            // {
-            //   label: "Settings",
-            //   key: "/ettings",
-            //   icon: <SettingOutlined />,
-            // },
-            // {
-            //   label: "Lock Screen",
-            //   key: "/lockscreen",
-            //   icon: <LockOutlined />,
-            // },
-            {
-              label: "Logout",
-              key: "/Vendors/logout",
-              icon: <LogoutOutlined />,
-            },
-          ],
-        },
-      ],
-    },
-  ];
 
   const handleCollapse = () => {
     setcollapse(!collapse);

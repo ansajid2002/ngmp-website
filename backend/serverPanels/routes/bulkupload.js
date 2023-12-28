@@ -27,7 +27,7 @@ const uploadExcel = multer({ storage: storageExcel });
 
 // Bulk Product Uploads
 app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, res) => {
-    const { jsonData, currentDateTime, vendorId } = req.body;
+    const { jsonData, currentDateTime, vendorId, excludeImage } = req.body;
 
     try {
         const jsonDataArray = JSON.parse(jsonData);
@@ -38,35 +38,63 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                 const imageUrl = data.key8?.text || data.key8;
                 let imageFileName = "";
 
-                try {
-                    const response = await fetch(imageUrl, {
-                        headers: {
-                            Accept: "image/jpeg",
-                        },
-                    });
+                if (excludeImage === 'false') {
+                    try {
+                        const response = await fetch(imageUrl, {
+                            headers: {
+                                Accept: "image/jpeg",
+                            },
+                        });
 
-                    if (response.ok) {
-                        imageFileName = `${Date.now()}_${path.basename(
-                            imageUrl,
-                            ".jpg"
-                        )}.jpg`;
-                        const imageBuffer = await response.arrayBuffer();
-                        const imagePath = path.join(
-                            __dirname,
-                            "..",
-                            "uploads/UploadedProductsFromVendors",
-                            imageFileName
-                        );
-                        fs.writeFileSync(imagePath, Buffer.from(imageBuffer));
+                        if (response.ok) {
+                            imageFileName = `${Date.now()}_${path.basename(
+                                imageUrl,
+                                ".jpg"
+                            )}.jpg`;
+
+                            // console.log(imageFileName);
+                            // return
+                            const imageBuffer = await response.arrayBuffer();
+                            const imagePath = path.join(
+                                __dirname,
+                                "..",
+                                "uploads/UploadedProductsFromVendors",
+                                imageFileName
+                            );
+                            fs.writeFileSync(imagePath, Buffer.from(imageBuffer));
+                        }
+                    } catch (error) {
+                        console.error("Error downloading image:", error);
                     }
-                } catch (error) {
-                    console.error("Error downloading image:", error);
                 }
+
 
                 const existingProduct = await pool.query(
                     'SELECT * FROM products WHERE skuid = $1 AND vendorid = $2',
                     [data.key17, data.vendorid]
                 );
+
+                // Unlink existing images
+                if (existingProduct.rows.length > 0 && excludeImage === 'false') {
+                    const existingImages = existingProduct.rows[0].images;
+
+                    existingImages.forEach((imageName) => {
+                        const existingImagePath = path.join(
+                            __dirname,
+                            "..",
+                            "uploads/UploadedProductsFromVendors",
+                            imageName
+                        );
+
+                        try {
+                            console.log('unlinked');
+                            // Unlink the existing image file
+                            fs.unlinkSync(existingImagePath);
+                        } catch (error) {
+                            console.error("Error unlinking existing image:", error);
+                        }
+                    });
+                }
 
                 if (existingProduct.rows.length > 0) {
                     console.log('exis', index);
@@ -113,7 +141,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.key4 || "",
                         data.key5 || 0,
                         existingProduct.rows[0].category || "",
-                        existingProduct.rows[0].subcategory || "",
+                        existingProduct.rows[0].subcategory.replace(/[^\w\s]/g, "").replace(/\s/g, "") || "",
                         data.key9 || "",
                         data.city || "",
                         data.state || "",
@@ -134,8 +162,8 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.key18 || 0,
                         "Simple",
                         data.key19 || "",
-                        data.category,
-                        data.subcatgeory,
+                        data.category.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
+                        data.subcatgeory.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
                         slug(data.key1 || "")
                     ];
 
@@ -214,8 +242,8 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.key18 || 0,
                         "Simple",
                         data.key19 || "",
-                        data.category,
-                        data.subcatgeory,
+                        data.category.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
+                        data.subcatgeory.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
                         slug(data.key1 || "")
                     ];
 
@@ -234,6 +262,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
         console.error("Error uploading data:", error);
         res.status(500).json({ error: error.message });
     }
+
 });
 
 app.post('/fetchVendorLibrary', async (req, res) => {

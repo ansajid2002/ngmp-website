@@ -9,6 +9,7 @@ const VendorDashboard = ({
   conversionRates,
   isCurrencyloading,
 }) => {
+
   return vendorDatastate && vendorDatastate?.length > 0 ? (
     <>
       <>
@@ -21,7 +22,7 @@ const VendorDashboard = ({
           </>
         ) : (
           <>
-            <div className="mb-10">
+            <div className="mb-10 transition-all duration-75 ease-in-out">
               <IncompleteProfile vendorDatastate={vendorDatastate} />
             </div>
             <DashboardMetrics
@@ -42,7 +43,13 @@ const VendorDashboard = ({
       </>
     </>
   ) : (
-    ""
+    <div className="bg-white h-screen p-2 absolute top-0 left-0 w-full overflow-hidden transition-all duration-75 ease-in-out">
+      <div className="bg-gray-200 w-full h-24 rounded animate-pulse"></div>
+      <div className="flex gap-2">
+        <div className="w-48 bg-gray-200 h-screen my-2  rounded-md animate-pulse"></div>
+        <div className="w-full bg-gray-200 h-screen my-2 rounded-md  animate-pulse"></div>
+      </div>
+    </div>
   );
 };
 

@@ -28,12 +28,11 @@ const VariantsCrud = ({
       try {
         const response = await getAllVendorProductvariants(id);
         setAttributeData(response);
-        console.log(variantsValueArray, "variantsValueArray");
         const initialFormFields = response.map((attribute) => ({
           attributeName: attribute.attribute_name,
           attributeValues: attribute.attribute_values,
         }));
-        setFormFields(initialFormFields);
+        SelectedUniqueId && setFormFields(initialFormFields);
         setVariants(variantsValueArray);
       } catch (error) {
         console.error("Error:", error);
@@ -56,10 +55,15 @@ const VariantsCrud = ({
       return;
     }
 
-    // Create a new attribute object with an available name and empty values
+    // Assuming attributeData contains attribute_value for the selected attribute
+    const selectedAttribute = attributeData.find(
+      (attribute) => attribute.attribute_name === availableAttributeNames[0]
+    );
+
+    // Create a new attribute object with an available name and attribute values
     const newAttribute = {
       attributeName: availableAttributeNames[0],
-      attributeValues: [],
+      attributeValues: selectedAttribute.attribute_values,
     };
 
     // Clear the selected values in the form fields for attributeName and attributeValues
@@ -68,6 +72,7 @@ const VariantsCrud = ({
       [`attributeValues${formFields.length}`]: [],
     });
 
+    console.log(newAttribute);
     setFormFields([...formFields, newAttribute]);
   };
 
@@ -162,25 +167,50 @@ const VariantsCrud = ({
     setVariants(variants);
   };
 
-  const handleSaveForm = (formData, id) => {
-    const variantsValue = variants[id];
+  const handleSaveForm = (formData_form, id) => {
+    const newFormData = { ...formData_form, variantsValue: variants[id] };
 
-    // Append the submitted form data and variantsValue to the formdata
-    setformdata([...formdata, { ...formData, variantsValue }]);
-    onSave([...formdata, { ...formData, variantsValue }], variants);
+    if (formdata[id]) {
+      // If formdata[id] exists, update the existing row
+      formdata[id] = newFormData;
+    } else {
+      // Check if any existing row has the same SKU
+      const duplicateIndex = formdata.findIndex(item => item.sku === newFormData.sku);
+
+      if (duplicateIndex !== -1) {
+        // Handle the case where a duplicate SKU is found
+        alert('Sku already added... check and try again.');
+        return;
+      }
+
+      // If formdata[id] doesn't exist, append a new row
+      formdata.push(newFormData);
+    }
+
+    // Update the state with the modified formdata
+    setformdata([...formdata]);
+
+    // Perform any additional actions if needed
+    onSave([...formdata], variants);
   };
 
   useEffect(() => {
     // Set initial values for attributeData and attributeValues
-    formFields.forEach((field, index) => {
+    SelectedUniqueId && formFields.forEach((field, index) => {
+      // Filter out duplicate values using a Set
+      const uniqueAttributeValues = new Set(
+        variantsValueArray
+          .filter((variant) => variant[field.attributeName])
+          .map((variant) => variant[field.attributeName])
+      );
+
       formRef.current.setFieldsValue({
         [`attributeName${index}`]: field.attributeName,
-        [`attributeValues${index}`]: variantsValueArray
-          .filter((variant) => variant[field.attributeName])
-          .map((variant) => variant[field.attributeName]),
+        [`attributeValues${index}`]: Array.from(uniqueAttributeValues),
       });
     });
   }, [formFields]);
+
 
   return (
     <>
@@ -189,56 +219,62 @@ const VariantsCrud = ({
         form={form}
         ref={(form) => (formRef.current = form)} // Assign the form ref
       >
-        {formFields.map((field, index) => (
-          <div key={index} style={{ display: "flex", marginBottom: "8px" }}>
-            <Form.Item
-              style={{ flex: 1, marginRight: "8px" }}
-              label={`Attribute Name ${index + 1}`}
-              name={`attributeName${index}`}
-            >
-              <Select
-                name="attributeName"
-                onChange={(value) => handleAttributeChange(index, value)}
-              >
-                {attributeData
-                  .filter(
-                    (attribute) =>
-                      !formFields.some(
-                        (field, i) =>
-                          i !== index &&
-                          field.attributeName === attribute.attribute_name
+        {formFields.map((field, index) => {
+
+          return (
+            <div key={index} style={{ display: "flex", marginBottom: "8px" }}>
+
+              <>
+                <Form.Item
+                  style={{ flex: 1, marginRight: "8px" }}
+                  label={`Attribute Name ${index + 1}`}
+                  name={`attributeName${index}`}
+                >
+                  <Select
+                    name="attributeName"
+                    onChange={(value) => handleAttributeChange(index, value)}
+                  >
+                    {attributeData
+                      .filter(
+                        (attribute) =>
+                          !formFields.some(
+                            (field, i) =>
+                              i !== index &&
+                              field.attributeName === attribute.attribute_name
+                          )
                       )
-                  )
-                  .map((attribute) => (
-                    <Option
-                      key={attribute.attribute_id}
-                      value={attribute.attribute_name}
-                    >
-                      {attribute.attribute_name}
-                    </Option>
-                  ))}
-              </Select>
-            </Form.Item>
+                      .map((attribute) => (
+                        <Option
+                          key={attribute.attribute_id}
+                          value={attribute.attribute_name}
+                        >
+                          {attribute.attribute_name}
+                        </Option>
+                      ))}
+                  </Select>
+                </Form.Item>
 
-            <Form.Item
-              style={{ flex: 1, marginRight: "8px" }}
-              label={`Attribute Value ${index + 1}`}
-              name={`attributeValues${index}`}
-            >
-              <Select mode="multiple" value={field.attributeValues}>
-                {field.attributeValues.map((value) => (
-                  <Option key={value} value={value}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
+                <Form.Item
+                  style={{ flex: 1, marginRight: "8px" }}
+                  label={`Attribute Value ${index + 1}`}
+                  name={`attributeValues${index}`}
+                >
+                  <Select mode="multiple" value={field.attributeValues}>
+                    {field.attributeValues.map((value) => (
+                      <Option key={value} value={value}>
+                        {value}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </>
 
-            <Button type="link" onClick={() => handleRemoveAttribute(index)}>
-              Remove
-            </Button>
-          </div>
-        ))}
+              <Button type="link" onClick={() => handleRemoveAttribute(index)}>
+                Remove
+              </Button>
+            </div>
+          )
+        })}
 
         <div className="flex">
           {formFields.length < attributeData.length && (
@@ -270,7 +306,7 @@ const VariantsCrud = ({
                 FilteredVariantData={FilteredVariantData}
                 initialValues={FilteredVariantData[index]} // Pass the initial values as the corresponding FilteredVariantData
                 SelectedUniqueId={SelectedUniqueId}
-                formData={form}
+                formData={formdata}
                 onCancel={onCancel}
               />
             ))}
@@ -281,6 +317,7 @@ const VariantsCrud = ({
 
 const VariantForm = ({
   variant,
+  key,
   onSave,
   data,
   initialValues,
@@ -305,6 +342,7 @@ const VariantForm = ({
   // Create a label string by joining the attribute values
   const label = Object.values(variant).join("/");
 
+  console.log(formData, data, 'formdata');
   const onFinish = async (values) => {
     setIsLoading(true); // Set loading to true when the form is submitted
 
@@ -321,6 +359,8 @@ const VariantForm = ({
         label,
         ...values,
       };
+
+      console.log(formData, 'asa');
 
       // Pass the form data to the parent component
       onSave(formData, data, variant);

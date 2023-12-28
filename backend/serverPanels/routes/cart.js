@@ -213,9 +213,54 @@ app.get('/cart', async (req, res) => {
             `;
         const queryParams = [customer_id];
 
-        // Execute the SQL query
         const cartData = await pool.query(query, queryParams);
-        res.json(cartData.rows);
+        console.log(cartData.rows);
+        // Get product details from AllProductsVendors based on product_uniqueid
+        const AllProducts = await AllProductsVendors(pool);
+
+        const matchingProducts = cartData.rows.map((cartItem) => {
+            const productMatch = AllProducts.find(
+                (product) => product.uniquepid === parseInt(cartItem.product_uniqueid)
+            );
+            if (productMatch) {
+                const newProduct = { ...productMatch };
+                newProduct.mrp = cartItem.mrp;
+                newProduct.sellingprice = cartItem.sellingprice;
+                newProduct.label = cartItem.variantlabel;
+                newProduct.added_quantity = parseInt(cartItem.total_quantity);
+                return newProduct;
+            }
+            return null;
+        });
+
+        // Filter out null values
+        const filteredProducts = matchingProducts.filter((product) => product !== null);
+        res.json(filteredProducts);
+    } catch (error) {
+        console.error('Error fetching cart data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/cartTotal', async (req, res) => {
+    const { customer_id } = req.query;
+    try {
+        if (!customer_id) {
+            return res.status(400).json({ error: 'Missing customer_id' });
+        }
+
+        // Construct the SQL query to calculate total_quantity and group by product_uniqueid
+        const query = `
+                SELECT product_uniqueid, variantlabel, mrp, sellingprice, SUM(quantity) as total_quantity
+                FROM cart
+                WHERE customer_id = $1::integer
+                GROUP BY product_uniqueid, variantlabel, mrp, sellingprice
+            `;
+        const queryParams = [customer_id];
+
+        const cartData = await pool.query(query, queryParams);
+
+        res.json({ total: cartData?.rows?.length });
     } catch (error) {
         console.error('Error fetching cart data:', error);
         res.status(500).json({ error: 'Internal Server Error' });

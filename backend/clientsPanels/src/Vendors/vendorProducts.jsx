@@ -20,6 +20,7 @@ import {
   AutoComplete,
   Typography,
   Pagination,
+  Popconfirm,
 } from "antd";
 
 const { Step } = Steps;
@@ -101,6 +102,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [totalProduct, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [VariantsEdit, setVariantsEditModal] = useState(false);
 
 
   const id = vendorDatastate?.[0].id;
@@ -116,6 +118,9 @@ const VendorProducts = ({ vendorDatastate }) => {
   // import { RiShieldCrossFill } from 'react-icons/ri';
   const callVendorProducts = useCallback(
     async (updatedImages) => {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
       try {
         const response = await fetch(`${AdminUrl}/api/allVendorProducts`, {
           method: "POST",
@@ -123,13 +128,13 @@ const VendorProducts = ({ vendorDatastate }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ id, subcatNameBackend, page, pageSize }),
+          signal, // Pass the signal to the fetch call
         });
 
         if (response.ok) {
           // Handle successful response
           const data = await response.json();
-          const sortedProducts = data.products.sort((a, b) => a.id - b.id);
-          const products = sortedProducts.map((item) => {
+          const products = data.products.map((item) => {
             // Spread the properties of attributes_specification into the main object
             return {
               ...item,
@@ -137,7 +142,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             };
           });
           setProducts(products);
-          setTotalCount(data?.total || 0)
+          setTotalCount(data?.total || 0);
           setAllProducts(products);
           if (updatedImages !== undefined) setUploadImages(updatedImages);
         } else {
@@ -147,16 +152,29 @@ const VendorProducts = ({ vendorDatastate }) => {
         }
       } catch (error) {
         // Handle error
-        console.error("Error fetching vendor products:", error);
+        if (error.name === "AbortError") {
+          // Handle cancellation
+          console.log("API request canceled");
+        } else {
+          console.error("Error fetching vendor products:", error);
+        }
       }
     },
     [id, subcatNameBackend, setProducts, setUploadImages, page, pageSize]
   );
 
-
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     callVendorProducts(UploadImages);
+
+    return () => {
+      // Cleanup function to abort the fetch when the component unmounts
+      controller.abort();
+    };
   }, [callVendorProducts, UploadImages, id, subcatNameBackend]);
+
 
   useEffect(() => {
     const fetchSubcategorywithCount = async () => {
@@ -1591,9 +1609,6 @@ const VendorProducts = ({ vendorDatastate }) => {
 
   const handleDeleteSelected = async () => {
     try {
-      // Prepare an array of selected product IDs
-      const selectedProductIds = selectedRowKeys;
-
       // Implement your API call here to delete selected products
       const response = await fetch(`${AdminUrl}/api/deleteProducts`, {
         method: "POST",
@@ -1601,7 +1616,7 @@ const VendorProducts = ({ vendorDatastate }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          productIds: selectedProductIds,
+          productIds: selectedRowKeys,
           subcatNameBackend,
         }),
       });
@@ -1617,12 +1632,13 @@ const VendorProducts = ({ vendorDatastate }) => {
       // Update the products list by filtering out the deleted products
       setProducts(
         memoizedProducts.filter(
-          (product) => !selectedProductIds.includes(product.id)
+          (product) => !selectedRowKeys.includes(product.id)
         )
       );
 
       // Clear the selectedRowKeys array
       setSelectedRowKeys([]);
+      callVendorProducts()
 
       message.success("Selected products deleted successfully.");
     } catch (error) {
@@ -1735,6 +1751,100 @@ const VendorProducts = ({ vendorDatastate }) => {
     selectedKey && setCurrentStep(value);
   };
 
+  const handleDeleteVariants = async (record) => {
+    try {
+      const responseData = await fetch(`${AdminUrl}/api/deleteVariant`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: record.variant_id })
+      })
+
+      if (responseData.ok) {
+        await responseData.json()
+        const updatedRowVariant = RowVariants.filter((item) => item.variant_id != record.variant_id)
+        const variantsFetchFinalUpdated = variantsFetchFinal.filter((item) => item.variant_id != record.variant_id)
+        setRowVariants(updatedRowVariant)
+        setvariantsFetchFinal(variantsFetchFinalUpdated)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleFinishVariantEdit = async (values) => {
+    form.validateFields(values).then(async res => {
+      try {
+        const updateResponse = await fetch(`${AdminUrl}/api/updateEditVariant`, {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(res)
+        });
+
+        if (updateResponse.ok) {
+          // Handle successful update
+          const updatedRowIndex = RowVariants.findIndex((item) => item.variant_id === res.variant_id);
+          const variantsFetchFinalIndex = variantsFetchFinal.findIndex((item) => item.variant_id === res.variant_id);
+          if (updatedRowIndex !== -1 || variantsFetchFinalIndex !== -1) {
+            const updatedRowVariant = {
+              ...RowVariants[updatedRowIndex],
+              variant_mrp: res.variant_mrp,
+              variant_sellingprice: res.variant_sellingprice,
+              variant_skuid: res.variant_skuid,
+              variant_quantity: res.variant_quantity,
+            };
+
+            const updatedRowVariantsFetchFinal = {
+              ...variantsFetchFinal[variantsFetchFinalIndex],
+              variant_mrp: res.variant_mrp,
+              variant_sellingprice: res.variant_sellingprice,
+              variant_skuid: res.variant_skuid,
+              variant_quantity: res.variant_quantity,
+            };
+
+            const updatedRowVariants = [...RowVariants];
+            const updatedRowVariantsFetchFinals = [...variantsFetchFinal];
+            updatedRowVariants[updatedRowIndex] = updatedRowVariant;
+            updatedRowVariantsFetchFinals[variantsFetchFinalIndex] = updatedRowVariantsFetchFinal;
+            setRowVariants(updatedRowVariants);
+            setvariantsFetchFinal(updatedRowVariantsFetchFinals);
+          }
+
+          setVariantsEditModal(false);
+        } else {
+          // Handle non-OK response (e.g., 400 Bad Request)
+          const errorData = await updateResponse.json();
+          console.error(`Update failed: ${errorData.error}`);
+          Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: errorData.error,
+          });
+        }
+
+      } catch (error) {
+        // Handle fetch or other unexpected errors
+        console.error("An error occurred:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred. Please try again.',
+        });
+      }
+    }).catch(validationError => {
+      // Handle form validation errors
+      console.error("Form validation failed:", validationError);
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: 'Please fill in all required fields correctly.',
+      });
+    });
+  };
+
   return vendorDatastate && vendorDatastate.length > 0 ? (
     <>
       {!vendorDatastate?.[0].email_verification_status ||
@@ -1791,7 +1901,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                   />
                 </svg>
               </button>
-              <div className="table-responsive overflow-hidden overflow-x-auto mt-4 bg-white">
+              <div className="overflow-auto mt-4 ">
                 <div className="flex justify-center items-center mb-4 p-4">
                   <AutoComplete
                     value={searchQuery}
@@ -1805,7 +1915,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                     }))}
                   />
                 </div>
-                <div className="px-4">
+                <div className="">
                   <Tabs
                     defaultActiveKey="all"
                     activeKey={changeSubcatTabs}
@@ -1827,51 +1937,51 @@ const VendorProducts = ({ vendorDatastate }) => {
                     }}
                     centered={subcategories.length <= 4} // Center the tabs when there are 4 or fewer tabs
                     scrollable={subcategories.length > 4} // Enable scrolling when there are more than 4 tabs
-                    style={{ overflowX: "auto" }} // Add custom style to enable horizontal scrolling if needed
                   >
                     {/* Add an "All Products" tab */}
                     <TabPane
                       tab={`All Products (${totalProduct})`}
                       key="all"
                     >
-                      <Table
-                        columns={columns}
-                        dataSource={memoizedProducts}
-                        pagination={false}
-                        rowClassName={(record) =>
-                          selectedRowKeys.includes(record.id)
-                            ? "selected-row"
-                            : ""
-                        }
-                        title={() => (
-                          <>
-                            <div className="flex items-center">
-                              <Checkbox
-                                checked={
-                                  selectedRowKeys.length ===
-                                  memoizedProducts.length
-                                }
-                                indeterminate={
-                                  selectedRowKeys.length > 0 &&
-                                  selectedRowKeys.length <
-                                  memoizedProducts.length
-                                }
-                                onChange={handleSelectAllRows}
-                              >
-                                Select All
-                              </Checkbox>
-                              <Button
-                                className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
-                                onClick={handleDeleteSelected}
-                                disabled={selectedRowKeys.length === 0}
-                              >
-                                Delete ({selectedRowKeys?.length})
-                              </Button>
-                            </div>
-                          </>
-                        )}
-                        className="w-full mt-10"
-                      />
+                      <div className="h-[50vh]  overflow-auto">
+                        <Table
+                          columns={columns}
+                          dataSource={memoizedProducts}
+                          pagination={false}
+                          rowClassName={(record) =>
+                            selectedRowKeys.includes(record.id)
+                              ? "selected-row"
+                              : ""
+                          }
+                          title={() => (
+                            <>
+                              <div className="flex items-center">
+                                <Checkbox
+                                  checked={
+                                    selectedRowKeys.length ===
+                                    memoizedProducts.length
+                                  }
+                                  indeterminate={
+                                    selectedRowKeys.length > 0 &&
+                                    selectedRowKeys.length <
+                                    memoizedProducts.length
+                                  }
+                                  onChange={handleSelectAllRows}
+                                >
+                                  Select All
+                                </Checkbox>
+                                <Button
+                                  className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
+                                  onClick={handleDeleteSelected}
+                                  disabled={selectedRowKeys.length === 0}
+                                >
+                                  Delete ({selectedRowKeys?.length})
+                                </Button>
+                              </div>
+                            </>
+                          )}
+                        />
+                      </div>
                       <div className="p-2 py-5 flex justify-end sticky top-0">
                         <Pagination
                           total={totalProduct}
@@ -1896,47 +2006,48 @@ const VendorProducts = ({ vendorDatastate }) => {
                             tab={`${subcat.subcategory} (${subcat.total_products})`}
                             key={index}
                           >
-                            <Table
-                              columns={columns}
-                              dataSource={memoizedProducts}
-                              pagination={false}
-                              rowClassName={(record) =>
-                                selectedRowKeys.includes(record.id) ? "selected-row" : ""
-                              }
-                              title={() => (
-                                <>
-                                  <div className="flex items-center">
-                                    <Checkbox
-                                      checked={
-                                        selectedRowKeys.length === memoizedProducts.length
-                                      }
-                                      indeterminate={
-                                        selectedRowKeys.length > 0 &&
-                                        selectedRowKeys.length <
-                                        memoizedProducts.length
-                                      }
-                                      onChange={handleSelectAllRows}
-                                    >
-                                      Select All
-                                    </Checkbox>
-                                    <Button
-                                      className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
-                                      onClick={handleDeleteSelected}
-                                      disabled={selectedRowKeys.length === 0}
-                                    >
-                                      Delete ({selectedRowKeys?.length})
-                                    </Button>
-                                  </div>
-                                </>
-                              )}
-                              className="w-full mt-10"
-                            />
+                            <div className="h-[50vh]  overflow-auto">
+                              <Table
+                                columns={columns}
+                                dataSource={memoizedProducts}
+                                pagination={false}
+                                rowClassName={(record) =>
+                                  selectedRowKeys.includes(record.id) ? "selected-row" : ""
+                                }
+                                title={() => (
+                                  <>
+                                    <div className="flex items-center">
+                                      <Checkbox
+                                        checked={
+                                          selectedRowKeys.length === memoizedProducts.length
+                                        }
+                                        indeterminate={
+                                          selectedRowKeys.length > 0 &&
+                                          selectedRowKeys.length <
+                                          memoizedProducts.length
+                                        }
+                                        onChange={handleSelectAllRows}
+                                      >
+                                        Select All
+                                      </Checkbox>
+                                      <Button
+                                        className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
+                                        onClick={handleDeleteSelected}
+                                        disabled={selectedRowKeys.length === 0}
+                                      >
+                                        Delete ({selectedRowKeys?.length})
+                                      </Button>
+                                    </div>
+                                  </>
+                                )}
+                                className="w-full mt-10"
+                              />
+                            </div>
                             <div className="p-2 py-5 flex justify-end">
                               <Pagination
                                 total={subcat?.total_products || 0}
                                 showSizeChanger
                                 showQuickJumper
-                                defaultCurrent={2}
                                 showTotal={(total) => `Total ${total} items`}
                                 responsive={true}
                                 onChange={(page, pageSize) => {
@@ -2064,7 +2175,8 @@ const VendorProducts = ({ vendorDatastate }) => {
                       {currentStep === steps.length - 1 && (
                         <Form.Item>
                           <Button
-                            onClick={() => setModalVisible(false)}
+                            onClick={() => window.location.href = "/Vendors/products/all"
+                            }
                             className="transition-all items-center flex duration-200 ease-in-out  bg-red-500 hover:bg-red-600 hover:text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transform hover:scale-110 hover:rotate-3 text-white"
                             icon={<IoMdClose className="text-white" />}
                             style={{ zIndex: 2 }} // Add higher z-index to prioritize this button
@@ -2147,61 +2259,177 @@ const VendorProducts = ({ vendorDatastate }) => {
                   </Button>,
                 ]}
               >
-                <Table
-                  dataSource={RowVariants}
-                  rowKey="variant_id"
-                  pagination={false}
-                  columns={[
-                    {
-                      title: "Variant ID",
-                      dataIndex: "variant_id",
-                    },
-                    {
-                      title: "Product Unique ID",
-                      dataIndex: "product_uniqueid",
-                    },
-                    {
-                      title: "MRP",
-                      dataIndex: "variant_mrp",
-                    },
-                    {
-                      title: "Selling Price",
-                      dataIndex: "variant_sellingprice",
-                    },
-                    {
-                      title: "SKUID",
-                      dataIndex: "variant_skuid",
-                    },
-                    {
-                      title: "Quantity",
-                      dataIndex: "variant_quantity",
-                    },
-                    {
-                      title: "Label",
-                      dataIndex: "label",
-                    },
-                    {
-                      title: "Vendor ID",
-                      dataIndex: "vendori_id",
-                    },
-                    {
-                      title: "Variants Values",
-                      dataIndex: "variantsvalues",
-                      render: (variantsvalues) => {
-                        const values = JSON.parse(variantsvalues);
-                        return (
-                          <ul>
-                            {Object.entries(values).map(([key, value]) => (
-                              <li key={key}>
-                                <strong>{key}:</strong> {value}
-                              </li>
-                            ))}
-                          </ul>
-                        );
+                <div className="w-full overflow-auto h-[60vh]">
+                  <Table
+                    dataSource={RowVariants}
+                    rowKey="variant_id"
+                    pagination={false}
+                    columns={[
+                      {
+                        title: "Variant ID",
+                        dataIndex: "variant_id",
+                        width: 50
                       },
-                    },
-                  ]}
-                />
+                      {
+                        title: "Product Unique ID",
+                        dataIndex: "product_uniqueid",
+                        width: 100
+                      },
+                      {
+                        title: "MRP",
+                        dataIndex: "variant_mrp",
+                      },
+                      {
+                        title: "Selling Price",
+                        dataIndex: "variant_sellingprice",
+                      },
+                      {
+                        title: "SKUID",
+                        dataIndex: "variant_skuid",
+                        width: 100
+
+                      },
+                      {
+                        title: "Quantity",
+                        dataIndex: "variant_quantity",
+                      },
+                      {
+                        title: "Label",
+                        dataIndex: "label",
+                      },
+
+                      {
+                        title: "Variants Values",
+                        dataIndex: "variantsvalues",
+                        render: (variantsvalues) => {
+                          const values = JSON.parse(variantsvalues);
+                          return (
+                            <ul>
+                              {Object.entries(values).map(([key, value]) => (
+                                <li key={key}>
+                                  <strong>{key}:</strong> {value}
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        },
+
+                      },
+                      {
+                        title: 'Actions',
+                        dataIndex: 'actions',
+                        width: 200,
+
+                        render: (_, record) => (
+                          <>
+                            <Button type="danger" onClick={() => {
+                              setVariantsEditModal(true)
+                              form.setFieldsValue(record);
+                            }}
+                              className="text-blue-500"
+                            >
+                              Edit
+                            </Button>
+                            <Popconfirm
+                              title="Are you sure to delete this variant?"
+                              onConfirm={() => handleDeleteVariants(record)}
+                              okButtonProps={{ style: { background: 'red' } }}
+                            >
+                              <Button type="danger" className="text-red-500">Delete</Button>
+                            </Popconfirm>
+
+                          </>
+                        ),
+                      },
+                    ]}
+                  />
+                </div>
+
+                <Modal
+                  open={VariantsEdit}
+                  onCancel={() => setVariantsEditModal(false)}
+                  okButtonProps={{ style: { background: 'blue' } }}
+                  okText={'SAVE'}
+                  onOk={handleFinishVariantEdit}
+
+                >
+                  <Form
+                    form={form}
+                    className="grid grid-cols-2 gap-4"
+                    onFinish={handleFinishVariantEdit}
+                  >
+                    <Form.Item
+                      label="Id"
+                      name="variant_id"
+                      className="col-span-1"
+                      hidden
+                    >
+                      <InputNumber name="variant_id" />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Price"
+                      name="variant_mrp"
+                      className="col-span-1"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Price is required",
+                        },
+                      ]}
+                    >
+                      <InputNumber name="price" />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Selling Price"
+                      name="variant_sellingprice"
+                      className="col-span-1"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Selling Price is required",
+                        },
+                      ]}
+                    >
+                      <InputNumber name="variant_sellingprice" />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="SKU"
+                      name="variant_skuid"
+                      className="col-span-1"
+                      rules={[
+                        {
+                          required: true,
+                          message: "SKU is required",
+                        },
+                      ]}
+                    >
+                      <Input name="sku" />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Quantity"
+                      name="variant_quantity"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Quantity is required",
+                        },
+                        {
+                          type: "number",
+                          min: 1,
+                          message: "Quantity must be at least 1",
+                        },
+                      ]}
+                    >
+                      <InputNumber name="quantity" />
+                    </Form.Item>
+
+
+                  </Form>
+                </Modal>
               </Modal>
             </>
           }
