@@ -127,7 +127,7 @@ const WithdrawalsTable = ({ vendorId }) => {
   };
 
   return (
-    <div className="mt-5">
+    <div className="mt-5 bg-white w-[92vw] min-w-[360px] overflow-x-scroll">
       <Table
         columns={columns}
         dataSource={withdrawals}

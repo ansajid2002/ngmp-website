@@ -183,7 +183,6 @@ app.post('/getGoogleUserData', async (req, res) => {
       const userdata = await pool.query(query, value)
       if (userdata?.rows?.length > 0) {
         const gid = await userdata.rows[0].google_id
-        console.log(gid, 'gid');
         if (gid) {
           // if not null then send the userdata 
           return res.status(200).json({ status: 200, userdata: userdata?.rows[0] });
@@ -215,9 +214,9 @@ app.post('/getGoogleUserData', async (req, res) => {
           INSERT INTO customers
           (given_name, family_name, email, 
             phone_number, address_line_1, address_line_2, 
-            city, state, zip_code, country, bio, status, password, verification_code, 
+            city, state, zip_code, country, bio, password, verification_code, 
             verification_expire_date, google_id, picture, verified_with, status)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, 3)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 3)
           RETURNING *;
         `;
 
@@ -233,7 +232,6 @@ app.post('/getGoogleUserData', async (req, res) => {
         newCustomer.zip_code,
         newCustomer.country,
         newCustomer.bio,
-        newCustomer.status,
         '', // Store the hashed password
         null,
         null,
@@ -271,7 +269,7 @@ app.post('/getWebGoogleLogin', async (req, res) => {
     const userdata = await pool.query(query, value)
     if (userdata?.rows?.length > 0) {
       const gid = await userdata.rows[0].google_id
-      console.log(gid, id, 'gid');
+
       if (gid === id) {
         // if not null then send the userdata 
         return res.status(200).json({ status: 200, customerData: userdata?.rows[0] });
@@ -684,15 +682,27 @@ app.post(
       // Delete the old image file from the destination folder
       const oldFilePath = `./uploads/customerProfileImages/${oldFileName}`;
       // Check if oldFileName starts with "https"
+      const fs = require('fs');
+
+      // Assuming oldFileName and oldFilePath are defined somewhere in your code
+
       if (!oldFileName.startsWith("https")) {
         // If it doesn't start with "https", proceed with unlinking
-        fs.unlink(oldFilePath, (err) => {
-          if (err) {
-            console.error("Error deleting old image file:", err);
+        fs.access(oldFilePath, fs.constants.F_OK, (err) => {
+          if (!err) {
+            // File exists, proceed with unlinking
+            fs.unlink(oldFilePath, (unlinkErr) => {
+              if (unlinkErr) {
+                console.error("Error deleting old image file:", unlinkErr);
+              } else {
+                console.log("Old image file deleted successfully");
+              }
+            });
+          } else {
+            console.error("File does not exist:", err);
           }
         });
       }
-
 
       // Send the image URL and the updated rows as a response to the frontend
       res.status(200).json({ picture: file.filename, updatedRows: rows });

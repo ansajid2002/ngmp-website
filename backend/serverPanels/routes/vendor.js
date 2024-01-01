@@ -1,12 +1,14 @@
 // vendor.js
 const express = require("express");
 const app = express();
+const { createObjectCsvWriter } = require('csv-writer');
 const pool = require("../config"); // Assuming you have a database connection configuration file
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const slug = require("slug");
+
 
 // const fs = require("fs/promises");
 const fs = require("fs");
@@ -883,6 +885,87 @@ app.post("/DeleteVendorProduct", async (req, res) => {
     });
   }
 });
+async function fetchProductDataFromDB(productIds, id) {
+  try {
+    let sql = '';
+    let queryParams = [];
+
+    if (productIds) {
+
+      // Fetch data using productIds
+      sql = 'SELECT * FROM products WHERE id = ANY($1)';
+      queryParams = [productIds];
+    } else {
+      // Fetch data where vendorid matches the provided id
+      sql = 'SELECT * FROM products WHERE vendorid = $1';
+      queryParams = [id];
+    }
+
+    const { rows } = await pool.query(sql, queryParams);
+
+    for (let index = 0; index < rows.length; index++) {
+      // Delete unwanted properties from each row
+      delete rows[index].status;
+      delete rows[index].category_type;
+      delete rows[index].slug_cat;
+      delete rows[index].slug_subcat;
+      delete rows[index].prod_slug;
+      delete rows[index].vendorid;
+      delete rows[index].uniquepid;
+    }
+
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+app.post("/downloadcsv", async (req, res) => {
+  const { productIds, id } = req.body
+
+  try {
+    const productsData = await fetchProductDataFromDB(productIds, id);
+
+    // Transform the nested objects or arrays into a readable string representation
+    const transformedProductsData = productsData.map((product) => {
+      const { attributes_specification, ...rest } = product;
+
+      if (Array.isArray(attributes_specification)) {
+        const stringifiedArray = attributes_specification.map((spec) => JSON.stringify(spec));
+        return {
+          ...rest,
+          attributes_specification: stringifiedArray.join(';'), // Adjust separator as needed
+        };
+      }
+
+      // If attributes_specification is not an array, directly stringify it
+      return {
+        ...rest,
+        attributes_specification: JSON.stringify(attributes_specification), // Stringify single object
+      };
+    });
+
+    console.log(transformedProductsData);
+
+    const csvWriter = createObjectCsvWriter({
+      path: 'selectedIds.csv',
+      header: Object.keys(transformedProductsData[0])?.map((key) => ({ id: key, title: key })),
+    });
+
+    await csvWriter.writeRecords(transformedProductsData); ``
+
+    res.setHeader('Content-Disposition', 'attachment; filename=selectedIds.csv');
+    res.setHeader('Content-Type', 'text/csv');
+
+    const fileStream = fs.createReadStream('selectedIds.csv');
+    fileStream.pipe(res);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+
+})
 
 // Bulk Product Deleted
 app.post("/deleteProducts", async (req, res) => {
@@ -1113,8 +1196,6 @@ const fetchRejectedVendors = async (page, pageSize) => {
   }
 };
 
-
-
 // Fetch rejected vendors for all categories
 app.get("/rejected-products", async (req, res) => {
   try {
@@ -1178,9 +1259,6 @@ app.get('/getVendorProductsAR', async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
-
 
 app.post("/reject-product-reason", async (req, res) => {
   try {
@@ -1286,18 +1364,6 @@ async function fetchProductsFromTable(
     values.push(parseInt(pageSize));
   }
 
-  console.log((pageNumber - 1) * parseInt(pageSize));
-  // If conditions exist, add WHERE clause to the query
-  // if (conditions.length > 0) {
-  //   query += ' WHERE ' + conditions.join(' AND ')
-  // } else {
-  //   if (!pageNumber && !parseInt(pageSize)) {
-  //     query += ' WHERE ' + conditions.join(' AND ');
-  //   } else {
-  //     query += ' WHERE ' + conditions.join('  ')
-  //   }
-  // }
-
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND   ");
   }
@@ -1306,104 +1372,6 @@ async function fetchProductsFromTable(
   if (lastAndIndex !== -1) {
     query =
       query.substring(0, lastAndIndex) + query.substring(lastAndIndex + 5);
-  }
-  console.log(query, values);
-
-  if (type && type === "recommended" && cid) {
-    // Fetch customer_interest array from the customers table based on cid
-    const customerInterestQuery =
-      "SELECT customer_interest FROM customers WHERE customer_id = $1";
-    const customerInterestValues = [cid];
-    const customerInterestResult = await pool.query(
-      customerInterestQuery,
-      customerInterestValues
-    );
-
-    if (customerInterestResult.rows.length > 0) {
-      const categoryIds = customerInterestResult.rows[0].customer_interest;
-
-      // Fetch category names from the categories table based on category IDs
-      const categoryNamesQuery =
-        "SELECT category_name FROM categories WHERE category_id = ANY($1::int[])";
-      const categoryNamesValues = [categoryIds];
-      const categoryNamesResult = await pool.query(
-        categoryNamesQuery,
-        categoryNamesValues
-      );
-
-      if (categoryNamesResult.rows.length > 0) {
-        const categoryNames = categoryNamesResult.rows.map(
-          (row) => row.category_name
-        );
-
-        // Add condition to filter products based on category names
-        if (
-          subcat !== undefined &&
-          vendorId !== undefined &&
-          status !== undefined
-        ) {
-          query +=
-            " AND category = ANY($" +
-            (values.length + 1) +
-            "::text[]) LIMIT 10";
-        } else {
-          query +=
-            " WHERE category = ANY($" +
-            (values.length + 1) +
-            "::text[]) LIMIT 10";
-        }
-
-        values.push(categoryNames);
-      }
-    }
-  }
-
-  if (type && type === "newarrivals" && cid) {
-    // Fetch customer_interest array from the customers table based on cid
-    const customerInterestQuery =
-      "SELECT customer_interest FROM customers WHERE customer_id = $1";
-    const customerInterestValues = [cid];
-    const customerInterestResult = await pool.query(
-      customerInterestQuery,
-      customerInterestValues
-    );
-
-    if (customerInterestResult.rows.length > 0) {
-      const categoryIds = customerInterestResult.rows[0].customer_interest;
-
-      // Fetch category names from the categories table based on category IDs
-      const categoryNamesQuery =
-        "SELECT category_name FROM categories WHERE category_id = ANY($1::int[])";
-      const categoryNamesValues = [categoryIds];
-      const categoryNamesResult = await pool.query(
-        categoryNamesQuery,
-        categoryNamesValues
-      );
-
-      if (categoryNamesResult.rows.length > 0) {
-        const categoryNames = categoryNamesResult.rows.map(
-          (row) => row.category_name
-        );
-
-        // Add condition to filter products based on category names
-        if (
-          subcat !== undefined &&
-          vendorId !== undefined &&
-          status !== undefined
-        ) {
-          query +=
-            " AND category = ANY($" +
-            (values.length + 1) +
-            "::text[]) ORDER BY updated_at_product ASC  LIMIT 10";
-        } else {
-          query +=
-            " WHERE category = ANY($" +
-            (values.length + 1) +
-            "::text[]) ORDER BY updated_at_product ASC  LIMIT 10";
-        }
-        values.push(categoryNames);
-      }
-    }
   }
 
   try {
@@ -1641,7 +1609,7 @@ app.get("/getVendorProducts", async (req, res) => {
   try {
     // Check if vendorid is provided in the URL and use it in your query
     // Use vendorid in your query or function
-    const AllProducts = await AllProductsVendors(
+    let AllProducts = await AllProductsVendors(
       pool,
       vendorid,
       currency,
@@ -1652,7 +1620,10 @@ app.get("/getVendorProducts", async (req, res) => {
       pageNumber,
       pageSize
     );
-    res.status(200).json(AllProducts);
+
+    const executeQuery = await pool.query('SELECT COUNT(*) AS totalVendorProducts FROM products WHERE status = 1 AND vendorid = $1', [vendorid])
+    const total = executeQuery.rows
+    res.status(200).json({ AllProducts, total });
   } catch (error) {
     // Handle the error and send an error response to the client
     console.error("Error in /AllProductsVendors route:", error);
@@ -1662,46 +1633,187 @@ app.get("/getVendorProducts", async (req, res) => {
 
 app.get("/recommendedProducts/:cid", async (req, res) => {
   const { cid } = req.params;
+  console.log(cid);
   try {
-    // Check if vendorid is provided in the URL and use it in your query
-    // Use vendorid in your query or function
-    const recommendedproducts = await AllProductsVendors(
-      pool,
-      null,
-      "USD",
-      null,
-      "recommended",
-      cid,
-      1
-    );
-    res.status(200).json(recommendedproducts);
+    let recommendedProducts;
+
+    if (cid !== 'null') {
+      const customerInterestQuery =
+        "SELECT customer_interest FROM customers WHERE customer_id = $1";
+      const customerInterestValues = [cid];
+      const customerInterestResult = await pool.query(
+        customerInterestQuery,
+        customerInterestValues
+      );
+
+      if (customerInterestResult.rows.length > 0) {
+        const categoryIds = customerInterestResult.rows[0].customer_interest;
+
+        // Fetch category names from the categories table based on category IDs
+        const categoryNamesQuery =
+          "SELECT category_name FROM categories WHERE category_id = ANY($1::int[])";
+        const categoryNamesValues = [categoryIds];
+        const categoryNamesResult = await pool.query(
+          categoryNamesQuery,
+          categoryNamesValues
+        );
+
+        if (categoryNamesResult.rows.length > 0) {
+          const categoryNames = categoryNamesResult.rows.map(
+            (row) => row.category_name
+          );
+
+          // Fetch products based on category names from the products table
+          const productsQuery =
+            "SELECT * FROM products WHERE category = ANY($1::text[]) AND status = 1 LIMIT 10";
+          const productsValues = [categoryNames];
+          const productsResult = await pool.query(
+            productsQuery,
+            productsValues
+          );
+
+          recommendedProducts = productsResult.rows;
+        } else {
+          // If categoryNames is empty, recommend random products with status 1
+          const randomProductsQuery =
+            "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT 10";
+          const randomProductsResult = await pool.query(randomProductsQuery);
+
+          recommendedProducts = randomProductsResult.rows;
+        }
+      } else {
+        const randomProductsQuery =
+          "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT 10";
+        const randomProductsResult = await pool.query(randomProductsQuery);
+
+        recommendedProducts = randomProductsResult.rows;
+      }
+    } else {
+      // If cid is null or undefined, recommend random products with status 1
+      const randomProductsQuery =
+        "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT 10";
+      const randomProductsResult = await pool.query(randomProductsQuery);
+
+      recommendedProducts = randomProductsResult.rows;
+    }
+
+    let AllProducts = []
+    for (const product of recommendedProducts) {
+      if (product.isvariant === "Variant") {
+        const variantData = await fetchVariantData(pool, product.uniquepid);
+        if (variantData && variantData.length > 0) {
+          // Update the product's mrp and sellingprice using the first entry in variantData
+          product.mrp = variantData[0].variant_mrp;
+          product.sellingprice = variantData[0].variant_sellingprice;
+          product.label = variantData[0].label; // Replace with the desired label
+        }
+      }
+
+      if (product.vendorid) {
+        const vendorInfo = await fetchVendorInfo(pool, product.vendorid);
+        product.vendorInfo = vendorInfo;
+      }
+      AllProducts.push(product);
+    }
+    // Send the recommended products as the response
+    res.json(AllProducts);
   } catch (error) {
     // Handle the error and send an error response to the client
-    console.error("Error in /recommendedproducts route:", error);
+    console.error("Error in /Recommended route:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 app.get("/newArrivals/:cid", async (req, res) => {
-  const { cid, pageNumber = 1, pageSize = 10 } = req.params;
+  const { cid } = req.params;
+  console.log(cid, 'arrival');
   try {
-    // Check if vendorid is provided in the URL and use it in your query
-    // Use vendorid in your query or function
-    const recommendedproducts = await AllProductsVendors(
-      pool,
-      null,
-      "USD",
-      null,
-      "newarrivals",
-      cid,
-      1,
-      pageNumber,
-      pageSize
-    );
-    res.status(200).json(recommendedproducts);
+    let newArrivals;
+
+    if (cid !== 'null') {
+      const customerInterestQuery =
+        "SELECT customer_interest FROM customers WHERE customer_id = $1";
+      const customerInterestValues = [cid];
+      const customerInterestResult = await pool.query(
+        customerInterestQuery,
+        customerInterestValues
+      );
+      console.log(customerInterestResult.rows.length, "customerInterestResult.rows");
+      if (customerInterestResult.rows.length > 0) {
+        const categoryIds = customerInterestResult.rows[0].customer_interest;
+
+        // Fetch category names from the categories table based on category IDs
+        const categoryNamesQuery =
+          "SELECT category_name FROM categories WHERE category_id = ANY($1::int[])";
+        const categoryNamesValues = [categoryIds];
+        const categoryNamesResult = await pool.query(
+          categoryNamesQuery,
+          categoryNamesValues
+        );
+
+        if (categoryNamesResult.rows.length > 0) {
+          const categoryNames = categoryNamesResult.rows.map(
+            (row) => row.category_name
+          );
+
+          // Fetch new arrivals based on category names and order by updated_at_product
+          const productsQuery =
+            "SELECT * FROM products WHERE category = ANY($1::text[]) AND status = 1 ORDER BY updated_at_product DESC LIMIT 10";
+          const productsValues = [categoryNames];
+          const productsResult = await pool.query(
+            productsQuery,
+            productsValues
+          );
+
+          newArrivals = productsResult.rows;
+        } else {
+          // If categoryNames is empty, recommend random new arrivals with status 1
+          const randomProductsQuery =
+            "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT 10";
+          const randomProductsResult = await pool.query(randomProductsQuery);
+
+          newArrivals = randomProductsResult.rows;
+        }
+      } else {
+        const randomProductsQuery =
+          "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT 10";
+        const randomProductsResult = await pool.query(randomProductsQuery);
+
+        newArrivals = randomProductsResult.rows;
+      }
+    } else {
+      // If cid is null or undefined, recommend random new arrivals with status 1
+      const randomProductsQuery =
+        "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT 10";
+      const randomProductsResult = await pool.query(randomProductsQuery);
+
+      newArrivals = randomProductsResult.rows;
+    }
+
+    let AllProducts = []
+    for (const product of newArrivals) {
+      if (product.isvariant === "Variant") {
+        const variantData = await fetchVariantData(pool, product.uniquepid);
+        if (variantData && variantData.length > 0) {
+          // Update the product's mrp and sellingprice using the first entry in variantData
+          product.mrp = variantData[0].variant_mrp;
+          product.sellingprice = variantData[0].variant_sellingprice;
+          product.label = variantData[0].label; // Replace with the desired label
+        }
+      }
+
+      if (product.vendorid) {
+        const vendorInfo = await fetchVendorInfo(pool, product.vendorid);
+        product.vendorInfo = vendorInfo;
+      }
+      AllProducts.push(product);
+      console.log(AllProducts, "AllProducts");
+    }
+    // Send the recommended products as the response
+    res.json(AllProducts);
   } catch (error) {
     // Handle the error and send an error response to the client
-    console.error("Error in /recommendedproducts route:", error);
+    console.error("Error in /newArrivals route:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -1745,6 +1857,7 @@ app.get("/getProductBySubcategories", async (req, res) => {
       AllProducts.push(product);
     }
 
+    console.log(AllProducts?.length);
     res.status(200).json({ AllProducts });
   } catch (error) {
     // Handle the error and send an error response to the client
@@ -1840,7 +1953,6 @@ app.get("/searchProducts", async (req, res) => {
   }
 });
 
-
 app.get("/getSearchedProducts", async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm;
@@ -1869,7 +1981,6 @@ app.get("/getSearchedProducts", async (req, res) => {
       values: [`%${searchTerm}%`],
     };
 
-
     const countResult = await pool.query(countQuery);
     const totalCount = countResult.rows[0].total_count;
 
@@ -1890,18 +2001,64 @@ app.get("/getSearchedProducts", async (req, res) => {
       values: [`%${searchTerm}%`, limit, (page - 1) * limit],
     };
 
-
     const result = await pool.query(query);
     const products = result.rows;
 
-    res.status(200).json({ totalCount, products });
+    let AllProducts = []
+
+    for (const product of products) {
+      if (product.isvariant === "Variant") {
+        const variantData = await fetchVariantData(pool, product.uniquepid);
+        if (variantData && variantData.length > 0) {
+          // Update the product's mrp and sellingprice using the first entry in variantData
+          product.mrp = variantData[0].variant_mrp;
+          product.sellingprice = variantData[0].variant_sellingprice;
+          product.label = variantData[0].label; // Replace with the desired label
+
+          if (product.currency_symbol !== 'USD') {
+            // Convert mrp and sellingprice to floats
+            const mrpAsFloat = parseFloat(variantData[0].variant_mrp);
+            const sellingPriceAsFloat = parseFloat(
+              variantData[0].variant_sellingprice
+            );
+
+            if (!isNaN(mrpAsFloat) && !isNaN(sellingPriceAsFloat)) {
+              // Calculate the exchanged mrp and sellingprice based on the conversion rate
+              product.sellingprice = sellingPriceAsFloat.toFixed(2);
+              product.mrp = mrpAsFloat.toFixed(2);
+              product.currency_symbol = 'USD'; // Update the currency symbol
+            }
+          }
+        }
+      }
+
+      if (product.vendorid) {
+        const vendorInfo = await fetchVendorInfo(pool, product.vendorid);
+        product.vendorInfo = vendorInfo;
+      }
+
+      // Check if the product's currency_symbol is not equal to the desired currency
+      // Convert the selling price to a float
+      const sellingPriceAsFloat = parseFloat(product.sellingprice);
+      const mrpAsFloat = parseFloat(product.mrp);
+
+
+      if (!isNaN(sellingPriceAsFloat)) {
+        // Round to two decimal places
+        product.sellingprice = sellingPriceAsFloat.toFixed(2);
+        product.mrp = mrpAsFloat.toFixed(2);
+        product.currency_symbol = 'USD'; // Update the currency symbol
+      }
+
+      AllProducts.push(product);
+    }
+
+    res.status(200).json({ totalCount, products: AllProducts });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 // Define an API endpoint to fetch data
 app.get("/generateReport", async (req, res) => {

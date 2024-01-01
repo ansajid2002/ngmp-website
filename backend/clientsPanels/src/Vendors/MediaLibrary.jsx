@@ -55,7 +55,9 @@ const MediaLibrary = ({ vendorDatastate }) => {
     return (
         <div>
             <Title level={2} className="mb-4">Media Library</Title>
-            <Table dataSource={data} columns={columns} />
+            <div className='overflow-hidden w-full overflow-x-auto bg-white p-4'>
+                <Table dataSource={data} columns={columns} />
+            </div>
         </div>
     );
 };

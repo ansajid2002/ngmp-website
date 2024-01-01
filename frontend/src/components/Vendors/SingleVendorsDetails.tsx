@@ -25,13 +25,10 @@ const SingleVendorsDetails = ({ data }) => {
         // Fetch all products
         const response = await fetch(`${AdminUrl}/api/getVendorProducts?vendorid=${data?.id}&currency=USD&pageNumber=1&pageSize=10`);
 
-        // Filter products based on activeTab value
-        // let filteredProducts = response;
-
 
         if (response.ok) {
           const data = await response.json()
-          setProducts(data);
+          setProducts(data?.AllProducts);
 
         }
 

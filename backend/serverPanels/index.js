@@ -47,7 +47,6 @@ const inbox = require("./routes/inbox");
 const wallet = require("./routes/wallet");
 const sendEmail = require("./routes/nodemailer");
 
-
 app.use(cookieParser());
 app.use(express.json());
 var options = {

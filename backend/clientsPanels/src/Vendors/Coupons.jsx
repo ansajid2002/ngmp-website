@@ -320,7 +320,7 @@ const Coupons = ({ vendorDatastate }) => {
                     const productsData = await productsResponse.json();
                     console.log(productsData);
                     // Set the response data in your state for vendor products
-                    setVendorProducts(productsData);
+                    setVendorProducts(productsData?.AllProducts);
                 } catch (err) {
                     setError(err.message);
                 }

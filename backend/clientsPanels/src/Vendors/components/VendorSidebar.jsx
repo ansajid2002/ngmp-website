@@ -14,7 +14,7 @@ import { IoIosNotificationsOutline, IoMdNotificationsOutline } from "react-icons
 
 const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
   const [dropdown, setDropdown] = useState(false);
-  const [collapse, setcollapse] = useState(true);
+  const [collapse, setcollapse] = useState(false);
   const [selectedPage, setSelectedPage] = useState("");
   const location = useLocation();
   const currentUrl = location.pathname;
@@ -169,7 +169,7 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
           <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
             <div className="px-3 py-3 lg:px-5 lg:pl-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center justify-start">
+                <div className="flex items-center justify-start mt-1.5">
                   <button
                     data-drawer-target="logo-sidebar"
                     data-drawer-toggle="logo-sidebar"
@@ -197,18 +197,18 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
 
                   <div className="flex items-center ml-2 md:mr-24">
                     <Link to="/" className="flex items-center">
-                      <div class="h-16 w-16 rounded-full border-4 border-gradient-blue-orange flex items-center justify-center overflow-hidden">
+                      <div class="h-10 sm:h-16 w-10 sm:w-16 rounded-full border-4 border-gradient-blue-orange flex items-center justify-center overflow-hidden">
                         <img
                           src="/logo.jpg"
                           className="h-24 object-contain  rounded-full"
                           alt="App Logo"
                         />
                       </div>
-                      <div class="ml-4">
-                        <span class="text-xl font-semibold text-gradient-blue-orange">
+                      <div class="ml-4 hidden sm:block">
+                        <span class="text-sm sm:text-xl font-semibold text-gradient-blue-orange">
                           Nile Global Market-Place
                         </span>
-                        <span class="block text-sm text-gray-500">
+                        <span class="block text-[12px] sm:text-sm text-gray-500">
                           Vendor Dashboard Panel
                         </span>
                       </div>
@@ -216,26 +216,14 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
                   </div>
                 </div>
 
-                {/* <Menu
-                  onClick={onClick}
-                  selectedKeys={[current]}
-                  mode="horizontal"
-                  items={items}
-                /> */}
-
-
-                <div className="flex gap-5 justify-center items-center">
-                  <Link to={'/Vendors/Notifications'} class="relative inline-flex items-center text-sm font-medium text-center text-gray-700 ">
-                    <IoIosNotificationsOutline className="text-4xl" />
-                    <span class="sr-only">Notifications</span>
-                    <div class="absolute  inline-flex items-center justify-center w-3 h-3 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full top-1 right-3 animate-ping dark:border-gray-900"></div>
-                  </Link>
+                <div className="flex gap-5 sm:justify-center mt-4 sm:mt-0 items-start">
+                  
 
                   <Popover className="relative">
-                    <Popover.Button className="inline-flex items-center gap-2 text-sm font-semibold leading-6 text-gray-900">
+                    <Popover.Button className="inline-flex items-center gap-2 text-[12px] md:text-sm font-semibold leading-6 text-gray-900">
                       <Image width={35} height={35} className="rounded-full" src={`${AdminUrl}/uploads/vendorProfile/${vendorDatastate?.[0]?.vendor_profile_picture_url?.images?.[0]}`} />
                       <div className="flex flex-col relative">
-                        <p className="mb-4 font-bold line-clamp-1">{vendorDatastate[0]?.email}</p>
+                        <p className="mb-4 font-bold line-clamp-1  ">{vendorDatastate[0]?.email}</p>
                         <p className="absolute top-5 line-clamp-1">{vendorDatastate?.[0]?.brand_name}</p>
                       </div>
                       {/* <ChevronDownIcon className="h-5 w-5" aria-hidden="true" /> */}
@@ -285,6 +273,11 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
                       </Popover.Panel>
                     </Transition>
                   </Popover>
+                  <Link to={'/Vendors/Notifications'} class="relative inline-flex items-center text-sm font-medium text-center text-gray-700 ">
+                    <IoIosNotificationsOutline className=" text-3xl sm:text-4xl" />
+                    <span class="sr-only">Notifications</span>
+                    <div class="absolute  inline-flex items-center justify-center w-3 h-3 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full top-1 right-3 animate-ping dark:border-gray-900"></div>
+                  </Link>
                 </div>
               </div>
             </div>

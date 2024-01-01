@@ -249,23 +249,40 @@ app.get('/cartTotal', async (req, res) => {
             return res.status(400).json({ error: 'Missing customer_id' });
         }
 
-        // Construct the SQL query to calculate total_quantity and group by product_uniqueid
+        // Construct the SQL query to calculate total_quantity and added_quantity, and group by product_uniqueid
         const query = `
-                SELECT product_uniqueid, variantlabel, mrp, sellingprice, SUM(quantity) as total_quantity
-                FROM cart
-                WHERE customer_id = $1::integer
-                GROUP BY product_uniqueid, variantlabel, mrp, sellingprice
-            `;
+            SELECT
+                product_uniqueid,
+                variantlabel,
+                mrp,
+                sellingprice,
+                SUM(quantity) as total_quantity,
+                MAX(quantity) as quantity
+            FROM
+                cart
+            WHERE
+                customer_id = $1::integer
+            GROUP BY
+                product_uniqueid, variantlabel, mrp, sellingprice
+        `;
         const queryParams = [customer_id];
 
         const cartData = await pool.query(query, queryParams);
 
-        res.json({ total: cartData?.rows?.length });
+        // Use Array.reduce to find the sum of added_quantities
+        const sumAddedQuantities = cartData?.rows?.reduce(
+            (accumulator, item) => accumulator + item.quantity,
+            0
+        );
+
+        res.json({ total: sumAddedQuantities });
     } catch (error) {
         console.error('Error fetching cart data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
 
 app.put('/cartWebsite', async (req, res) => {
     const { customer_id } = req.body;

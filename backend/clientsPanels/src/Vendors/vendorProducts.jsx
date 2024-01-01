@@ -103,8 +103,9 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [VariantsEdit, setVariantsEditModal] = useState(false);
+  const [downloadcsvloader, setdownloadcsvloader] = useState(null)
 
-
+  console.log(downloadcsvloader, "downloadcsvloader");
   const id = vendorDatastate?.[0].id;
 
   const [locationData, setLocationData] = useState({
@@ -1317,7 +1318,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       content: (
         <div>
           <div className="flex justify-center flex-col h-96 items-center">
-            <h1 className="text-3xl font-bold tracking-[2px] mb-8 text-center">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-[2px] mb-8 text-center">
               Choose Category Type
             </h1>
             <div className="grid grid-cols-2 gap-4">
@@ -1368,7 +1369,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       title: `Select Category`,
       content: (
         <Form onFinish={onFinish} form={form}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-col-1 sm:grid-cols-2 gap-4">
             <div className="flex justify-between items-center">
               <label htmlFor="category" className="mr-4 mb-5">
                 Category:
@@ -1607,6 +1608,10 @@ const VendorProducts = ({ vendorDatastate }) => {
     },
   ];
 
+  console.log(selectedRowKeys, "selectedRowKeys");
+
+
+
   const handleDeleteSelected = async () => {
     try {
       // Implement your API call here to delete selected products
@@ -1646,6 +1651,68 @@ const VendorProducts = ({ vendorDatastate }) => {
       message.error("Error deleting products. Please try again later.");
     }
   };
+
+  console.log(subcatNameBackend, "subcatNameBackend");
+
+  const handleDownloadcsv = async (type) => {
+    if (type === 'all') {
+      setdownloadcsvloader('all')
+    }
+    else {
+      setdownloadcsvloader("single")
+    }
+    try {
+
+      const datatoSendSelected = {
+        productIds: selectedRowKeys,
+        subcatNameBackend,
+      }
+
+
+      // Implement your API call here to download CSV data
+      const response = await fetch(`${AdminUrl}/api/downloadcsv`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(type === 'all' ? { id } : datatoSendSelected),
+      });
+
+      if (response.ok) {
+        // Get the response text directly as a blob
+        const csvBlob = await response.blob();
+
+        // Create a temporary URL to trigger download
+        const downloadUrl = window.URL.createObjectURL(csvBlob);
+
+        // Create a temporary anchor element
+        const downloadLink = document.createElement("a");
+        downloadLink.href = downloadUrl;
+        downloadLink.download = "downloadedData.csv";
+
+        // Simulate click on the link to trigger the download
+        downloadLink.click();
+
+        // Clean up: remove the temporary URL and anchor element
+        window.URL.revokeObjectURL(downloadUrl);
+        downloadLink.remove();
+
+      } else {
+        const responseData = await response.text();
+        console.error("Backend error:", responseData);
+        message.error("Error downloading CSV: " + responseData);
+
+
+      }
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+      message.error("Error downloading CSV. Please try again later.");
+    }
+    finally {
+      setdownloadcsvloader(null)
+    }
+  };
+
 
   const removeDuplicatesAndKeepLast = (data) => {
     // Create an object to store the last inserted item for each unique key
@@ -1750,7 +1817,6 @@ const VendorProducts = ({ vendorDatastate }) => {
   const onChange = (value) => {
     selectedKey && setCurrentStep(value);
   };
-
   const handleDeleteVariants = async (record) => {
     try {
       const responseData = await fetch(`${AdminUrl}/api/deleteVariant`, {
@@ -1853,38 +1919,59 @@ const VendorProducts = ({ vendorDatastate }) => {
         <AuthCheck vendorDatastate={vendorDatastate} />
       ) : (
         <>
-          <h1 className="text-4xl text-gray-700 font-bold mb-2">
-            All Products ({totalProduct})
-          </h1>
-          <nav
-            aria-label="Breadcrumbs"
-            className="order-first flex text-sm font-semibold sm:space-x-2"
-          >
-            <NavLink to={`${AdminUrl}`}>
-              <a
-                href=""
-                className="hover:text-slate-600 hidden text-slate-500 sm:block"
+          <div className="lg:flex items-start lg:space-x-6 ">
+            <div>
+              <h1 className=" text-xl sm:text-2xl lg:text-4xl text-gray-700 font-bold mb-2">
+                All Products ({totalProduct})
+              </h1>
+              <nav
+                aria-label="Breadcrumbs"
+                className="order-first flex text-base font-semibold sm:space-x-2 mx-2 mb-2"
               >
-                Home
-              </a>
-            </NavLink>
+                <NavLink to={`${AdminUrl}`}>
+                  <a
+                    href=""
+                    className="hover:text-slate-600 hidden text-slate-500 sm:block"
+                  >
+                    Home
+                  </a>
+                </NavLink>
 
-            <div
-              aria-hidden="true"
-              className="hidden select-none text-slate-400 sm:block"
-            >
-              /
+                <div
+                  aria-hidden="true"
+                  className="hidden select-none text-slate-400 sm:block"
+                >
+                  /
+                </div>
+                <p className="text-slate-500 hover:text-slate-600">
+                  Manage All Products{" "}
+                </p>
+              </nav>
+              {/* <button onClick={() => handleDownloadcsv('all')}>Download csv (All Products)</button> */}
+              <Button loading={downloadcsvloader === "all" && true}
+                className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
+                onClick={() => handleDownloadcsv('all')}
+              // onClick={handleDeleteSelected}
+              >Download csv ({totalProduct})
+              </Button>
+
             </div>
-            <p className="text-slate-500 hover:text-slate-600">
-              Manage All Products{" "}
-            </p>
-          </nav>
-
-          {
-            <>
-              <button
+            <div className="lg:flex justify-center border-none items-center mt-3 lg:mt-0 p-1">
+              <AutoComplete
+                value={searchQuery}
+                onChange={(value) => handleInputChange(value)}
+                onSelect={(value) => handleSearchSubmit(value)}
+                allowClear
+                className="w-full sm:w-72 xl:w-96  border ring-0"
+                placeholder="Search Subcategory"
+                options={suggestions.map((suggestion) => ({
+                  value: suggestion,
+                }))}
+              />
+            </div>
+            <button
                 onClick={handleCreate}
-                className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-2  absolute right-10 top-24"
+                className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-0.5 sm:p-1 lg:p-2  absolute right-4 sm:right-10 top-28 sm:top-28"
               >
                 <svg
                   className="w-10 h-10"
@@ -1901,20 +1988,14 @@ const VendorProducts = ({ vendorDatastate }) => {
                   />
                 </svg>
               </button>
-              <div className="overflow-auto mt-4 ">
-                <div className="flex justify-center items-center mb-4 p-4">
-                  <AutoComplete
-                    value={searchQuery}
-                    onChange={(value) => handleInputChange(value)}
-                    onSelect={(value) => handleSearchSubmit(value)}
-                    allowClear
-                    className="w-full md:w-96 mr-2 border-none ring-0"
-                    placeholder="Search Subcategory"
-                    options={suggestions.map((suggestion) => ({
-                      value: suggestion,
-                    }))}
-                  />
-                </div>
+          </div>
+
+          {
+            <>
+              
+              <div className="overflow-auto mt-4 border-none
+               ">
+
                 <div className="">
                   <Tabs
                     defaultActiveKey="all"
@@ -1943,7 +2024,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                       tab={`All Products (${totalProduct})`}
                       key="all"
                     >
-                      <div className="h-[50vh]  overflow-auto">
+                      <div className="h-[60vh] bg-white  overflow-auto">
                         <Table
                           columns={columns}
                           dataSource={memoizedProducts}
@@ -1970,13 +2051,24 @@ const VendorProducts = ({ vendorDatastate }) => {
                                 >
                                   Select All
                                 </Checkbox>
-                                <Button
-                                  className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
-                                  onClick={handleDeleteSelected}
-                                  disabled={selectedRowKeys.length === 0}
-                                >
-                                  Delete ({selectedRowKeys?.length})
-                                </Button>
+                                <div className="flex items-center space-x-2">
+
+                                  <Button
+                                    className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
+                                    onClick={handleDeleteSelected}
+                                    disabled={selectedRowKeys.length === 0}
+                                  >
+                                    Delete ({selectedRowKeys?.length})
+                                  </Button>
+                                  <Button loading={downloadcsvloader === "single" && true}
+                                    className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
+                                    onClick={() => handleDownloadcsv()}
+                                    // onClick={handleDeleteSelected}
+                                    disabled={selectedRowKeys.length === 0}
+                                  >
+                                    Download CSV ({selectedRowKeys?.length})
+                                  </Button>
+                                </div>
                               </div>
                             </>
                           )}
@@ -2006,7 +2098,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                             tab={`${subcat.subcategory} (${subcat.total_products})`}
                             key={index}
                           >
-                            <div className="h-[50vh]  overflow-auto">
+                            <div className="h-[60vh]  overflow-auto">
                               <Table
                                 columns={columns}
                                 dataSource={memoizedProducts}
@@ -2016,7 +2108,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                                 }
                                 title={() => (
                                   <>
-                                    <div className="flex items-center">
+                                    <div className="flex items-center ">
                                       <Checkbox
                                         checked={
                                           selectedRowKeys.length === memoizedProducts.length
@@ -2030,17 +2122,28 @@ const VendorProducts = ({ vendorDatastate }) => {
                                       >
                                         Select All
                                       </Checkbox>
-                                      <Button
-                                        className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
-                                        onClick={handleDeleteSelected}
-                                        disabled={selectedRowKeys.length === 0}
-                                      >
-                                        Delete ({selectedRowKeys?.length})
-                                      </Button>
+                                      <div className="flex items-center space-x-2">
+
+                                        <Button
+                                          className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
+                                          onClick={handleDeleteSelected}
+                                          disabled={selectedRowKeys.length === 0}
+                                        >
+                                          Delete ({selectedRowKeys?.length})
+                                        </Button>
+                                        <Button loading={downloadcsvloader === "single" && true}
+                                          className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
+                                          onClick={() => handleDownloadcsv()}
+                                          // onClick={handleDeleteSelected}
+                                          disabled={selectedRowKeys.length === 0}
+                                        >
+                                          Download CSV ({selectedRowKeys?.length})
+                                        </Button>
+                                      </div>
                                     </div>
                                   </>
                                 )}
-                                className="w-full mt-10"
+                                className="w-full "
                               />
                             </div>
                             <div className="p-2 py-5 flex justify-end">

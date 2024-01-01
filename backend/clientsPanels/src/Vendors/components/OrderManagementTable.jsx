@@ -684,46 +684,51 @@ const OrderManagementTable = ({
     const expandedRowKeys = Object.keys(groupedOrders);
 
     return (
-      <Table
-        columns={columns.slice(0, -11)}
-        dataSource={Object.entries(groupedOrders).map(
-          ([orderDate, orders]) => ({
-            created_at: orderDate,
-            orders,
-          })
-        )}
-        pagination={false}
-        className="ant-table-bordered"
-        expandable={{
-          expandedRowKeys: expandedRowKeys,
-          onExpand: (expanded, record) => {
-            // This part can be left as is
-            if (expanded) {
-              setExpandedRowKeys((prevKeys) => [
-                ...prevKeys,
-                record.created_at,
-              ]);
-            } else {
-              setExpandedRowKeys((prevKeys) =>
-                prevKeys.filter((key) => key !== record.created_at)
-              );
-            }
-          },
-          expandedRowRender: (record) => {
-            const filteredNestedOrders = record.orders;
+      <div className="w-full overflow-hidden overflow-x-auto">
+        <Table
+          columns={columns.slice(0, -11)}
+          dataSource={Object.entries(groupedOrders).map(
+            ([orderDate, orders]) => ({
+              created_at: orderDate,
+              orders,
+            })
+          )}
+          pagination={false}
+          className="ant-table-bordered"
+          expandable={{
+            expandedRowKeys: expandedRowKeys,
+            onExpand: (expanded, record) => {
+              // This part can be left as is
+              if (expanded) {
+                setExpandedRowKeys((prevKeys) => [
+                  ...prevKeys,
+                  record.created_at,
+                ]);
+              } else {
+                setExpandedRowKeys((prevKeys) =>
+                  prevKeys.filter((key) => key !== record.created_at)
+                );
+              }
+            },
+            expandedRowRender: (record) => {
+              const filteredNestedOrders = record.orders;
 
-            return (
-              <Table
-                columns={columns.slice(1)} // Exclude the Order Date column
-                dataSource={filteredNestedOrders}
-                rowKey="order_id"
-                pagination={false}
-              />
-            );
-          },
-        }}
-        rowKey="created_at"
-      />
+              return (
+                <div className="bg-white">
+                  <Table
+                    columns={columns.slice(1)} // Exclude the Order Date column
+                    dataSource={filteredNestedOrders}
+                    rowKey="order_id"
+                    pagination={false}
+                  />
+                </div>
+              );
+            },
+          }}
+          rowKey="created_at"
+        />
+      </div>
+
     );
   };
 
@@ -816,7 +821,7 @@ const OrderManagementTable = ({
       <div className="mt-10 px-2 md:px-4">
         <div className="flex justify-between">
           <div className="">
-            <h1 className="text-3xl font-semibold mb-2">
+            <h1 className="text-xl md:text-3xl font-semibold mb-2">
               {type === "admin"
                 ? "Handle All Orders "
                 : "Manage Your Orders Here "}
@@ -828,7 +833,7 @@ const OrderManagementTable = ({
               )}
             </h1>
 
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-6 text-sm md:text-base">
               Effortlessly organize and control orders in a structured table
             </p>
           </div>
@@ -839,10 +844,10 @@ const OrderManagementTable = ({
                 <div className="relative">
                   <CalendarOutlined
                     onClick={OpenDatepicker}
-                    className="w-96 p-2 justify-end flex text-2xl mr-4"
+                    className="  lg:w-36 p-2 sm:justify-end flex text-2xl mr-4"
                   />
                   {showCalendar && (
-                    <div className="absolute top-1 -left-14 w-full">
+                    <div className=" w-full">
                       <DatePicker.RangePicker
                         value={filteredDateRange}
                         onChange={handleDateRangeChange}

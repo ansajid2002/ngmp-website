@@ -222,6 +222,11 @@ p {
 :where(.css-dev-only-do-not-override-14wwjjs).ant-modal .ant-modal-content {
   box-shadow: none !important;
 }
+@media Screen and (max-width :640px) {
+  :where(.css-dev-only-do-not-override-14wwjjs).ant-modal .ant-modal-content {
+    padding:2px !important
+  }
+}
 
 .custom-form .ant-form-item-label {
   text-align: left;

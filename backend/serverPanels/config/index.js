@@ -17,6 +17,3 @@ pool.query('SELECT 1', (err, result) => {
 });
 
 module.exports = pool;
-
-
-// sajid

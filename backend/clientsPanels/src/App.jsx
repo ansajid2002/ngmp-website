@@ -62,7 +62,7 @@ export const websiteUrl = "https://stg.nilegmp.com/"
 function AdminRoutes() {
   const [superad, setsuperadmin] = useState(false);
   const [vendorExists, setvendorExists] = useState(false);
-  const [collapse, setcollapse] = useState(true);
+  const [collapse, setcollapse] = useState(false);
   const [adminLoginData, setadminLoginData] = useState(null);
   const [vendorDatastate, setvendorDatastate] = useState(null);
 
@@ -299,7 +299,7 @@ function AdminRoutes() {
             handleCollapseAPP={handleCollapseAPP}
           />
           <div
-            className={`mx-auto p-8 mt-20 bg-gray-100 ${collapse
+            className={`mx-auto p-3 sm:p-8  mt-20 sm:mt-20 bg-gray-100 ${collapse
               ? "sm:ml-64 transition-all duration-300 ease-in"
               : "sm:ml-0 transition-all duration-300 ease-out"
               }`}

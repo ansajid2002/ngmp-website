@@ -23,6 +23,7 @@ const ClaimForm = ({ vendorDatastate }) => {
   const [desc, setDescription] = useState("");
   const [previewImages, setPreviewImages] = useState([]);
   const [loader, setLoader] = useState(false);
+
   const columns = [
     {
       title: "Claim ID",
@@ -46,8 +47,8 @@ const ClaimForm = ({ vendorDatastate }) => {
             status === "Pending"
               ? "orange"
               : status === "Ongoing"
-              ? "blue"
-              : "green"
+                ? "blue"
+                : "green"
           }
         >
           {status}
@@ -240,9 +241,6 @@ const ClaimForm = ({ vendorDatastate }) => {
       claim.claim_id.toString().includes(searchText.toString())
     );
 
-  // The `toString()` method is used to convert both claim_id and searchText to strings for comparison.
-  // This will return an array of claims where claim_id includes the searchText.
-
   return (
     <div>
       <div className="p-5 md:p-8 bg-white shadow-lg rounded mb-8 flex flex-col items-center xl:flex-row">
@@ -299,12 +297,14 @@ const ClaimForm = ({ vendorDatastate }) => {
       {error ? (
         <p>Error: {error}</p>
       ) : (
-        <Table
-          dataSource={filterClaims || []} // Use filtered list of coupons
-          columns={columns}
-          rowKey="coupon_id"
-          pagination={false}
-        />
+        <div className="w-full overflow-hidden overflow-x-auto bg-white">
+          <Table
+            dataSource={filterClaims || []} // Use filtered list of coupons
+            columns={columns}
+            rowKey="coupon_id"
+            pagination={false}
+          />
+        </div>
       )}
 
       <Modal
@@ -409,8 +409,8 @@ const ClaimForm = ({ vendorDatastate }) => {
               }
               className={
                 !additionalText.trim() ||
-                additionalText.length < 20 ||
-                additionalText.length > 200
+                  additionalText.length < 20 ||
+                  additionalText.length > 200
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-500 text-white"
               }
