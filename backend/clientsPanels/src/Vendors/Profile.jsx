@@ -11,6 +11,7 @@ import { RiBankLine } from 'react-icons/ri';
 import TabPane from 'antd/es/tabs/TabPane';
 import { BrandLogoUpdate, TrademarkUploader, VendorProductImageUploader, VendorProfileChange } from '../Admin/components';
 import IncompleteProfile from './components/IncompleteProfile';
+import VendorPolicies from './components/VendorPolicies';
 const Profile = ({ vendorDatastate }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageUploadModal, setimageUploadModal] = useState(false);

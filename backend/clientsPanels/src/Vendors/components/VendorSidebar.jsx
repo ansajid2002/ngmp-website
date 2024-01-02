@@ -148,7 +148,7 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
 
   const solutions = [
     { name: 'Profile', description: 'Manage your Vendor profile', href: '/Vendors/Profile', icon: UserCircleIcon },
-    // { name: 'Settings', description: "Manage your default Settings", href: '/Vendors/Settings', icon: FiSettings },
+    { name: 'Policies', description: "Manage your Vendor Policies", href: '/Vendors/vendorpolicies', icon: FiSettings },
     // { name: 'Integrations', description: 'Connect with third-party tools', href: '#', icon: SquaresPlusIcon },
   ]
   const callsToAction = [

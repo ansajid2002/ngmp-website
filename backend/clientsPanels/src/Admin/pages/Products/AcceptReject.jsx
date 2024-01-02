@@ -929,7 +929,7 @@ const AcceptReject = () => {
           </ul>
         </div>
       </Modal>
-    </div >
+    </div>
   );
 };
 

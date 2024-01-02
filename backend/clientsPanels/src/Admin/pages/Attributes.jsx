@@ -21,6 +21,7 @@ const AdminAttributes = () => {
     const [selectedCategoryType, setSelectedCategoryType] = useState("Products");
     const [selectedCategory, setSelectedCategory] = useState(null);
 
+    console.log(selectedSubcategory,"selectedSubcategory");
     const showModal = () => {
         setVisible(true);
     };
@@ -120,7 +121,7 @@ const AdminAttributes = () => {
                 }
             } else {
                 // Add a new attribute
-                const newAttribute = { name: attributeName, values: attributeValues, category: selectedCategory, subcategory: selectedCategory };
+                const newAttribute = { name: attributeName, values: attributeValues, category: selectedCategory, subcategory: selectedSubcategory };
 
                 try {
                     const dataToSend = {
@@ -128,7 +129,7 @@ const AdminAttributes = () => {
                         attributeValues: attributeValues,
                         type: "add",
                         category: selectedCategory,
-                        subcategory: selectedCategory
+                        subcategory: selectedSubcategory
                     };
 
                     const response = await fetch(`${AdminUrl}/api/SetAttributesValues`, {
@@ -180,7 +181,7 @@ const AdminAttributes = () => {
             })
         }
     };
-
+console.log(attributeValue,"attributeValue");
     const handleCancel = () => {
         setVisible(false);
         setEditModalVisible(false);
@@ -218,6 +219,8 @@ const AdminAttributes = () => {
 
         // Pre-fill edit modal fields with selected attribute's data
         const selectedAttribute = attributes[index];
+
+        console.log(selectedAttribute,"selectedAttribute");
         setAttributeName(selectedAttribute.name);
         setSelectedCategory(selectedAttribute.category);
         setSelectedSubcategory(selectedAttribute.subcategory);

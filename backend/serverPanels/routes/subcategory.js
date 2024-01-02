@@ -16,7 +16,8 @@ app.use((req, res, next) => {
 
 app.get("/getAllSubcategories", async (req, res) => {
   try {
-    const query = "SELECT * FROM subcategories";
+    // const query = "SELECT * FROM subcategories";
+    const query = "SELECT subcategories.*, COUNT(products.subcategory) AS product_subcount FROM subcategories LEFT JOIN products ON subcategories.subcategory_name = products.subcategory GROUP BY subcategories.subcategory_id";
 
     const { rows } = await pool.query(query);
     res.status(200).json(rows);

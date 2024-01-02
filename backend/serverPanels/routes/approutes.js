@@ -88,19 +88,6 @@ app.get("/getAllCategoriesData", async (req, res) => {
 });
 
 
-// app.get("/getProductsData", async (req, res) => {
-//     try {
-//         const subcatData = await SubcatAll(res)
-//         let response = subcatData.filter((singleproduct) => singleproduct.category_type === "Products")
-//         console.log(response, "Res dara");
-//         res.status(200).json(response)
-
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ error: 'Internal Server Error' })
-//     }
-// });
-
 app.get("/getProductsData", async (req, res) => {
     try {
 

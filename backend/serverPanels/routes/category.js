@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 
 app.get("/getAllProductCatgeory", async (req, res) => {
     try {
-        const query = 'SELECT * FROM categories';
+        const query = 'SELECT categories.*, COUNT(products.category) AS product_count FROM categories LEFT JOIN products ON categories.category_name = products.category GROUP BY categories.category_id';
 
         const { rows } = await pool.query(query);
         res.status(200).json(rows);

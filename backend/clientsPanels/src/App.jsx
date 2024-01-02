@@ -56,6 +56,7 @@ import ChatwithCustomers from "./Vendors/Chats/ChatwithCustomers";
 import AdminChatwithCustomers from "./Admin/pages/Chats/AdminChatwithCustomers";
 import Wallets from "./Admin/pages/Wallets";
 import MediaLibrary from "./Vendors/MediaLibrary";
+import VendorPolicies from "./Vendors/components/VendorPolicies";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
 
@@ -167,6 +168,7 @@ function AdminRoutes() {
       "/",
       "/Vendors/products/all",
       "/Vendors/Profile",
+      "/Vendors/vendorpolicies",
       "/Vendors/products/bulkUpload",
       "/Vendors/products/MediaLibrary",
       "/Vendors/products/Rejected",
@@ -323,6 +325,10 @@ function AdminRoutes() {
               <Route
                 path="/Vendors/Profile"
                 element={<Profile vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/vendorpolicies"
+                element={<VendorPolicies vendorDatastate={vendorDatastate} />}
               />
               <Route
                 path="/Vendors/products/bulkUpload"

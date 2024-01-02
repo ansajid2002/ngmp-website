@@ -5,6 +5,7 @@ import { getAllVendorProductvariants } from "../Admin/constant";
 const { Option } = Select;
 
 const VariantsCrud = ({
+  selectedSubcategory,
   vendorDatastate,
   onSave,
   variantsValueArray,
@@ -18,7 +19,7 @@ const VariantsCrud = ({
   const [formFields, setFormFields] = useState([
     { attributeName: "", attributeValues: [] },
   ]);
-
+console.log(attributeData,"attributeData")
   const [form] = Form.useForm();
 
   const id = vendorDatastate?.[0].id;
@@ -27,7 +28,10 @@ const VariantsCrud = ({
     const fetchData = async () => {
       try {
         const response = await getAllVendorProductvariants(id);
-        setAttributeData(response);
+        console.log(response,"response from attributes table");
+        setAttributeData(response.filter((single) => single.subcategory === selectedSubcategory ))
+
+        // setAttributeData(response);
         const initialFormFields = response.map((attribute) => ({
           attributeName: attribute.attribute_name,
           attributeValues: attribute.attribute_values,

@@ -104,8 +104,18 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [pageSize, setPageSize] = useState(10);
   const [VariantsEdit, setVariantsEditModal] = useState(false);
   const [downloadcsvloader, setdownloadcsvloader] = useState(null)
+  const [conditionToggle, setConditionToggle] = useState('');
+  const [additionalInfo, setAdditionalInfo] = useState('');
+  const handleConditionChange = (value) => {
+    setConditionToggle(value);
+  };
+  console.log(conditionToggle,additionalInfo,'conditionToggle');
 
-  console.log(downloadcsvloader, "downloadcsvloader");
+  const handleAdditionalInfoChange = (e) => {
+    setAdditionalInfo(`${e.target.value}`
+     
+    );
+  };
   const id = vendorDatastate?.[0].id;
 
   const [locationData, setLocationData] = useState({
@@ -397,6 +407,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   const allConditionValues = Array.from(
     new Set(memoizedProducts.map((item) => item.condition))
   );
+
   // Get all unique category and subcategory values from the dataSource
   const allCategoryValues = Array.from(
     new Set(memoizedProducts.map((item) => item.category))
@@ -749,7 +760,6 @@ const VendorProducts = ({ vendorDatastate }) => {
 
   const [form] = Form.useForm();
   const [formitem] = Form.useForm();
-
   useEffect(() => {
     if (!locationRetrieved && "geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -822,7 +832,6 @@ const VendorProducts = ({ vendorDatastate }) => {
     const selectedRow = products.find((item) => {
       return item.id === key;
     });
-    console.log(selectedRow);
     setProductVariantType(selectedRow?.isvariant);
     setselectRowProduct(selectedRow);
     form.setFieldsValue(selectedRow);
@@ -899,17 +908,19 @@ const VendorProducts = ({ vendorDatastate }) => {
 
   const onFinish = async (values) => {
     try {
-      // console.log(values);
       const vendorId = vendorDatastate[0].id;
       // Update the status value to 0
-      values.status = 0;
       // Check if an object with the same name already exists
+      values.condition = `${conditionToggle},${additionalInfo}`
+      console.log(values,"vlaues from onfinsih");
+      values.status = 0;
       const existingIndex = formValues.findIndex(
         (item) => item.name === values.name
       );
 
       // Create a copy of the existing state
       const updatedFormValues = [...formValues];
+
 
       if (existingIndex !== -1) {
         // Update the value if the object already exists
@@ -1008,7 +1019,6 @@ const VendorProducts = ({ vendorDatastate }) => {
             text: "Your ID is not valid. Please try reloading the page after selecting a valid key.",
           });
         } else {
-          console.log(values);
 
           try {
             // Send the data to the backend for adding a new record
@@ -1124,22 +1134,27 @@ const VendorProducts = ({ vendorDatastate }) => {
           ))}
 
           <Form.Item
-            label="Condition"
-            name="condition"
-            rules={[
-              {
-                required: true,
-                message: "Please select a Condition",
-              },
-            ]}
-          >
-            <Select>
-              <Select.Option value={`New`}>New</Select.Option>
-              <Select.Option value={`Used`}>Used</Select.Option>
-              <Select.Option value={`Refurbished`}>Refurbished</Select.Option>
-            </Select>
-          </Form.Item>
+        label="Condition"
+        name="condition"
+        rules={[
+          {
+            required: true,
+            message: 'Please select a Condition',
+          },
+        ]}
+      >
+        <Select onChange={handleConditionChange}>
+          <Select.Option value="New">New</Select.Option>
+          <Select.Option value="Refurbished">Refurbished</Select.Option>
+          <Select.Option value="Used">Used</Select.Option>
+        </Select>
+      </Form.Item>
 
+      {conditionToggle === 'Used' && (
+        <Form.Item label="Additional Information">
+          <Input value={additionalInfo} onChange={handleAdditionalInfoChange} />
+        </Form.Item>
+      )}
           <Form.Item
             label="Product Type"
             name="productType"
@@ -1302,7 +1317,6 @@ const VendorProducts = ({ vendorDatastate }) => {
     }
   };
 
-  // console.log(speicificationFields);
   const getFieldsByCategory = (category) => {
     const selectedCategory = speicificationFields.find(
       (spec) => spec.category === category
@@ -1608,7 +1622,6 @@ const VendorProducts = ({ vendorDatastate }) => {
     },
   ];
 
-  console.log(selectedRowKeys, "selectedRowKeys");
 
 
 
@@ -1652,7 +1665,6 @@ const VendorProducts = ({ vendorDatastate }) => {
     }
   };
 
-  console.log(subcatNameBackend, "subcatNameBackend");
 
   const handleDownloadcsv = async (type) => {
     if (type === 'all') {
@@ -1970,29 +1982,29 @@ const VendorProducts = ({ vendorDatastate }) => {
               />
             </div>
             <button
-                onClick={handleCreate}
-                className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-0.5 sm:p-1 lg:p-2  absolute right-4 sm:right-10 top-28 sm:top-28"
+              onClick={handleCreate}
+              className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-0.5 sm:p-1 lg:p-2  absolute right-4 sm:right-10 top-28 sm:top-28"
+            >
+              <svg
+                className="w-10 h-10"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg
-                  className="w-10 h-10"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+            </button>
           </div>
 
           {
             <>
-              
+
               <div className="overflow-auto mt-4 border-none
                ">
 
@@ -2080,6 +2092,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                           showSizeChanger
                           showQuickJumper
                           defaultCurrent={2}
+                          current={page}
                           showTotal={(total) => `Total ${total} items`}
                           responsive={true}
                           onChange={(page, pageSize) => {
@@ -2151,6 +2164,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                                 total={subcat?.total_products || 0}
                                 showSizeChanger
                                 showQuickJumper
+                                current={page}
                                 showTotal={(total) => `Total ${total} items`}
                                 responsive={true}
                                 onChange={(page, pageSize) => {
@@ -2338,6 +2352,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                 }}
               >
                 <VariantsCrud
+                  selectedSubcategory={selectedSubcategory}
                   vendorDatastate={vendorDatastate}
                   onSave={handleVariantsData}
                   // handleVariantOk={handleVariantOk}

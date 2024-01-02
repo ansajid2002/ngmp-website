@@ -129,6 +129,11 @@ const ManageCategory = ({ adminLoginData }) => {
       dataIndex: "category_name", // Replace 'name' with 'category_name'
       key: "category_name", // Replace 'name' with 'category_name'
       width: 100,
+      render: (_, record) => {
+        return <>
+          <p>{record?.category_name} ({record?.product_count})</p>
+        </>
+      }
     },
     {
       title: "Description",
@@ -270,6 +275,11 @@ const ManageCategory = ({ adminLoginData }) => {
       dataIndex: "subcategory_name",
       key: "subcategory_name",
       width: 100,
+      render: (_, record) => {
+        return <>
+          <p>{record?.subcategory_name} ({record?.product_subcount})</p>
+        </>
+      }
     },
     {
       title: "Image",
@@ -906,7 +916,7 @@ const ManageCategory = ({ adminLoginData }) => {
                     <Table
                       columns={columns}
                       dataSource={category}
-                      pagination={false}
+                      pagination={true}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
                     />
@@ -918,7 +928,7 @@ const ManageCategory = ({ adminLoginData }) => {
                     <Table
                       columns={columns}
                       dataSource={productsCategory}
-                      pagination={false}
+                      pagination={true}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
                     />
@@ -930,7 +940,7 @@ const ManageCategory = ({ adminLoginData }) => {
                     <Table
                       columns={columns}
                       dataSource={ServicesCatgeory}
-                      pagination={false}
+                      pagination={true}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
                     />
@@ -938,14 +948,14 @@ const ManageCategory = ({ adminLoginData }) => {
                 </Tabs>
               </div>
 
-              <div className="mt-4">
+              {/* <div className="mt-4">
                 <Pagination
                   current={currentPage}
                   onChange={handlePageChange}
                   pageSize={pageSize}
                   total={category?.length}
                 />
-              </div>
+              </div> */}
 
               <Modal
                 title={

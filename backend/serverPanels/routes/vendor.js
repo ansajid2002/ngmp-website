@@ -1605,21 +1605,38 @@ app.put("/getSingleProduct", async (req, res) => {
 
 // get Products of Vendors with Vendor Id
 app.get("/getVendorProducts", async (req, res) => {
-  const { vendorid, currency, pageNumber, pageSize } = req.query;
+  const { vendorid, currency, pageNumber = 1, pageSize = 10, type = "" } = req.query;
   try {
     // Check if vendorid is provided in the URL and use it in your query
     // Use vendorid in your query or function
-    let AllProducts = await AllProductsVendors(
-      pool,
-      vendorid,
-      currency,
-      null,
-      null,
-      null,
-      1,
-      pageNumber,
-      pageSize
-    );
+
+    let AllProducts
+    if (type === 'coupons') {
+      AllProducts = await AllProductsVendors(
+        pool,
+        vendorid,
+        currency,
+        null,
+        null,
+        null,
+        1,
+        1,
+        100000000
+      );
+    } else {
+      AllProducts = await AllProductsVendors(
+        pool,
+        vendorid,
+        currency,
+        null,
+        null,
+        null,
+        1,
+        pageNumber,
+        pageSize
+      );
+    }
+
 
     const executeQuery = await pool.query('SELECT COUNT(*) AS totalVendorProducts FROM products WHERE status = 1 AND vendorid = $1', [vendorid])
     const total = executeQuery.rows

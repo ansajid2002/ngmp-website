@@ -313,7 +313,7 @@ const Coupons = ({ vendorDatastate }) => {
                     setCoupons(couponsData);
 
                     // Fetch vendor products by vendorId
-                    const productsResponse = await fetch(`${AdminUrl}/api/getVendorProducts?vendorid=${id}&currency=USD`);
+                    const productsResponse = await fetch(`${AdminUrl}/api/getVendorProducts?vendorid=${id}&currency=USD&type=coupons`);
                     if (!productsResponse.ok) {
                         throw new Error(`Request for vendor products failed with status: ${productsResponse.status}`);
                     }

@@ -88,6 +88,22 @@ const SellerForm = ({ onModal }) => {
             }
         };
 
+        const prefixSelector = (
+            <Form.Item name="country_code" noStyle >
+                <Select
+                    style={{
+                        width: 70,
+                    }}
+                >
+                    {countryCodes.map((country) => (
+                        <Option key={country.code} value={country.code}>
+                            {country.code}
+                        </Option>
+                    ))}
+                </Select>
+            </Form.Item>
+        );
+
         return (
             <>
                 <div className="mt-10 p-2">
@@ -99,7 +115,25 @@ const SellerForm = ({ onModal }) => {
                         layout="horizontal" // Set the layout to "horizontal"
                     >
                         <div className='grid grid-cols-2 gap-4'>
+
                             <Form.Item
+                                name="mobile_number"
+                                label="Phone Number"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please input your phone number!',
+                                    },
+                                ]}
+                            >
+                                <Input
+                                    addonBefore={prefixSelector}
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                />
+                            </Form.Item>
+                            {/* <Form.Item
                                 name="country_code"
                                 label="Country Code"
                                 rules={[
@@ -137,7 +171,7 @@ const SellerForm = ({ onModal }) => {
                                 // You can use the prefix if needed
                                 // prefix={<FiPhone className="site-form-item-icon" />}
                                 />
-                            </Form.Item>
+                            </Form.Item> */}
 
 
 

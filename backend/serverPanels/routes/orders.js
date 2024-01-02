@@ -89,7 +89,7 @@ app.post("/Insertorders", async (req, res) => {
         product_uniqueid: order.uniquepid,
         vendor_id: order.vendorid,
         product_image: order.images?.[0],
-        currency_symbol: order.currency_symbol,
+        currency_symbol: order.currency_symbol || 'USD',
         label: order.label,
         category,
         subcategory,

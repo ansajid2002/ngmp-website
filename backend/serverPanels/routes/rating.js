@@ -89,9 +89,9 @@ app.get('/fetchRatings', async (req, res) => {
     const vendorId = req.query.vendorid;
     const rate_id = req.query.rate_id;
 
-    console.log(req.query);
     try {
         let ratingsData;
+        console.log(req.query);
 
         if (customer_id && !vendorId) {
             console.log('customer_id');

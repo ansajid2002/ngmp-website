@@ -42,7 +42,7 @@ const mobileBanner = require("./routes/mobileBanner");
 const claims = require("./routes/claims");
 const approutes = require("./routes/approutes");
 const bulkupload = require("./routes/bulkupload");
-
+const vendorpolicies = require("./routes/vendorpolicies")
 const inbox = require("./routes/inbox");
 const wallet = require("./routes/wallet");
 const sendEmail = require("./routes/nodemailer");
@@ -83,6 +83,7 @@ app.use('/api', banner);
 app.use('/api', mobileBanner);
 app.use('/api', claims);
 app.use('/api', approutes);
+app.use('/api', vendorpolicies);
 app.use('/api', inbox);
 app.use('/api', wallet);
 app.use('/api', bulkupload);
