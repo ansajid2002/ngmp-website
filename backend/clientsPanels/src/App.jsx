@@ -57,6 +57,7 @@ import AdminChatwithCustomers from "./Admin/pages/Chats/AdminChatwithCustomers";
 import Wallets from "./Admin/pages/Wallets";
 import MediaLibrary from "./Vendors/MediaLibrary";
 import VendorPolicies from "./Vendors/components/VendorPolicies";
+import Apploading from "./Admin/pages/Apploading";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
 
@@ -152,6 +153,7 @@ function AdminRoutes() {
       "/Admin/Profile",
       "/Admin/Settings",
       "/Admin/HomeBanner",
+      "/Admin/AppLoading",
       "/Admin/MobileBanner",
       "/Admin/customersAddress",
       "/Admin/VendorClaimsAdimin",
@@ -260,6 +262,10 @@ function AdminRoutes() {
             <Route
               path="/Admin/HomeBanner"
               element={<HomeBanner conversionRates={conversionRates} adminLoginData={adminLoginData} />}
+            />
+            <Route
+              path="/Admin/AppLoading"
+              element={<Apploading conversionRates={conversionRates} adminLoginData={adminLoginData} />}
             />
             <Route
               path="/Admin/MobileBanner"

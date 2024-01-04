@@ -33,6 +33,7 @@ import {
 } from "../../components";
 import { FcCancel } from "react-icons/fc";
 import { FaArchive, FaBan, FaCheck, FaClock, FaTimes } from "react-icons/fa";
+import { countryCodes } from "../../../Vendors/constants/ProductsForm/Specifications";
 
 const { TabPane } = Tabs;
 
@@ -381,12 +382,7 @@ const Vendors = ({ adminLoginData }) => {
   const Pinfo = () => {
     const [, forceUpdate] = useState({});
     const { Option } = Select;
-    const countryCodes = [
-      { code: "+1", country: "United States" },
-      { code: "+44", country: "United Kingdom" },
-      { code: "+91", country: "India" },
-      // Add more country codes as needed
-    ];
+
 
     // To disable submit button at the beginning.
     useEffect(() => {
@@ -480,6 +476,22 @@ const Vendors = ({ adminLoginData }) => {
       }
     };
 
+    const prefixSelector = (
+      <Form.Item name="country_code" noStyle >
+        <Select
+          style={{
+            width: 70,
+          }}
+        >
+          {countryCodes.map((country) => (
+            <Option key={country.code} value={country.code}>
+              {country.code}
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
+    );
+
     return (
       <>
         <div className="mt-10 p-2">
@@ -490,36 +502,20 @@ const Vendors = ({ adminLoginData }) => {
             wrapperCol={{ span: 18 }}
           >
             <Form.Item
-              name="country_code"
-              label="Country Code"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select country code!",
-                },
-              ]}
-            >
-              <Select placeholder={"Code"}>
-                {countryCodes.map((country) => (
-                  <Option key={country.code} value={country.code}>
-                    {country.code}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item
               name="mobile_number"
-              label="Mobile Number"
+              label="Phone Number"
               rules={[
                 {
                   required: true,
-                  message: "Please input your mobile number!",
+                  message: 'Please input your phone number!',
                 },
               ]}
             >
               <Input
-                prefix={<FiPhone className="site-form-item-icon" />}
-                placeholder="Mobile Number"
+                addonBefore={prefixSelector}
+                style={{
+                  width: '100%',
+                }}
               />
             </Form.Item>
 

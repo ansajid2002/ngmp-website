@@ -338,7 +338,7 @@ app.post('/addProductcart', async (req, res) => {
             product_uniqueid,
             category,
             subcategory,
-            quantity,
+            added_quantity, // Change 'quantity' to 'added_quantity'
             variantlabel,
             mrp,
             sellingprice,
@@ -371,7 +371,7 @@ app.post('/addProductcart', async (req, res) => {
         if (existingCartItem.rows.length > 0) {
             // Product already exists in the cart; update the quantity
             const existingQuantity = existingCartItem.rows[0].quantity;
-            const updatedQuantity = existingQuantity + quantity;
+            const updatedQuantity = existingQuantity + added_quantity; // Change 'quantity' to 'added_quantity'
 
             // Create an UPDATE query to update the quantity
             let updateQuery = `
@@ -387,7 +387,7 @@ app.post('/addProductcart', async (req, res) => {
                 values.push(variantlabel);
             }
 
-            console.log(values);
+            console.log(values,"values");
             await pool.query(updateQuery, values);
 
 
@@ -410,7 +410,7 @@ app.post('/addProductcart', async (req, res) => {
                     )
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 `;
-                await pool.query(insertQuery, [customer_id, vendor_id, product_uniqueid, category, subcategory, quantity, mrp, sellingprice, variantlabel]);
+                await pool.query(insertQuery, [customer_id, vendor_id, product_uniqueid, category, subcategory, added_quantity, mrp, sellingprice, variantlabel]); // Change 'quantity' to 'added_quantity'
 
             } else {
                 // If variantlabel is not provided, insert without it
@@ -429,7 +429,7 @@ app.post('/addProductcart', async (req, res) => {
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, null)
                 `;
 
-                await pool.query(insertQuery, [customer_id, vendor_id, product_uniqueid, category, subcategory, quantity, mrp, sellingprice]);
+                await pool.query(insertQuery, [customer_id, vendor_id, product_uniqueid, category, subcategory, added_quantity, mrp, sellingprice]); // Change 'quantity' to 'added_quantity'
 
             }
 
@@ -441,6 +441,7 @@ app.post('/addProductcart', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 app.delete('/removeProductFromCart', async (req, res) => {
     let { category, subcategory, product_uniqueid, customer_id, label } = req.query;

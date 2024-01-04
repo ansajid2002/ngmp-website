@@ -9,7 +9,6 @@ const AdminDashboard = ({
   isCurrencyloading,
 }) => {
 
-  console.log(conversionRates, 'dashborad');
   const [customerCounts, setCustomerCounts] = useState(null);
   const [vendorCounts, setVendorCounts] = useState(null);
   const stats = [

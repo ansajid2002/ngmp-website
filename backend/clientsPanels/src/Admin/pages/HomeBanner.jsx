@@ -147,10 +147,11 @@ const HomeBanner = () => {
         formData.append('title', instance.title === "" ? banners[instanceIndex].title : instance.title);
         formData.append('link', instance.link === "" ? banners[instanceIndex].link : instance.link);
         formData.append('id', instanceIndex);
-
+        console.log(instance);
+        console.log(formData);
         // Replace 'backendUploadUrl' with your actual backend API endpoint
         const backendUploadUrl = `${AdminUrl}/api/uploadBanner`;
-
+        console.log(backendUploadUrl,"backendUploadUrl");
         // Send a POST request to the backend
         axios
             .post(backendUploadUrl, formData)

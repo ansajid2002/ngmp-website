@@ -28,12 +28,13 @@ const uploadExcel = multer({ storage: storageExcel });
 // Bulk Product Uploads
 app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, res) => {
     const { jsonData, currentDateTime, vendorId, excludeImage } = req.body;
-
     try {
         const jsonDataArray = JSON.parse(jsonData);
 
         await Promise.all(
             jsonDataArray.map(async (data, index) => {
+                console.log(data);
+
                 const createdAt = new Date().toISOString();
                 const imageUrl = data.key8?.text || data.key8;
                 let imageFileName = "";
@@ -97,7 +98,6 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                 }
 
                 if (existingProduct.rows.length > 0) {
-                    console.log('exis', index);
                     // Update the existing row
                     const query = `
                         UPDATE products SET 
@@ -130,7 +130,11 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                             countryoforigin = $27,
                             slug_cat = $28,
                             slug_subcat = $29,
-                            prod_slug = $30
+                            prod_slug = $30,
+                            height = $31,
+                            width = $32,
+                            length = $33,
+                            weight = $34
                         WHERE skuid = $24 AND vendorid = $12
                     `;
 
@@ -164,7 +168,11 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.key19 || "",
                         data.category.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
                         data.subcatgeory.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
-                        slug(data.key1 || "")
+                        slug(data.key1 || ""),
+                        data.key20 || 0,
+                        data.key21 || 0,
+                        data.key22 || 0,
+                        data.key23 || 0,
                     ];
 
                     await pool.query(query, flattenedValues);
@@ -202,6 +210,10 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         "slug_cat",
                         "slug_subcat",
                         "prod_slug",
+                        "height",
+                        "width",
+                        "length",
+                        "weight"
                     ];
 
                     // Insert a new row
@@ -210,7 +222,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         VALUES (
                             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
                             $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-                            $21, $22, $23, $24, $25, $26, $27, $28, $29, $30
+                            $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34
                         )
                     `;
 
@@ -244,7 +256,11 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.key19 || "",
                         data.category.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
                         data.subcatgeory.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
-                        slug(data.key1 || "")
+                        slug(data.key1 || ""),
+                        data.key20 || 0,
+                        data.key21 || 0,
+                        data.key22 || 0,
+                        data.key23 || 0,
                     ];
 
                     await pool.query(query, flattenedValues);

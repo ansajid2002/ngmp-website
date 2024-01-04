@@ -514,7 +514,7 @@ const checkSkuidExists = async (sku) => {
 
 app.post("/addVendorProduct", async (req, res) => {
   try {
-    const { subcategory, category, locationData, ...productData } = req.body[0];
+    const { subcategory, category, locationData, length, ...productData } = req.body[0];
     const uniquepid = generateUniqueID();
     const replaceSubcategory = subcategory.trim();
     const replacecategory = category.trim();
@@ -549,8 +549,8 @@ app.post("/addVendorProduct", async (req, res) => {
       INSERT INTO products (ad_title, city, state, country, currency_symbol, category, subcategory, vendorid,
       uniquepid, skuid, mrp, sellingprice, countryoforigin, manufacturername, packerdetails,
       additionaldescription, searchkeywords, keyfeatures, videourl, status, images, category_type,
-      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, NOW(), $31)
+      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug, width, height, weight, length)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, NOW(), $31, $32, $33, $34, $35)
       RETURNING *;
     `;
 
@@ -586,6 +586,10 @@ app.post("/addVendorProduct", async (req, res) => {
       replacecategorySlug,
       replacesubcategorySlug,
       prodSlug,
+      productData.width,
+      productData.height,
+      productData.weight,
+      length
     ];
 
 
@@ -658,12 +662,11 @@ app.post("/addVendorProduct", async (req, res) => {
 
 app.post("/updateVendorProduct", async (req, res) => {
   try {
-    const { subcategory, ...productData } = req.body[0]; // Exclude category, isvariant, skuid, countryoforigin
+    const { subcategory, length, ...productData } = req.body[0]; // Exclude category, isvariant, skuid, countryoforigin
     const replaceSubcategory = subcategory
       .replace(/[^\w\s]/g, "")
       .replace(/\s/g, "");
-    const { ProductVariantType, SelectedUniqueId, FilteredVariantData } =
-      productData;
+    const { ProductVariantType, SelectedUniqueId, FilteredVariantData } = productData;
     const prodSlug = slug(productData?.ad_title);
 
     // Update the product in the 'products' table
@@ -685,7 +688,11 @@ app.post("/updateVendorProduct", async (req, res) => {
                               condition = $13,
                               updated_at_product = NOW(),
                               status = 0,
-                              prod_slug = $15
+                              prod_slug = $15,
+                              height = $16,
+                              width = $17,
+                              length = $18,
+                              weight = $19
                             WHERE uniquepid = $14
                             RETURNING *;
                             `;
@@ -706,6 +713,10 @@ app.post("/updateVendorProduct", async (req, res) => {
       productData.condition,
       SelectedUniqueId,
       prodSlug,
+      productData.width,
+      productData.height,
+      length,
+      productData.weight
     ];
 
     // Execute the 'products' table update query
@@ -1649,6 +1660,8 @@ app.get("/getVendorProducts", async (req, res) => {
 });
 
 app.get("/recommendedProducts/:cid", async (req, res) => {
+  const {pageNumber=1,pageSize=10} = req.query
+  const offset = (pageNumber - 1) * parseInt(pageSize);
   const { cid } = req.params;
   console.log(cid);
   try {
@@ -1681,15 +1694,12 @@ app.get("/recommendedProducts/:cid", async (req, res) => {
           );
 
           // Fetch products based on category names from the products table
-          const productsQuery =
-            "SELECT * FROM products WHERE category = ANY($1::text[]) AND status = 1 LIMIT 10";
-          const productsValues = [categoryNames];
-          const productsResult = await pool.query(
-            productsQuery,
-            productsValues
-          );
+           const productsQuery =
+      "SELECT * FROM products WHERE category = ANY($1::text[]) AND status = 1 LIMIT $2 OFFSET $3";
+    const productsValues = [categoryNames, pageSize, offset];
+    const productsResult = await pool.query(productsQuery, productsValues);
 
-          recommendedProducts = productsResult.rows;
+    recommendedProducts = productsResult.rows;
         } else {
           // If categoryNames is empty, recommend random products with status 1
           const randomProductsQuery =
@@ -1708,11 +1718,12 @@ app.get("/recommendedProducts/:cid", async (req, res) => {
     } else {
       // If cid is null or undefined, recommend random products with status 1
       const randomProductsQuery =
-        "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT 10";
-      const randomProductsResult = await pool.query(randomProductsQuery);
+      "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT $1 OFFSET $2";
+    const randomProductsValues = [pageSize, offset];
+    const randomProductsResult = await pool.query(randomProductsQuery, randomProductsValues);
 
-      recommendedProducts = randomProductsResult.rows;
-    }
+    recommendedProducts = randomProductsResult.rows;
+    } 
 
     let AllProducts = []
     for (const product of recommendedProducts) {
@@ -1743,7 +1754,8 @@ app.get("/recommendedProducts/:cid", async (req, res) => {
 
 app.get("/newArrivals/:cid", async (req, res) => {
   const { cid } = req.params;
-  console.log(cid, 'arrival');
+  const { pageNumber = 1, pageSize = 10 } = req.query;
+  const offset = (pageNumber - 1) * parseInt(pageSize);
   try {
     let newArrivals;
 
@@ -1765,7 +1777,7 @@ app.get("/newArrivals/:cid", async (req, res) => {
         const categoryNamesValues = [categoryIds];
         const categoryNamesResult = await pool.query(
           categoryNamesQuery,
-          categoryNamesValues
+          categoryNamesValues 
         );
 
         if (categoryNamesResult.rows.length > 0) {
@@ -1775,14 +1787,11 @@ app.get("/newArrivals/:cid", async (req, res) => {
 
           // Fetch new arrivals based on category names and order by updated_at_product
           const productsQuery =
-            "SELECT * FROM products WHERE category = ANY($1::text[]) AND status = 1 ORDER BY updated_at_product DESC LIMIT 10";
-          const productsValues = [categoryNames];
-          const productsResult = await pool.query(
-            productsQuery,
-            productsValues
-          );
-
-          newArrivals = productsResult.rows;
+          "SELECT * FROM products WHERE category = ANY($1::text[]) AND status = 1 ORDER BY updated_at_product DESC LIMIT $2 OFFSET $3";
+        const productsValues = [categoryNames, pageSize, offset];
+        const productsResult = await pool.query(productsQuery, productsValues);
+  
+        newArrivals = productsResult.rows;
         } else {
           // If categoryNames is empty, recommend random new arrivals with status 1
           const randomProductsQuery =
@@ -1801,8 +1810,9 @@ app.get("/newArrivals/:cid", async (req, res) => {
     } else {
       // If cid is null or undefined, recommend random new arrivals with status 1
       const randomProductsQuery =
-        "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT 10";
-      const randomProductsResult = await pool.query(randomProductsQuery);
+        "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT $1 OFFSET $2";
+      const randomProductsValues = [pageSize, offset];
+      const randomProductsResult = await pool.query(randomProductsQuery, randomProductsValues);
 
       newArrivals = randomProductsResult.rows;
     }
@@ -1834,6 +1844,30 @@ app.get("/newArrivals/:cid", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.get("/getexploreproducts", async (req, res) => {
+  try {
+    const { pageNumber = 1, pageSize = 10 } = req.query;
+    const offset = (pageNumber - 1) * parseInt(pageSize);
+
+    const query = "SELECT * FROM products WHERE status = 1 ORDER BY RANDOM() LIMIT $1 OFFSET $2";
+    const values = [pageSize, offset];
+
+    const response = await pool.query(query, values);
+    const data = response.rows;
+    
+
+    if (data.length > 0) {
+      res.json(data);
+    } else {
+      res.status(404).json({ message: "No products found" });
+    }
+  } catch (error) {
+    console.error("Error in /getexploreproducts route:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 app.get("/getProductBySubcategories", async (req, res) => {
   const { subcat, category, pageNumber = 1, pageSize = 10 } = req.query;

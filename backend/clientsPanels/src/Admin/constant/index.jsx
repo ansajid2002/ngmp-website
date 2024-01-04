@@ -11,7 +11,8 @@ import {
 } from "react-icons/ri";
 import { FiEdit3 } from "react-icons/fi";
 import Cookies from "js-cookie";
-import { FaDesktop, FaHandPaper, FaHandRock, FaMobile, FaUserCheck } from "react-icons/fa";
+import { FaDesktop, FaHandPaper, FaHandRock, FaMobile, FaTruckLoading, FaUserCheck } from "react-icons/fa";
+import { AiOutlineLoading3Quarters } from "react-icons/ai"
 
 export const AdminUrl = "http://localhost:3001";
 
@@ -100,6 +101,18 @@ export const links = [
         icon: <RiVoiceprintFill />,
         to: "/Admin/VendorClaimsAdimin",
       }
+    ]
+  },
+  {
+    title: 'Manage Loading Screen',
+    links: [
+      {
+        id: 11,
+        name: "App Loading Screen",
+        icon: <AiOutlineLoading3Quarters  />,
+        to: "/Admin/AppLoading",
+      },
+      
     ]
   },
   {

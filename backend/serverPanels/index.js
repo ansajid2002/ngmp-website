@@ -45,6 +45,9 @@ const bulkupload = require("./routes/bulkupload");
 const vendorpolicies = require("./routes/vendorpolicies")
 const inbox = require("./routes/inbox");
 const wallet = require("./routes/wallet");
+const common = require("./routes/common");
+const apploadingscreen = require("./routes/apploadingscreen");
+
 const sendEmail = require("./routes/nodemailer");
 
 app.use(cookieParser());
@@ -87,6 +90,8 @@ app.use('/api', vendorpolicies);
 app.use('/api', inbox);
 app.use('/api', wallet);
 app.use('/api', bulkupload);
+app.use('/api', common);
+app.use('/api', apploadingscreen);
 
 app.use((req, res, next) => {
   req.pool = pool;

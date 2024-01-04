@@ -111,6 +111,10 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         const key17 = row[18];
         const key18 = row[19];
         const key19 = row[20];
+        const key20 = row[21];
+        const key21 = row[22];
+        const key22 = row[23];
+        const key23 = row[24];
 
         const uniquepid = generateUniqueID(); // Generate a unique ID for each row
 
@@ -134,6 +138,10 @@ const BulkProductUpload = ({ vendorDatastate }) => {
           key17,
           key18,
           key19,
+          key20,
+          key21,
+          key22,
+          key23,
           ...locationData,
           vendorid,
           uniquepid, // Include the generated unique ID
@@ -551,7 +559,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
 
                 <div className={jsonData ? "hidden" : ""}>
-                  <DownloadSampleExcel />
+                  <DownloadSampleExcel category={selectedCategory} subcategory={SelectedSubcategory} />
                 </div>
               </>
             }

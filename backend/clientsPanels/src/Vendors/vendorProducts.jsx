@@ -52,6 +52,7 @@ import axios from "axios";
 import { commonFormFields } from "./constants/ProductsForm/CommonFields";
 import { speicificationFields } from "./constants/ProductsForm/Specifications";
 import { RiInformationFill } from "react-icons/ri";
+import { FaFileExcel } from "react-icons/fa";
 
 const { TabPane } = Tabs;
 
@@ -106,14 +107,18 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [downloadcsvloader, setdownloadcsvloader] = useState(null)
   const [conditionToggle, setConditionToggle] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
+  const [bulkEditOption, setBulkEditOption] = useState(null); // State to store selected bulk edit option
+  const [BulkModal, showBulkEditOption] = useState(false); // State to store selected bulk edit option
+  const [SelectedRowProduct, setSelectedRowProduct] = useState(null); // State to store selected bulk edit option
+
   const handleConditionChange = (value) => {
     setConditionToggle(value);
   };
-  console.log(conditionToggle,additionalInfo,'conditionToggle');
+  console.log(conditionToggle, additionalInfo, 'conditionToggle');
 
   const handleAdditionalInfoChange = (e) => {
     setAdditionalInfo(`${e.target.value}`
-     
+
     );
   };
   const id = vendorDatastate?.[0].id;
@@ -428,10 +433,35 @@ const VendorProducts = ({ vendorDatastate }) => {
         />
       ),
     },
+
+    {
+      title: "",
+      key: "actions",
+      render: (record) => {
+        if (record.status === 4) {
+          return <span className="text-red-500">Rejected</span>;
+        }
+
+        return (
+          <Space size="middle" className="flex">
+            <FiEdit3
+              onClick={() => handleUpdate(record.id, record.uniquepid)}
+              className="w-6 h-6 cursor-pointer rounded-full text-green-500 hover:text-green-900"
+            />
+            <FiTrash2
+              onClick={() => handleDelete(record.id, record.ad_title)}
+              className="text-red-500 w-6 h-6 cursor-pointer rounded-full   "
+            />
+          </Space>
+        );
+      },
+    },
+
     {
       title: "SKUID",
       dataIndex: "skuid",
       key: "skuid",
+      editable: true,
       render: (skuid, record) => {
         // Check if the product is a variant
         if (record.isvariant === "Variant") {
@@ -698,28 +728,7 @@ const VendorProducts = ({ vendorDatastate }) => {
         return content;
       },
     },
-    {
-      title: "ACTIONS",
-      key: "actions",
-      render: (record) => {
-        if (record.status === 4) {
-          return <span className="text-red-500">Rejected</span>;
-        }
 
-        return (
-          <Space size="middle" className="flex">
-            <FiEdit3
-              onClick={() => handleUpdate(record.id, record.uniquepid)}
-              className="text-white w-8 h-8 p-2 rounded-full bg-green-500 border-none hover:bg-green-600 hover:text-white"
-            />
-            <FiTrash2
-              onClick={() => handleDelete(record.id, record.ad_title)}
-              className="text-white w-8 h-8 p-2 rounded-full bg-red-500 border-none hover:bg-red-600 hover:text-white"
-            />
-          </Space>
-        );
-      },
-    },
   ];
 
   const handleVariantShowModal = (id, variants) => {
@@ -912,7 +921,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       // Update the status value to 0
       // Check if an object with the same name already exists
       values.condition = `${conditionToggle},${additionalInfo}`
-      console.log(values,"vlaues from onfinsih");
+      console.log(values, "vlaues from onfinsih");
       values.status = 0;
       const existingIndex = formValues.findIndex(
         (item) => item.name === values.name
@@ -1134,27 +1143,27 @@ const VendorProducts = ({ vendorDatastate }) => {
           ))}
 
           <Form.Item
-        label="Condition"
-        name="condition"
-        rules={[
-          {
-            required: true,
-            message: 'Please select a Condition',
-          },
-        ]}
-      >
-        <Select onChange={handleConditionChange}>
-          <Select.Option value="New">New</Select.Option>
-          <Select.Option value="Refurbished">Refurbished</Select.Option>
-          <Select.Option value="Used">Used</Select.Option>
-        </Select>
-      </Form.Item>
+            label="Condition"
+            name="condition"
+            rules={[
+              {
+                required: true,
+                message: 'Please select a Condition',
+              },
+            ]}
+          >
+            <Select onChange={handleConditionChange}>
+              <Select.Option value="New">New</Select.Option>
+              <Select.Option value="Refurbished">Refurbished</Select.Option>
+              <Select.Option value="Used">Used</Select.Option>
+            </Select>
+          </Form.Item>
 
-      {conditionToggle === 'Used' && (
-        <Form.Item label="Additional Information">
-          <Input value={additionalInfo} onChange={handleAdditionalInfoChange} />
-        </Form.Item>
-      )}
+          {conditionToggle === 'Used' && (
+            <Form.Item label="Additional Information">
+              <Input value={additionalInfo} onChange={handleAdditionalInfoChange} />
+            </Form.Item>
+          )}
           <Form.Item
             label="Product Type"
             name="productType"
@@ -1169,7 +1178,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             <Select
               value={ProductVariantType}
               onChange={handleVariantChange}
-              disabled={selectedKey !== null}
+            // disabled={selectedKey !== null}
             >
               <Select.Option value="Simple">Simple Product</Select.Option>
               <Select.Option value="Variant">Variant Product</Select.Option>
@@ -1622,7 +1631,7 @@ const VendorProducts = ({ vendorDatastate }) => {
     },
   ];
 
-
+  console.log(selectRowProduct);
 
 
   const handleDeleteSelected = async () => {
@@ -1923,6 +1932,37 @@ const VendorProducts = ({ vendorDatastate }) => {
     });
   };
 
+  const bulkEditOptions = [
+    'SKU',
+    'Quantity',
+    'Product Name',
+    'Description',
+    'Price',
+    'Brand',
+    'Condition',
+  ];
+
+  const handleBulkEdit = (values) => {
+    setBulkEditOption(values);
+
+    // Assuming products is your array of products
+    const filteredProducts = products.filter(product => {
+      // Assuming 'uniquepid' is the property name in your product object
+      return selectedRowKeys.includes(parseInt(product.id));
+    });
+
+    setSelectedRowProduct(filteredProducts)
+
+    showBulkEditOption(true);
+  }
+
+  const handleSave = () => {
+    // Handle save logic here
+    const formData = form.getFieldsValue();
+    console.log('Form Data:', formData);
+  };
+
+  console.log(SelectedRowProduct, 'sa');
   return vendorDatastate && vendorDatastate.length > 0 ? (
     <>
       {!vendorDatastate?.[0].email_verification_status ||
@@ -1959,16 +1999,34 @@ const VendorProducts = ({ vendorDatastate }) => {
                   Manage All Products{" "}
                 </p>
               </nav>
-              {/* <button onClick={() => handleDownloadcsv('all')}>Download csv (All Products)</button> */}
-              <Button loading={downloadcsvloader === "all" && true}
-                className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
-                onClick={() => handleDownloadcsv('all')}
-              // onClick={handleDeleteSelected}
-              >Download csv ({totalProduct})
-              </Button>
+              <div className="flex ">
+                <Select
+                  showSearch
+                  showAction={['click', 'focus']} // Add showAction prop
+                  placeholder="Bulk Edit"
+                  style={{ width: 200, marginRight: 16 }}
+                  onChange={handleBulkEdit}
+                  disabled={selectedRowKeys.length === 0} // Disable Select if selectedRowKeys length is 0
+
+                >
+                  {bulkEditOptions.map((option) => (
+                    <Option key={option} value={option}>
+                      {option}
+                    </Option>
+                  ))}
+                </Select>
+
+                <Button
+                  loading={downloadcsvloader === 'all' && true}
+                  className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
+                  onClick={() => handleDownloadcsv(bulkEditOption)}
+                >
+                  <FaFileExcel className="mr-2" /> Download CSV ({totalProduct})
+                </Button>
+              </div>
 
             </div>
-            <div className="lg:flex justify-center border-none items-center mt-3 lg:mt-0 p-1">
+            {/* <div className="lg:flex justify-center border-none items-center mt-3 lg:mt-0 p-1">
               <AutoComplete
                 value={searchQuery}
                 onChange={(value) => handleInputChange(value)}
@@ -1980,233 +2038,237 @@ const VendorProducts = ({ vendorDatastate }) => {
                   value: suggestion,
                 }))}
               />
-            </div>
-            <button
-              onClick={handleCreate}
-              className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-0.5 sm:p-1 lg:p-2  absolute right-4 sm:right-10 top-28 sm:top-28"
-            >
-              <svg
-                className="w-10 h-10"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            </div> */}
+            {
+              vendorDatastate?.[0].status === 3 ? <button
+                onClick={handleCreate}
+                className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-0.5 sm:p-1 lg:p-2  absolute right-4 sm:right-10 top-28 sm:top-28"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-            </button>
+                <svg
+                  className="w-10 h-10"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+              </button> : <p className=" absolute right-4">Verify your Account First</p>
+            }
           </div>
 
           {
             <>
 
-              <div className="overflow-auto mt-4 border-none
-               ">
+              {vendorDatastate?.[0]?.status === 3 ?
+                <div className="overflow-auto mt-4 border-none
+                ">
 
-                <div className="">
-                  <Tabs
-                    defaultActiveKey="all"
-                    activeKey={changeSubcatTabs}
-                    onChange={async (selectedTabKey) => {
-                      const selectedSubcategory =
-                        selectedTabKey != "all"
-                          ? SubcategoryCount[selectedTabKey]?.subcategory
-                          : "all";
+                  <div className="">
+                    <Tabs
+                      defaultActiveKey="all"
+                      activeKey={changeSubcatTabs}
+                      onChange={async (selectedTabKey) => {
+                        const selectedSubcategory =
+                          selectedTabKey != "all"
+                            ? SubcategoryCount[selectedTabKey]?.subcategory
+                            : "all";
 
-                      try {
-                        // After pre-load, update the active tab
-                        handleTabChangeforTable(
-                          selectedTabKey,
-                          selectedSubcategory
-                        );
-                      } catch (error) {
-                        console.error("Error during preloading:", error);
-                      }
-                    }}
-                    centered={subcategories.length <= 4} // Center the tabs when there are 4 or fewer tabs
-                    scrollable={subcategories.length > 4} // Enable scrolling when there are more than 4 tabs
-                  >
-                    {/* Add an "All Products" tab */}
-                    <TabPane
-                      tab={`All Products (${totalProduct})`}
-                      key="all"
+                        try {
+                          // After pre-load, update the active tab
+                          handleTabChangeforTable(
+                            selectedTabKey,
+                            selectedSubcategory
+                          );
+                        } catch (error) {
+                          console.error("Error during preloading:", error);
+                        }
+                      }}
+                      centered={subcategories.length <= 4} // Center the tabs when there are 4 or fewer tabs
+                      scrollable={subcategories.length > 4} // Enable scrolling when there are more than 4 tabs
                     >
-                      <div className="h-[60vh] bg-white  overflow-auto">
-                        <Table
-                          columns={columns}
-                          dataSource={memoizedProducts}
-                          pagination={false}
-                          rowClassName={(record) =>
-                            selectedRowKeys.includes(record.id)
-                              ? "selected-row"
-                              : ""
-                          }
-                          title={() => (
-                            <>
-                              <div className="flex items-center">
-                                <Checkbox
-                                  checked={
-                                    selectedRowKeys.length ===
-                                    memoizedProducts.length
-                                  }
-                                  indeterminate={
-                                    selectedRowKeys.length > 0 &&
-                                    selectedRowKeys.length <
-                                    memoizedProducts.length
-                                  }
-                                  onChange={handleSelectAllRows}
-                                >
-                                  Select All
-                                </Checkbox>
-                                <div className="flex items-center space-x-2">
-
-                                  <Button
-                                    className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
-                                    onClick={handleDeleteSelected}
-                                    disabled={selectedRowKeys.length === 0}
-                                  >
-                                    Delete ({selectedRowKeys?.length})
-                                  </Button>
-                                  <Button loading={downloadcsvloader === "single" && true}
-                                    className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
-                                    onClick={() => handleDownloadcsv()}
-                                    // onClick={handleDeleteSelected}
-                                    disabled={selectedRowKeys.length === 0}
-                                  >
-                                    Download CSV ({selectedRowKeys?.length})
-                                  </Button>
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        />
-                      </div>
-                      <div className="p-2 py-5 flex justify-end sticky top-0">
-                        <Pagination
-                          total={totalProduct}
-                          showSizeChanger
-                          showQuickJumper
-                          defaultCurrent={2}
-                          current={page}
-                          showTotal={(total) => `Total ${total} items`}
-                          responsive={true}
-                          onChange={(page, pageSize) => {
-                            setPage(page)
-                            setPageSize(pageSize)
-                          }}
-                        />
-                      </div>
-                    </TabPane>
-
-                    {SubcategoryCount && SubcategoryCount.map((subcat, index) => {
-                      // Check if matchingProducts have at least one product
-                      if (SubcategoryCount.length > 0) {
-                        return (
-                          <TabPane
-                            tab={`${subcat.subcategory} (${subcat.total_products})`}
-                            key={index}
-                          >
-                            <div className="h-[60vh]  overflow-auto">
-                              <Table
-                                columns={columns}
-                                dataSource={memoizedProducts}
-                                pagination={false}
-                                rowClassName={(record) =>
-                                  selectedRowKeys.includes(record.id) ? "selected-row" : ""
-                                }
-                                title={() => (
-                                  <>
-                                    <div className="flex items-center ">
-                                      <Checkbox
-                                        checked={
-                                          selectedRowKeys.length === memoizedProducts.length
-                                        }
-                                        indeterminate={
-                                          selectedRowKeys.length > 0 &&
-                                          selectedRowKeys.length <
-                                          memoizedProducts.length
-                                        }
-                                        onChange={handleSelectAllRows}
-                                      >
-                                        Select All
-                                      </Checkbox>
-                                      <div className="flex items-center space-x-2">
-
-                                        <Button
-                                          className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
-                                          onClick={handleDeleteSelected}
-                                          disabled={selectedRowKeys.length === 0}
-                                        >
-                                          Delete ({selectedRowKeys?.length})
-                                        </Button>
-                                        <Button loading={downloadcsvloader === "single" && true}
-                                          className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
-                                          onClick={() => handleDownloadcsv()}
-                                          // onClick={handleDeleteSelected}
-                                          disabled={selectedRowKeys.length === 0}
-                                        >
-                                          Download CSV ({selectedRowKeys?.length})
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-                                className="w-full "
-                              />
-                            </div>
-                            <div className="p-2 py-5 flex justify-end">
-                              <Pagination
-                                total={subcat?.total_products || 0}
-                                showSizeChanger
-                                showQuickJumper
-                                current={page}
-                                showTotal={(total) => `Total ${total} items`}
-                                responsive={true}
-                                onChange={(page, pageSize) => {
-                                  setPage(page)
-                                  setPageSize(pageSize)
-                                }}
-                              />
-                            </div>
-                          </TabPane>
-                        );
-                      } else {
-                        // If matchingProducts have no products, don't render TabPane
-                        return null;
-                      }
-                    })}
-
-                  </Tabs>
-                </div>
-                {isLoading && (
-                  <div style={overlayStyles}>
-                    <div role="status">
-                      <svg
-                        aria-hidden="true"
-                        class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                        viewBox="0 0 100 101"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                      {/* Add an "All Products" tab */}
+                      <TabPane
+                        tab={`All Products (${totalProduct})`}
+                        key="all"
                       >
-                        <path
-                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                          fill="currentFill"
-                        />
-                      </svg>
-                      <span class="sr-only">Loading...</span>
-                    </div>
+                        <div className="h-[60vh] bg-white  overflow-auto">
+                          <Table
+                            columns={columns}
+                            dataSource={memoizedProducts}
+                            pagination={false}
+                            rowClassName={(record) =>
+                              selectedRowKeys.includes(record.id)
+                                ? "selected-row"
+                                : ""
+                            }
+                            title={() => (
+                              <>
+                                <div className="flex items-center">
+                                  <Checkbox
+                                    checked={
+                                      selectedRowKeys.length ===
+                                      memoizedProducts.length
+                                    }
+                                    indeterminate={
+                                      selectedRowKeys.length > 0 &&
+                                      selectedRowKeys.length <
+                                      memoizedProducts.length
+                                    }
+                                    onChange={handleSelectAllRows}
+                                  >
+                                    Select All
+                                  </Checkbox>
+                                  <div className="flex items-center space-x-2">
+
+                                    <Button
+                                      className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
+                                      onClick={handleDeleteSelected}
+                                      disabled={selectedRowKeys.length === 0}
+                                    >
+                                      Delete ({selectedRowKeys?.length})
+                                    </Button>
+                                    <Button loading={downloadcsvloader === "single" && true}
+                                      className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
+                                      onClick={() => handleDownloadcsv()}
+                                      // onClick={handleDeleteSelected}
+                                      disabled={selectedRowKeys.length === 0}
+                                    >
+                                      Download CSV ({selectedRowKeys?.length})
+                                    </Button>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          />
+                        </div>
+                        <div className="p-2 py-5 flex justify-end sticky top-0">
+                          <Pagination
+                            total={totalProduct}
+                            showSizeChanger
+                            showQuickJumper
+                            defaultCurrent={2}
+                            current={page}
+                            showTotal={(total) => `Total ${total} items`}
+                            responsive={true}
+                            onChange={(page, pageSize) => {
+                              setPage(page)
+                              setPageSize(pageSize)
+                            }}
+                          />
+                        </div>
+                      </TabPane>
+
+                      {SubcategoryCount && SubcategoryCount.map((subcat, index) => {
+                        // Check if matchingProducts have at least one product
+                        if (SubcategoryCount.length > 0) {
+                          return (
+                            <TabPane
+                              tab={`${subcat.subcategory} (${subcat.total_products})`}
+                              key={index}
+                            >
+                              <div className="h-[60vh]  overflow-auto">
+                                <Table
+                                  columns={columns}
+                                  dataSource={memoizedProducts}
+                                  pagination={false}
+                                  rowClassName={(record) =>
+                                    selectedRowKeys.includes(record.id) ? "selected-row" : ""
+                                  }
+                                  title={() => (
+                                    <>
+                                      <div className="flex items-center ">
+                                        <Checkbox
+                                          checked={
+                                            selectedRowKeys.length === memoizedProducts.length
+                                          }
+                                          indeterminate={
+                                            selectedRowKeys.length > 0 &&
+                                            selectedRowKeys.length <
+                                            memoizedProducts.length
+                                          }
+                                          onChange={handleSelectAllRows}
+                                        >
+                                          Select All
+                                        </Checkbox>
+                                        <div className="flex items-center space-x-2">
+
+                                          <Button
+                                            className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
+                                            onClick={handleDeleteSelected}
+                                            disabled={selectedRowKeys.length === 0}
+                                          >
+                                            Delete ({selectedRowKeys?.length})
+                                          </Button>
+                                          <Button loading={downloadcsvloader === "single" && true}
+                                            className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
+                                            onClick={() => handleDownloadcsv()}
+                                            // onClick={handleDeleteSelected}
+                                            disabled={selectedRowKeys.length === 0}
+                                          >
+                                            Download CSV ({selectedRowKeys?.length})
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
+                                  className="w-full "
+                                />
+                              </div>
+                              <div className="p-2 py-5 flex justify-end">
+                                <Pagination
+                                  total={subcat?.total_products || 0}
+                                  showSizeChanger
+                                  showQuickJumper
+                                  current={page}
+                                  showTotal={(total) => `Total ${total} items`}
+                                  responsive={true}
+                                  onChange={(page, pageSize) => {
+                                    setPage(page)
+                                    setPageSize(pageSize)
+                                  }}
+                                />
+                              </div>
+                            </TabPane>
+                          );
+                        } else {
+                          // If matchingProducts have no products, don't render TabPane
+                          return null;
+                        }
+                      })}
+
+                    </Tabs>
                   </div>
-                )}
-              </div>
+                  {isLoading && (
+                    <div style={overlayStyles}>
+                      <div role="status">
+                        <svg
+                          aria-hidden="true"
+                          class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                          viewBox="0 0 100 101"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                            fill="currentFill"
+                          />
+                        </svg>
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  )}
+                </div> : <p className="mt-5">Kindly Verify your Account First</p>
+              }
 
               <Modal
                 title={
@@ -2548,6 +2610,42 @@ const VendorProducts = ({ vendorDatastate }) => {
 
                   </Form>
                 </Modal>
+              </Modal>
+
+
+              <Modal
+                title={`Edit Bulk ${bulkEditOption}`}
+                visible={BulkModal}
+                onCancel={() => showBulkEditOption(false)}
+                width={1000}
+                footer={[
+                  <Button key="close" onClick={() => showBulkEditOption(false)}>
+                    Close
+                  </Button>,
+                  <Button key="save" type="primary" onClick={handleSave}>
+                    Save
+                  </Button>,
+                ]}
+              >
+                This module is not yet completed, we are working on this, it will be done by (06-01-2024)
+                {/* <Form form={form}>
+                  {selectedRowKeys.map((rowKey, index) => (
+                    <Form.Item key={rowKey} label={`Edit ${bulkEditOption} for Row ${rowKey}`} name={`row_${rowKey}`}>
+                      <Input
+                        value={
+                          bulkEditOption === 'SKU' ? SelectedRowProduct[index]?.skuid :
+                            bulkEditOption === 'Product Name' ? SelectedRowProduct[index]?.ad_title :
+                              bulkEditOption === 'Quantity' ? SelectedRowProduct[index]?.quantity :
+                                bulkEditOption === 'Price' ? SelectedRowProduct[index]?.mrp :
+                                  bulkEditOption === 'Brand' ? SelectedRowProduct[index]?.brand :
+                                    ''
+                        }
+                      />
+                    </Form.Item>
+                  ))}
+                </Form> */}
+
+
               </Modal>
             </>
           }

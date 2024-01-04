@@ -58,19 +58,22 @@ app.post(
     uploadBanner.single("bannerUrl"),
     async (req, res) => {
         try {
+          
             const { title, link, id } = req.body;
             const updatedid = parseInt(id) + 1;
             let query = 'UPDATE homebanner SET';
             let values = [updatedid];
 
             if (req.file && req.file.filename) {
+               
                 query += ' title = $2, banner_url = $3, link = $4 WHERE id = $1 RETURNING *';
                 values.push(title, req.file.filename, link);
             } else {
+               
                 query += ' title = $2, link = $3 WHERE id = $1 RETURNING *';
                 values.push(title, link);
             }
-
+           
             pool.query(query, values, (err, result) => {
                 if (err) {
                     return res.status(500).json({ error: 'Database error' });

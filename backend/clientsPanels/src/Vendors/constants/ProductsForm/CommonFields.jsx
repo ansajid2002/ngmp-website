@@ -25,6 +25,48 @@ export const commonFormFields = [
     notes: "Guidelines: Please limit your description to 1000 words.",
   },
   {
+    label: "Product Dimension",
+    name: "productdimension",
+    children: [
+      {
+        label: "Height",
+        name: "height",
+        rules: [
+          { required: true, message: "Please input the Height of Product" },
+        ],
+        component: <Input type="number" step="0.01" placeholder="0" />,
+        notes: "Example: 2.04",
+      },
+      {
+        label: "Width",
+        name: "width",
+        rules: [
+          { required: true, message: "Please input the Width of Product" },
+        ],
+        component: <Input type="number" step="0.01" placeholder="0" />,
+        notes: "Example: 1.5",
+      },
+      {
+        label: "Length",
+        name: "length",
+        rules: [
+          { required: true, message: "Please input the Length of Product" },
+        ],
+        component: <Input type="number" step="0.01" placeholder="0" />,
+        notes: "Example: 3.2",
+      },
+      {
+        label: "Weight",
+        name: "weight",
+        rules: [
+          { required: true, message: "Please input the Weight of Product" },
+        ],
+        component: <Input type="number" step="0.01" placeholder="0" />,
+        notes: "Example: 5.7",
+      },
+    ],
+  },
+  {
     label: "Manufacturer Details",
     name: "manufacturerDetails",
     children: [

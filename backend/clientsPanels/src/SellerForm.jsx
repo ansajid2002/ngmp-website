@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, message, theme, Form, Input, Steps, Select, InputNumber } from 'antd';
 import { AdminUrl } from './Admin/constant';
 import Swal from 'sweetalert2';
+import { countryCodes } from './Vendors/constants/ProductsForm/Specifications';
 
 const SellerForm = ({ onModal }) => {
     const [form] = Form.useForm();
@@ -30,12 +31,7 @@ const SellerForm = ({ onModal }) => {
     const Pinfo = () => {
         const [, forceUpdate] = useState({});
         const { Option } = Select;
-        const countryCodes = [
-            { code: "+1", country: "United States" },
-            { code: "+44", country: "United Kingdom" },
-            { code: "+91", country: "India" },
-            // Add more country codes as needed
-        ];
+
 
         // To disable submit button at the beginning.
         useEffect(() => {
