@@ -10,9 +10,10 @@ import Swal from 'sweetalert2';
 
 const VendorPolicies = ({ vendorDatastate }) => {
 
-    const id = 999
-    console.log(id, "id");
+    const id = vendorDatastate && vendorDatastate[0]?.id
+    // console.log(id, "id");
 
+    console.log(vendorDatastate, "vendor");
     const editor1 = useRef(null);
     const editor2 = useRef(null);
     const editor3 = useRef(null);
@@ -20,7 +21,6 @@ const VendorPolicies = ({ vendorDatastate }) => {
     const [returnpolicy, setReturnpolicy] = useState('')
     const [businessPolicy, setBusinessPolicy] = useState('')
 
-    console.log(businessPolicy, "businessPolicy");
     const handlebusinesspolicy = async () => {
         try {
             if (businessPolicy === "") {
@@ -64,6 +64,7 @@ const VendorPolicies = ({ vendorDatastate }) => {
             console.log(error, "Error While updating Business Policy");
         }
     }
+
     const handleShipping = async () => {
         try {
             if (shipping === "") {
@@ -222,14 +223,14 @@ const VendorPolicies = ({ vendorDatastate }) => {
             if (policies.ok) {
                 const response = await policies.json()
                 console.log(response, "response");
-                if (response.data[0].shipping_information) {
-                    setShipping(response.data[0].shipping_information)
+                if (response[0].shipping_information) {
+                    setShipping(response[0].shipping_information)
                 }
-                if (response.data[0].return_policy) {
-                    setReturnpolicy(response.data[0].return_policy)
+                if (response[0].return_policy) {
+                    setReturnpolicy(response[0].return_policy)
                 }
-                if (response.data[0].business_policy) {
-                    setBusinessPolicy(response.data[0].business_policy)
+                if (response[0].business_policy) {
+                    setBusinessPolicy(response[0].business_policy)
                 }
             }
             else {

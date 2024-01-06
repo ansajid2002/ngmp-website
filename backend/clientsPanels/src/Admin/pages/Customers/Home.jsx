@@ -123,13 +123,13 @@ const CustomerHome = ({ adminLoginData }) => {
       title: "ID",
       dataIndex: "customer_id",
       key: "customer_id",
-      width: 40,
+      width: 80,
       sorter: (a, b) => a.customer_id - b.customer_id,
     },
     {
       title: "Name & Contact",
       key: "nameAndContact",
-      width: 240,
+      width: 250,
       render: (record) => (
         <div className="flex items-center">
           {record.picture && !record.picture.startsWith("https://") ? (
@@ -288,6 +288,7 @@ const CustomerHome = ({ adminLoginData }) => {
       title: "Actions",
       key: "actions",
       width: 80,
+      fixed: 'right',
       render: (record) => (
         <Space size="middle" className="flex">
           <>
@@ -412,6 +413,10 @@ const CustomerHome = ({ adminLoginData }) => {
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
+                      scroll={{
+                        x: 1500,
+                        y: 700,
+                      }}
                     />
                     <div className="mt-4">
                       <Pagination
@@ -432,6 +437,10 @@ const CustomerHome = ({ adminLoginData }) => {
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
+                      scroll={{
+                        x: 1500,
+                        y: 700,
+                      }}
                     />
                     <div className="mt-4">
                       <Pagination
@@ -452,6 +461,10 @@ const CustomerHome = ({ adminLoginData }) => {
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
+                      scroll={{
+                        x: 1500,
+                        y: 700,
+                      }}
                     />
                     <div className="mt-4">
                       <Pagination
@@ -475,6 +488,10 @@ const CustomerHome = ({ adminLoginData }) => {
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
+                      scroll={{
+                        x: 1500,
+                        y: 700,
+                      }}
                     />
                     <div className="mt-4">
                       <Pagination
@@ -495,6 +512,10 @@ const CustomerHome = ({ adminLoginData }) => {
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
+                      scroll={{
+                        x: 1500,
+                        y: 700,
+                      }}
                     />
                     <div className="mt-4">
                       <Pagination
@@ -515,6 +536,10 @@ const CustomerHome = ({ adminLoginData }) => {
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
+                      scroll={{
+                        x: 1500,
+                        y: 700,
+                      }}
                     />
                     <div className="mt-4">
                       <Pagination

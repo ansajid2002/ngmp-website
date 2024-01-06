@@ -26,29 +26,182 @@ app.get("/getAllProductCatgeory", async (req, res) => {
     }
 });
 
-app.post("/addNewCategories", async (req, res) => {
+app.get("/getAllCatgeoryWithSubcategory", async (req, res) => {
     try {
-        const { category_name, category_description, category_status, category_type } = req.body.values;
+        const { pageNumber, pageSize } = req.query;
+        // const offset = (pageNumber - 1) * pageSize;
+        const offset = isNaN(pageNumber) ? 0 : (pageNumber - 1) * pageSize;
 
-        // Check if the category with the given name already exists in the database
-        const checkQuery = 'SELECT * FROM categories WHERE category_name = $1';
-        const checkValues = [category_name];
-        const checkResult = await pool.query(checkQuery, checkValues);
+        // Fetch categories
+        const categoriesQuery = `
+        SELECT categories.*, COUNT(products.category) AS product_count
+        FROM categories
+        LEFT JOIN products ON categories.category_name = products.category
+        GROUP BY categories.category_id
+        ORDER BY categories.category_id
+        OFFSET $1
+        LIMIT $2
+    `;
 
-        if (checkResult.rows.length > 0) {
-            // Category with the given name already exists
-            return res.status(409).json({ error: "Category already exists." });
-        }
+        const categoriesResult = await pool.query(categoriesQuery, [offset, pageSize]);
+        const categories = categoriesResult.rows;
 
-        // If the category doesn't exist, proceed with the insertion
-        const insertQuery = 'INSERT INTO categories (category_name, category_description, category_status, category_type) VALUES ($1, $2, $3, $4) RETURNING *';
-        const insertValues = [category_name, category_description, category_status, category_type];
-        const { rows } = await pool.query(insertQuery, insertValues);
+        // Fetch subcategories and group them by parent_category_id
+        const subcategoriesQuery = `
+            SELECT subcategories.*, categories.category_id
+            FROM public.subcategories
+            LEFT JOIN categories ON subcategories.parent_category_id = categories.category_id
+        `;
 
-        res.status(201).json(rows[0]); // Return the newly inserted category data
+        const subcategoriesResult = await pool.query(subcategoriesQuery);
+        const groupedSubcategories = groupSubcategoriesByParentCategoryId(subcategoriesResult.rows);
+
+        // Append subcategories to the corresponding categories
+        const data = categories.map(category => {
+            const parentId = category.category_id;
+            return {
+                ...category,
+                subcategories: groupedSubcategories[parentId] || [],
+            };
+        });
+
+        // You can use another query to get the total count
+        const countQuery = 'SELECT COUNT(*) FROM categories';
+        const countResult = await pool.query(countQuery);
+        const totalCount = countResult.rows[0].count || 0;
+
+        res.status(200).json({
+            data: data,
+            total: totalCount,
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+// Helper function to group subcategories by parent_category_id
+function groupSubcategoriesByParentCategoryId(subcategories) {
+    const groupedSubcategories = {};
+    subcategories.forEach(subcategory => {
+        const parentId = subcategory.parent_category_id;
+        if (!groupedSubcategories[parentId]) {
+            groupedSubcategories[parentId] = [];
+        }
+        groupedSubcategories[parentId].push(subcategory);
+    });
+    return groupedSubcategories;
+}
+
+app.post("/updateCategoryStatus", async (req, res) => {
+    try {
+        const { categoryId, status, type } = req.body;
+
+        console.log(req.body);
+        // Define the update query and values based on the type
+        let updateQuery, values;
+        if (type === 'category') {
+            updateQuery = 'UPDATE categories SET category_status = $1 WHERE category_id = $2';
+            values = [status, categoryId];
+        } else if (type === 'subcategory') {
+            updateQuery = 'UPDATE subcategories SET subcat_status = $1 WHERE subcategory_id = $2';
+            values = [status, categoryId];
+        } else {
+            // Invalid type provided
+            return res.status(400).json({ success: false, message: 'Invalid type specified' });
+        }
+
+        // Execute the update query
+        await pool.query(updateQuery, values);
+
+        // Send a success response
+        res.status(200).json({ success: true, message: 'Status updated successfully' });
+    } catch (error) {
+        console.error('Error updating status:', error);
+        // Send an error response
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+app.post("/addNewCategories", async (req, res) => {
+    try {
+        const { category_type, category_name, category_description, category_status, subcategories = [] } = req.body;
+        // Check if the category with the same name already exists
+        const existingCategoryQuery = 'SELECT category_name FROM categories WHERE category_name = $1';
+        const existingCategoryResult = await pool.query(existingCategoryQuery, [category_name]);
+
+        if (existingCategoryResult.rows.length > 0) {
+            // Category with the same name already exists
+            return res.status(400).json({ success: false, error: 'Category with the same name already exists' });
+        }
+
+        // Insert the main category into the "categories" table
+        const insertCategoryQuery = `
+        INSERT INTO categories (category_type, category_name, category_description, category_status)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *;
+    `;
+
+        const categoryResult = await pool.query(insertCategoryQuery, [
+            category_type,
+            category_name,
+            category_description,
+            category_status,
+        ]);
+
+        const categoryId = isNaN(categoryResult.rows[0].category_id) ? null : categoryResult.rows[0].category_id;
+        // console.log(categoryResult?.rows[0]);
+
+        const addedSubcategories = [];
+        const existingSubcategories = [];
+
+        // Check and insert subcategories
+        for (const subcategory of subcategories) {
+            const { subcategory_name, subcategory_description } = subcategory;
+
+            // // Check if the subcategory with the same name already exists
+            const existingSubcategoryQuery = 'SELECT subcategory_name FROM subcategories WHERE subcategory_name = $1';
+            const existingSubcategoryResult = await pool.query(existingSubcategoryQuery, [subcategory_name]);
+
+            if (existingSubcategoryResult.rows.length === 0) {
+                // Subcategory with the same name does not exist, insert it
+                const insertSubcategoryQuery = `INSERT INTO subcategories (subcategory_name, subcategory_description, parent_category_id) VALUES ($1, $2, $3) RETURNING *`;
+
+                const insertedSubcategoryResult = await pool.query(insertSubcategoryQuery, [subcategory_name, subcategory_description, categoryId]);
+
+                // Log the successful addition
+                console.log(`Subcategory "${subcategory_name}" added successfully for category "${category_name}"`);
+
+                // Add the inserted subcategory to the list
+                addedSubcategories.push(insertedSubcategoryResult.rows[0]);
+            } else {
+                // Log that the subcategory already exists
+                console.log(`Subcategory "${subcategory_name}" already exists for category "${category_name}"`);
+
+                // Add the existing subcategory to the list
+                existingSubcategories.push(existingSubcategoryResult.rows[0]);
+            }
+        }
+
+        const updatedSubcategoriesQuery = 'SELECT * FROM subcategories WHERE parent_category_id = $1';
+        const updatedSubcategoriesResult = await pool.query(updatedSubcategoriesQuery, [categoryId]);
+
+        const groupedSubcategories = groupSubcategoriesByParentCategoryId(updatedSubcategoriesResult.rows);
+
+        // Append subcategories to the corresponding categories
+        const dataWithNewCategory = categoryResult?.rows.map(category => {
+            const parentId = category.category_id;
+            return {
+                ...category,
+                subcategories: groupedSubcategories[parentId] || [],
+            };
+        });
+
+
+        res.status(200).json({ success: true, data: dataWithNewCategory, message: `Categories and subcategories added successfully, ${addedSubcategories.length} added and ${existingSubcategories.length} already exists` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: "Internal Server Error" });
     }
 });
 

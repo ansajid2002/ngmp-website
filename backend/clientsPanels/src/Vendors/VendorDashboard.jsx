@@ -16,7 +16,7 @@ const VendorDashboard = ({
         {!vendorDatastate?.[0].email_verification_status ||
           // !vendorDatastate?.[0].mobile_verification_status ||
           vendorDatastate?.[0].status === 1 ||
-          vendorDatastate?.[0].status === 4 ? (
+          vendorDatastate?.[0].status === 4 || vendorDatastate?.[0].status !== 3 ? (
           <>
             <AuthCheck vendorDatastate={vendorDatastate} />
           </>

@@ -92,6 +92,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
       const jsonRows = rows.slice(5);
       // Convert rows into JSON format as needed
       const sheetData = jsonRows.reduce((acc, row) => {
+        const key0 = row[1];
         const key1 = row[2];
         const key2 = row[3];
         const key3 = row[4];
@@ -115,10 +116,15 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         const key21 = row[22];
         const key22 = row[23];
         const key23 = row[24];
+        const key24 = row[25];
+        const key25 = row[26];
+
+        console.log(key25, 'jeyi');
 
         const uniquepid = generateUniqueID(); // Generate a unique ID for each row
 
         const rowData = {
+          key0,
           key1,
           key2,
           key3,
@@ -142,6 +148,8 @@ const BulkProductUpload = ({ vendorDatastate }) => {
           key21,
           key22,
           key23,
+          key24,
+          key25,
           ...locationData,
           vendorid,
           uniquepid, // Include the generated unique ID
@@ -347,6 +355,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
         if (!response.ok) {
           const responseData = await response.json();
+
           Swal.fire({
             icon: "error",
             title: "Error",
@@ -354,6 +363,8 @@ const BulkProductUpload = ({ vendorDatastate }) => {
           });
           return;
         }
+
+        const responseData = await response.json();
 
         successCount += 1;
 
@@ -366,6 +377,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
       // Close the loading Swal after all batches are processed
       loadingSwal.close();
+
 
       Swal.fire({
         icon: "success",
@@ -455,7 +467,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
     <>
       {!vendorDatastate?.[0].email_verification_status ||
         // !vendorDatastate?.[0].mobile_verification_status ||
-        vendorDatastate?.[0].status === 1 ? (
+        vendorDatastate?.[0].status === 1 || vendorDatastate?.[0].status !== 3 || vendorDatastate?.[0].status === 4 ? (
         <AuthCheck vendorDatastate={vendorDatastate} />
       ) : (
         <>

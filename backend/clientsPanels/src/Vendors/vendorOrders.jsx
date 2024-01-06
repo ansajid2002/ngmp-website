@@ -14,9 +14,9 @@ const OrderManagementPage = ({
       {!vendorDatastate?.[0].email_verification_status ||
         // !vendorDatastate?.[0].mobile_verification_status ||
         vendorDatastate?.[0].status === 1 ||
-        vendorDatastate?.[0].status === 4 ? (
+        vendorDatastate?.[0].status === 4 || vendorDatastate?.[0].status !== 3 ? (
         <div>
-          0
+
           <AuthCheck vendorDatastate={vendorDatastate} />
         </div>
       ) : (

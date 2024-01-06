@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, InputNumber, Select } from "antd";
+import { DatePicker, Input, InputNumber, Select } from "antd";
 
 export const commonFormFields = [
   {
@@ -15,14 +15,7 @@ export const commonFormFields = [
   {
     label: "Additional Description",
     name: "additionaldescription",
-    rules: [
-      {
-        max: 1000,
-        message: "Additional description must be at most 1000 characters!",
-      },
-    ],
     component: <Input.TextArea rows={4} />,
-    notes: "Guidelines: Please limit your description to 1000 words.",
   },
   {
     label: "Product Dimension",
@@ -63,6 +56,34 @@ export const commonFormFields = [
         ],
         component: <Input type="number" step="0.01" placeholder="0" />,
         notes: "Example: 5.7",
+      },
+    ],
+  },
+  {
+    label: "Shipping Information",
+    name: "productInformation",
+    children: [
+      {
+        label: "Product Ship From",
+        name: "product_ship_from",
+        rules: [
+          { required: true, message: "Please input the Product Ship From location" },
+        ],
+        component: <Input placeholder="Enter Ship From Location" />,
+        notes: "Example: Warehouse A",
+      },
+      {
+        label: "Estimate Delivery By",
+        name: "estimate_delivery_by",
+        rules: [
+          { required: true, message: "Please input the Estimate Delivery By" },
+        ],
+        component: (
+          <>
+            <Input placeholder="Enter the estimate" />
+          </>
+        ),
+        notes: "Example: within 1 Day, 1 - 2 weeks",
       },
     ],
   },

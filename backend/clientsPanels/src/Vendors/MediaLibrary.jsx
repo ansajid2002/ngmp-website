@@ -4,6 +4,7 @@ import { Table, Typography, Button } from 'antd';
 import moment from 'moment';
 import { AdminUrl } from '../Admin/constant';
 import { AiOutlineDownload } from 'react-icons/ai'; // Import the download icon
+import AuthCheck from './components/AuthCheck';
 
 const { Title, Text } = Typography;
 
@@ -53,13 +54,22 @@ const MediaLibrary = ({ vendorDatastate }) => {
     ];
 
     return (
-        <div>
-            <Title level={2} className="mb-4">Media Library</Title>
-            <div className='overflow-hidden w-full overflow-x-auto bg-white p-4'>
-                <Table dataSource={data} columns={columns} />
+        !vendorDatastate?.[0].email_verification_status ||
+            // !vendorDatastate?.[0].mobile_verification_status ||
+            vendorDatastate?.[0].status === 1 ||
+            vendorDatastate?.[0].status === 4 || vendorDatastate?.[0].status !== 3 ? (
+            <>
+                <AuthCheck vendorDatastate={vendorDatastate} />
+            </>
+        ) : (
+            <div>
+                <Title level={2} className="mb-4">Media Library</Title>
+                <div className='overflow-hidden w-full overflow-x-auto bg-white p-4'>
+                    <Table dataSource={data} columns={columns} />
+                </div>
             </div>
-        </div>
-    );
+        )
+    )
 };
 
 export default MediaLibrary;

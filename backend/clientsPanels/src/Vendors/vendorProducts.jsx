@@ -53,6 +53,7 @@ import { commonFormFields } from "./constants/ProductsForm/CommonFields";
 import { speicificationFields } from "./constants/ProductsForm/Specifications";
 import { RiInformationFill } from "react-icons/ri";
 import { FaFileExcel } from "react-icons/fa";
+import AccountApprovalPending from "./components/AccountApprovalPending";
 
 const { TabPane } = Tabs;
 
@@ -426,6 +427,8 @@ const VendorProducts = ({ vendorDatastate }) => {
     {
       title: "",
       key: "select_all",
+      fixed: 'left',
+      width: 80,
       render: (_, record) => (
         <Checkbox
           checked={selectedRowKeys.includes(record.id)}
@@ -437,6 +440,8 @@ const VendorProducts = ({ vendorDatastate }) => {
     {
       title: "",
       key: "actions",
+      fixed: 'left',
+      width: 150,
       render: (record) => {
         if (record.status === 4) {
           return <span className="text-red-500">Rejected</span>;
@@ -456,7 +461,6 @@ const VendorProducts = ({ vendorDatastate }) => {
         );
       },
     },
-
     {
       title: "SKUID",
       dataIndex: "skuid",
@@ -1107,11 +1111,13 @@ const VendorProducts = ({ vendorDatastate }) => {
               {field.children ? (
                 field.children.map((childField, childIndex) => (
                   <>
-                    <Tooltip title={childField.notes} className="mt-2 w-6">
-                      <Typography>
-                        <RiInformationFill />
-                      </Typography>
-                    </Tooltip>
+                    {
+                      childField?.notes && <Tooltip title={childField.notes} className="mt-2 w-6">
+                        <Typography>
+                          <RiInformationFill />
+                        </Typography>
+                      </Tooltip>
+                    }
                     <Form.Item
                       key={childIndex}
                       label={childField.label}
@@ -1124,11 +1130,13 @@ const VendorProducts = ({ vendorDatastate }) => {
                 ))
               ) : (
                 <>
-                  <Tooltip title={field.notes} className="mt-2 w-6">
-                    <Typography>
-                      <RiInformationFill />
-                    </Typography>
-                  </Tooltip>
+                  {
+                    field?.notes && <Tooltip title={field.notes} className="mt-2 w-6">
+                      <Typography>
+                        <RiInformationFill />
+                      </Typography>
+                    </Tooltip>
+                  }
                   <Form.Item
                     key={index}
                     // label={field.label}
@@ -1970,7 +1978,7 @@ const VendorProducts = ({ vendorDatastate }) => {
         vendorDatastate?.[0].status === 1 ? (
         <AuthCheck vendorDatastate={vendorDatastate} />
       ) : (
-        <>
+        vendorDatastate?.[0]?.status === 3 ? <>
           <div className="lg:flex items-start lg:space-x-6 ">
             <div>
               <h1 className=" text-xl sm:text-2xl lg:text-4xl text-gray-700 font-bold mb-2">
@@ -2027,93 +2035,161 @@ const VendorProducts = ({ vendorDatastate }) => {
 
             </div>
             {/* <div className="lg:flex justify-center border-none items-center mt-3 lg:mt-0 p-1">
-              <AutoComplete
-                value={searchQuery}
-                onChange={(value) => handleInputChange(value)}
-                onSelect={(value) => handleSearchSubmit(value)}
-                allowClear
-                className="w-full sm:w-72 xl:w-96  border ring-0"
-                placeholder="Search Subcategory"
-                options={suggestions.map((suggestion) => ({
-                  value: suggestion,
-                }))}
-              />
-            </div> */}
-            {
-              vendorDatastate?.[0].status === 3 ? <button
-                onClick={handleCreate}
-                className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-0.5 sm:p-1 lg:p-2  absolute right-4 sm:right-10 top-28 sm:top-28"
+           <AutoComplete
+             value={searchQuery}
+             onChange={(value) => handleInputChange(value)}
+             onSelect={(value) => handleSearchSubmit(value)}
+             allowClear
+             className="w-full sm:w-72 xl:w-96  border ring-0"
+             placeholder="Search Subcategory"
+             options={suggestions.map((suggestion) => ({
+               value: suggestion,
+             }))}
+           />
+         </div> */}
+            <button
+              onClick={handleCreate}
+              className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-0.5 sm:p-1 lg:p-2  absolute right-4 sm:right-10 top-28 sm:top-28"
+            >
+              <svg
+                className="w-10 h-10"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg
-                  className="w-10 h-10"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-              </button> : <p className=" absolute right-4">Verify your Account First</p>
-            }
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+            </button>
           </div>
 
-          {
-            <>
+          <div className="overflow-auto mt-4 border-none
+             ">
 
-              {vendorDatastate?.[0]?.status === 3 ?
-                <div className="overflow-auto mt-4 border-none
-                ">
+            <div className="">
+              <Tabs
+                defaultActiveKey="all"
+                activeKey={changeSubcatTabs}
+                onChange={async (selectedTabKey) => {
+                  const selectedSubcategory =
+                    selectedTabKey != "all"
+                      ? SubcategoryCount[selectedTabKey]?.subcategory
+                      : "all";
 
-                  <div className="">
-                    <Tabs
-                      defaultActiveKey="all"
-                      activeKey={changeSubcatTabs}
-                      onChange={async (selectedTabKey) => {
-                        const selectedSubcategory =
-                          selectedTabKey != "all"
-                            ? SubcategoryCount[selectedTabKey]?.subcategory
-                            : "all";
+                  try {
+                    // After pre-load, update the active tab
+                    handleTabChangeforTable(
+                      selectedTabKey,
+                      selectedSubcategory
+                    );
+                  } catch (error) {
+                    console.error("Error during preloading:", error);
+                  }
+                }}
+                centered={subcategories.length <= 4} // Center the tabs when there are 4 or fewer tabs
+                scrollable={subcategories.length > 4} // Enable scrolling when there are more than 4 tabs
+              >
+                {/* Add an "All Products" tab */}
+                <TabPane
+                  tab={`All Products (${totalProduct})`}
+                  key="all"
+                >
+                  <Table
+                    columns={columns}
+                    dataSource={memoizedProducts}
+                    pagination={false}
+                    rowClassName={(record) =>
+                      selectedRowKeys.includes(record.id)
+                        ? "selected-row"
+                        : ""
+                    }
+                    scroll={{
+                      x: 1500,
+                      y: 400,
+                    }}
+                    title={() => (
+                      <>
+                        <div className="flex items-center">
+                          <Checkbox
+                            checked={
+                              selectedRowKeys.length ===
+                              memoizedProducts.length
+                            }
+                            indeterminate={
+                              selectedRowKeys.length > 0 &&
+                              selectedRowKeys.length <
+                              memoizedProducts.length
+                            }
+                            onChange={handleSelectAllRows}
+                          >
+                            Select All
+                          </Checkbox>
+                          <div className="flex items-center space-x-2">
 
-                        try {
-                          // After pre-load, update the active tab
-                          handleTabChangeforTable(
-                            selectedTabKey,
-                            selectedSubcategory
-                          );
-                        } catch (error) {
-                          console.error("Error during preloading:", error);
-                        }
+                            <Button
+                              className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
+                              onClick={handleDeleteSelected}
+                              disabled={selectedRowKeys.length === 0}
+                            >
+                              Delete ({selectedRowKeys?.length})
+                            </Button>
+                            <Button loading={downloadcsvloader === "single" && true}
+                              className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
+                              onClick={() => handleDownloadcsv()}
+                              // onClick={handleDeleteSelected}
+                              disabled={selectedRowKeys.length === 0}
+                            >
+                              Download CSV ({selectedRowKeys?.length})
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  />
+                  <div className="p-2 py-5 flex justify-end sticky top-0">
+                    <Pagination
+                      total={totalProduct}
+                      showSizeChanger
+                      showQuickJumper
+                      defaultCurrent={2}
+                      current={page}
+                      showTotal={(total) => `Total ${total} items`}
+                      responsive={true}
+                      onChange={(page, pageSize) => {
+                        setPage(page)
+                        setPageSize(pageSize)
                       }}
-                      centered={subcategories.length <= 4} // Center the tabs when there are 4 or fewer tabs
-                      scrollable={subcategories.length > 4} // Enable scrolling when there are more than 4 tabs
-                    >
-                      {/* Add an "All Products" tab */}
+                    />
+                  </div>
+                </TabPane>
+
+                {SubcategoryCount && SubcategoryCount.map((subcat, index) => {
+                  // Check if matchingProducts have at least one product
+                  if (SubcategoryCount.length > 0) {
+                    return (
                       <TabPane
-                        tab={`All Products (${totalProduct})`}
-                        key="all"
+                        tab={`${subcat.subcategory} (${subcat.total_products})`}
+                        key={index}
                       >
-                        <div className="h-[60vh] bg-white  overflow-auto">
+                        <div className="h-[60vh]  overflow-auto">
                           <Table
                             columns={columns}
                             dataSource={memoizedProducts}
                             pagination={false}
                             rowClassName={(record) =>
-                              selectedRowKeys.includes(record.id)
-                                ? "selected-row"
-                                : ""
+                              selectedRowKeys.includes(record.id) ? "selected-row" : ""
                             }
                             title={() => (
                               <>
-                                <div className="flex items-center">
+                                <div className="flex items-center ">
                                   <Checkbox
                                     checked={
-                                      selectedRowKeys.length ===
-                                      memoizedProducts.length
+                                      selectedRowKeys.length === memoizedProducts.length
                                     }
                                     indeterminate={
                                       selectedRowKeys.length > 0 &&
@@ -2145,14 +2221,14 @@ const VendorProducts = ({ vendorDatastate }) => {
                                 </div>
                               </>
                             )}
+                            className="w-full "
                           />
                         </div>
-                        <div className="p-2 py-5 flex justify-end sticky top-0">
+                        <div className="p-2 py-5 flex justify-end">
                           <Pagination
-                            total={totalProduct}
+                            total={subcat?.total_products || 0}
                             showSizeChanger
                             showQuickJumper
-                            defaultCurrent={2}
                             current={page}
                             showTotal={(total) => `Total ${total} items`}
                             responsive={true}
@@ -2163,493 +2239,418 @@ const VendorProducts = ({ vendorDatastate }) => {
                           />
                         </div>
                       </TabPane>
+                    );
+                  } else {
+                    // If matchingProducts have no products, don't render TabPane
+                    return null;
+                  }
+                })}
 
-                      {SubcategoryCount && SubcategoryCount.map((subcat, index) => {
-                        // Check if matchingProducts have at least one product
-                        if (SubcategoryCount.length > 0) {
-                          return (
-                            <TabPane
-                              tab={`${subcat.subcategory} (${subcat.total_products})`}
-                              key={index}
-                            >
-                              <div className="h-[60vh]  overflow-auto">
-                                <Table
-                                  columns={columns}
-                                  dataSource={memoizedProducts}
-                                  pagination={false}
-                                  rowClassName={(record) =>
-                                    selectedRowKeys.includes(record.id) ? "selected-row" : ""
-                                  }
-                                  title={() => (
-                                    <>
-                                      <div className="flex items-center ">
-                                        <Checkbox
-                                          checked={
-                                            selectedRowKeys.length === memoizedProducts.length
-                                          }
-                                          indeterminate={
-                                            selectedRowKeys.length > 0 &&
-                                            selectedRowKeys.length <
-                                            memoizedProducts.length
-                                          }
-                                          onChange={handleSelectAllRows}
-                                        >
-                                          Select All
-                                        </Checkbox>
-                                        <div className="flex items-center space-x-2">
+              </Tabs>
+            </div>
+            {isLoading && (
+              <div style={overlayStyles}>
+                <div role="status">
+                  <svg
+                    aria-hidden="true"
+                    class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                    viewBox="0 0 100 101"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                      fill="currentFill"
+                    />
+                  </svg>
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            )}
+          </div>
 
-                                          <Button
-                                            className="bg-red-500 flex items-center flex-row hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-md"
-                                            onClick={handleDeleteSelected}
-                                            disabled={selectedRowKeys.length === 0}
-                                          >
-                                            Delete ({selectedRowKeys?.length})
-                                          </Button>
-                                          <Button loading={downloadcsvloader === "single" && true}
-                                            className="bg-green-500 flex items-center flex-row hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-md"
-                                            onClick={() => handleDownloadcsv()}
-                                            // onClick={handleDeleteSelected}
-                                            disabled={selectedRowKeys.length === 0}
-                                          >
-                                            Download CSV ({selectedRowKeys?.length})
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </>
-                                  )}
-                                  className="w-full "
-                                />
-                              </div>
-                              <div className="p-2 py-5 flex justify-end">
-                                <Pagination
-                                  total={subcat?.total_products || 0}
-                                  showSizeChanger
-                                  showQuickJumper
-                                  current={page}
-                                  showTotal={(total) => `Total ${total} items`}
-                                  responsive={true}
-                                  onChange={(page, pageSize) => {
-                                    setPage(page)
-                                    setPageSize(pageSize)
-                                  }}
-                                />
-                              </div>
-                            </TabPane>
-                          );
-                        } else {
-                          // If matchingProducts have no products, don't render TabPane
-                          return null;
-                        }
-                      })}
-
-                    </Tabs>
-                  </div>
-                  {isLoading && (
-                    <div style={overlayStyles}>
-                      <div role="status">
-                        <svg
-                          aria-hidden="true"
-                          class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                          viewBox="0 0 100 101"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                            fill="currentColor"
-                          />
-                          <path
-                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                            fill="currentFill"
-                          />
-                        </svg>
-                        <span class="sr-only">Loading...</span>
-                      </div>
-                    </div>
+          <Modal
+            title={
+              selectedKey === null ? "Create Product's" : "Update Product's"
+            }
+            visible={modalVisible}
+            onOk={handleFormSubmit}
+            onCancel={() => {
+              form.resetFields();
+              setModalVisible(false);
+              setFilteredVariantData([]);
+              setProductVariantType(null);
+              setVariants([]);
+              setVariantsValueArray([]);
+              setSelectedUniqueId(null);
+              window.location.href = "/Vendors/products/all";
+            }}
+            footer={null}
+            maskClosable={false}
+            okButtonProps={{
+              style: {
+                backgroundColor: "#1677FF",
+                color: "#fff",
+              },
+            }}
+            width="100vw"
+            style={{
+              top: 0,
+              right: 0,
+              margin: 0,
+              padding: 0,
+              borderRadius: 0,
+              boxShadow: "0 0 0 rgba(0, 0, 0, 0)", // Remove shadow
+            }}
+            bodyStyle={{
+              margin: 0,
+              padding: 0,
+              height: "calc(100vh - 108px)",
+              borderRadius: 0,
+              boxShadow: "0 0 0 rgba(0, 0, 0, 0)", // Remove shadow
+            }}
+            maskStyle={{ backgroundColor: "rgba(255, 255, 255, 0.95)" }}
+            className="rounded-none absolute p-0"
+          >
+            <Steps current={currentStep} onChange={onChange}>
+              {steps.map((step) => (
+                <Step key={step.title} title={step.title} />
+              ))}
+            </Steps>
+            <div className="mt-10">
+              <Form
+                name="product_adding_form"
+                onFinish={onFinish}
+                form={form}
+              >
+                {steps[currentStep].content}
+                {/* Add a button for the previous step */}
+                <div className="flex justify-end items-center gap-4 w-full border-t sticky bottom-0 bg-white py-5">
+                  {currentStep > 0 && (
+                    <Form.Item className="animate__animated animate__fadeInLeft animate__faster">
+                      <Button
+                        onClick={handlePrev}
+                        className="border-none"
+                        style={{ zIndex: 1 }} // Add z-index to prioritize this button
+                      >
+                        Previous
+                      </Button>
+                    </Form.Item>
                   )}
-                </div> : <p className="mt-5">Kindly Verify your Account First</p>
+                  {currentStep < steps.length - 1 && (
+                    <Form.Item>
+                      <Button
+                        onClick={handleNext}
+                        size="large"
+                        spellCheck="true"
+                        className="border-none text-sm w-full bg-blue-500 text-white !hover:text-white"
+                        style={{ zIndex: 2 }} // Add higher z-index to prioritize this button
+                      >
+                        Next
+                      </Button>
+                    </Form.Item>
+                  )}
+                  {currentStep === steps.length - 1 && (
+                    <Form.Item>
+                      <Button
+                        onClick={() => window.location.href = "/Vendors/products/all"
+                        }
+                        className="transition-all items-center flex duration-200 ease-in-out  bg-red-500 hover:bg-red-600 hover:text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transform hover:scale-110 hover:rotate-3 text-white"
+                        icon={<IoMdClose className="text-white" />}
+                        style={{ zIndex: 2 }} // Add higher z-index to prioritize this button
+                      >
+                        Close
+                      </Button>
+                    </Form.Item>
+                  )}
+                </div>
+              </Form>
+            </div>
+          </Modal>
+
+          <Modal
+            title={SelectedUniqueId ? "Edit Variants" : "Add Variants"}
+            visible={variantAddModal}
+            width={800}
+            confirmLoading={isLoading} // Set isLoading to true when you want to show loading
+            onOk={() => {
+              if (
+                FilteredVariantData.length === 0 &&
+                variantData.length === 0
+              ) {
+                // Prevent action when both arrays are empty
+                return;
               }
 
-              <Modal
-                title={
-                  selectedKey === null ? "Create Product's" : "Update Product's"
-                }
-                visible={modalVisible}
-                onOk={handleFormSubmit}
-                onCancel={() => {
-                  form.resetFields();
-                  setModalVisible(false);
-                  setFilteredVariantData([]);
-                  setProductVariantType(null);
-                  setVariants([]);
-                  setVariantsValueArray([]);
-                  setSelectedUniqueId(null);
-                  window.location.href = "/Vendors/products/all";
-                }}
-                footer={null}
-                maskClosable={false}
-                okButtonProps={{
-                  style: {
-                    backgroundColor: "#1677FF",
-                    color: "#fff",
-                  },
-                }}
-                width="100vw"
-                style={{
-                  top: 0,
-                  right: 0,
-                  margin: 0,
-                  padding: 0,
-                  borderRadius: 0,
-                  boxShadow: "0 0 0 rgba(0, 0, 0, 0)", // Remove shadow
-                }}
-                bodyStyle={{
-                  margin: 0,
-                  padding: 0,
-                  height: "calc(100vh - 108px)",
-                  borderRadius: 0,
-                  boxShadow: "0 0 0 rgba(0, 0, 0, 0)", // Remove shadow
-                }}
-                maskStyle={{ backgroundColor: "rgba(255, 255, 255, 0.95)" }}
-                className="rounded-none absolute p-0"
+              // Set isLoading to true when "OK" button is clicked
+              setIsLoading(true);
+
+              // Simulate an async action (you can replace this with your actual logic)
+              setTimeout(() => {
+                // After your async action is complete, set isLoading back to false
+                setIsLoading(false);
+
+                // Handle "OK" action here
+                handleVariantOk();
+              }, 2000); // Replace 2000 with your desired loading duration
+            }}
+            onCancel={handleVariantCancel}
+            okButtonProps={{
+              disabled:
+                FilteredVariantData.length !== variantData.length ||
+                (FilteredVariantData.length === 0 &&
+                  variantData.length === 0),
+              style: {
+                backgroundColor: "#1890ff",
+                color: "#fff",
+              },
+            }}
+            cancelButtonProps={{
+              style: {
+                backgroundColor: "#ccc",
+                color: "#333",
+              },
+            }}
+          >
+            <VariantsCrud
+              selectedSubcategory={selectedSubcategory}
+              vendorDatastate={vendorDatastate}
+              onSave={handleVariantsData}
+              // handleVariantOk={handleVariantOk}
+              variantsValueArray={variantsValueArray}
+              FilteredVariantData={FilteredVariantData}
+              SelectedUniqueId={SelectedUniqueId}
+              onCancel={handleVariantCancel}
+            />
+          </Modal>
+
+          <Modal
+            title="View Variants"
+            visible={VariantModalShow}
+            onCancel={() => setVariantModalShow(false)}
+            width={1000} // Adjust the width as needed
+            footer={[
+              <Button
+                key="close"
+                onClick={() => setVariantModalShow(false)}
               >
-                <Steps current={currentStep} onChange={onChange}>
-                  {steps.map((step) => (
-                    <Step key={step.title} title={step.title} />
-                  ))}
-                </Steps>
-                <div className="mt-10">
-                  <Form
-                    name="product_adding_form"
-                    onFinish={onFinish}
-                    form={form}
-                  >
-                    {steps[currentStep].content}
-                    {/* Add a button for the previous step */}
-                    <div className="flex justify-end items-center gap-4 w-full border-t sticky bottom-0 bg-white py-5">
-                      {currentStep > 0 && (
-                        <Form.Item className="animate__animated animate__fadeInLeft animate__faster">
-                          <Button
-                            onClick={handlePrev}
-                            className="border-none"
-                            style={{ zIndex: 1 }} // Add z-index to prioritize this button
-                          >
-                            Previous
-                          </Button>
-                        </Form.Item>
-                      )}
-                      {currentStep < steps.length - 1 && (
-                        <Form.Item>
-                          <Button
-                            onClick={handleNext}
-                            size="large"
-                            spellCheck="true"
-                            className="border-none text-sm w-full bg-blue-500 text-white !hover:text-white"
-                            style={{ zIndex: 2 }} // Add higher z-index to prioritize this button
-                          >
-                            Next
-                          </Button>
-                        </Form.Item>
-                      )}
-                      {currentStep === steps.length - 1 && (
-                        <Form.Item>
-                          <Button
-                            onClick={() => window.location.href = "/Vendors/products/all"
-                            }
-                            className="transition-all items-center flex duration-200 ease-in-out  bg-red-500 hover:bg-red-600 hover:text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transform hover:scale-110 hover:rotate-3 text-white"
-                            icon={<IoMdClose className="text-white" />}
-                            style={{ zIndex: 2 }} // Add higher z-index to prioritize this button
-                          >
-                            Close
-                          </Button>
-                        </Form.Item>
-                      )}
-                    </div>
-                  </Form>
-                </div>
-              </Modal>
-
-              <Modal
-                title={SelectedUniqueId ? "Edit Variants" : "Add Variants"}
-                visible={variantAddModal}
-                width={800}
-                confirmLoading={isLoading} // Set isLoading to true when you want to show loading
-                onOk={() => {
-                  if (
-                    FilteredVariantData.length === 0 &&
-                    variantData.length === 0
-                  ) {
-                    // Prevent action when both arrays are empty
-                    return;
-                  }
-
-                  // Set isLoading to true when "OK" button is clicked
-                  setIsLoading(true);
-
-                  // Simulate an async action (you can replace this with your actual logic)
-                  setTimeout(() => {
-                    // After your async action is complete, set isLoading back to false
-                    setIsLoading(false);
-
-                    // Handle "OK" action here
-                    handleVariantOk();
-                  }, 2000); // Replace 2000 with your desired loading duration
-                }}
-                onCancel={handleVariantCancel}
-                okButtonProps={{
-                  disabled:
-                    FilteredVariantData.length !== variantData.length ||
-                    (FilteredVariantData.length === 0 &&
-                      variantData.length === 0),
-                  style: {
-                    backgroundColor: "#1890ff",
-                    color: "#fff",
+                Close
+              </Button>,
+            ]}
+          >
+            <div className="w-full overflow-auto h-[60vh]">
+              <Table
+                dataSource={RowVariants}
+                rowKey="variant_id"
+                pagination={false}
+                columns={[
+                  {
+                    title: "Variant ID",
+                    dataIndex: "variant_id",
+                    width: 50
                   },
-                }}
-                cancelButtonProps={{
-                  style: {
-                    backgroundColor: "#ccc",
-                    color: "#333",
+                  {
+                    title: "Product Unique ID",
+                    dataIndex: "product_uniqueid",
+                    width: 100
                   },
-                }}
-              >
-                <VariantsCrud
-                  selectedSubcategory={selectedSubcategory}
-                  vendorDatastate={vendorDatastate}
-                  onSave={handleVariantsData}
-                  // handleVariantOk={handleVariantOk}
-                  variantsValueArray={variantsValueArray}
-                  FilteredVariantData={FilteredVariantData}
-                  SelectedUniqueId={SelectedUniqueId}
-                  onCancel={handleVariantCancel}
-                />
-              </Modal>
+                  {
+                    title: "MRP",
+                    dataIndex: "variant_mrp",
+                  },
+                  {
+                    title: "Selling Price",
+                    dataIndex: "variant_sellingprice",
+                  },
+                  {
+                    title: "SKUID",
+                    dataIndex: "variant_skuid",
+                    width: 100
 
-              <Modal
-                title="View Variants"
-                visible={VariantModalShow}
-                onCancel={() => setVariantModalShow(false)}
-                width={1000} // Adjust the width as needed
-                footer={[
-                  <Button
-                    key="close"
-                    onClick={() => setVariantModalShow(false)}
-                  >
-                    Close
-                  </Button>,
+                  },
+                  {
+                    title: "Quantity",
+                    dataIndex: "variant_quantity",
+                  },
+                  {
+                    title: "Label",
+                    dataIndex: "label",
+                  },
+
+                  {
+                    title: "Variants Values",
+                    dataIndex: "variantsvalues",
+                    render: (variantsvalues) => {
+                      const values = JSON.parse(variantsvalues);
+                      return (
+                        <ul>
+                          {Object.entries(values).map(([key, value]) => (
+                            <li key={key}>
+                              <strong>{key}:</strong> {value}
+                            </li>
+                          ))}
+                        </ul>
+                      );
+                    },
+
+                  },
+                  {
+                    title: 'Actions',
+                    dataIndex: 'actions',
+                    width: 200,
+
+                    render: (_, record) => (
+                      <>
+                        <Button type="danger" onClick={() => {
+                          setVariantsEditModal(true)
+                          form.setFieldsValue(record);
+                        }}
+                          className="text-blue-500"
+                        >
+                          Edit
+                        </Button>
+                        <Popconfirm
+                          title="Are you sure to delete this variant?"
+                          onConfirm={() => handleDeleteVariants(record)}
+                          okButtonProps={{ style: { background: 'red' } }}
+                        >
+                          <Button type="danger" className="text-red-500">Delete</Button>
+                        </Popconfirm>
+
+                      </>
+                    ),
+                  },
                 ]}
+              />
+            </div>
+
+            <Modal
+              open={VariantsEdit}
+              onCancel={() => setVariantsEditModal(false)}
+              okButtonProps={{ style: { background: 'blue' } }}
+              okText={'SAVE'}
+              onOk={handleFinishVariantEdit}
+
+            >
+              <Form
+                form={form}
+                className="grid grid-cols-2 gap-4"
+                onFinish={handleFinishVariantEdit}
               >
-                <div className="w-full overflow-auto h-[60vh]">
-                  <Table
-                    dataSource={RowVariants}
-                    rowKey="variant_id"
-                    pagination={false}
-                    columns={[
-                      {
-                        title: "Variant ID",
-                        dataIndex: "variant_id",
-                        width: 50
-                      },
-                      {
-                        title: "Product Unique ID",
-                        dataIndex: "product_uniqueid",
-                        width: 100
-                      },
-                      {
-                        title: "MRP",
-                        dataIndex: "variant_mrp",
-                      },
-                      {
-                        title: "Selling Price",
-                        dataIndex: "variant_sellingprice",
-                      },
-                      {
-                        title: "SKUID",
-                        dataIndex: "variant_skuid",
-                        width: 100
-
-                      },
-                      {
-                        title: "Quantity",
-                        dataIndex: "variant_quantity",
-                      },
-                      {
-                        title: "Label",
-                        dataIndex: "label",
-                      },
-
-                      {
-                        title: "Variants Values",
-                        dataIndex: "variantsvalues",
-                        render: (variantsvalues) => {
-                          const values = JSON.parse(variantsvalues);
-                          return (
-                            <ul>
-                              {Object.entries(values).map(([key, value]) => (
-                                <li key={key}>
-                                  <strong>{key}:</strong> {value}
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        },
-
-                      },
-                      {
-                        title: 'Actions',
-                        dataIndex: 'actions',
-                        width: 200,
-
-                        render: (_, record) => (
-                          <>
-                            <Button type="danger" onClick={() => {
-                              setVariantsEditModal(true)
-                              form.setFieldsValue(record);
-                            }}
-                              className="text-blue-500"
-                            >
-                              Edit
-                            </Button>
-                            <Popconfirm
-                              title="Are you sure to delete this variant?"
-                              onConfirm={() => handleDeleteVariants(record)}
-                              okButtonProps={{ style: { background: 'red' } }}
-                            >
-                              <Button type="danger" className="text-red-500">Delete</Button>
-                            </Popconfirm>
-
-                          </>
-                        ),
-                      },
-                    ]}
-                  />
-                </div>
-
-                <Modal
-                  open={VariantsEdit}
-                  onCancel={() => setVariantsEditModal(false)}
-                  okButtonProps={{ style: { background: 'blue' } }}
-                  okText={'SAVE'}
-                  onOk={handleFinishVariantEdit}
-
+                <Form.Item
+                  label="Id"
+                  name="variant_id"
+                  className="col-span-1"
+                  hidden
                 >
-                  <Form
-                    form={form}
-                    className="grid grid-cols-2 gap-4"
-                    onFinish={handleFinishVariantEdit}
-                  >
-                    <Form.Item
-                      label="Id"
-                      name="variant_id"
-                      className="col-span-1"
-                      hidden
-                    >
-                      <InputNumber name="variant_id" />
-                    </Form.Item>
+                  <InputNumber name="variant_id" />
+                </Form.Item>
 
-                    <Form.Item
-                      label="Price"
-                      name="variant_mrp"
-                      className="col-span-1"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Price is required",
-                        },
-                      ]}
-                    >
-                      <InputNumber name="price" />
-                    </Form.Item>
+                <Form.Item
+                  label="Price"
+                  name="variant_mrp"
+                  className="col-span-1"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Price is required",
+                    },
+                  ]}
+                >
+                  <InputNumber name="price" />
+                </Form.Item>
 
-                    <Form.Item
-                      label="Selling Price"
-                      name="variant_sellingprice"
-                      className="col-span-1"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Selling Price is required",
-                        },
-                      ]}
-                    >
-                      <InputNumber name="variant_sellingprice" />
-                    </Form.Item>
+                <Form.Item
+                  label="Selling Price"
+                  name="variant_sellingprice"
+                  className="col-span-1"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Selling Price is required",
+                    },
+                  ]}
+                >
+                  <InputNumber name="variant_sellingprice" />
+                </Form.Item>
 
-                    <Form.Item
-                      label="SKU"
-                      name="variant_skuid"
-                      className="col-span-1"
-                      rules={[
-                        {
-                          required: true,
-                          message: "SKU is required",
-                        },
-                      ]}
-                    >
-                      <Input name="sku" />
-                    </Form.Item>
+                <Form.Item
+                  label="SKU"
+                  name="variant_skuid"
+                  className="col-span-1"
+                  rules={[
+                    {
+                      required: true,
+                      message: "SKU is required",
+                    },
+                  ]}
+                >
+                  <Input name="sku" />
+                </Form.Item>
 
-                    <Form.Item
-                      label="Quantity"
-                      name="variant_quantity"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Quantity is required",
-                        },
-                        {
-                          type: "number",
-                          min: 1,
-                          message: "Quantity must be at least 1",
-                        },
-                      ]}
-                    >
-                      <InputNumber name="quantity" />
-                    </Form.Item>
+                <Form.Item
+                  label="Quantity"
+                  name="variant_quantity"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Quantity is required",
+                    },
+                    {
+                      type: "number",
+                      min: 1,
+                      message: "Quantity must be at least 1",
+                    },
+                  ]}
+                >
+                  <InputNumber name="quantity" />
+                </Form.Item>
 
 
-                  </Form>
-                </Modal>
-              </Modal>
+              </Form>
+            </Modal>
+          </Modal>
 
 
-              <Modal
-                title={`Edit Bulk ${bulkEditOption}`}
-                visible={BulkModal}
-                onCancel={() => showBulkEditOption(false)}
-                width={1000}
-                footer={[
-                  <Button key="close" onClick={() => showBulkEditOption(false)}>
-                    Close
-                  </Button>,
-                  <Button key="save" type="primary" onClick={handleSave}>
-                    Save
-                  </Button>,
-                ]}
-              >
-                This module is not yet completed, we are working on this, it will be done by (06-01-2024)
-                {/* <Form form={form}>
-                  {selectedRowKeys.map((rowKey, index) => (
-                    <Form.Item key={rowKey} label={`Edit ${bulkEditOption} for Row ${rowKey}`} name={`row_${rowKey}`}>
-                      <Input
-                        value={
-                          bulkEditOption === 'SKU' ? SelectedRowProduct[index]?.skuid :
-                            bulkEditOption === 'Product Name' ? SelectedRowProduct[index]?.ad_title :
-                              bulkEditOption === 'Quantity' ? SelectedRowProduct[index]?.quantity :
-                                bulkEditOption === 'Price' ? SelectedRowProduct[index]?.mrp :
-                                  bulkEditOption === 'Brand' ? SelectedRowProduct[index]?.brand :
-                                    ''
-                        }
-                      />
-                    </Form.Item>
-                  ))}
-                </Form> */}
+          <Modal
+            title={`Edit Bulk ${bulkEditOption}`}
+            visible={BulkModal}
+            onCancel={() => showBulkEditOption(false)}
+            width={1000}
+            footer={[
+              <Button key="close" onClick={() => showBulkEditOption(false)}>
+                Close
+              </Button>,
+              <Button key="save" type="primary" onClick={handleSave}>
+                Save
+              </Button>,
+            ]}
+          >
+            This module is not yet completed, we are working on this, it will be done by (06-01-2024)
+            {/* <Form form={form}>
+               {selectedRowKeys.map((rowKey, index) => (
+                 <Form.Item key={rowKey} label={`Edit ${bulkEditOption} for Row ${rowKey}`} name={`row_${rowKey}`}>
+                   <Input
+                     value={
+                       bulkEditOption === 'SKU' ? SelectedRowProduct[index]?.skuid :
+                         bulkEditOption === 'Product Name' ? SelectedRowProduct[index]?.ad_title :
+                           bulkEditOption === 'Quantity' ? SelectedRowProduct[index]?.quantity :
+                             bulkEditOption === 'Price' ? SelectedRowProduct[index]?.mrp :
+                               bulkEditOption === 'Brand' ? SelectedRowProduct[index]?.brand :
+                                 ''
+                     }
+                   />
+                 </Form.Item>
+               ))}
+             </Form> */}
 
 
-              </Modal>
-            </>
-          }
-        </>
+          </Modal>
+        </> : <AccountApprovalPending />
       )}
     </>
   ) : (

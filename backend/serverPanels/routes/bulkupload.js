@@ -30,11 +30,10 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
     const { jsonData, currentDateTime, vendorId, excludeImage } = req.body;
     try {
         const jsonDataArray = JSON.parse(jsonData);
-
         await Promise.all(
             jsonDataArray.map(async (data, index) => {
-                console.log(data);
-
+                const key24String = data.key24 || "[]"; // If data.key24 is undefined or null, default to an empty array
+                const key24Array = JSON.parse(key24String);
                 const createdAt = new Date().toISOString();
                 const imageUrl = data.key8?.text || data.key8;
                 let imageFileName = "";
@@ -69,7 +68,6 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                     }
                 }
 
-
                 const existingProduct = await pool.query(
                     'SELECT * FROM products WHERE skuid = $1 AND vendorid = $2',
                     [data.key17, data.vendorid]
@@ -79,7 +77,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                 if (existingProduct.rows.length > 0 && excludeImage === 'false') {
                     const existingImages = existingProduct.rows[0].images;
 
-                    existingImages.forEach((imageName) => {
+                    existingImages && existingImages.forEach((imageName) => {
                         const existingImagePath = path.join(
                             __dirname,
                             "..",
@@ -134,7 +132,8 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                             height = $31,
                             width = $32,
                             length = $33,
-                            weight = $34
+                            weight = $34,
+                            attributes_specification = $35
                         WHERE skuid = $24 AND vendorid = $12
                     `;
 
@@ -164,18 +163,20 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.key16 || "",
                         data.key17 || "",
                         data.key18 || 0,
-                        "Simple",
+                        data.key0 || '',
                         data.key19 || "",
-                        data.category.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
-                        data.subcatgeory.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
+                        existingProduct.rows[0].category.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
+                        existingProduct.rows[0].subcategory.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
                         slug(data.key1 || ""),
                         data.key20 || 0,
                         data.key21 || 0,
                         data.key22 || 0,
                         data.key23 || 0,
+                        data.key25 || {}
                     ];
 
                     await pool.query(query, flattenedValues);
+                    // console.log(query, flattenedValues);
                 } else {
                     console.log('insert', index);
 
@@ -213,7 +214,8 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         "height",
                         "width",
                         "length",
-                        "weight"
+                        "weight",
+                        "attributes_specification"
                     ];
 
                     // Insert a new row
@@ -222,7 +224,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         VALUES (
                             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
                             $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-                            $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34
+                            $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35
                         )
                     `;
 
@@ -242,7 +244,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         createdAt || "",
                         `{${imageFileName || ""}}`,
                         0,
-                        data.uniquepid || null,
+                        existingProduct.rows[0].uniquepid || null,
                         data.key10 || 0,
                         data.key11 || "",
                         data.key12 || "",
@@ -252,7 +254,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.key16 || "",
                         data.key17 || "",
                         data.key18 || 0,
-                        "Simple",
+                        data.key0 || '',
                         data.key19 || "",
                         data.category.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
                         data.subcatgeory.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
@@ -261,10 +263,78 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.key21 || 0,
                         data.key22 || 0,
                         data.key23 || 0,
+                        data.key25 || {}
                     ];
 
                     await pool.query(query, flattenedValues);
                 }
+
+                await Promise.all(
+                    key24Array.map(async (variantData) => {
+                        const existingVariant = await pool.query(
+                            'SELECT * FROM variantproducts WHERE variant_skuid = $1 AND vendori_id = $2 AND product_uniqueid = $3',
+                            [variantData.sku, data.vendorid, existingProduct.rows[0].uniquepid]
+                        );
+
+                        const label = Object.entries(variantData.attributes)
+                            .map(([key, value]) => `${value}`)
+                            .join('/');
+
+
+                        if (existingVariant.rows.length > 0) {
+                            console.log(variantData.sku, data.vendorid, existingProduct.rows[0].uniquepid);
+
+                            // Update Variant
+                            const updateQuery = `
+                                UPDATE variantproducts SET 
+                                    variant_mrp = $1,
+                                    variant_sellingprice = $2,
+                                    variant_skuid = $3,
+                                    variant_quantity = $4,
+                                    variantsvalues = $5,
+                                    label = $6,
+                                    product_uniqueid = $8
+                                WHERE variant_skuid = $3 AND vendori_id = $7
+                            `;
+
+                            const updateValues = [
+                                parseFloat(variantData.Mrp) || 0,
+                                parseFloat(variantData['Selling Price']) || 0,
+                                variantData.sku || '',
+                                parseInt(variantData.Quantity) || 0,
+                                variantData.attributes || '',
+                                label || '',
+                                data.vendorid,
+                                existingProduct.rows[0].uniquepid
+                            ];
+
+                            await pool.query(updateQuery, updateValues);
+                        } else {
+                            // Insert Variant 
+                            const insertQuery = `
+                                    INSERT INTO variantproducts(variant_mrp, variant_sellingprice, variant_skuid, variant_quantity, variantsvalues, label, product_uniqueid, vendori_id, variant_category, variant_subcategory)
+                                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                                `;
+
+                            const insertValues = [
+                                parseFloat(variantData.Mrp) || 0,
+                                parseFloat(variantData['Selling Price']) || 0,
+                                variantData.sku || '',
+                                parseInt(variantData.Quantity) || 0,
+                                variantData.attributes || '',
+                                label || '',
+                                data.uniquepid,
+                                data.vendorid,
+                                data.category.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
+                                data.subcatgeory.replace(/[^\w\s]/g, "").replace(/\s/g, "")
+                            ];
+
+                            await pool.query(insertQuery, insertValues);
+
+
+                        }
+                    })
+                );
             })
         );
 

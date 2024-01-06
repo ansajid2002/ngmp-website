@@ -1,145 +1,159 @@
-import React, { useState, useEffect } from "react";
-import {
-  Table,
-  Button,
-  Modal,
-  Form,
-  Input,
-  Pagination,
-  Select,
-  Space,
-  Switch,
-  Image,
-  Tabs,
-  Typography,
-  Tooltip,
-  Upload,
-  message,
-} from "antd";
-import { NavLink } from "react-router-dom";
-import { AdminUrl, links } from "../constant";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Image, Input, Modal, Select, Space, Switch, Table, Tooltip, Typography, Upload, notification } from 'antd';
+import { AdminUrl } from '../constant';
+import { FiEdit3, FiTrash2 } from 'react-icons/fi';
+import { FaEdit } from 'react-icons/fa';
+import { UploadOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
-import { PlusOutlined, UploadOutlined, DeleteOutlined } from "@ant-design/icons";
-
-
-const { TabPane } = Tabs;
-
 const ManageCategory = ({ adminLoginData }) => {
-  const [form] = Form.useForm();
-  const [selectedKey, setSelectedKey] = useState(null);
-  const [Loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [category, setCategory] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
-  const [DeleteSubcat, setDeleteSubcat] = useState([]);
-  const [selectedsubcategories, setselectedSubcategories] = useState([]);
-
-  // State to handle the visibility of the modal
-  const [modalVisible, setModalVisible] = useState(false);
-  const [DeletemodalVisibleRole, setDeleteModalCategory] = useState(false);
-  const [DeleteRow, setDeleteRow] = useState([]);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [DeleteSubcategoryModal, setDeleteSubcategoryModal] = useState(false);
-  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [CatgeoryChangeTab, setCatgeoryChangeTab] = useState("1");
-  const [Descp_modalVisible, setDescp_ModalVisible] = useState(false);
+  // Ensure to define your Hooks at the beginning of the component
+  const [categoryData, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDescription, setSelectedDescription] = useState("");
-  const [fileList, setFileList] = useState([]);
+  const [Descp_modalVisible, setDescp_ModalVisible] = useState(false);
+  const [modalSubcategory, setModalSubcategories] = useState(false);
   const [UploadImageButtonModal, setUploadImageButtonModal] = useState(false);
   const [CategoryLoading, setCategoryLoading] = useState(false);
+  const [fileList, setFileList] = useState([]);
+  const [selectedKey, setSelectedKey] = useState(null);
+  const [DeletemodalVisibleRole, setDeleteModalCategory] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [DeleteSubcategoryModal, setDeleteSubcategoryModal] = useState(false);
+
+  const [selectedRow, setSelectedRow] = useState([]);
+  const [subselectedRow, setSubSelectedRow] = useState([]);
   const [type, setType] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  // State to store the roles to be displayed in the modal
-
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 6 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 18 },
-    },
-  };
-
+  // Fetch data using useEffect
   useEffect(() => {
-    fetchCategoriesAndSubcategories();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const url = `${AdminUrl}/api/getAllCatgeoryWithSubcategory?pageNumber=${pagination.current}&pageSize=${pagination.pageSize}`;
+        const categoryResponse = await fetch(url);
+        const result = await categoryResponse.json();
 
-  const fetchCategoriesAndSubcategories = async () => {
-    try {
-      const categoryResponse = await fetch(`${AdminUrl}/api/getAllProductCatgeory`);
-      const subcategoryResponse = await fetch(
-        `${AdminUrl}/api/getAllSubcategories`
-      );
-
-      if (categoryResponse.ok && subcategoryResponse.ok) {
-        const categoryData = await categoryResponse.json();
-        const subcategoryData = await subcategoryResponse.json();
-
-        // Map each category to add a 'subcategories' array containing its associated subcategories
-        const categoriesWithSubcategories = categoryData.map((cat) => ({
-          ...cat,
-          subcategories: subcategoryData.filter(
-            (subcat) => subcat.parent_category_id === cat.category_id
-          ),
-        }));
-
-        // Sort the categories by their 'category_id' before updating the state
-        const sortedCategories = categoriesWithSubcategories.sort(
-          (a, b) => a.category_id - b.category_id
-        );
-        setSubcategories(subcategoryData);
-        setCategory(sortedCategories);
-      } else {
-        // Handle error responses
-        console.error(
-          "Error fetching categories:",
-          categoryResponse.statusText
-        );
-        console.error(
-          "Error fetching subcategories:",
-          subcategoryResponse.statusText
-        );
+        setData(result.data);
+        setPagination({
+          ...pagination,
+          total: result.total || 0,
+        });
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
       }
-    } catch (error) {
-      // Handle error
-      console.error("Error fetching data:", error);
+    };
+
+    if (adminLoginData != null && adminLoginData.length > 0) {
+      fetchData();
     }
-  };
+  }, [adminLoginData, pagination.current, pagination.pageSize]);
 
-  const productsCategory = category.filter(
-    (data) => data.category_type == "Products"
-  );
-  const ServicesCatgeory = category.filter(
-    (data) => data.category_type == "Services"
-  );
-
+  // Define your columns and handleTableChange function as before
   const columns = [
     {
-      title: "ID",
-      dataIndex: "category_id", // Replace 'id' with 'category_id'
-      key: "category_id", // Replace 'id' with 'category_id'
-      sorter: (a, b) => a.category_id - b.category_id, // Replace 'id' with 'category_id'
+      title: "Actions",
+      key: "actions",
+      width: 120,
+      fixed: 'left',
+      render: (record) => (
+        <Space size="middle" className="flex">
+          {/* Edit Icon */}
+          <FiEdit3
+            // onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
+            className="text-green-600 w-6 h-6 cursor-pointer"
+          />
+
+          {/* Delete Icon */}
+          <FiTrash2
+            onClick={() => handleDelete(record.category_id)} // Replace 'id' with 'category_id'
+            className="text-red-600 w-6 h-6 cursor-pointer"
+          />
+        </Space>
+      ),
+    },
+    {
+      title: "Type",
+      dataIndex: "category_type",
+      key: "category_type",
+      width: 120,
+      fixed: 'left',
+      sorter: (a, b) => a.category_type.localeCompare(b.category_type), // Add sorter function for string comparison
     },
     {
       title: "Name",
-      dataIndex: "category_name", // Replace 'name' with 'category_name'
-      key: "category_name", // Replace 'name' with 'category_name'
-      width: 100,
-      render: (_, record) => {
-        return <>
+      dataIndex: "category_name",
+      key: "category_name",
+      width: 250,
+      sorter: (a, b) => a.category_name.localeCompare(b.category_name), // Add sorter function for string comparison
+      defaultSortOrder: 'ascend', // Set the default sorting order to ascending
+      render: (_, record) => (
+        <>
           <p>{record?.category_name} ({record?.product_count})</p>
         </>
-      }
+      ),
+    },
+    {
+      title: "Subcategories",
+      dataIndex: "Subcategories",
+      key: "Subcategories",
+      width: 250,
+      defaultSortOrder: 'ascend', // Set the default sorting order to ascending
+      render: (_, record) => (
+        <>
+          <div onClick={() => {
+            setSelectedRow(record)
+            setModalSubcategories(true)
+          }} className='cursor-pointer'>
+            <p className='text-base text-blue-800'>View Subcategories ({record?.subcategories?.length})</p>
+          </div>
+        </>
+      ),
+    },
+    {
+      title: 'Image',
+      dataIndex: 'category_image_url',
+      key: 'category_image_url',
+      width: 100,
+      render: (imageUrl, row) => {
+        if (imageUrl) {
+          return (
+            <div className="overflow-hidden flex">
+              <Image
+                width={50}
+                height={50}
+                src={`${AdminUrl}/uploads/CatgeoryImages/${imageUrl}`}
+                className="w-full h-full object-contain border-4  rounded-full"
+              />
+
+              <FaEdit className='text-gray-500 cursor-pointer' onClick={() => {
+                setUploadImageButtonModal(true)
+                setSelectedKey(row.category_id)
+                setType('category')
+              }} />
+            </div>
+          );
+        } else {
+          return (
+            <FaEdit className='text-gray-500 cursor-pointer' onClick={() => {
+              setUploadImageButtonModal(true)
+              setSelectedKey(row.category_id)
+              setType('category')
+            }} />
+          );
+        }
+      },
     },
     {
       title: "Description",
       dataIndex: "category_description",
       key: "category_description",
-      width: 200,
+      width: 300,
       render: (category_description) => (
         <Tooltip title={category_description}>
           <div
@@ -168,185 +182,174 @@ const ManageCategory = ({ adminLoginData }) => {
       ),
     },
     {
+      title: "Status",
+      dataIndex: "category_status",
+      key: "category_status",
+      render: (status, record) => (
+        <Switch
+          checked={status}
+          onChange={(checked) => handleSwitchChange(checked, record.category_id, 'category')}
+          className='bg-red-500'
+        />
+      ),
+    },
+  ]
+
+  const subcategory_columns = [
+    {
+      title: "Actions",
+      key: "actions",
+      width: 120,
+      fixed: 'left',
+      render: (record) => (
+        <Space size="middle" className="flex">
+          {/* Edit Icon */}
+          <FiEdit3
+            // onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
+            className="text-green-600 w-6 h-6 cursor-pointer"
+          />
+
+          {/* Delete Icon */}
+          <FiTrash2
+            onClick={() => handleSubcatModal(record.subcategory_id)} // Replace 'id' with 'category_id'
+            className="text-red-600 w-6 h-6 cursor-pointer"
+          />
+        </Space>
+      ),
+    },
+    { title: 'Subcategory Name', dataIndex: 'subcategory_name', key: 'subcategory_name' },
+    {
       title: 'Image',
-      dataIndex: 'category_image_url',
-      key: 'category_image_url',
+      dataIndex: 'subcategory_image_url',
+      key: 'subcategory_image_url',
       width: 100,
       render: (imageUrl, row) => {
         if (imageUrl) {
           return (
-            <div className="overflow-hidden">
+            <div className="overflow-hidden flex">
               <Image
-                width={100}
-                src={`${AdminUrl}/uploads/CatgeoryImages/${imageUrl}`}
-                className="w-full h-full object-contain border-4 border-white shadow-xl"
+                width={50}
+                height={50}
+                src={`${AdminUrl}/uploads/SubcategoryImages/${imageUrl}`}
+                className="w-full h-full object-contain border-4  rounded-full"
               />
-              <Button onClick={() => {
+
+              <FaEdit className='text-gray-500 cursor-pointer' onClick={() => {
                 setUploadImageButtonModal(true)
-                setSelectedKey(row.category_id)
-                setType('category')
-              }}>Change Image</Button>
+                setSelectedKey(row.subcategory_id)
+                setType('subcategory')
+              }} />
             </div>
           );
         } else {
           return (
-            <Button onClick={() => {
+            <FaEdit className='text-gray-500 cursor-pointer' onClick={() => {
               setUploadImageButtonModal(true)
-              setSelectedKey(row.category_id)
-              setType('category')
-            }}>Upload Image</Button>
+              setSelectedKey(row.subcategory_id)
+              setType('subcategory')
+            }} />
           );
         }
       },
     },
     {
       title: "Status",
-      dataIndex: "category_status",
-      key: "category_status",
-      render: (status) => (
-        <span>
-          <span>
-            {status ? (
-              <FaCheckCircle className={`text-green-500 cursor-pointer`} />
-            ) : (
-              <FaTimesCircle className="text-red-500 cursor-pointer" />
-            )}
-          </span>
-        </span>
-      ),
-    },
-    {
-      title: "Subcategories",
-      key: "subcategories",
-      render: (record) => (
-        <Table
-          columns={[
-            ...subCategoryColumns,
-            {
-              title: () => (
-                <Button
-                  type="button"
-                  icon={<PlusOutlined />}
-                  onClick={() => handleAddNewSubcategory(record.category_id)}
-                  className="bg-orange-400 flex items-center justify-center text-white"
-                />
-              ),
-              key: "actions",
-              dataIndex: "actions", // Give a unique dataIndex to avoid any warnings (it won't be used)
-            },
-          ]}
-          dataSource={record.subcategories}
-          pagination={false}
-          rowKey="subcategory_id"
-        />
-      ),
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (record) => (
-        <Space size="middle" className="flex">
-          {/* Edit Icon */}
-          <FiEdit2
-            onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
-            className="text-white w-8 h-8 p-2 rounded-full bg-green-500 border-none hover:bg-green-600 hover:text-white"
+      dataIndex: "subcat_status",
+      key: "subcat_status",
+      render: (subcat_status, record) => (
+        <>
+          <Switch
+            checked={subcat_status}
+            onChange={(checked) => handleSwitchChange(checked, record.subcategory_id, 'subcategory')}
+            className='bg-red-500'
           />
-
-          {/* Delete Icon */}
-          <FiTrash2
-            onClick={() => handleDelete(record.category_id)} // Replace 'id' with 'category_id'
-            className="text-white w-8 h-8 p-2 rounded-full bg-red-500 border-none hover:bg-red-600 hover:text-white"
-          />
-        </Space>
-      ),
-    },
-  ];
-
-  const subCategoryColumns = [
-    {
-      title: "ID",
-      dataIndex: "subcategory_id",
-      key: "subcategory_id",
-      sorter: (a, b) => a.subcategory_id - b.subcategory_id, // Replace 'id' with 'category_id'
-      width: 50,
-    },
-    {
-      title: "Name",
-      dataIndex: "subcategory_name",
-      key: "subcategory_name",
-      width: 100,
-      render: (_, record) => {
-        return <>
-          <p>{record?.subcategory_name} ({record?.product_subcount})</p>
+          <p>{subcat_status}</p>
         </>
-      }
-    },
-    {
-      title: "Image",
-      dataIndex: "subcategory_image_url",
-      key: "subcategory_image_url",
-      render: (imageUrl, row) => {
-        if (imageUrl) {
-          return (
-            <div className="overflow-hidden">
-              <Image
-                width={100}
-                src={`${AdminUrl}/uploads/SubcategoryImages/${imageUrl}`}
-                className="w-full h-full object-contain border-4 border-white shadow-xl"
-              />
-              <Button onClick={() => {
-                setUploadImageButtonModal(true)
-                setSelectedKey(row.subcategory_id)
-                setType("subcategory")
-              }}>Change Image</Button>
-            </div>
-          );
-        } else {
-          return (
-            <Button onClick={() => {
-              setUploadImageButtonModal(true)
-              setSelectedKey(row.subcategory_id)
-              setType("subcategory")
-            }}>Upload Image</Button>
-          );
-        }
-      },
-      width: 100,
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (record) => (
-        <Space size="middle">
-          {/* Edit Icon */}
-          <Button onClick={() => handleEditSubcategory(record.subcategory_id)}>
-            Edit
-          </Button>
-
-          {/* Delete Icon */}
-          <Button
-            onClick={() => handleSubcatModal(record.subcategory_id)}
-            danger
-          >
-            Delete
-          </Button>
-        </Space>
       ),
-      width: 100,
     },
+    // Add more columns as needed
   ];
 
-  const handleViewAllSubcategories = (categoryId) => {
-    // Implement your logic here, such as opening a modal or navigating to a new page
-    // to show all subcategories for the specified category.
-    // You can use the categoryId to fetch the subcategories from your data source.
-    // For example:
+  function handleDelete(key) {
+    setSelectedKey(key);
+    const selectedRow = categoryData.find((item) => item.category_id === key);
+    setSelectedRow(selectedRow);
+    setDeleteModalCategory(true);
+  }
 
-    // Open a modal with all subcategories
-    showModalWithAllSubcategories(categoryId);
+  const handleSwitchChange = async (checked, categoryId, type) => {
+    try {
+      // Send a request to the backend to update the category status
+      const response = await fetch(`${AdminUrl}/api/updateCategoryStatus`, {
+        method: 'POST', // Adjust the method based on your backend API
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          categoryId: categoryId,
+          status: checked,
+          type
+        }),
+      });
 
-    // Or navigate to a new page with all subcategories
-    navigateToAllSubcategoriesPage(categoryId);
+      if (response.ok) {
+        setData((prevCategoryData) => {
+          const updatedCategoryData = [...prevCategoryData];
+          let categoryIndex;
+
+          if (type === 'subcategory') {
+            // Find the category index containing the specified subcategory
+            categoryIndex = updatedCategoryData.findIndex((category) =>
+              category.subcategories?.some((subcat) => subcat.subcategory_id === categoryId)
+            );
+          } else {
+            // Find the category index by category_id
+            categoryIndex = updatedCategoryData.findIndex((category) => category.category_id === categoryId);
+          }
+
+          if (categoryIndex !== -1) {
+            if (type === 'category') {
+              // Update category status
+              updatedCategoryData[categoryIndex].category_status = checked;
+            } else if (type === 'subcategory') {
+              // Find the index of the specified subcategory within its category
+              const subcategoryIndex = updatedCategoryData[categoryIndex].subcategories.findIndex((subcat) => subcat.subcategory_id === categoryId);
+
+              // Update subcategory status within the category
+              if (subcategoryIndex !== -1) {
+                updatedCategoryData[categoryIndex].subcategories[subcategoryIndex].subcat_status = checked;
+              }
+            } else {
+              // Invalid type provided
+              console.error('Invalid type specified');
+            }
+          }
+
+          return updatedCategoryData;
+        });
+
+        console.log(categoryData);
+        // Show a success notification if the request was successful
+        const statusMessage = checked ? 'enabled' : 'disabled';
+        notification.success({
+          message: 'Success',
+          description: `${type === 'category' ? 'Category' : 'Subcategory'} is now ${statusMessage}.`,
+        });
+      } else {
+        // Handle errors if the request was not successful
+        notification.error({
+          message: 'Error',
+          description: 'Failed to update category status.',
+        });
+      }
+    } catch (error) {
+      // Handle network errors or other exceptions
+      console.error('Error updating category status:', error);
+      notification.error({
+        message: 'Error',
+        description: 'Failed to update category status. Please try again.',
+      });
+    }
   };
 
   const handleDescriptionModal = (description) => {
@@ -354,377 +357,22 @@ const ManageCategory = ({ adminLoginData }) => {
     setDescp_ModalVisible(true);
   };
 
-  const handleAddNewSubcategory = (catId) => {
-    form.resetFields();
-    form.setFieldsValue({
-      category_type: "a",
-      category_name: "a",
-      category_description: "a",
-      category_image_url: "a",
+  const handleTableChange = (pagination, filters, sorter) => {
+    setPagination({
+      ...pagination,
+      current: pagination.current,
+      pageSize: pagination.pageSize,
     });
-    setSelectedKey(catId);
-    setSelectedSubcategory(null);
-    setEditModalVisible(true);
   };
-
-  // Function to handle editing a subcategory
-  const handleEditSubcategory = (key) => {
-    const selectedRow = subcategories.find(
-      (item) => item.subcategory_id === key
-    );
-    form.setFieldsValue(selectedRow);
-    setSelectedSubcategory(key);
-    setEditModalVisible(true);
-  };
-
-  const handleSubcatModal = (key) => {
-    const DeleteSubcat = subcategories.find(
-      (item) => item.subcategory_id === key
-    );
-    setDeleteSubcat(DeleteSubcat);
-    setSelectedKey(key);
-    setDeleteSubcategoryModal(true);
-  };
-  // Function to handle deleting a subcategory
-  const handleDeleteSubcategoryLogic = async (subcategory_id) => {
-    try {
-      // Send a DELETE request to your backend API to delete the subcategory
-      const response = await fetch(`${AdminUrl}/api/deleteSubcategory`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ subcategory_id }), // Send the subcategory_id in the request body
-      });
-
-      if (response.ok) {
-        // Subcategory deleted successfully
-        // You may want to update the subcategories list after deletion, so you can fetch the updated list again
-        fetchCategoriesAndSubcategories();
-        setDeleteSubcategoryModal(false);
-        Swal.fire({
-          icon: "success",
-          title: "SubCategory Deleted Successfully.",
-          text: "The SubCategory has been successfully Deleted.",
-        });
-      } else {
-        // Handle error response
-        console.error("Error deleting subcategory:", response.statusText);
-        Swal.fire({
-          icon: "success",
-          title: "Error deleting subcategory",
-          text: `${response.statusText}`,
-        });
-      }
-    } catch (error) {
-      // Handle error
-      console.error("Error deleting subcategory:", error);
-      Swal.fire({
-        icon: "success",
-        title: "Error deleting subcategory",
-        text: `${error}`,
-      });
-    }
-  };
-
-  const pageSize = 10;
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  function handleCreate() {
-    form.resetFields();
-    form.setFieldsValue({
-      subcategory_name: "a",
-      subcategory_description: "a",
-      subcategory_image_url: "a",
-    });
-    setSelectedKey(null);
-    setModalVisible(true);
-  }
-
-  function handleDelete(key) {
-    setSelectedKey(key);
-    const selectedRow = category.find((item) => item.category_id === key);
-    setDeleteRow(selectedRow);
-    setDeleteModalCategory(true);
-  }
 
   function onCancel() {
     setSelectedKey(null);
     setDeleteModalCategory(false);
-    setDeleteSubcategoryModal(false);
     setUploadImageButtonModal(false)
     setFileList([])
     setSelectedKey(null)
+    setDeleteSubcategoryModal(false)
   }
-
-  function handleUpdate(key) {
-    fetchCategoriesAndSubcategories();
-    const selectedRow = category.find((item) => item.category_id === key);
-    form.setFieldsValue(selectedRow);
-    const subcategoriesWithParents = subcategories.filter(
-      (subcat) => subcat.parent_category_id === key
-    );
-    setselectedSubcategories(subcategoriesWithParents);
-    setSelectedKey(key);
-    setModalVisible(true);
-  }
-
-  const handleTabChangeforTable = (key) => {
-    setCatgeoryChangeTab(key);
-  };
-
-  const handleSaveCategories = async () => {
-    form.validateFields().then((values) => {
-      if (selectedKey == null) {
-        // Add category Details to Superadmin Table and set Positon as category
-        const addCategory = async () => {
-          try {
-            const response = await fetch(`${AdminUrl}/api/addNewCategories`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ values }),
-            });
-
-            if (response.ok) {
-              // Show success message using Swal.fire
-              const data = await response.json();
-              setCategory([
-                ...category,
-                {
-                  category_id: data.category_id,
-                  ...values,
-                },
-              ]);
-              handleTabChangeforTable(data.category_type === 'Services' ? '3' : '2')
-              Swal.fire({
-                icon: "success",
-                title: "Category Added",
-                text: "The category has been successfully added.",
-              });
-
-              setModalVisible(false);
-              // Perform any additional actions after successful category insertion
-            } else {
-              // Show error message using Swal.fire
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "Failed to add the category. Please try again later.",
-              });
-            }
-          } catch (error) {
-            // Handle any other errors
-            console.error(error);
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Failed to add the category. Please try again later.",
-            });
-          }
-        };
-
-        addCategory();
-      } else {
-        setCategory(
-          category.map((item) =>
-            item.category_id === selectedKey ? { ...item, ...values } : item
-          )
-        );
-        const updateCategory = async () => {
-          try {
-            const response = await fetch(`${AdminUrl}/api/updateCategory`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ selectedKey, values }),
-            });
-
-            if (response.ok) {
-              // Show success message using Swal.fire
-              Swal.fire({
-                icon: "success",
-                title: "Category Updated",
-                text: "The category has been successfully updated.",
-              });
-
-              setModalVisible(false);
-
-              // Perform any additional actions after successful category insertion
-            } else {
-              // Show error message using Swal.fire
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "Failed to updated the category. Please try again later.",
-              });
-            }
-          } catch (error) {
-            // Handle any other errors
-            console.error(error);
-          }
-        };
-
-        updateCategory();
-      }
-    });
-  };
-
-  const onDelete = async (selectedKey) => {
-    if (selectedKey) {
-      try {
-        // Send the request to the backend using fetch
-        const response = await fetch(`${AdminUrl}/api/deleteCategory`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ selectedKey }),
-        });
-
-        if (!response.ok) {
-          // Handle error response from the server if needed
-          const errorText = await response.text();
-          throw new Error(
-            `Failed to update roles. Server responded with status ${response.status}: ${errorText}`
-          );
-        } else {
-          if (response.ok) {
-            // Show a success Swal popup
-            Swal.fire({
-              icon: "success",
-              title: "Deleted!",
-              text: "The item has been deleted.",
-            });
-            setDeleteModalCategory(false);
-            setCategory(
-              category.filter((item) => item.category_id != selectedKey)
-            );
-          } else {
-            // Show an error Swal popup if the response status is not ok
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: data.message || "Failed to delete the item.",
-            });
-          }
-        }
-      } catch (error) {
-        // Show an error Swal popup if there's an error making the request
-        console.error("Error during onDelete:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Failed to delete the item.",
-        });
-      }
-    } else {
-      setUploadImageButtonModal(false)
-    }
-  };
-
-  const handleUpdateSubcategory = async () => {
-    console.log(selectedKey);
-    form.validateFields().then((values) => {
-      if (selectedSubcategory == null) {
-        const addSubcat = async () => {
-          try {
-            const response = await fetch(`${AdminUrl}/api/addNewSubCategories`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ selectedKey, values }),
-            });
-
-            if (response.ok) {
-              // Show success message using Swal.fire
-              Swal.fire({
-                icon: "success",
-                title: "Subcategory Added",
-                text: "The Subcategory has been successfully added.",
-              });
-
-              setEditModalVisible(false);
-              fetchCategoriesAndSubcategories();
-
-              // Perform any additional actions after successful category insertion
-            } else {
-              // Show error message using Swal.fire
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "Failed to add the category. Please try again later.",
-              });
-            }
-          } catch (error) {
-            // Handle any other errors
-            console.error(error);
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Failed to add the category. Please try again later.",
-            });
-          }
-        };
-
-        addSubcat();
-      } else {
-        const updateSubcat = async () => {
-          try {
-            // Get the updated values from the form
-            const updatedValues = form.getFieldsValue();
-            console.log(updatedValues);
-            // Send a PUT request to your backend API to update the subcategory
-            const response = await fetch(`${AdminUrl}/api/updateSubcategory`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                selectedSubcategory,
-                ...updatedValues,
-              }),
-            });
-
-            if (response.ok) {
-              // Subcategory updated successfully
-              setEditModalVisible(false); // Close the Edit modal
-              fetchCategoriesAndSubcategories(); // Fetch updated categories and subcategories data
-              Swal.fire({
-                icon: "success",
-                title: "Subcategory Updated",
-                text: "The Subcategory has been successfully Updated.",
-              });
-              fetchCategoriesAndSubcategories();
-            } else {
-              // Handle error response
-              console.error("Error updating subcategory:", response.statusText);
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: `Error updating subcategory:', ${response.statusText}`,
-              });
-            }
-          } catch (error) {
-            // Handle error
-            console.error("Error updating subcategory:", error);
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: `Error updating subcategory:', ${error}`,
-            });
-          }
-        };
-
-        updateSubcat();
-      }
-    });
-  };
 
   const handleBeforeUpload = (file) => {
     // Check file type and size before uploading
@@ -766,18 +414,21 @@ const ManageCategory = ({ adminLoginData }) => {
             if (response.ok) {
               // Handle success
               const data = await response.json()
-              console.log(data);
-              const updatedCategories = category.map((category) => {
-                if (category.category_id === selectedKey) {
-                  return {
-                    ...category,
-                    category_image_url: `${data?.file}`, // Update the image URL
-                  };
-                }
-                return category;
-              });
+              const updatedCategoryData = [...categoryData]; // Create a shallow copy of categoryData to avoid mutating the original array
+              const foundCategoryIndex = updatedCategoryData.findIndex(item => item.category_id === selectedKey);
 
-              setCategory(updatedCategories)
+              if (foundCategoryIndex !== -1) {
+                // Update category_image_url for the found category
+                updatedCategoryData[foundCategoryIndex].category_image_url = data?.file;
+                notification.success({
+                  message: 'Success',
+                  description: 'Category Image updated successfully!',
+                });
+                // If you need to update other properties, you can do so here
+                // updatedCategoryData[foundCategoryIndex].otherProperty = 'new_value';
+              }
+
+              // Use updatedCategoryData in your application
 
               setUploadImageButtonModal(false)
               setCategoryLoading(false)
@@ -803,26 +454,17 @@ const ManageCategory = ({ adminLoginData }) => {
             if (response.ok) {
               // Handle success
               const data = await response.json()
-              console.log(data);
-              const updatedCategories = category.map((category) => {
-                const updatedSubcategories = category.subcategories.map((subcategory) => {
-                  if (subcategory.subcategory_id === selectedKey) {
-                    // Update the image URL for the matching subcategory
-                    return {
-                      ...subcategory,
-                      subcategory_image_url: data?.file, // Update the image URL
-                    };
-                  }
-                  return subcategory;
-                });
-                // Return the updated subcategories for this category
-                return {
-                  ...category,
-                  subcategories: updatedSubcategories,
-                };
-              });
 
-              setCategory(updatedCategories)
+              const foundSubcatIndex = selectedRow?.subcategories?.findIndex(item => item.subcategory_id === selectedKey);
+
+              if (foundSubcatIndex !== -1) {
+                // Update category_image_url for the found category
+                selectedRow.subcategories[foundSubcatIndex].subcategory_image_url = data?.file;
+                notification.success({
+                  message: 'Success',
+                  description: 'SubCategory Image updated successfully!',
+                });
+              }
 
               setUploadImageButtonModal(false)
               setCategoryLoading(false)
@@ -844,328 +486,506 @@ const ManageCategory = ({ adminLoginData }) => {
     }
   };
 
+  const [form] = Form.useForm();
 
+  function handleCreate() {
+    form.resetFields()
+    setSelectedKey(null);
+    setModalVisible(true);
+  }
 
+  const formItemLayout = {
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 6 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 18 },
+    },
+  };
+
+  const handleSaveCategories = async () => {
+    try {
+      // Validate the form fields
+      const values = await form.validateFields();
+
+      if (selectedKey === null) {
+        // Send the values to the backend
+        const response = await fetch(`${AdminUrl}/api/addNewCategories`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        });
+
+        if (response.ok) {
+          // Handle success, maybe show a success message
+          console.log('Categories added successfully!');
+
+          // Fetch and update the category data after successful insertion
+          const result = await response.json();
+
+          // Fetch the new data (for example, from the server response)
+          const newData = result.data;
+
+          // Append the new data to the existing data
+          const updatedData = [...newData, ...categoryData];
+
+          // Update the state with the updated data
+          setData([
+            ...categoryData,
+            {
+              category_id: newData.category_id,
+              ...values,
+            },
+          ]);
+
+          // Show success notification with SweetAlert
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: result.message,
+          });
+          setModalVisible(false)
+        } else {
+          // Handle errors and show appropriate messages
+          const responseData = await response.json();
+          if (responseData && responseData.error) {
+            console.error('Failed to add categories:', responseData.error);
+            // Show error message to the user
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: responseData.error,
+            });
+          } else {
+            console.error('Failed to add categories:', response.statusText);
+            // Show a generic error message to the user
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to add categories. Please try again.',
+            });
+          }
+        }
+      } else {
+        // Update
+      }
+    } catch (error) {
+      // Handle validation errors or other exceptions
+      console.error('Error:', error);
+      // Show an error message to the user
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to add categories. Please check the form and try again.',
+      });
+    }
+  };
+
+  const onDelete = async (selectedKey) => {
+    if (selectedKey) {
+      try {
+        // Send the request to the backend using fetch
+        const response = await fetch(`${AdminUrl}/api/deleteCategory`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ selectedKey }),
+        });
+
+        if (!response.ok) {
+          // Handle error response from the server if needed
+          const errorText = await response.text();
+          throw new Error(
+            `Failed to update roles. Server responded with status ${response.status}: ${errorText}`
+          );
+        } else {
+          if (response.ok) {
+            // Show a success Swal popup
+            Swal.fire({
+              icon: "success",
+              title: "Deleted!",
+              text: "The item has been deleted.",
+            });
+            setDeleteModalCategory(false);
+            setData(
+              categoryData.filter((item) => item.category_id != selectedKey)
+            );
+          } else {
+            // Show an error Swal popup if the response status is not ok
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "Failed to delete the item.",
+            });
+          }
+        }
+      } catch (error) {
+        // Show an error Swal popup if there's an error making the request
+        console.error("Error during onDelete:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to delete the item.",
+        });
+      }
+    } else {
+      setUploadImageButtonModal(false)
+    }
+  };
+
+  const handleSubcatModal = (key) => {
+    const DeleteSubcat = categoryData
+      .map((category) => ({
+        ...category,
+        subcategories: category.subcategories.filter(
+          (subcat) => subcat.subcategory_id === key
+        ),
+      }))
+      .filter((category) => category.subcategories.length > 0)
+      .map((category) => category.subcategories);
+
+    // DeleteSubcat will now contain the parent category that contains the subcategory with the specified subcategory_id
+
+    // The updated categoryData with the subcategory removed
+    const firstSubcategory = DeleteSubcat[0][0];
+
+    setSubSelectedRow(firstSubcategory);
+    setSelectedKey(key);
+    setDeleteSubcategoryModal(true);
+  };
+
+  const handleDeleteSubcategoryLogic = async (subcategory_id) => {
+    try {
+      // Send a DELETE request to your backend API to delete the subcategory
+      const response = await fetch(`${AdminUrl}/api/deleteSubcategory`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ subcategory_id }), // Send the subcategory_id in the request body
+      });
+
+      if (response.ok) {
+        // Subcategory deleted successfully
+        const foundSubcatIndex = selectedRow?.subcategories.filter(item => item.subcategory_id === selectedKey);
+
+        const updatedDATA = selectedRow?.subcategories.filter(item => item.subcategory_id !== foundSubcatIndex[0]?.subcategory_id);
+        const craetedata = {
+          ...categoryData,
+          subcategories: updatedDATA
+        }
+        setSelectedRow(craetedata)
+
+        setDeleteSubcategoryModal(false);
+        Swal.fire({
+          icon: "success",
+          title: "SubCategory Deleted Successfully.",
+          text: "The SubCategory has been successfully Deleted.",
+        });
+      } else {
+        // Handle error response
+        console.error("Error deleting subcategory:", response.statusText);
+        Swal.fire({
+          icon: "success",
+          title: "Error deleting subcategory",
+          text: `${response.statusText}`,
+        });
+      }
+    } catch (error) {
+      // Handle error
+      console.error("Error deleting subcategory:", error);
+      Swal.fire({
+        icon: "success",
+        title: "Error deleting subcategory",
+        text: `${error}`,
+      });
+    }
+  };
   return (
-    <>
-      {adminLoginData == null || adminLoginData?.length == 0 ? (
-        ""
-      ) : (
-        <div className="mt-10 sm:ml-72 sm:p-0 p-4 mb-44">
-          <h1 className="text-4xl text-gray-700 font-bold mb-2">
-            Manage Category
-          </h1>
-          <nav
-            aria-label="Breadcrumbs"
-            className="order-first flex text-sm font-semibold sm:space-x-2"
+    <div className="mt-10 sm:ml-72 sm:p-0 p-4 mb-44 ">
+      <h1 className="text-4xl text-gray-700 font-bold mb-10">
+        Manage Category
+      </h1>
+
+      <button
+        onClick={handleCreate}
+        className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-2 z-[999] absolute right-10 top-20"
+      >
+        <svg
+          className="w-10 h-10 "
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+      </button>
+
+      <Table
+        dataSource={categoryData}
+        columns={columns}
+        loading={loading}
+        pagination={pagination}
+        onChange={handleTableChange}
+        scroll={{
+          x: 1500,
+          y: 600,
+        }}
+      />
+
+      <Modal
+        title={
+          selectedKey === null ? "Create category" : "Update category"
+        }
+        visible={modalVisible}
+        onOk={handleSaveCategories}
+        onCancel={() => setModalVisible(false)}
+        okText={selectedKey === null ? "Create" : "Update"}
+        width={800}
+        okButtonProps={{ style: { backgroundColor: "green" } }}
+      >
+        <Form {...formItemLayout} form={form}>
+          {/* Category Type Input */}
+          <Form.Item
+            label="Category Type"
+            name="category_type"
+            rules={[
+              {
+                required: true,
+                message: "Please select the category type!",
+              },
+            ]}
           >
-            <NavLink to={`${AdminUrl}`}>
-              <a
-                href=""
-                className="hover:text-slate-600 hidden text-slate-500 sm:block"
-              >
-                Home
-              </a>
-            </NavLink>
+            <Select placeholder="Select category type">
+              <Select.Option value="Products">Products</Select.Option>
+              <Select.Option value="Services">Services</Select.Option>
+            </Select>
+          </Form.Item>
 
-            <div
-              aria-hidden="true"
-              className="hidden select-none text-slate-400 sm:block"
-            >
-              /
-            </div>
-            <p className="text-slate-500 hover:text-slate-600">
-              Manage Category
-            </p>
-          </nav>
+          {/* Category Name Input */}
+          <Form.Item
+            label="Category Name"
+            name="category_name"
+            rules={[
+              {
+                required: true,
+                message: "Please enter the category name!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
 
-          {Loading ? (
-            "Table Loading"
-          ) : (
-            <>
-              <button
-                onClick={handleCreate}
-                className="bg-[#EC642A] hover:bg-[#EC642A]/80 text-white rounded-full p-2 z-[999] absolute right-10 top-20"
-              >
-                <svg
-                  className="w-10 h-10 "
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-              </button>
-              <div
-                style={{ maxWidth: "100%", overflowX: "auto" }}
-                className="mt-10"
-              >
-                <Tabs
-                  defaultActiveKey="1"
-                  activeKey={CatgeoryChangeTab}
-                  onChange={handleTabChangeforTable}
-                  centered
-                >
-                  <TabPane tab={`All (${category?.length})`} key="1">
-                    <Table
-                      columns={columns}
-                      dataSource={category}
-                      pagination={true}
-                      className="w-full mt-10"
-                      rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
-                    />
-                  </TabPane>
-                  <TabPane
-                    tab={`Products (${productsCategory?.length})`}
-                    key="2"
-                  >
-                    <Table
-                      columns={columns}
-                      dataSource={productsCategory}
-                      pagination={true}
-                      className="w-full mt-10"
-                      rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
-                    />
-                  </TabPane>
-                  <TabPane
-                    tab={`Services (${ServicesCatgeory?.length})`}
-                    key="3"
-                  >
-                    <Table
-                      columns={columns}
-                      dataSource={ServicesCatgeory}
-                      pagination={true}
-                      className="w-full mt-10"
-                      rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
-                    />
-                  </TabPane>
-                </Tabs>
-              </div>
+          {/* Category Description Input */}
+          <Form.Item
+            label="Category Description"
+            name="category_description"
+            rules={[
+              {
+                required: true,
+                message: "Please enter the category description!",
+              },
+            ]}
+          >
+            <Input.TextArea />
+          </Form.Item>
 
-              {/* <div className="mt-4">
-                <Pagination
-                  current={currentPage}
-                  onChange={handlePageChange}
-                  pageSize={pageSize}
-                  total={category?.length}
-                />
-              </div> */}
+          {/* Category Status Input */}
+          <Form.Item
+            label="Category Status"
+            name="category_status"
+            valuePropName="checked" // This allows handling the boolean value as a checkbox
+          >
+            <Switch
+              checked={form.getFieldValue("category_status") || true}
+              className='bg-red-500'
+            />
+          </Form.Item>
 
-              <Modal
-                title={
-                  selectedKey === null ? "Create category" : "Update category"
-                }
-                visible={modalVisible}
-                onOk={handleSaveCategories}
-                onCancel={() => setModalVisible(false)}
-                okText={selectedKey === null ? "Create" : "Update"}
-                width={800}
-                okButtonProps={{ style: { backgroundColor: "green" } }}
-              >
-                <Form {...formItemLayout} form={form}>
-                  {/* Category Type Input */}
-                  <Form.Item
-                    label="Category Type"
-                    name="category_type"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select the category type!",
-                      },
-                    ]}
-                  >
-                    <Select placeholder="Select category type">
-                      <Select.Option value="Products">Products</Select.Option>
-                      <Select.Option value="Services">Services</Select.Option>
-                    </Select>
-                  </Form.Item>
+          <hr className='mb-8' />
+          <Form.List name="subcategories" >
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, fieldKey, ...restField }) => (
+                  <div className='border-b mb-4'>
+                    <Form.Item
+                      key={key}
+                      label={`Name ${key + 1}`}
+                      {...restField}
+                      name={[name, "subcategory_name"]}
+                      fieldKey={[fieldKey, "subcategory_name"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter the subcategory name!",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <Form.Item
+                      key={key}
+                      label={`Description ${key + 1}`}
+                      {...restField}
+                      name={[name, "subcategory_description"]}
+                      fieldKey={[fieldKey, "subcategory_description"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter the subcategory name!",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </div>
+                ))}
 
-                  {/* Category Name Input */}
-                  <Form.Item
-                    label="Category Name"
-                    name="category_name"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the category name!",
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-
-                  {/* Category Description Input */}
-                  <Form.Item
-                    label="Category Description"
-                    name="category_description"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the category description!",
-                      },
-                    ]}
-                  >
-                    <Input.TextArea />
-                  </Form.Item>
-
-                  {/* Category Status Input */}
-                  <Form.Item
-                    label="Category Status"
-                    name="category_status"
-                    valuePropName="checked" // This allows handling the boolean value as a checkbox
-                  >
-                    <Switch
-                      checked={form.getFieldValue("category_status") || true}
-                    />
-                  </Form.Item>
-                </Form>
-              </Modal>
-
-              <Modal
-                title="Confirm Delete"
-                visible={DeletemodalVisibleRole}
-                onCancel={onCancel}
-                footer={[
-                  <Button key="cancel" onClick={onCancel}>
-                    Cancel
-                  </Button>,
+                <Form.Item wrapperCol={{ offset: 6, span: 14 }} className='flex  justify-center items-center'>
                   <Button
-                    key="delete"
-                    type="primary"
-                    danger
-                    onClick={() => onDelete(selectedKey)}
+                    type="dashed"
+                    onClick={() => add()}
+                    icon={<PlusOutlined />}
+                    className='flex justify-center items-center'
                   >
-                    Delete
-                  </Button>,
-                ]}
-              >
-                <p>
-                  Are you sure you want to delete this category{" "}
-                  <b>({`${DeleteRow?.category_name}`}) </b>?
-                </p>
-              </Modal>
+                    Add Subcategory
+                  </Button>
+                </Form.Item>
 
-              <Modal
-                title="Confirm Subcategory Delete"
-                visible={DeleteSubcategoryModal}
-                onCancel={onCancel}
-                footer={[
-                  <Button key="cancel" onClick={onCancel}>
-                    Cancel
-                  </Button>,
-                  <Button
-                    key="delete"
-                    type="primary"
-                    danger
-                    onClick={() => handleDeleteSubcategoryLogic(selectedKey)}
-                  >
-                    Delete
-                  </Button>,
-                ]}
-              >
-                <p>
-                  Are you sure you want to delete this category{" "}
-                  <b>({`${DeleteSubcat?.subcategory_name}`}) </b>?
-                </p>
-              </Modal>
+                {fields.length > 0 && (
+                  <Form.Item wrapperCol={{ offset: 6, span: 14 }}>
+                    <Button
+                      type="dashed"
+                      onClick={() => remove(fields.length - 1)}
+                      icon={<MinusCircleOutlined />}
+                      className='flex justify-center items-center'
 
-              <Modal
-                title="Edit Subcategory"
-                visible={editModalVisible}
-                onOk={handleUpdateSubcategory} // Implement the function to handle the update action
-                onCancel={() => setEditModalVisible(false)}
-                okText={selectedSubcategory ? "Update" : "Create"}
-                width={800}
-                okButtonProps={{ style: { backgroundColor: "green" } }}
-              >
-                <Form {...formItemLayout} form={form}>
-                  {/* Subcategory Name Input */}
-                  <Form.Item
-                    label="Subcategory Name"
-                    name="subcategory_name"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the subcategory name!",
-                      },
-                    ]}
-                  >
-                    <Input />
+                    >
+                      Remove Last Subcategory
+                    </Button>
                   </Form.Item>
+                )}
+              </>
+            )}
+          </Form.List>
+        </Form>
+      </Modal>
 
-                  {/* Subcategory Description Input */}
-                  <Form.Item
-                    label="Subcategory Description"
-                    name="subcategory_description"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the subcategory description!",
-                      },
-                    ]}
-                  >
-                    <Input.TextArea />
-                  </Form.Item>
+      <Modal
+        visible={Descp_modalVisible}
+        onCancel={() => setDescp_ModalVisible(false)}
+        footer={null}
+        width={600}
+        title="Description"
+      >
+        <Typography.Paragraph>
+          {selectedDescription}
+        </Typography.Paragraph>
+      </Modal>
 
-                </Form>
-              </Modal>
+      <Modal
+        visible={modalSubcategory}
+        onCancel={() => setModalSubcategories(false)}
+        footer={null}
+        width={600}
+        title="Subcategories"
+      >
+        <Table dataSource={selectedRow?.subcategories} columns={subcategory_columns} />
+      </Modal>
 
-              <Modal
-                visible={Descp_modalVisible}
-                onCancel={() => setDescp_ModalVisible(false)}
-                footer={null}
-                width={600}
-                title="Description"
-              >
-                <Typography.Paragraph>
-                  {selectedDescription}
-                </Typography.Paragraph>
-              </Modal>
+      <Modal
+        title="Upload Image"
+        visible={UploadImageButtonModal}
+        onCancel={onCancel}
+        footer={[
+          <Button key="cancel" onClick={onCancel}>
+            Cancel
+          </Button>,
+          <Button
+            key="upload"
+            type="default"
+            className="bg-green-500 text-white"
+            onClick={() => handleUploadImage()}
+            loading={CategoryLoading}
+          >
+            Upload
+          </Button>,
+        ]}
+      >
+        <Upload
+          name="category_image"
+          accept=".jpg,.png"
+          beforeUpload={handleBeforeUpload}
+          fileList={fileList}
 
-              <Modal
-                title="Upload Image"
-                visible={UploadImageButtonModal}
-                onCancel={onCancel}
-                footer={[
-                  <Button key="cancel" onClick={onCancel}>
-                    Cancel
-                  </Button>,
-                  <Button
-                    key="upload"
-                    type="default"
-                    className="bg-green-500 text-white"
-                    onClick={() => handleUploadImage()}
-                    loading={CategoryLoading}
-                  >
-                    Upload
-                  </Button>,
-                ]}
-              >
-                <Upload
-                  name="category_image"
-                  accept=".jpg,.png"
-                  beforeUpload={handleBeforeUpload}
-                  fileList={fileList}
-
-                  onRemove={handleDeleteImage}
-                  listType="picture"
-                >
-                  {fileList.length === 0 && (
-                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                  )}
-                </Upload>
-              </Modal>
-            </>
+          onRemove={handleDeleteImage}
+          listType="picture"
+        >
+          {fileList.length === 0 && (
+            <Button icon={<UploadOutlined />}>Click to Upload</Button>
           )}
-        </div>
-      )}
-    </>
+        </Upload>
+      </Modal>
+
+      <Modal
+        title="Confirm Delete"
+        visible={DeletemodalVisibleRole}
+        onCancel={onCancel}
+        footer={[
+          <Button key="cancel" onClick={onCancel}>
+            Cancel
+          </Button>,
+          <Button
+            key="delete"
+            type="primary"
+            danger
+            onClick={() => onDelete(selectedKey)}
+          >
+            Delete
+          </Button>,
+        ]}
+      >
+        <p>
+          Are you sure you want to delete this category{" "}
+          <b>({`${selectedRow?.category_name}`}) </b>?
+        </p>
+      </Modal>
+
+      <Modal
+        title="Confirm Subcategory Delete"
+        visible={DeleteSubcategoryModal}
+        onCancel={onCancel}
+        footer={[
+          <Button key="cancel" onClick={onCancel}>
+            Cancel
+          </Button>,
+          <Button
+            key="delete"
+            type="primary"
+            danger
+            onClick={() => handleDeleteSubcategoryLogic(selectedKey)}
+          >
+            Delete
+          </Button>,
+        ]}
+      >
+        <p>
+          Are you sure you want to delete this category{" "}
+          <b>({`${subselectedRow?.subcategory_name}`}) </b>?
+        </p>
+      </Modal>
+    </div>
   );
 };
 

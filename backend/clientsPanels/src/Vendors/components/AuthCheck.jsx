@@ -3,6 +3,7 @@ import { Modal } from 'antd';
 import { AdminUrl } from '../../Admin/constant';
 import Swal from 'sweetalert2';
 import axios from 'axios'
+import AccountApprovalPending from './AccountApprovalPending';
 
 const AuthCheck = ({ vendorDatastate }) => {
     const id = vendorDatastate?.[0]?.id;
@@ -150,6 +151,7 @@ const AuthCheck = ({ vendorDatastate }) => {
     const isMobileVerified = vendorDatastate?.[0]?.mobile_verification_status;
     const accountStatus = vendorDatastate?.[0]?.status;
 
+    console.log(accountStatus, 'acco');
     return (
         accountStatus === 1 || accountStatus === 4 ?
             <div className="flex justify-center items-center h-[80vh] bg-gray-50">
@@ -199,71 +201,71 @@ const AuthCheck = ({ vendorDatastate }) => {
                 </div>
             </div>
 
-            :
-            <div className="flex justify-center items-center h-[80vh] bg-gray-100">
-                <div className="w-4/5 md:w-2/3 bg-white p-8 rounded-lg shadow-md">
-                    <h1 className="text-4xl font-bold mb-8 text-center">Account Verification</h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {renderVerificationButton('email', 'Email', isEmailVerified, isMobileVerified)}
-                        {/* {renderVerificationButton('mobile', 'Mobile Number', isMobileVerified, isEmailVerified)} */}
+            : accountStatus !== 3 ? <AccountApprovalPending /> :
+                <div className="flex justify-center items-center h-[80vh] bg-gray-100">
+                    <div className="w-4/5 md:w-2/3 bg-white p-8 rounded-lg shadow-md">
+                        <h1 className="text-4xl font-bold mb-8 text-center">Account Verification</h1>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {renderVerificationButton('email', 'Email', isEmailVerified, isMobileVerified)}
+                            {/* {renderVerificationButton('mobile', 'Mobile Number', isMobileVerified, isEmailVerified)} */}
+                        </div>
                     </div>
+                    <Modal
+                        visible={otpModalOpen}
+                        onCancel={closeOtpModal}
+                        onOk={handleVerification}
+                        okText="Verify"
+                        okButtonProps={{
+                            style: {
+                                backgroundColor: '#2196F3',
+                                borderColor: '#2196F3',
+                                pointerEvents: verificationType === 'email'
+                                    ? emailOtpFields.every(field => field.length > 0) ? 'auto' : 'none'
+                                    : mobileOtpFields.every(field => field.length > 0) ? 'auto' : 'none',
+                            },
+                        }}
+                        closable={!verificationType ? true : (verificationType === 'email'
+                            ? !emailOtpFields.every(field => field.length > 0)
+                            : !mobileOtpFields.every(field => field.length > 0))}
+                        maskClosable={!verificationType ? true : (verificationType === 'email'
+                            ? !emailOtpFields.every(field => field.length > 0)
+                            : !mobileOtpFields.every(field => field.length > 0))}
+                    >
+                        <h2 className="text-xl font-semibold mb-4">{`${verificationType === 'email' ? 'Email' : 'Mobile'} Verification`}</h2>
+                        <p className="text-gray-600 mb-6">
+                            {`Please enter the 4-digit OTP sent to your ${verificationType === 'email' ? 'email' : 'mobile'} address.`}
+                        </p>
+                        <div className="flex justify-center">
+                            {verificationType === 'email' ? (
+                                emailOtpFields.map((otp, index) => (
+                                    <input
+                                        key={index}
+                                        ref={(ref) => (emailOtpInputRefs.current[index] = ref)}
+                                        type="text"
+                                        value={otp}
+                                        onChange={(e) => handleOtpChange('email', index, e.target.value)}
+                                        className="border rounded-md px-3 py-2 w-12 text-center mx-1"
+                                        maxLength={1}
+                                        disabled={index !== 0}
+                                    />
+                                ))
+                            ) : (
+                                mobileOtpFields.map((otp, index) => (
+                                    <input
+                                        key={index}
+                                        ref={(ref) => (mobileOtpInputRefs.current[index] = ref)}
+                                        type="text"
+                                        value={otp}
+                                        onChange={(e) => handleOtpChange('mobile', index, e.target.value)}
+                                        className="border rounded-md px-3 py-2 w-12 text-center mx-1"
+                                        maxLength={1}
+                                        disabled={index !== 0}
+                                    />
+                                ))
+                            )}
+                        </div>
+                    </Modal>
                 </div>
-                <Modal
-                    visible={otpModalOpen}
-                    onCancel={closeOtpModal}
-                    onOk={handleVerification}
-                    okText="Verify"
-                    okButtonProps={{
-                        style: {
-                            backgroundColor: '#2196F3',
-                            borderColor: '#2196F3',
-                            pointerEvents: verificationType === 'email'
-                                ? emailOtpFields.every(field => field.length > 0) ? 'auto' : 'none'
-                                : mobileOtpFields.every(field => field.length > 0) ? 'auto' : 'none',
-                        },
-                    }}
-                    closable={!verificationType ? true : (verificationType === 'email'
-                        ? !emailOtpFields.every(field => field.length > 0)
-                        : !mobileOtpFields.every(field => field.length > 0))}
-                    maskClosable={!verificationType ? true : (verificationType === 'email'
-                        ? !emailOtpFields.every(field => field.length > 0)
-                        : !mobileOtpFields.every(field => field.length > 0))}
-                >
-                    <h2 className="text-xl font-semibold mb-4">{`${verificationType === 'email' ? 'Email' : 'Mobile'} Verification`}</h2>
-                    <p className="text-gray-600 mb-6">
-                        {`Please enter the 4-digit OTP sent to your ${verificationType === 'email' ? 'email' : 'mobile'} address.`}
-                    </p>
-                    <div className="flex justify-center">
-                        {verificationType === 'email' ? (
-                            emailOtpFields.map((otp, index) => (
-                                <input
-                                    key={index}
-                                    ref={(ref) => (emailOtpInputRefs.current[index] = ref)}
-                                    type="text"
-                                    value={otp}
-                                    onChange={(e) => handleOtpChange('email', index, e.target.value)}
-                                    className="border rounded-md px-3 py-2 w-12 text-center mx-1"
-                                    maxLength={1}
-                                    disabled={index !== 0}
-                                />
-                            ))
-                        ) : (
-                            mobileOtpFields.map((otp, index) => (
-                                <input
-                                    key={index}
-                                    ref={(ref) => (mobileOtpInputRefs.current[index] = ref)}
-                                    type="text"
-                                    value={otp}
-                                    onChange={(e) => handleOtpChange('mobile', index, e.target.value)}
-                                    className="border rounded-md px-3 py-2 w-12 text-center mx-1"
-                                    maxLength={1}
-                                    disabled={index !== 0}
-                                />
-                            ))
-                        )}
-                    </div>
-                </Modal>
-            </div>
     );
 };
 

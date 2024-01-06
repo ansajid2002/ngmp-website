@@ -999,8 +999,11 @@ app.get('/getAddressForAdminBackend', async (req, res) => {
       return res.json([]);
     }
 
-    // Fetch unique customer_ids from the addresses
-    const uniqueCustomerIds = [...new Set(addressData.map((address) => address.customer_id))];
+    console.log(addressData);
+
+    // Fetch unique customer_ids from the addresses, excluding undefined values
+    const uniqueCustomerIds = [...new Set(addressData.map((address) => address?.customer_id).filter((id) => id !== undefined))];
+
 
     // Fetch customer details for each unique customer_id
     const customerDataPromises = uniqueCustomerIds.map(async (customerId) => {
@@ -1011,26 +1014,29 @@ app.get('/getAddressForAdminBackend', async (req, res) => {
     // Wait for all customer data promises to resolve
     const customerDataArray = await Promise.all(customerDataPromises);
     // Combine customer information with addresses
-    const result = customerDataArray.map((customerData) => {
-      const customerId = customerData.customer_id;
-      return {
-        id: customerId,
-        given_name: customerData.given_name,
-        family_name: customerData.family_name,
-        addresses: addressData
-          .filter((address) => address.customer_id === customerId)
-          .map((address) => ({
-            address_id: address.address_id,
-            apt_address: address.apt_address,
-            subregion_address: address.subregion_address,
-            city_address: address.city_address,
-            country_address: address.country_address,
-            region_address: address.region_address,
-            zip_address: address.zip_address,
-            phone_address: address.phone_address,
-          })),
-      };
-    });
+    const result = customerDataArray
+      .filter((customerData) => customerData?.customer_id !== undefined)
+      .map((customerData) => {
+        const customerId = customerData?.customer_id;
+        return {
+          id: customerId,
+          given_name: customerData.given_name,
+          family_name: customerData.family_name,
+          addresses: addressData
+            .filter((address) => address.customer_id === customerId)
+            .map((address) => ({
+              address_id: address.address_id,
+              apt_address: address.apt_address,
+              subregion_address: address.subregion_address,
+              city_address: address.city_address,
+              country_address: address.country_address,
+              region_address: address.region_address,
+              zip_address: address.zip_address,
+              phone_address: address.phone_address,
+            })),
+        };
+      });
+
 
     // Return the result as JSON
     res.json(result);

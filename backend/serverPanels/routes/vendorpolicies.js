@@ -3,6 +3,7 @@ const app = express();
 const pool = require('../config')
 const cors = require('cors');
 const multer = require('multer');
+const cheerio = require('cheerio');
 
 app.use(express.json())
 app.use(cors())
@@ -20,10 +21,58 @@ try {
     console.log(vendor_id,"vendor_id");
 
      const result = await pool.query(query,values)
-     res.status(200).json({data:result.rows})
+     res.status(200).json(result.rows)
 } catch (error) {
     console.log(error,"error getting vendor policies");
+}})
+
+
+function convertHtmlToReactNative(htmlCode) {
+  const $ = cheerio.load(htmlCode);
+  
+  // Get all text content from the HTML and append space after each tag
+  let textContent = '';
+  $('body').contents().each((index, element) => {
+    if (element.type === 'text') {
+      textContent += $(element).text().trim();
+    } else {
+      textContent += '\n' + $(element).text().trim() + ' ';
+    }
+  });
+
+  // Wrap the content in <View><Text>...</Text></View>
+  const reactNativeCode = `${textContent.trim()}`;
+
+  return reactNativeCode;
 }
+
+
+
+// app.get("/getpoliciesofAppbyVendorid",async(req,res) => {
+//   const {vendor_id}= req.query
+
+// try {
+//   const query = "SELECT * FROM vendorpolicies WHERE vendor_id = $1"
+//   const values=[vendor_id]
+//   console.log(vendor_id,"vendor_id");
+
+//    const result = await pool.query(query,values)
+//    console.log(result.rows,"RESULT>ROWS");
+//    const convertedData = result.rows.map(item => {
+//     const newItem = { ...item };
+//     for (const key in newItem) {
+//       if (typeof newItem[key] === 'string' && newItem[key].trim().startsWith('<')) {
+//         newItem[key] = convertHtmlToReactNative(newItem[key]);
+//       }
+//     }
+//     return newItem;
+//   });
+//   console.log(convertedData,"converteddata from log");
+//    res.status(200).json(convertedData)
+
+// } catch (error) {
+//   console.log(error,"error getting vendor policies");
+// }})
 
 // Update shipping information or insert new row if vendor_id doesn't exist
 app.post("/updateShippingInfo", async (req, res) => {
@@ -154,7 +203,6 @@ app.post("/updateBusinessPolicy", async (req, res) => {
     
 
    
-})
 
 
 
