@@ -21,6 +21,7 @@ import {
   Typography,
   Pagination,
   Popconfirm,
+  notification,
 } from "antd";
 
 const { Step } = Steps;
@@ -115,7 +116,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   const handleConditionChange = (value) => {
     setConditionToggle(value);
   };
-  console.log(conditionToggle, additionalInfo, 'conditionToggle');
+  console.log(categories);
 
   const handleAdditionalInfoChange = (e) => {
     setAdditionalInfo(`${e.target.value}`
@@ -462,17 +463,16 @@ const VendorProducts = ({ vendorDatastate }) => {
       },
     },
     {
-      title: "SKUID",
+      title: "SKU",
       dataIndex: "skuid",
       key: "skuid",
-      editable: true,
+      width: 200,
       render: (skuid, record) => {
         // Check if the product is a variant
         if (record.isvariant === "Variant") {
           // Filter variantsFetchFinal based on SelectedUniqueid
           const filteredVariants = variantsFetchFinal.filter(
-            (variant) =>
-              parseInt(variant.product_uniqueid, 10) === record.uniquepid
+            (variant) => parseInt(variant.product_uniqueid, 10) === record.uniquepid
           );
 
           return (
@@ -491,15 +491,27 @@ const VendorProducts = ({ vendorDatastate }) => {
             </>
           );
         } else {
-          return skuid; // Render the SKUID as it is for non-variant products
+          return (
+            <>
+              <p>{skuid}</p>
+              <Button
+                type="link"
+                icon={<EditOutlined />}
+                onClick={() => handleEditClickCatChange(record, 'skuid')}
+              />
+            </>
+          ); // Render the SKUID as it is for non-variant products
         }
       },
+
     },
 
     {
       title: "PRODUCT NAME",
       dataIndex: "ad_title",
       key: "ad_title",
+      width: 200,
+
       render: (ad_title) => (
         <Tooltip title={ad_title}>
           <div
@@ -519,6 +531,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       title: "DESCRIPTION",
       dataIndex: "additionaldescription",
       key: "additionaldescription",
+      width: 200,
       render: (additionaldescription, record) => (
         <Tooltip title={additionaldescription}>
           <div
@@ -538,6 +551,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       title: "IMAGES",
       dataIndex: "images",
       key: "images",
+      width: 200,
       render: (images) => (
         <div>
           <Image.PreviewGroup>
@@ -564,7 +578,95 @@ const VendorProducts = ({ vendorDatastate }) => {
       ),
     },
     {
-      title: "PRICE",
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+      width: 200,
+
+      render: (quantity, record) => (
+        <Tooltip title={quantity}>
+          <div
+            style={{
+              maxWidth: "150px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {quantity}
+          </div>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEditClickCatChange(record, 'quantity')}
+          />
+        </Tooltip>
+      ),
+    },
+    {
+      title: "MRP",
+      dataIndex: "mrp",
+      key: "mrp",
+      width: 200,
+      render: (mrp, record) => {
+        if (record.isvariant === "Variant") {
+          const filteredVariants = variantsFetchFinal
+            .filter(
+              (variant) =>
+                parseInt(variant.product_uniqueid) === record.uniquepid
+            )
+            .sort(
+              (a, b) =>
+                parseFloat(a?.variant_mrp) -
+                parseFloat(b?.variant_mrp)
+            );
+          return (
+            <Tooltip
+              title={`${record.currency_symbol === 'USD' && '$'} ${filteredVariants[0]?.variant_mrp
+                } -  ${record.currency_symbol === 'USD' && '$'} ${filteredVariants[filteredVariants.length - 1]
+                  ?.variant_mrp
+                }`}
+            >
+              <div className="w-[150px]">
+                <span className="font-semibold text-[12px]">
+                  {record.currency_symbol === 'USD' && '$'}{" "}
+                  {filteredVariants[0]?.variant_mrp}
+                </span>
+                <span> - </span>
+                <span className="font-medium">
+                  {record.currency_symbol === 'USD' && '$'}{" "}
+                  {
+                    filteredVariants[filteredVariants.length - 1]
+                      ?.variant_mrp
+                  }
+                </span>
+              </div>
+            </Tooltip>
+          );
+        } else {
+          return (
+            <Tooltip
+              title={`${record.currency_symbol === 'USD' && '$'} MRP: ${mrp} - Selling Price: ${record.currency_symbol === 'USD' && '$'} ${record.sellingprice}`}
+            >
+              <div className="w-[150px] flex items-center">
+                <span className="font-medium">
+                  MRP: {record.currency_symbol === 'USD' && '$'} {record.mrp}
+                </span>
+                <Button
+                  type="link"
+                  icon={<EditOutlined />}
+                  onClick={() => handleEditClickCatChange(record, 'mrp')}
+                />
+              </div>
+            </Tooltip>
+          );
+
+        }
+      },
+      sorter: (a, b) => parseFloat(a.mrp) - parseFloat(b.mrp),
+    },
+    {
+      title: "Sell Price",
       dataIndex: "mrp",
       key: "mrp",
       width: 200,
@@ -582,19 +684,19 @@ const VendorProducts = ({ vendorDatastate }) => {
             );
           return (
             <Tooltip
-              title={`${record.currency_symbol} ${filteredVariants[0]?.variant_sellingprice
-                } -  ${record.currency_symbol} ${filteredVariants[filteredVariants.length - 1]
+              title={`${record.currency_symbol === 'USD' && '$'} ${filteredVariants[0]?.variant_sellingprice
+                } -  ${record.currency_symbol === 'USD' && '$'} ${filteredVariants[filteredVariants.length - 1]
                   ?.variant_sellingprice
                 }`}
             >
               <div className="w-[150px]">
                 <span className="font-semibold text-[12px]">
-                  {record.currency_symbol}{" "}
+                  {record.currency_symbol === 'USD' && '$'}{" "}
                   {filteredVariants[0]?.variant_sellingprice}
                 </span>
                 <span> - </span>
                 <span className="font-medium">
-                  {record.currency_symbol}{" "}
+                  {record.currency_symbol === 'USD' && '$'}{" "}
                   {
                     filteredVariants[filteredVariants.length - 1]
                       ?.variant_sellingprice
@@ -606,15 +708,21 @@ const VendorProducts = ({ vendorDatastate }) => {
         } else {
           return (
             <Tooltip
-              title={`${record.currency_symbol} MRP: ${mrp} - Selling Price: ${record.currency_symbol} ${record.sellingprice}`}
+              title={`${record.currency_symbol === 'USD' && '$'} MRP: ${mrp} - Selling Price: ${record.currency_symbol === 'USD' && '$'} ${record.sellingprice}`}
             >
-              <div className="w-[150px]">
+              <div className="w-[150px] flex items-center">
                 <span className="font-medium">
-                  SP: {record.currency_symbol} {record.sellingprice}
+                  SP: {record.currency_symbol === 'USD' && '$'} {record.sellingprice}
                 </span>
+                <Button
+                  type="link"
+                  icon={<EditOutlined />}
+                  onClick={() => handleEditClickCatChange(record, 'sellingprice')}
+                />
               </div>
             </Tooltip>
           );
+
         }
       },
       sorter: (a, b) => parseFloat(a.mrp) - parseFloat(b.mrp),
@@ -623,8 +731,18 @@ const VendorProducts = ({ vendorDatastate }) => {
       title: "BRAND",
       dataIndex: "brand",
       key: "brand",
+      width: 200,
       sorter: (a, b) => a.brand.localeCompare(b.brand),
-      render: (brand) => <Tooltip title={brand}>{brand}</Tooltip>,
+      render: (_, record) => (
+        <>
+          <p>{record.brand}</p>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEditClickCatChange(record, 'brand')}
+          />
+        </>
+      ),
       filters: allBrandValues.map((brand) => ({
         text: brand,
         value: brand,
@@ -635,6 +753,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       title: "CONDITION",
       dataIndex: "condition",
       key: "condition",
+      width: 100,
       onFilter: (value, record) => record.condition === value,
       sorter: (a, b) => a.condition.localeCompare(b.condition),
       render: (condition) => <Tooltip title={condition}>{condition}</Tooltip>,
@@ -647,6 +766,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       title: "COUNTRY",
       dataIndex: "country",
       key: "country",
+      width: 100,
       render: (country) => (
         <Tooltip title={country}>
           <div
@@ -666,27 +786,53 @@ const VendorProducts = ({ vendorDatastate }) => {
       title: "CATEGORY",
       dataIndex: "category",
       key: "category",
-
+      width: 200,
       filters: allCategoryValues.map((category) => ({
         text: category,
         value: category,
       })),
       onFilter: (value, record) => record.category === value,
+      render: (text, record) => (
+        <span>
+          {text}
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEditClickCatChange(record, 'category')}
+          >
+            Edit
+          </Button>
+        </span>
+      ),
     },
     {
       title: "SUBCATEGORY",
       dataIndex: "subcategory",
+      width: 200,
       key: "subcategory",
       filters: allSubcategoryValues.map((subcategory) => ({
         text: subcategory,
         value: subcategory,
       })),
       onFilter: (value, record) => record.subcategory === value,
+      render: (text, record) => (
+        <span>
+          {text}
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEditClickCatChange(record, 'subcategory')}
+          >
+            Edit
+          </Button>
+        </span>
+      ),
     },
     {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
+      width: 200,
       render: (status, record) => {
         let icon, color;
         switch (status) {
@@ -734,6 +880,78 @@ const VendorProducts = ({ vendorDatastate }) => {
     },
 
   ];
+
+  const handleEditClickCatChange = async (record, type) => {
+    // Get the current category value
+
+    const optionsArray = type === 'category' ? categories : subcategories;
+    const currentValue =
+      type === 'category' ? record.category :
+        type === 'subcategory' ? record.subcategory :
+          type === 'mrp' ? record.mrp :
+            type === 'sellingprice' ? record.sellingprice :
+              type === 'brand' ? record.brand :
+                type === 'skuid' ? record.skuid :
+                  type === 'quantity' ? record.quantity :
+                    ''; // Add a default value if none of the conditions match
+
+    const categoryOptions = {};
+    optionsArray.forEach((option) => {
+      categoryOptions[option[type + '_name']] = option[type + '_name'];
+    });
+
+    // Open a Swal alert with an input field and a default value
+    const { value: newValue } = await Swal.fire({
+      title: `Edit ${type === 'category' ? 'Category' : type === 'subcategory' ? 'Subcategory' : 'Value'} `,
+      input: type === 'category' || type === 'subcategory' ? 'select' : 'text',
+      inputValue: currentValue,
+      inputOptions: type === 'category' || type === 'subcategory' ? categoryOptions : currentValue,
+      showCancelButton: true,
+      confirmButtonText: 'Save',
+    });
+
+    if (newValue !== undefined) {
+      try {
+        const response = await fetch(`${AdminUrl}/api/vendorCatChange`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            recordId: record.id, // Assuming key is the unique identifier for the record
+            newValue,
+            type,
+          }),
+        });
+
+        if (response.ok) {
+          // Handle success response from the backend
+          console.log('Category updated successfully');
+          notification.success({ message: `Updated ${newValue} in ${type}` });
+          const updatedProducts = products.map((product) => {
+            if (product.id === record.id) {
+              return {
+                ...product,
+                [type]: newValue,
+              };
+            }
+            return product;
+          });
+
+          // Assuming products is a state variable, update it with the new array
+          setProducts(updatedProducts);
+        } else {
+          const errorDta = await response.json()
+          // Handle error response from the backend
+          console.error('Error updating category:', response.statusText);
+          notification.error({ message: errorDta.message });
+        }
+      } catch (error) {
+        // Handle fetch or network error
+        console.error('Error updating category:', error);
+      }
+    }
+  };
 
   const handleVariantShowModal = (id, variants) => {
     setRowVariants(variants);
@@ -1941,11 +2159,10 @@ const VendorProducts = ({ vendorDatastate }) => {
   };
 
   const bulkEditOptions = [
-    'SKU',
     'Quantity',
-    'Product Name',
     'Description',
     'Price',
+    'Sell Price',
     'Brand',
     'Condition',
   ];
@@ -1959,10 +2176,91 @@ const VendorProducts = ({ vendorDatastate }) => {
       return selectedRowKeys.includes(parseInt(product.id));
     });
 
-    setSelectedRowProduct(filteredProducts)
+    setSelectedRowProduct(filteredProducts);
 
-    showBulkEditOption(true);
+    console.log(values);
+    // Open a Swal alert with a dropdown for bulk editing options
+    Swal.fire({
+      title: 'Bulk Edit Options',
+      html: `
+        <div>
+          ${values === 'Description' ? '<textarea id="bulkEditOption" class="swal2-input"></textarea>' : '<input id="bulkEditOption" class="swal2-input" />'}
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Apply',
+      width: 1000,
+      preConfirm: () => {
+        const selectedOption = document.getElementById('bulkEditOption').value;
+        // Handle the selected bulk edit option
+        handleBulkEditOption(selectedOption, values);
+      }
+    });
+
   }
+
+  const handleBulkEditOption = async (selectedOption, values) => {
+    let updateCol = ''
+    if (values === 'Description') {
+      updateCol = 'additionaldescription'
+    } else if (values === 'Quantity') {
+      updateCol = 'quantity'
+    } else if (values === 'Price') {
+      updateCol = 'mrp'
+    } else if (values === 'Sell Price') {
+      updateCol = 'sellingprice'
+    } else if (values === 'Brand') {
+      updateCol = 'brand'
+    } else if (values === 'Condition') {
+      updateCol = 'condition'
+    }
+    try {
+      // Assuming you have the backend URL stored in a variable named 'backendUrl'
+      const response = await fetch(`${AdminUrl}/api/bulkEditProduct`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selectedRowKeys,
+          selectedOption,
+          column: values,
+        }),
+      });
+
+      if (response.ok) {
+        // Handle success response from the backend
+        console.log('Bulk edit successful');
+
+        // Assuming products is a state variable, update it with the new data
+        const updatedProducts = products.map((product) => {
+          if (selectedRowKeys.includes(product.id)) {
+            // Update only the selected products
+            return {
+              ...product,
+              [updateCol]: selectedOption, // Assuming values is the column name
+            };
+          }
+          return product;
+        });
+
+        // Update the state variable with the modified data
+        setProducts(updatedProducts);
+        setSelectedRowKeys([])
+
+        // Perform any other actions based on success
+      } else {
+        // Handle error response from the backend
+        console.error('Error in bulk edit:', response.statusText);
+        // Perform any other actions based on error
+      }
+    } catch (error) {
+      // Handle fetch or network error
+      console.error('Error in bulk edit:', error);
+      // Perform any other actions based on error
+    }
+  };
+
 
   const handleSave = () => {
     // Handle save logic here
@@ -2316,7 +2614,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             maskStyle={{ backgroundColor: "rgba(255, 255, 255, 0.95)" }}
             className="rounded-none absolute p-0"
           >
-            <Steps current={currentStep} onChange={onChange}>
+            <Steps current={currentStep} onChange={onChange} >
               {steps.map((step) => (
                 <Step key={step.title} title={step.title} />
               ))}

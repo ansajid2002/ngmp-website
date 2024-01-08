@@ -483,7 +483,8 @@ app.get("/api/allStaff", async (req, res) => {
 // Add Vendor Details
 app.post("/api/addVendorstoDb", async (req, res) => {
   try {
-    let { country_code, mobile_number, email, vendorname, password = '' } = req.body;
+    let { country_code, mobile_number, email, vendorname, vendor_username, password = '' } = req.body;
+
     // Check if the table exists
     const tableExists = await checkTableExists();
 
@@ -492,15 +493,15 @@ app.post("/api/addVendorstoDb", async (req, res) => {
       await createTable();
     }
 
-    // Check if email already exists
-    const emailExistsQuery = "SELECT * FROM vendors WHERE email = $1";
-    const emailExistsResult = await pool.query(emailExistsQuery, [email]);
+    // Check if email or vendor_username already exists
+    const emailExistsQuery = "SELECT * FROM vendors WHERE email = $1 OR vendor_username = $2";
+    const emailExistsResult = await pool.query(emailExistsQuery, [email, vendor_username]);
 
     if (emailExistsResult.rows.length > 0) {
-      return res.status(400).json({ error: "Email already exists" });
+      return res.status(400).json({ error: "Email or Vendor Username already exists" });
     }
 
-    // Generate a random password
+    // Generate a random password if not provided
     if (password === '') {
       password = generateRandomPassword(8);
     }
@@ -513,13 +514,14 @@ app.post("/api/addVendorstoDb", async (req, res) => {
 
     // Store the data in PostgreSQL with status set to false and current date
     const insertQuery =
-      "INSERT INTO vendors (country_code, mobile_number, email, vendorname, password, registration_date, mobile_verification_status, email_verification_status, email_otp, mobile_otp) VALUES ($1, $2, $3, $4, $5, $6, false, false, 2412, 3218) RETURNING id";
+      "INSERT INTO vendors (country_code, mobile_number, email, vendorname, vendor_username, password, registration_date, mobile_verification_status, email_verification_status, email_otp, mobile_otp) VALUES ($1, $2, $3, $4, $5, $6, $7, false, false, 2412, 3218) RETURNING id";
 
     const result = await pool.query(insertQuery, [
       country_code,
       mobile_number,
       email,
       vendorname,
+      vendor_username,
       hashedPassword,
       currentDate,
     ]);
@@ -529,15 +531,16 @@ app.post("/api/addVendorstoDb", async (req, res) => {
     // Send the welcome email to the vendor
     const subject = 'Welcome to our system - Nile Market-place';
     const body = `
-      <p>Hello ${vendorname},</p>
-      <p>Thank you for creating an account. Here are your login details:</p>
-      <ul>
-        <li><strong>Email:</strong> ${email}</li>
-        <li><strong>Password:</strong> ${password}</li>
-      </ul>
-      <p>Please keep this information secure.</p>
-      <p>Best regards,<br>Nile Market-place</p>
-    `;
+        <p>Hello ${vendorname},</p>
+        <p>Thank you for creating an account. Here are your login details:</p>
+        <ul>
+          <li><strong>Email:</strong> ${email}</li>
+          <li><strong>Username:</strong> ${vendor_username}</li>
+          <li><strong>Password:</strong> ${password}</li>
+        </ul>
+        <p>Please keep this information secure.</p>
+        <p>Best regards,<br>Nile Market-place</p>
+      `;
 
     await sendEmail(email, subject, body);
 
@@ -549,15 +552,62 @@ app.post("/api/addVendorstoDb", async (req, res) => {
 });
 
 
+function generateOTP() {
+  const length = 4; // You can adjust the length of the OTP
+  const digits = '0123456789';
+  let OTP = '';
+
+  for (let i = 0; i < length; i++) {
+    const index = Math.floor(Math.random() * digits.length);
+    OTP += digits[index];
+  }
+
+  return OTP;
+}
+
 // Update Vendors Details
 app.post("/api/updateVendorDb", async (req, res) => {
   try {
     const { selectedKey } = req.body;
     const {
+      email,
+      vendorname,
+    } = req.body.values;
+    // Generate and update OTP
+    const otp = generateOTP(); // Implement your OTP generation logic
+    const updateOtpQuery = "UPDATE vendors SET email_otp = $1 WHERE id = $2";
+    await pool.query(updateOtpQuery, [otp, selectedKey]);
+
+    // Send the OTP email to the vendor
+    const subject = 'OTP for Vendor Update - Nile Market-place';
+    const otpBody = `
+      <p>Hello ${vendorname},</p>
+      <p>Your OTP for updating your vendor information is: <strong>${otp}</strong></p>
+      <p>Please use this OTP to verify and complete the update process.</p>
+      <p>Best regards,<br>Nile Market-place</p>
+    `;
+
+    await sendEmail(email, subject, otpBody);
+
+    // await pool.query(updateQuery, updateParams);
+    // client.release();
+
+    res.status(200).json({ message: "Check" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/updateVendorDataWithOtp", async (req, res) => {
+  try {
+    const {
       country_code,
       mobile_number,
       email,
       vendorname,
+      vendor_username,
+      password,
       brand_name,
       business_model,
       bank_name,
@@ -567,8 +617,33 @@ app.post("/api/updateVendorDb", async (req, res) => {
       bank_branch,
       bank_swift_code,
     } = req.body.values;
+    const { selectedKey, otp } = req.body;
+
 
     const client = await pool.connect();
+
+    // Check if the provided vendor_username already exists
+    const checkUsernameQuery = 'SELECT id FROM vendors WHERE vendor_username = $1 AND id != $2';
+    const checkUsernameValues = [vendor_username, selectedKey];
+    const usernameResult = await client.query(checkUsernameQuery, checkUsernameValues);
+
+    if (usernameResult.rows.length > 0) {
+      // Vendor username already exists for another vendor
+      client.release();
+      return res.status(400).json({ error: "Vendor username already exists." });
+    }
+
+    // Verify the provided OTP
+    const checkOtpQuery = 'SELECT email_otp FROM vendors WHERE id = $1';
+    const checkOtpValues = [selectedKey];
+    const otpResult = await client.query(checkOtpQuery, checkOtpValues);
+
+    if (otpResult.rows.length === 0 || otpResult.rows[0].email_otp !== otp) {
+      // Incorrect OTP
+      client.release();
+      return res.status(400).json({ error: "Incorrect OTP. Please try again." });
+    }
+
     const updateParams = [];
 
     let updateQuery = `
@@ -578,6 +653,13 @@ app.post("/api/updateVendorDb", async (req, res) => {
 
     if (country_code != null || country_code != undefined) {
       updateQuery += " country_code = $" + updateParams.push(country_code);
+    }
+
+    // Check if password is provided before adding to the updateQuery
+    if (password != null || password != undefined) {
+      const hashedPassword = await bcrypt.hash(password, 10); // 10 is the saltRounds
+
+      updateQuery += ", password = $" + updateParams.push(hashedPassword);
     }
 
     if (mobile_number != null || mobile_number != undefined) {
@@ -590,6 +672,10 @@ app.post("/api/updateVendorDb", async (req, res) => {
 
     if (vendorname != null || vendorname != undefined) {
       updateQuery += ", vendorname = $" + updateParams.push(vendorname);
+    }
+
+    if (vendor_username != null || vendor_username != undefined) {
+      updateQuery += ", vendor_username = $" + updateParams.push(vendor_username);
     }
 
     if (brand_name != null || brand_name != undefined) {
@@ -630,52 +716,65 @@ app.post("/api/updateVendorDb", async (req, res) => {
 
     updateQuery += " WHERE id = $" + updateParams.push(selectedKey);
 
-    await client.query(updateQuery, updateParams);
-    client.release();
+    await pool.query(updateQuery, updateParams);
 
-    res.status(200).json({ message: "Vendor data updated successfully" });
+    res.status(200).json({ message: "Vendor Updated" });
+
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-});
+})
 
 app.get("/api/allVendors", async (req, res) => {
   try {
-    // Get start and end indices from query parameters, defaulting to all vendors if not provided
-    const { start, end } = req.query;
+    // Get pageNumber and pageSize from query parameters, defaulting to all vendors if not provided
+    const { pageNumber, pageSize } = req.query;
     let queryParameters = [];
 
-    if (start && end) {
+    if (pageNumber && pageSize) {
+      // Convert pageNumber and pageSize to integers
+      const pageNum = parseInt(pageNumber);
+      const size = parseInt(pageSize);
 
-      // Convert start and end to integers
-      const startIndex = parseInt(start);
-      const endIndex = parseInt(end);
-
-      // Validate the indices
-      if (isNaN(startIndex) || isNaN(endIndex) || startIndex < 0 || endIndex < startIndex) {
-        return res.status(400).json({ error: "Invalid start or end indices" });
+      // Validate pageNumber and pageSize
+      if (isNaN(pageNum) || isNaN(size) || pageNum < 1 || size < 1) {
+        return res.status(400).json({ error: "Invalid pageNumber or pageSize" });
       }
+
+      // Calculate start and end indices based on pageNumber and pageSize
+      const startIndex = (pageNum - 1) * size;
+      const endIndex = startIndex + size - 1;
 
       // Construct the SQL query with LIMIT
       queryParameters = [endIndex - startIndex + 1, startIndex];
     }
 
-    // Construct the SQL query
+    // Construct the SQL query to get paginated vendors
     const getAllVendorsQuery = `SELECT * FROM vendors${queryParameters.length > 0 ? ' LIMIT $1 OFFSET $2' : ''}`;
-    const result = await pool.query(getAllVendorsQuery, queryParameters);
+    const resultVendors = await pool.query(getAllVendorsQuery, queryParameters);
 
     // Extract the vendors from the result
-    const vendors = result.rows;
+    const vendors = resultVendors.rows;
 
     // Remove the 'password' field from each vendor
     const vendorsWithoutPassword = vendors.map(({ password, ...rest }) => rest);
-    res.status(200).json({ vendors: vendorsWithoutPassword });
+
+    // Construct the SQL query to get the total count of vendors
+    const getCountQuery = 'SELECT COUNT(*) FROM vendors';
+    const resultCount = await pool.query(getCountQuery);
+
+    // Extract the total count from the result
+    const totalCount = parseInt(resultCount.rows[0].count);
+
+    res.status(200).json({ vendors: vendorsWithoutPassword, totalCount });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 
 
 

@@ -1,110 +1,91 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from "react-router-dom"
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AdminUrl, adminData, links } from '../constant';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
+import { Form, Input, Button, Checkbox, Image } from 'antd';
 
 const Login = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const [adminLoginData, setadminLoginData] = useState(null);
     const [filteredLinks, setfilteredLinks] = useState([]);
     const [error, seterror] = useState(false);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
+    const onFinish = async (values) => {
+        const { email, password } = values;
+        setLoading(true);
 
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        // Send the email and password to the Node.js server
         try {
             const response = await fetch(`${AdminUrl}/api/superadminLogin`, {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     email,
-                    password
-                })
+                    password,
+                }),
             });
 
             const data = await response.json();
-            if (data?.status == 200) {
+            if (data?.status === 200) {
                 Cookies.set('adminData', data.data.loggedId);
-                let timerInterval
+                let timerInterval;
                 Swal.fire({
                     title: 'Logged Successfully',
                     icon: 'success',
                     timer: 2000,
                     timerProgressBar: true,
                     didOpen: () => {
-                        Swal.showLoading()
+                        Swal.showLoading();
                         timerInterval = setInterval(() => {
-                            window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404'
-                        }, 1500)
+                            window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404';
+                        }, 1500);
                     },
                     willClose: () => {
-                        clearInterval(timerInterval)
-                    }
-                })
+                        clearInterval(timerInterval);
+                    },
+                });
             } else if (data?.error) {
                 Swal.fire({
                     title: 'Internal Server Error..',
                     icon: 'error',
                     timer: 2000,
                     timerProgressBar: true,
-                })
+                });
             } else {
-                let timerInterval
+                let timerInterval;
                 Swal.fire({
                     title: 'Invalid Credentails',
                     icon: 'error',
                     timer: 2000,
                     timerProgressBar: true,
                     didOpen: () => {
-                        Swal.showLoading()
+                        Swal.showLoading();
                         timerInterval = setInterval(() => {
                             // window.location.href = '/Admin'
-                        }, 1000)
+                        }, 1000);
                     },
                     willClose: () => {
-                        clearInterval(timerInterval)
-                    }
-                })
+                        clearInterval(timerInterval);
+                    },
+                });
             }
         } catch (err) {
             console.log(err);
+        } finally {
+            setLoading(false);
         }
-
     };
 
-    useEffect(() => {
-        const AdminData = async () => {
-            try {
-                const jsondata = await adminData();
-                console.log(jsondata);
-                if (jsondata?.error) {
-                    seterror(true)
-                } else if (jsondata && jsondata?.length > 0) {
-                    setadminLoginData(jsondata);
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    };
 
-                }
-
-            } catch (err) {
-                console.log(err);
-                seterror(true)
-            }
-        }
-
-        const filteredLinks =
+    const getFilteredLinks = () => {
+        return (
             adminLoginData?.[0]?.role_id?.length > 0
                 ? links[0].links?.flatMap((link) => {
                     if (adminLoginData[0].role_id.includes(link.id)) {
@@ -112,109 +93,79 @@ const Login = () => {
                     }
                     return null;
                 }).filter((toValue) => toValue !== null)
-                : [];
+                : []
+        );
+    };
 
-        setfilteredLinks(filteredLinks)
-        adminLoginData?.length == 0 || adminLoginData == null || adminLoginData == undefined
-            ?
-            AdminData()
-            :
-            error ?
-                Swal.fire({
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const jsondata = await adminData();
+                console.log(jsondata);
+                if (jsondata?.error) {
+                    seterror(true);
+                } else if (jsondata && jsondata?.length > 0) {
+                    setadminLoginData(jsondata);
+                }
+            } catch (err) {
+                console.log(err);
+                seterror(true);
+            }
+        };
+
+        setfilteredLinks(getFilteredLinks());
+
+        if (adminLoginData?.length === 0 || adminLoginData == null || adminLoginData == undefined) {
+            fetchData();
+        } else {
+            error
+                ? Swal.fire({
                     icon: 'error',
                     title: 'Internal Server Error',
                     text: 'Something went wrong on the server side.',
                     confirmButtonColor: '#3085d6',
                     confirmButtonText: 'OK',
                 })
-                : window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404'
-    }, [adminLoginData])
+                : (window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404');
+        }
+    }, [adminLoginData, error]);
 
-    // console.log(adminLoginData);
     return (
-        <>
-            <head>
-                <title>
-                    Login
-                </title>
-            </head>
-            {
-                adminLoginData?.length == 0 && adminLoginData == undefined ? 'Loading' :
-                    <section className="bg-gray-50 dark:bg-gray-900">
-                        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0">
-                            <a href="/Admin" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-                                <img className="w-32 h-32 mr-2" src="/logo.jpg" alt="logo" />
-                            </a>
-                            <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                                <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-                                    <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                                        Sign in to your account
-                                    </h1>
-                                    <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-                                        <div>
-                                            <label
-                                                htmlFor="email"
-                                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                            >
-                                                Your email
-                                            </label>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                id="email"
-                                                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-slate-600 focus:border-slate-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                placeholder="name@company.com"
-                                                required
-                                                value={email}
-                                                onChange={handleEmailChange}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label
-                                                htmlFor="password"
-                                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                            >
-                                                Password
-                                            </label>
-                                            <input
-                                                type="password"
-                                                name="password"
-                                                id="password"
-                                                placeholder="••••••••"
-                                                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-slate-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                required
-                                                value={password}
-                                                onChange={handlePasswordChange}
-                                            />
-                                        </div>
-                                        <div className="flex items-center justify-between hidden">
-                                            <div className="flex items-start">
-                                                <div className="flex items-center h-5">
-                                                    <input id="remember" aria-describedby="remember" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required="" />
-                                                </div>
-                                                <div className="ml-3 text-sm">
-                                                    <label for="remember" className="text-gray-500 dark:text-gray-300">Remember me</label>
-                                                </div>
-                                            </div>
-                                            {/* <a href="#" className="text-sm font-medium text-slate-600 hover:underline dark:text-slate-500">Forgot password?</a> */}
-                                        </div>
-                                        <button
-                                            type="submit"
-                                            className="w-full block text-white bg-slate-600 hover:bg-slate-700 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800"
-                                        >
-                                            Sign in
-                                        </button>
-                                    </form>
-                                    {/* <p className="text-sm font-light text-gray-500 dark:text-gray-400 mt-2">
-                                        Don’t have an account yet? <a href="#" className="font-medium text-slate-600 hover:underline dark:text-slate-500">Sign up</a>
-                                    </p> */}
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-            }
-        </>
-    )
-}
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <div className=' w-full max-w-md'>
+                <div className='flex justify-center mb-5'>
+                    <Image nonce='false' src='/mainlogovertical.png' width={150} height={150} />
+                </div>
+                <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+                    <h1 className="text-2xl font-semibold mb-6 text-center">Admin Login</h1>
+                    <Form
+                        name="loginForm"
+                        initialValues={{ remember: true }}
+                        onFinish={onFinish}
+                        onFinishFailed={onFinishFailed}
+                    >
+                        <Form.Item
+                            name="email"
+                            rules={[{ required: true, message: 'Please input your email!' }]}
+                        >
+                            <Input type='email' placeholder="Email" className="w-full mb-4 px-3 py-2 border rounded" />
+                        </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[{ required: true, message: 'Please input your password!' }]}
+                        >
+                            <Input.Password placeholder="Password" className="w-full mb-4 px-3 py-2 border rounded" />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" loading={loading} htmlType="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 flex justify-center items-center">
+                                Login
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default Login

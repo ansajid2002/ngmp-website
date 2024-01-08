@@ -50,9 +50,10 @@ app.post("/vendorLogin", async (req, res) => {
     // Use the connection pool to check if the email exists in the database
     const loggedId = generateRandomNumber(); // Generate a 28-character random string
     const result = await req.pool.query(
-      "SELECT * FROM vendors WHERE email = $1",
-      [email]
+      'SELECT * FROM vendors WHERE email = $1 OR vendor_username = $2',
+      [email, email] // Use the same email value for both parameters
     );
+
     if (result.rows.length > 0) {
       const vendorLogin = result.rows[0];
       const hashedPassword = vendorLogin.password; // Assuming the hashed password is stored in the 'password' field
@@ -73,8 +74,8 @@ app.post("/vendorLogin", async (req, res) => {
         // Passwords match, generate random string
         // Update the 'loggedId' column with the generated random string
         await req.pool.query(
-          'UPDATE vendors SET "useridvendor" = $1 WHERE email = $2',
-          [loggedId, email]
+          'UPDATE vendors SET "useridvendor" = $1 WHERE email = $2 OR vendor_username = $3',
+          [loggedId, email, email]
         );
 
         // Return the updated vendors data
@@ -350,7 +351,8 @@ app.post("/verify-otp", async (req, res) => {
 app.post("/getVendorData", async (req, res) => {
   try {
     const loggedId = req.body.loggedId; // Assuming the loggedId value is sent in the request body
-    const query = 'SELECT * FROM vendors WHERE "useridvendor" = $1';
+    console.log(loggedId);
+    const query = 'SELECT * FROM vendors WHERE useridvendor = $1';
     const values = [loggedId];
 
     const { rows } = await pool.query(query, values);
@@ -2336,5 +2338,52 @@ app.post("/bulkProductApprove", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+app.post("/bulkEditProduct", async (req, res) => {
+  try {
+    const { selectedRowKeys, selectedOption, column } = req.body;
+
+    console.log(req.body);
+
+    let updateCol = ''
+    if (column === 'Description') {
+      updateCol = 'additionaldescription'
+    } else if (column === 'Quantity') {
+      updateCol = 'quantity'
+    } else if (column === 'Price') {
+      updateCol = 'mrp'
+    } else if (column === 'Sell Price') {
+      updateCol = 'sellingprice'
+    } else if (column === 'Brand') {
+      updateCol = 'brand'
+    } else if (column === 'Condition') {
+      updateCol = 'condition'
+    }
+    // Check if a valid option is selected
+    if (!selectedOption) {
+      return res.status(400).json({ error: "Invalid bulk edit option" });
+    }
+
+    // Iterate through the selectedRowKeys array and update records
+    for (const productId of selectedRowKeys) {
+      let updateQuery = '';
+      let updateParams = [];
+
+      // Assuming 'products' is your table name
+      updateQuery = `UPDATE products SET ${updateCol} = $1 WHERE id = $2`;
+      updateParams = [selectedOption, productId];
+
+      // Execute the update query
+      await pool.query(updateQuery, updateParams);
+    }
+
+    res.status(200).json({ message: 'Bulk edit successful' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 module.exports = app;

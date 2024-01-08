@@ -156,7 +156,6 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
     // { name: 'Contact', href: 'tel:9167263576', icon: PhoneIcon },
   ]
 
-  console.log(vendorDatastate);
   return (
     <>
       {vendorDatastate == null || vendorDatastate?.length == 0 ? (
@@ -199,7 +198,7 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
                     <Link to="/" className="flex items-center">
                       <div class="h-10 sm:h-16 w-10 sm:w-16 rounded-full border-4 border-gradient-blue-orange flex items-center justify-center overflow-hidden">
                         <img
-                          src="/logo.jpg"
+                          src="/mainlogovertical.png"
                           className="h-24 object-contain  rounded-full"
                           alt="App Logo"
                         />
@@ -217,7 +216,7 @@ const VendorSidebar = ({ vendorDatastate, handleCollapseAPP }) => {
                 </div>
 
                 <div className="flex gap-5 sm:justify-center mt-4 sm:mt-0 items-start">
-                  
+
 
                   <Popover className="relative">
                     <Popover.Button className="inline-flex items-center gap-2 text-[12px] md:text-sm font-semibold leading-6 text-gray-900">

@@ -15,7 +15,7 @@ import {
   Image,
 } from "antd";
 import { NavLink } from "react-router-dom";
-import { MailOutlined } from "@ant-design/icons";
+import { MailOutlined, UserOutlined } from "@ant-design/icons";
 import { AdminUrl } from "../../constant";
 import {
   FiCheckCircle,
@@ -44,13 +44,22 @@ const Vendors = ({ adminLoginData }) => {
   const [vendors, setVendors] = useState([]);
   const [current, setCurrent] = useState(0);
   const [imageUploadModal, setimageUploadModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedVendors, setselectedVendors] = useState();
   const [activeTab, setActiveTab] = useState("1");
   const [imageUploadTab, setImageUploadTab] = useState("1"); // Separate state for the second set of tabs
+  const [page, setPage] = useState(1); // Separate state for the second set of tabs
+  const [pageSize, setPageSize] = useState(10); // Separate state for the second set of tabs
+  const [totalcount, setTotalcount] = useState(0); // Separate state for the second set of tabs
 
-  const callVendor = async () => {
+  const callVendor = async (pageNumber, pageSize) => {
     try {
-      const response = await fetch(`${AdminUrl}/api/allVendors`, {
+      const queryParams = new URLSearchParams({
+        pageNumber,
+        pageSize,
+      });
+
+      const response = await fetch(`${AdminUrl}/api/allVendors?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -62,34 +71,55 @@ const Vendors = ({ adminLoginData }) => {
         const data = await response.json();
         const sortedVendors = data.vendors.sort((a, b) => a.id - b.id);
         setVendors(sortedVendors);
+        setTotalcount(data?.totalCount)
       } else {
         // Handle error response
-        console.error("Error sending form data:", response.statusText);
+        console.error("Error fetching vendors:", response.statusText);
       }
     } catch (error) {
       // Handle error
-      console.error("Error sending form data:", error);
+      console.error("Error fetching vendors:", error);
     }
   };
 
   useEffect(() => {
-    callVendor();
+    callVendor(page, pageSize)
   }, []);
 
   const allVendors = vendors.filter((vendor) => vendor);
-  const activeVendors = vendors.filter((vendor) => vendor.status === 0);
-  const blockedVendors = vendors.filter((vendor) => vendor.status === 1);
-  const archivedVendors = vendors.filter((vendor) => vendor.status === 2);
-  const approvedVendor = vendors.filter((vendor) => vendor.status === 3);
-  const rejectvendor = vendors.filter((vendor) => vendor.status === 4);
+  // const activeVendors = vendors.filter((vendor) => vendor.status === 0);
+  // const blockedVendors = vendors.filter((vendor) => vendor.status === 1);
+  // const archivedVendors = vendors.filter((vendor) => vendor.status === 2);
+  // const approvedVendor = vendors.filter((vendor) => vendor.status === 3);
+  // const rejectvendor = vendors.filter((vendor) => vendor.status === 4);
 
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
+      fixed: 'left',
       sorter: (a, b) => a.id - b.id,
-      width: 40,
+      width: 80,
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      fixed: 'left',
+      width: 100,
+      render: (record) =>
+        record.status !== 4 ? (
+          <Space size="middle" className="flex">
+            <>
+              <FiEdit2
+                onClick={() => handleUpdate(record.id)}
+                className="text-white  w-8 h-8 p-2 rounded-full bg-green-500 border-none hover:bg-green-600 hover:text-white "
+              />
+            </>
+          </Space>
+        ) : (
+          "-"
+        ),
     },
     {
       title: "Brand Name",
@@ -318,23 +348,7 @@ const Vendors = ({ adminLoginData }) => {
       },
     },
 
-    {
-      title: "Actions",
-      key: "actions",
-      render: (record) =>
-        record.status !== 4 ? (
-          <Space size="middle" className="flex">
-            <>
-              <FiEdit2
-                onClick={() => handleUpdate(record.id)}
-                className="text-white  w-8 h-8 p-2 rounded-full bg-green-500 border-none hover:bg-green-600 hover:text-white "
-              />
-            </>
-          </Space>
-        ) : (
-          "-"
-        ),
-    },
+
   ];
 
   const handleTabChange = (key) => {
@@ -346,10 +360,10 @@ const Vendors = ({ adminLoginData }) => {
   };
 
   const [form] = Form.useForm();
-  const pageSize = 10;
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handlePageChange = (page, pageSize) => {
+    setPage(page);
+    callVendor(page, pageSize)
   };
 
   function handleCreate() {
@@ -359,7 +373,7 @@ const Vendors = ({ adminLoginData }) => {
   }
 
   function handleUpdate(key) {
-    callVendor();
+    // callVendor();
     const selectedRow = vendors.find((item) => item.id === key);
     form.setFieldsValue(selectedRow);
     form.setFieldsValue({ confirm_bank_account_number: "" });
@@ -368,7 +382,7 @@ const Vendors = ({ adminLoginData }) => {
   }
 
   function handleImageUpload(key) {
-    callVendor();
+    // callVendor(page, pageSize);
     setSelectedKey(key);
     setselectedVendors(vendors.find((item) => item.id === key));
     setimageUploadModal(true);
@@ -390,11 +404,11 @@ const Vendors = ({ adminLoginData }) => {
     }, []);
 
     const onFinish = async (values) => {
-      // console.log('Finish:', values);
+      setLoading(true);
+
       if (selectedKey == null) {
         // Adding
         try {
-          // Make API call to send form data to the backend
           const response = await fetch(`${AdminUrl}/api/addVendorstoDb`, {
             method: "POST",
             headers: {
@@ -404,7 +418,9 @@ const Vendors = ({ adminLoginData }) => {
           });
 
           if (response.ok) {
-            // Handle successful response
+            const vendordata = await response.json();
+            setSelectedKey(vendordata?.lastInsertedId);
+            next(); // Move to the next step or perform any other action
             Swal.fire({
               icon: "success",
               title: "Vendor data added successfully",
@@ -412,36 +428,36 @@ const Vendors = ({ adminLoginData }) => {
               showConfirmButton: false,
               timer: 1500,
             });
-            setVendors([
-              ...vendors,
-              {
-                id: vendors?.length + 1,
-                ...values,
-              },
-            ]);
-            const vendordata = await response.json();
-            setSelectedKey(vendordata?.lastInsertedId);
-            next(); // Move to the next step or perform any other action
-            console.log("Form data sent successfully!");
           } else {
-            // Handle error response
-            console.error("Error sending form data:", response.statusText);
-            Swal.fire({
-              icon: "error",
-              title: "Email id already Exist",
-              showConfirmButton: false,
-              timer: 1500,
-            });
+            const errorResponse = await response.json();
+            console.error("Error adding vendor:", errorResponse.error);
 
+            if (errorResponse.error.includes("Email already exists")) {
+              Swal.fire({
+                icon: "error",
+                title: "Email ID already exists",
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            } else {
+              // Handle other specific errors if needed
+              Swal.fire({
+                icon: "error",
+                title: "An error occurred while adding the vendor",
+                text: errorResponse.error,
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            }
           }
         } catch (error) {
-          // Handle error
-          console.error("Error sending form data:", error);
+          console.error("Error adding vendor:", error);
+        } finally {
+          setLoading(false);
         }
       } else {
-        //Updating
+        // Updating
         try {
-          // Make API call to send form data to the backend
           const response = await fetch(`${AdminUrl}/api/updateVendorDb`, {
             method: "POST",
             headers: {
@@ -451,30 +467,94 @@ const Vendors = ({ adminLoginData }) => {
           });
 
           if (response.ok) {
-            // Handle successful response
+
+            let otpConfirmed = false;
+
+            while (!otpConfirmed) {
+              const otpInput = await Swal.fire({
+                title: 'Enter 4-digit OTP',
+                input: 'text',
+                inputAttributes: {
+                  maxlength: 4,
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+              });
+
+              if (otpInput.isConfirmed) {
+                try {
+                  // Send OTP value to the backend along with selectedKey
+                  const otpResponse = await fetch(`${AdminUrl}/api/updateVendorDataWithOtp`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ selectedKey, otp: otpInput.value, values }),
+                  });
+
+                  if (otpResponse.ok) {
+                    setVendors(
+                      vendors.map((item) =>
+                        item.id === selectedKey ? { ...item, ...values } : item
+                      )
+                    );
+                    next(); // Move to the next step or perform any other action
+                    Swal.fire({
+                      icon: "success",
+                      title: "Verification Details updated successfully",
+                      showConfirmButton: false,
+                      timer: 1500,
+                    });
+                    otpConfirmed = true; // Set to true to exit the loop
+                  } else {
+                    // Handle OTP submission error
+                    const errorResponse = await otpResponse.json();
+                    console.error("Error updating vendor:", errorResponse.error);
+                    // Handle other specific errors if needed
+                    Swal.fire({
+                      icon: "error",
+                      title: "Invalid OTP",
+                      text: errorResponse.error,
+                      showConfirmButton: true, // Set this to true to keep the alert open
+                    });
+                  }
+                } catch (error) {
+                  // Handle other errors if needed
+                  console.error("Error updating vendor:", error);
+                  Swal.fire({
+                    icon: "error",
+                    title: "An error occurred while updating the vendor",
+                    text: "Please try again later.",
+                    showConfirmButton: true, // Set this to true to keep the alert open
+                  });
+                }
+              } else {
+                // User clicked cancel, exit the loop
+                otpConfirmed = true;
+              }
+            }
+
+
+          } else {
+            const errorResponse = await response.json();
+            console.error("Error updating vendor:", errorResponse.error);
+            // Handle other specific errors if needed
             Swal.fire({
-              icon: "success",
-              title: "Verification Details updated successfully",
+              icon: "error",
+              title: "An error occurred while updating the vendor",
+              text: errorResponse.error,
               showConfirmButton: false,
               timer: 1500,
             });
-            setVendors(
-              vendors.map((item) =>
-                item.id === selectedKey ? { ...item, ...values } : item
-              )
-            );
-            next(); // Move to the next step or perform any other action
-            console.log("Form data sent successfully!");
-          } else {
-            // Handle error response
-            console.error("Error sending form data:", response.statusText);
           }
         } catch (error) {
-          // Handle error
-          console.error("Error sending form data:", error);
+          console.error("Error updating vendor:", error);
+        } finally {
+          setLoading(false);
         }
       }
     };
+
 
     const prefixSelector = (
       <Form.Item name="country_code" noStyle >
@@ -501,6 +581,34 @@ const Vendors = ({ adminLoginData }) => {
             labelCol={{ span: 6 }}
             wrapperCol={{ span: 18 }}
           >
+            <Form.Item
+              name="vendor_username"
+              label="Username"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter your username!',
+                },
+                {
+                  min: 3,
+                  message: 'Username must be at least 3 characters!',
+                },
+                {
+                  max: 20,
+                  message: 'Username cannot exceed 20 characters!',
+                },
+                {
+                  pattern: /^[a-zA-Z0-9_]+$/,
+                  message: 'Username can only contain letters, numbers, and underscores!',
+                },
+              ]}
+            >
+              <Input
+                prefix={<UserOutlined className="site-form-item-icon" />}
+                placeholder="Username"
+              />
+            </Form.Item>
+
             <Form.Item
               name="mobile_number"
               label="Phone Number"
@@ -554,6 +662,22 @@ const Vendors = ({ adminLoginData }) => {
               />
             </Form.Item>
 
+            <Form.Item
+              name="password"
+              label="Password"
+              rules={[
+                {
+                  min: 6,
+                  message: 'Password must be at least 6 characters!',
+                },
+              ]}
+            >
+              <Input.Password
+                // prefix={<LockOutlined className="site-form-item-icon" />}
+                placeholder="Password"
+              />
+            </Form.Item>
+
             <Form.Item shouldUpdate wrapperCol={{ offset: 6, span: 18 }}>
               {() => (
                 <Button
@@ -564,6 +688,7 @@ const Vendors = ({ adminLoginData }) => {
                     ? "bg-blue-500 text-white"
                     : "bg-gray-300 text-black"
                     }`}
+                  loading={loading}
                 >
                   Save
                 </Button>
@@ -691,6 +816,7 @@ const Vendors = ({ adminLoginData }) => {
                       ? "bg-blue-500 text-white"
                       : "bg-gray-300 text-black"
                       }`}
+                    loading={loading}
                   >
                     Save
                   </Button>
@@ -1185,7 +1311,7 @@ const Vendors = ({ adminLoginData }) => {
       ) : (
         <div className="mx-auto p-5 mt-10 sm:ml-72 sm:p-4">
           <h1 className="text-4xl text-gray-700 font-bold mb-2">
-            Vendor Listing's ({vendors?.length})
+            Vendor Listing's ({totalcount})
           </h1>
           <nav
             aria-label="Breadcrumbs"
@@ -1232,34 +1358,38 @@ const Vendors = ({ adminLoginData }) => {
                   />
                 </svg>
               </button>
-              <div className="table-responsive overflow-hidden overflow-x-auto mt-4 ">
-                <Tabs
+              <div className=" mt-4 ">
+                {/* <Tabs
                   defaultActiveKey="1"
                   activeKey={imageUploadTab}
                   onChange={handleTabChangeforTable}
                   centered
-                >
-                  <TabPane tab={`All (${allVendors?.length})`} key="1">
-                    <Table
-                      columns={columns}
-                      dataSource={allVendors?.slice(
-                        (currentPage - 1) * pageSize,
-                        currentPage * pageSize
-                      )}
-                      pagination={false}
-                      className="w-full mt-10"
-                      rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
-                    />
-                    <div className="mt-4">
-                      <Pagination
-                        current={currentPage}
-                        onChange={handlePageChange}
-                        pageSize={pageSize}
-                        total={allVendors?.length}
-                      />
-                    </div>
-                  </TabPane>
-                  <TabPane tab={`Pending (${activeVendors?.length})`} key="2">
+                > */}
+                {/* <TabPane tab={`All (${allVendors?.length})`} key="1"> */}
+                <Table
+                  columns={columns}
+                  dataSource={allVendors?.slice(
+                    (currentPage - 1) * pageSize,
+                    currentPage * pageSize
+                  )}
+                  pagination={false}
+                  className="w-full mt-10"
+                  rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
+                  scroll={{
+                    x: 1500,
+                    y: 600,
+                  }}
+                />
+                <div className="mt-4">
+                  <Pagination
+                    current={page}
+                    onChange={(page, pageSize) => handlePageChange(page, pageSize)}
+                    pageSize={pageSize}
+                    total={totalcount}
+                  />
+                </div>
+                {/* </TabPane> */}
+                {/* <TabPane tab={`Pending (${activeVendors?.length})`} key="2">
                     <Table
                       columns={columns}
                       dataSource={activeVendors?.slice(
@@ -1361,8 +1491,8 @@ const Vendors = ({ adminLoginData }) => {
                         total={archivedVendors?.length}
                       />
                     </div>
-                  </TabPane>
-                </Tabs>
+                  </TabPane> */}
+                {/* </Tabs> */}
               </div>
 
               <Modal
@@ -1383,7 +1513,9 @@ const Vendors = ({ adminLoginData }) => {
                 }}
                 width={1200}
               >
-                <Steps current={current} items={items} className="mt-5 mb-5" />
+                <Steps current={current} onChange={(value) => {
+                  selectedKey && setCurrent(value);
+                }} items={items} className="mt-5 mb-5" />
                 <div>{steps[current].content}</div>
                 <div
                   style={{
@@ -1455,7 +1587,7 @@ const Vendors = ({ adminLoginData }) => {
                           maxFiles={1}
                           ids={selectedKey}
                           vendors={selectedVendors}
-                          updateVendor={callVendor}
+                          updateVendor={() => callVendor(page, pageSize)}
                         />
                       </>
                     )}
@@ -1467,7 +1599,7 @@ const Vendors = ({ adminLoginData }) => {
                           maxFiles={1}
                           ids={selectedKey}
                           vendors={selectedVendors}
-                          updateVendor={callVendor}
+                          updateVendor={() => callVendor(page, pageSize)}
                         />
                       </>
                     )}
@@ -1489,7 +1621,7 @@ const Vendors = ({ adminLoginData }) => {
               </Modal>
             </>
           }
-        </div>
+        </div >
       )}
     </>
   );

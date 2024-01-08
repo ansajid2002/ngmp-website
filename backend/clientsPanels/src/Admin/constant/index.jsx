@@ -109,10 +109,10 @@ export const links = [
       {
         id: 11,
         name: "App Loading Screen",
-        icon: <AiOutlineLoading3Quarters  />,
+        icon: <AiOutlineLoading3Quarters />,
         to: "/Admin/AppLoading",
       },
-      
+
     ]
   },
   {
@@ -180,6 +180,7 @@ export const vendorDataDb = async () => {
     });
 
     const data = await response.json();
+    console.log(data);
     return data;
   } catch (err) {
     console.log(err);

@@ -111,7 +111,32 @@ const SellerForm = ({ onModal }) => {
                         layout="horizontal" // Set the layout to "horizontal"
                     >
                         <div className='grid grid-cols-2 gap-4'>
-
+                            <Form.Item
+                                name="vendor_username"
+                                label="Username"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please enter your username!',
+                                    },
+                                    {
+                                        min: 3,
+                                        message: 'Username must be at least 3 characters!',
+                                    },
+                                    {
+                                        max: 20,
+                                        message: 'Username cannot exceed 20 characters!',
+                                    },
+                                    {
+                                        pattern: /^[a-zA-Z0-9_]+$/,
+                                        message: 'Username can only contain letters, numbers, and underscores!',
+                                    },
+                                ]}
+                            >
+                                <Input
+                                    placeholder="Username"
+                                />
+                            </Form.Item>
                             <Form.Item
                                 name="mobile_number"
                                 label="Phone Number"
@@ -129,47 +154,6 @@ const SellerForm = ({ onModal }) => {
                                     }}
                                 />
                             </Form.Item>
-                            {/* <Form.Item
-                                name="country_code"
-                                label="Country Code"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please select country code!",
-                                    },
-                                ]}
-                            >
-                                <Select placeholder="+1" className='flex justify-start w-full md:w-[20%]'>
-                                    {countryCodes.map((country) => (
-                                        <Option key={country.code} value={country.code}>
-                                            {country.code}
-                                        </Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                            <Form.Item
-                                name="mobile_number"
-                                label="Mobile Number"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please input your mobile number!",
-                                    },
-                                    {
-                                        pattern: /^[0-9]{10}$/,
-                                        message: "Please enter a valid 10-digit mobile number!",
-                                    },
-                                ]}
-                            >
-                                <InputNumber
-                                    className='w-full ml-2'
-                                    placeholder="Mobile Number"
-                                // You can use the prefix if needed
-                                // prefix={<FiPhone className="site-form-item-icon" />}
-                                />
-                            </Form.Item> */}
-
-
 
                             <Form.Item
                                 name="vendorname"

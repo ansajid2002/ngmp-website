@@ -209,7 +209,7 @@ app.post("/updateCategory", async (req, res) => {
     console.log(req.body);
     try {
         const categoryId = req.body.selectedKey; // Get the category ID from the URL parameter
-        const { category_name, category_description, category_status, category_type } = req.body.values;
+        const { category_name, category_description, category_status, category_type, subcategories } = req.body.values;
 
         // Check if the category with the given ID exists in the database
         const checkQuery = 'SELECT * FROM categories WHERE category_id = $1';
@@ -226,12 +226,31 @@ app.post("/updateCategory", async (req, res) => {
         const updateValues = [category_name, category_description, categoryId, category_status, category_type];
         const { rows } = await pool.query(updateQuery, updateValues);
 
+        // Update or insert subcategories
+        if (subcategories && subcategories.length > 0) {
+            for (const subcategory of subcategories) {
+                const { subcategory_id, subcategory_name, subcat_status, subcategory_description } = subcategory;
+                if (subcategory_id) {
+                    // Update existing subcategory
+                    const subUpdateQuery = 'UPDATE subcategories SET subcategory_name = $2, subcat_status = $3, subcategory_description = $4 WHERE subcategory_id = $1 RETURNING *';
+                    const subUpdateValues = [subcategory_id, subcategory_name, subcat_status, subcategory_description];
+                    await pool.query(subUpdateQuery, subUpdateValues);
+                } else {
+                    // Insert new subcategory
+                    const subInsertQuery = 'INSERT INTO subcategories (subcategory_name, subcat_status, parent_category_id, subcategory_description) VALUES ($1, $2, $3, $4) RETURNING *';
+                    const subInsertValues = [subcategory_name, subcat_status, categoryId, subcategory_description];
+                    await pool.query(subInsertQuery, subInsertValues);
+                }
+            }
+        }
+
         res.status(200).json(rows[0]); // Return the updated category data
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
 
 app.post("/deleteCategory", async (req, res) => {
     try {
@@ -331,6 +350,80 @@ app.post('/UploadCategoryImage', uploadCategory.single('file'), async (req, res)
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error occurred while storing the category picture.' });
+    }
+});
+
+
+app.post('/vendorCatChange', async (req, res) => {
+    try {
+        let { type, recordId, newValue } = req.body;
+
+        // Assume you have a database connection pool named 'pool'
+
+        // Check the type and update the corresponding column
+        let updateQuery = '';
+        let updateParams = [];
+        const slug_cat = newValue?.replace(/[^\w\s]/g, "").replace(/\s/g, "")
+
+        if (type === 'category') {
+            updateQuery = 'UPDATE products SET category = $1, slug_cat = $2, status = 0 WHERE id = $3';
+            updateParams = [newValue, slug_cat, recordId];
+
+        } else if (type === 'subcategory') {
+            updateQuery = 'UPDATE products SET subcategory = $1, slug_cat = $2, status = 0 WHERE id = $3';
+            updateParams = [newValue, slug_cat, recordId];
+
+        } else if (type === 'sellingprice') {
+            updateQuery = 'UPDATE products SET sellingprice = $1, status = 0 WHERE id = $2';
+            updateParams = [newValue, recordId];
+        } else if (type === 'mrp') {
+            updateQuery = 'UPDATE products SET mrp = $1, status = 0 WHERE id = $2';
+            updateParams = [newValue, recordId];
+
+        } else if (type === 'brand') {
+            updateQuery = 'UPDATE products SET brand = $1, status = 0 WHERE id = $2';
+            updateParams = [newValue, recordId];
+
+        } else if (type === 'quantity') {
+            updateQuery = 'UPDATE products SET quantity = $1, status = 0 WHERE id = $2';
+            updateParams = [newValue, recordId];
+
+        } else if (type === 'skuid') {
+            // Check if the new skuid already exists in the products table
+            const skuidCheckQuery = 'SELECT id FROM products WHERE skuid = $1 AND id != $2';
+            const skuidCheckParams = [newValue, recordId];
+            const skuidCheckResult = await pool.query(skuidCheckQuery, skuidCheckParams);
+
+            if (skuidCheckResult.rows.length > 0) {
+                // Skuid already exists in the products table, return an error
+                return res.status(400).json({ message: 'Skuid already exists in products. Please choose a different one.' });
+            }
+
+            // Check if the new skuid already exists in the variantproducts table
+            const variantSkuidCheckQuery = 'SELECT id FROM variantproducts WHERE variant_skuid = $1 AND product_uniqueid != $2';
+            const variantSkuidCheckParams = [newValue, recordId];
+            const variantSkuidCheckResult = await pool.query(variantSkuidCheckQuery, variantSkuidCheckParams);
+
+            if (variantSkuidCheckResult.rows.length > 0) {
+                // Skuid already exists in variantproducts, return an error
+                return res.status(400).json({ message: 'Skuid already exists in variantproducts. Please choose a different one.' });
+            }
+
+            // Continue with the update if skuid is unique in both tables
+            updateQuery = 'UPDATE products SET skuid = $1, status = 0 WHERE id = $2';
+            updateParams = [newValue, recordId];
+        } else {
+            return res.status(400).json({ message: 'Invalid type provided.' });
+        }
+
+
+        // Execute the update query
+        await pool.query(updateQuery, updateParams);
+
+        res.status(200).json({ message: 'Category updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error occurred' });
     }
 });
 

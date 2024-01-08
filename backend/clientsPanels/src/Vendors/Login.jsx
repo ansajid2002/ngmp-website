@@ -47,14 +47,6 @@ const VendorLogin = () => {
   const validateForm = () => {
     let isValid = true;
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.match(emailRegex)) {
-      setEmailError("Please enter a valid email address.");
-      isValid = false;
-    }
-
-    // Validate password is not empty
     if (password.trim() === "") {
       setPasswordError("Password is required.");
       isValid = false;
@@ -304,24 +296,24 @@ const VendorLogin = () => {
     <section className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="max-w-md w-full px-6 py-8 bg-white rounded-lg shadow-lg">
         <div className="text-center">
-          <img className="w-24 h-24 mx-auto mb-4" src="/logo.jpg" alt="logo" />
+          <img className="w-24 h-24 mx-auto mb-4" src="/mainlogovertical.png" alt="logo" />
           <h2 className="text-xl font-semibold text-gray-800">Vendor Login</h2>
         </div>
         <form className="mt-6" onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
-              htmlFor="email"
+              htmlFor="text"
               className="block text-gray-700 font-semibold"
             >
-              Email
+              Email/Username
             </label>
             <input
-              type="email"
+              type="text"
               name="email"
               id="email"
               className={`mt-1 px-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-indigo-400 text-gray-900 ${emailError ? "border-red-500" : "border-gray-300"
                 }`}
-              placeholder="name@company.com"
+              placeholder=""
               required
               value={email}
               onChange={handleEmailChange}

@@ -16,6 +16,7 @@ const ManageCategory = ({ adminLoginData }) => {
   const [CategoryLoading, setCategoryLoading] = useState(false);
   const [fileList, setFileList] = useState([]);
   const [selectedKey, setSelectedKey] = useState(null);
+  const [selectedSubKey, setSelectedSubKey] = useState(null);
   const [DeletemodalVisibleRole, setDeleteModalCategory] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [DeleteSubcategoryModal, setDeleteSubcategoryModal] = useState(false);
@@ -65,7 +66,7 @@ const ManageCategory = ({ adminLoginData }) => {
         <Space size="middle" className="flex">
           {/* Edit Icon */}
           <FiEdit3
-            // onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
+            onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
             className="text-green-600 w-6 h-6 cursor-pointer"
           />
 
@@ -108,6 +109,7 @@ const ManageCategory = ({ adminLoginData }) => {
         <>
           <div onClick={() => {
             setSelectedRow(record)
+            setSelectedKey(record.category_id)
             setModalSubcategories(true)
           }} className='cursor-pointer'>
             <p className='text-base text-blue-800'>View Subcategories ({record?.subcategories?.length})</p>
@@ -205,7 +207,7 @@ const ManageCategory = ({ adminLoginData }) => {
         <Space size="middle" className="flex">
           {/* Edit Icon */}
           <FiEdit3
-            // onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
+            onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
             className="text-green-600 w-6 h-6 cursor-pointer"
           />
 
@@ -269,6 +271,15 @@ const ManageCategory = ({ adminLoginData }) => {
     },
     // Add more columns as needed
   ];
+
+  const handleUpdate = (key) => {
+    setSelectedKey(key)
+    setModalVisible(true)
+    const seletcedRow = categoryData?.filter(item => item.category_id === key)
+    console.log(seletcedRow[0]);
+    form.setFieldsValue(seletcedRow[0])
+    setSelectedRow(seletcedRow[0])
+  }
 
   function handleDelete(key) {
     setSelectedKey(key);
@@ -371,6 +382,7 @@ const ManageCategory = ({ adminLoginData }) => {
     setUploadImageButtonModal(false)
     setFileList([])
     setSelectedKey(null)
+    setSelectedSubKey(null)
     setDeleteSubcategoryModal(false)
   }
 
@@ -508,71 +520,109 @@ const ManageCategory = ({ adminLoginData }) => {
   const handleSaveCategories = async () => {
     try {
       // Validate the form fields
-      const values = await form.validateFields();
-
-      if (selectedKey === null) {
-        // Send the values to the backend
-        const response = await fetch(`${AdminUrl}/api/addNewCategories`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
-
-        if (response.ok) {
-          // Handle success, maybe show a success message
-          console.log('Categories added successfully!');
-
-          // Fetch and update the category data after successful insertion
-          const result = await response.json();
-
-          // Fetch the new data (for example, from the server response)
-          const newData = result.data;
-
-          // Append the new data to the existing data
-          const updatedData = [...newData, ...categoryData];
-
-          // Update the state with the updated data
-          setData([
-            ...categoryData,
-            {
-              category_id: newData.category_id,
-              ...values,
+      form.validateFields().then(async values => {
+        if (selectedKey === null) {
+          // Send the values to the backend
+          const response = await fetch(`${AdminUrl}/api/addNewCategories`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-          ]);
-
-          // Show success notification with SweetAlert
-          Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: result.message,
+            body: JSON.stringify(values),
           });
-          setModalVisible(false)
-        } else {
-          // Handle errors and show appropriate messages
-          const responseData = await response.json();
-          if (responseData && responseData.error) {
-            console.error('Failed to add categories:', responseData.error);
-            // Show error message to the user
+
+          if (response.ok) {
+            // Handle success, maybe show a success message
+
+            // Fetch and update the category data after successful insertion
+            const result = await response.json();
+
+            // Fetch the new data (for example, from the server response)
+            const newData = result.data;
+
+            // Append the new data to the existing data
+            const updatedData = [...newData, ...categoryData];
+
+            // Update the state with the updated data
+            setData([
+              ...categoryData,
+              {
+                category_id: newData.category_id,
+                ...values,
+              },
+            ]);
+
+            // Show success notification with SweetAlert
             Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: responseData.error,
+              icon: 'success',
+              title: 'Success',
+              text: result.message,
             });
+            setModalVisible(false)
           } else {
-            console.error('Failed to add categories:', response.statusText);
-            // Show a generic error message to the user
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Failed to add categories. Please try again.',
+            // Handle errors and show appropriate messages
+            const responseData = await response.json();
+            if (responseData && responseData.error) {
+              console.error('Failed to add categories:', responseData.error);
+              // Show error message to the user
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: responseData.error,
+              });
+            } else {
+              console.error('Failed to add categories:', response.statusText);
+              // Show a generic error message to the user
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to add categories. Please try again.',
+              });
+            }
+          }
+        } else {
+          setData(
+            categoryData.map((item) =>
+              item.category_id === selectedKey ? { ...item, ...values } : item
+            )
+          );
+
+          try {
+            const response = await fetch(`${AdminUrl}/api/updateCategory`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ selectedKey, values }),
             });
+
+            if (response.ok) {
+              // Show success message using Swal.fire
+              Swal.fire({
+                icon: "success",
+                title: "Category Updated",
+                text: "The category has been successfully updated.",
+              });
+
+              setModalVisible(false);
+
+              // Perform any additional actions after successful category insertion
+            } else {
+              // Show error message using Swal.fire
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Failed to updated the category. Please try again later.",
+              });
+            }
+          } catch (error) {
+            // Handle any other errors
+            console.error(error);
           }
         }
-      } else {
-        // Update
-      }
+      })
+
+
     } catch (error) {
       // Handle validation errors or other exceptions
       console.error('Error:', error);
@@ -649,15 +699,14 @@ const ManageCategory = ({ adminLoginData }) => {
       .filter((category) => category.subcategories.length > 0)
       .map((category) => category.subcategories);
 
-    // DeleteSubcat will now contain the parent category that contains the subcategory with the specified subcategory_id
-
     // The updated categoryData with the subcategory removed
     const firstSubcategory = DeleteSubcat[0][0];
 
     setSubSelectedRow(firstSubcategory);
-    setSelectedKey(key);
+    setSelectedSubKey(key);
     setDeleteSubcategoryModal(true);
   };
+
 
   const handleDeleteSubcategoryLogic = async (subcategory_id) => {
     try {
@@ -672,21 +721,33 @@ const ManageCategory = ({ adminLoginData }) => {
 
       if (response.ok) {
         // Subcategory deleted successfully
-        const foundSubcatIndex = selectedRow?.subcategories.filter(item => item.subcategory_id === selectedKey);
+        const foundSubcatIndex = selectedRow?.subcategories.filter(item => item.subcategory_id === selectedSubKey);
 
         const updatedDATA = selectedRow?.subcategories.filter(item => item.subcategory_id !== foundSubcatIndex[0]?.subcategory_id);
         const craetedata = {
           ...categoryData,
           subcategories: updatedDATA
         }
+
+        const filterCategory = categoryData?.find(item => item.category_id === selectedKey);
+
+        if (filterCategory) {
+          const filteredSubcategories = filterCategory.subcategories.filter(item => item.subcategory_id !== subcategory_id);
+
+          const updatedCategory = {
+            ...filterCategory,
+            subcategories: filteredSubcategories
+          };
+
+          const updatedData = categoryData.map(item => (item.category_id === selectedKey ? updatedCategory : item));
+
+          setData(updatedData);
+        }
+
         setSelectedRow(craetedata)
 
         setDeleteSubcategoryModal(false);
-        Swal.fire({
-          icon: "success",
-          title: "SubCategory Deleted Successfully.",
-          text: "The SubCategory has been successfully Deleted.",
-        });
+        notification.success({ message: 'SubCategory Deleted Successfully' })
       } else {
         // Handle error response
         console.error("Error deleting subcategory:", response.statusText);
@@ -849,6 +910,7 @@ const ManageCategory = ({ adminLoginData }) => {
                     >
                       <Input />
                     </Form.Item>
+
                   </div>
                 ))}
 
@@ -965,16 +1027,22 @@ const ManageCategory = ({ adminLoginData }) => {
       <Modal
         title="Confirm Subcategory Delete"
         visible={DeleteSubcategoryModal}
-        onCancel={onCancel}
+        onCancel={() => {
+          setDeleteSubcategoryModal(false)
+          setSelectedSubKey(null)
+        }}
         footer={[
-          <Button key="cancel" onClick={onCancel}>
+          <Button key="cancel" onClick={() => {
+            setDeleteSubcategoryModal(false)
+            setSelectedSubKey(null)
+          }}>
             Cancel
           </Button>,
           <Button
             key="delete"
             type="primary"
             danger
-            onClick={() => handleDeleteSubcategoryLogic(selectedKey)}
+            onClick={() => handleDeleteSubcategoryLogic(selectedSubKey)}
           >
             Delete
           </Button>,
