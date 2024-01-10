@@ -69,6 +69,7 @@ export const links = [
           },
           { name: "", to: "/Admin/Vendors/viewDetails" },
           { name: "Product Approval", to: "/Admin/Products/AcceptReject" },
+          { name: "Bulk Product Approval", to: "/Admin/Products/BulkApprove" },
         ],
       },
 

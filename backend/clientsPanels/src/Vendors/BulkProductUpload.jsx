@@ -24,7 +24,8 @@ const BulkProductUpload = ({ vendorDatastate }) => {
   const [selectedExcel, setSelectedExcel] = useState(null);
   const [loading, setLoading] = useState(false);
   const [checkImage, setCheckImage] = useState(false);
-  console.log(checkImage);
+  const [productsIds, setProductIds] = useState([]);
+
   const [locationData, setLocationData] = useState({
     city: "",
     state: "",
@@ -119,8 +120,6 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         const key24 = row[25];
         const key25 = row[26];
 
-        console.log(key25, 'jeyi');
-
         const uniquepid = generateUniqueID(); // Generate a unique ID for each row
 
         const rowData = {
@@ -172,7 +171,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
       setLoading(false)
       setJsonData(sheetData);
     } catch (error) {
-      console.error("Error reading the uploaded file:", error);
+      console.log("Error reading the uploaded file:", error);
       message.error("Error reading the uploaded file.");
       setJsonData(null);
     }
@@ -212,7 +211,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
           width: 100,
           ellipsis: true,
           render: (text) => {
-            return <Image src={text.text || text} width={80} height={80} />
+            return <Image src={text?.text || text} width={80} height={80} />
           },
         },
         {
@@ -309,8 +308,9 @@ const BulkProductUpload = ({ vendorDatastate }) => {
   const handleUpload = async () => {
     try {
       if (!jsonData) {
-        return
+        return;
       }
+
       const batchSize = 100; // Set the batch size
       const subcategory = jsonData[0]?.key7;
 
@@ -333,20 +333,28 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         },
       });
 
+      let updatedProductIds = [];
+      let fileName = '';
+      const currentDate = new Date();
+
       for (let batchIndex = 0; batchIndex < totalRequests; batchIndex++) {
         const startIdx = batchIndex * batchSize;
         const endIdx = Math.min(startIdx + batchSize, jsonData.length);
         const batchData = jsonData.slice(startIdx, endIdx);
 
         const dataToSend = new FormData();
-        const currentDate = new Date();
 
         dataToSend.append("jsonData", JSON.stringify(batchData));
         dataToSend.append("subcategory", subcategory);
-        dataToSend.append("selectedExcel", selectedExcel);
-        dataToSend.append("currentDateTime", currentDate.toISOString());
+        // dataToSend.append("currentDateTime", currentDate.toISOString());
         dataToSend.append("vendorId", vendorid);
         dataToSend.append("excludeImage", checkImage);
+        dataToSend.append("startIdx", startIdx);
+
+        // Send the selectedExcel file only when startIdx is "0"
+        if (startIdx === 0) {
+          dataToSend.append("selectedExcel", selectedExcel);
+        }
 
         const response = await fetch(`${AdminUrl}/api/BulkProductUpload`, {
           method: "POST",
@@ -365,7 +373,12 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         }
 
         const responseData = await response.json();
-
+        // const productIds = productsIds.concat(responseData.updatedProductIds);
+        updatedProductIds.push(responseData.updatedProductIds);
+        console.log(responseData);
+        if (successCount === 0) {
+          fileName = responseData?.filename
+        }
         successCount += 1;
 
         // Update loading message in real-time
@@ -375,18 +388,37 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         });
       }
 
-      // Close the loading Swal after all batches are processed
-      loadingSwal.close();
+      const singleDimensionalArray = updatedProductIds.flat(1);
 
-
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: `Data uploaded successfully. (${successCount} batches)`,
+      const responseUpdateSheet = await fetch(`${AdminUrl}/api/BulkUploadSheetandIds`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ singleDimensionalArray, vendorid, fileName, date: currentDate.toISOString() }),
       });
 
+      if (responseUpdateSheet.ok) {
+        loadingSwal.update({
+          title: "Uploading Excel Sheet to Media Library",
+          text: ``,
+        });
+        // Close the loading Swal after all batches are processed
+        setTimeout(() => {
+          loadingSwal.close();
+
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: `Data uploaded successfully. (${successCount} batches)`,
+          });
+        }, 3000)
+      }
+
+
+
       setJsonData(null); // Clear jsonData after successful upload
-      setCheckImage(false)
+      setCheckImage(false);
     } catch (error) {
       console.error("Error uploading data to the backend:", error);
       Swal.fire({
@@ -396,6 +428,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
       });
     }
   };
+
 
 
   const categoryFunction = async () => {
@@ -500,7 +533,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
                       />
                     </div>
                     {/* Text */}
-                    <p className="font-medium text-center text-lg">{category.category_name}</p>
+                    <p className="font-medium text-center text-lg line-clamp-1 w-full">{category.category_name}</p>
                   </div>
                 ))}
               </div>
@@ -526,7 +559,6 @@ const BulkProductUpload = ({ vendorDatastate }) => {
                     >
                       {/* Image */}
                       <div className="h-24 mb-2">
-
                         <img
                           src={`${AdminUrl}/uploads/SubcategoryImages/${subcat.subcategory_image_url}`}
                           alt=""
@@ -540,7 +572,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
 
                       {/* Text */}
-                      <p className="font-semibold text-center text-lg">{subcat.subcategory_name}</p>
+                      <p className="font-semibold text-center text-lg line-clamp-1 w-full">{subcat.subcategory_name}</p>
                     </div>
                   ))}
               </div>

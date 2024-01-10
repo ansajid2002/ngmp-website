@@ -210,6 +210,13 @@ const Notifications = ({ vendorDatastate }) => {
               All
             </button>
             <button
+              onClick={() => setFilter("General")}
+              className={`px-3 py-1 border-blue-500 border text-blue-500 rounded transition duration-300 ${filter === "General" ? "bg-blue-500 text-white" : ""
+                } hover:bg-blue-700 hover:text-white focus:outline-none`}
+            >
+              General
+            </button>
+            <button
               onClick={() => setFilter("Payment")}
               className={`px-3 py-1 border-blue-500 border text-blue-500 rounded transition duration-300 ${filter === "Payment" ? "bg-blue-500 text-white" : ""
                 } hover:bg-blue-700 hover:text-white focus:outline-none`}

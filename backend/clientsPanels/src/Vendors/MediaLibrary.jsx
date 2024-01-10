@@ -63,7 +63,7 @@ const MediaLibrary = ({ vendorDatastate }) => {
             </>
         ) : (
             <div>
-                <Title level={2} className="mb-4">Media Library</Title>
+                <Title level={2} className="mb-4">Media Library ({data && data.length})</Title>
                 <div className='overflow-hidden w-full overflow-x-auto bg-white p-4'>
                     <Table dataSource={data} columns={columns} />
                 </div>
