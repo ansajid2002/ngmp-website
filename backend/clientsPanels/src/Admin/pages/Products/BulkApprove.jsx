@@ -8,9 +8,9 @@ import { RiFileExcelLine } from 'react-icons/ri';
 
 const BulkApprove = () => {
     const [data, setData] = useState([]);
-    const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+    // const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(4);
+    const [pageSize, setPageSize] = useState(10);
     const [totalCount, setPageTotal] = useState(0);
     const [loading, setLoading] = useState(true);
 
@@ -215,7 +215,6 @@ const BulkApprove = () => {
                             length: productids?.length,
                             type,
                             bulkId: bulk_id,
-
                         }),
                     });
 
@@ -226,6 +225,14 @@ const BulkApprove = () => {
                     } else {
                         console.log('Another request successful!');
                         notification.success({ message: `${type === 'approve' ? 'Approved' : 'Rejected'} Mail Sended Successfully` })
+                        const updatedData = data.map(item => {
+                            if (item.bulk_id === record.bulk_id) {
+                                return { ...item, status: type === 'approve' ? 'approved' : 'rejected' };
+                            }
+                            return item;
+                        });
+
+                        setData(updatedData)
 
                     }
                 }

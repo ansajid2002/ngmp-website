@@ -12,6 +12,7 @@ import { AiOutlineLoading } from "react-icons/ai";
 const { Title } = Typography;
 const BulkProductUpload = ({ vendorDatastate }) => {
   const [jsonData, setJsonData] = useState(null);
+  const [specifications, setSpecificaiton] = useState(null);
   const vendorid = vendorDatastate?.[0]?.id;
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDescription, setSelectedDescription] = useState("");
@@ -24,7 +25,6 @@ const BulkProductUpload = ({ vendorDatastate }) => {
   const [selectedExcel, setSelectedExcel] = useState(null);
   const [loading, setLoading] = useState(false);
   const [checkImage, setCheckImage] = useState(false);
-  const [productsIds, setProductIds] = useState([]);
 
   const [locationData, setLocationData] = useState({
     city: "",
@@ -89,6 +89,8 @@ const BulkProductUpload = ({ vendorDatastate }) => {
       const worksheet = workbook.worksheets[0];
       const rows = worksheet.getSheetValues();
 
+      const secondSheet = workbook?.worksheets[1];
+      const secondSheetRows = secondSheet?.getSheetValues();
       // Starting from the 5th row (index 4) for JSON data
       const jsonRows = rows.slice(5);
       // Convert rows into JSON format as needed
@@ -168,8 +170,23 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
       }, []);
 
+      const keys = secondSheetRows && secondSheetRows[1]?.filter((key) => key !== null);
+
+      // Transform subsequent arrays into objects
+      const sheetDataSecond = (secondSheetRows && secondSheetRows.length >= 3) ? secondSheetRows.slice(2).map((values) => {
+        const rowData = {};
+        keys.forEach((key, index) => {
+          if (key !== undefined && values[index + 1] !== null) {
+            rowData[key] = values[index + 1];
+          }
+        });
+        return rowData;
+      }) : [];
+
+
       setLoading(false)
       setJsonData(sheetData);
+      setSpecificaiton(sheetDataSecond || [])
     } catch (error) {
       console.log("Error reading the uploaded file:", error);
       message.error("Error reading the uploaded file.");
@@ -179,6 +196,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
   let columns = [];
 
+  console.log(specifications, 'update');
   if (jsonData) {
     if (
       jsonData[0]?.key7
@@ -349,6 +367,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         // dataToSend.append("currentDateTime", currentDate.toISOString());
         dataToSend.append("vendorId", vendorid);
         dataToSend.append("excludeImage", checkImage);
+        dataToSend.append("specifications", JSON.stringify(specifications));
         dataToSend.append("startIdx", startIdx);
 
         // Send the selectedExcel file only when startIdx is "0"
@@ -415,8 +434,6 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         }, 3000)
       }
 
-
-
       setJsonData(null); // Clear jsonData after successful upload
       setCheckImage(false);
     } catch (error) {
@@ -428,8 +445,6 @@ const BulkProductUpload = ({ vendorDatastate }) => {
       });
     }
   };
-
-
 
   const categoryFunction = async () => {
     try {
@@ -490,7 +505,6 @@ const BulkProductUpload = ({ vendorDatastate }) => {
     setSelectedSubcategory(subcategory);
     setJsonData(null);
   };
-
 
   const handleCheckboxChange = (e) => {
     setCheckImage(e.target.checked);
@@ -580,31 +594,36 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
             {
               SelectedSubcategory && <>
-                <Title
-                  level={3}
-                  className="font-bold text-2xl mb-5 text-gray-700"
-                >
-                  Bulk Product Upload
-                </Title>
-                <Upload
-                  accept=".xlsx"
-                  className="w-full"
-                  beforeUpload={() => false}
-                  onChange={(info) => handleFileUpload(info.file)}
-                >
-                  <Button
-                    style={{ width: "80vw" }} // Set the width to 100% to make the button full-width
-                    className="h-48 text-xl"
-                    icon={<UploadOutlined />}
-                  >
-                    Upload Excel File
-                  </Button>
-                </Upload>
-
-
-                <div className={jsonData ? "hidden" : ""}>
+                <div className={`${jsonData ? "hidden" : ""} mt-20`}>
                   <DownloadSampleExcel category={selectedCategory} subcategory={SelectedSubcategory} />
                 </div>
+
+                <div className="mt-16 ">
+                  <Title
+                    level={1}
+                    className="font-bold  text-gray-700 text-center"
+                  >
+                    Ready to  Upload ?
+                  </Title>
+                  <Upload
+                    accept=".xlsx"
+                    className="w-full"
+                    beforeUpload={() => false}
+                    onChange={(info) => handleFileUpload(info.file)}
+                  >
+                    <Button
+                      style={{ width: '80vw' }}
+
+                      className="h-48 text-xl"
+                      icon={<UploadOutlined />}
+                    >
+                      Upload Excel File
+                    </Button>
+                  </Upload>
+                </div>
+
+
+
               </>
             }
 

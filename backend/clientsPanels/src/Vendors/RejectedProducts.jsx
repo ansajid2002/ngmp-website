@@ -101,19 +101,18 @@ const RejectedProducts = ({ vendorDatastate }) => {
   useEffect(() => {
     const fetchRejectedProducts = async () => {
       try {
-        const response = await fetch(`${AdminUrl}/api/rejected-products`);
+        const response = await fetch(`${AdminUrl}/api/product-rejected?vendodid=${id}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        console.log(data);
-        setRejectedProducts(data.filter(item => item.productstatus === 2 && item.vendorid === id));
+        setRejectedProducts(data);
       } catch (error) {
         console.error('Error fetching rejected products:', error);
       }
     };
 
-    fetchRejectedProducts();
+    id && fetchRejectedProducts();
   }, [id]);
 
   return (

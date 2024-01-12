@@ -55,6 +55,7 @@ import { speicificationFields } from "./constants/ProductsForm/Specifications";
 import { RiInformationFill } from "react-icons/ri";
 import { FaFileExcel } from "react-icons/fa";
 import AccountApprovalPending from "./components/AccountApprovalPending";
+import Search from "antd/es/input/Search";
 
 const { TabPane } = Tabs;
 
@@ -116,7 +117,6 @@ const VendorProducts = ({ vendorDatastate }) => {
   const handleConditionChange = (value) => {
     setConditionToggle(value);
   };
-  console.log(categories);
 
   const handleAdditionalInfoChange = (e) => {
     setAdditionalInfo(`${e.target.value}`
@@ -212,10 +212,6 @@ const VendorProducts = ({ vendorDatastate }) => {
     fetchSubcategorywithCount()
   }, [id])
   // Use useMemo to create a memoized version of products for improved performance
-  const memoizedProducts = useMemo(() => {
-    // Perform any additional memoization logic if needed
-    return products;
-  }, [products]);
 
   useEffect(() => {
     fetchVariantProducts()
@@ -280,13 +276,7 @@ const VendorProducts = ({ vendorDatastate }) => {
 
     setSelectedCategoryId(categoryId);
     setSelectedSubcategory(null);
-    // setSelectedCategory(
-    //   selectedCategory
-    //     ? selectedCategory.category_name
-    //         .replace(/[^\w\s]/g, "")
-    //         .replace(/\s/g, "")
-    //     : ""
-    // );
+
     setFilteredSubcategories([]);
     document.getElementById("subcategory").value = "";
   };
@@ -394,10 +384,10 @@ const VendorProducts = ({ vendorDatastate }) => {
   };
 
   const handleSelectAllRows = () => {
-    if (selectedRowKeys.length === memoizedProducts.length) {
+    if (selectedRowKeys.length === products.length) {
       setSelectedRowKeys([]);
     } else {
-      setSelectedRowKeys(memoizedProducts.map((product) => product.id));
+      setSelectedRowKeys(products.map((product) => product.id));
     }
   };
 
@@ -409,18 +399,18 @@ const VendorProducts = ({ vendorDatastate }) => {
   };
 
   const allBrandValues = Array.from(
-    new Set(memoizedProducts.map((item) => item.brand))
+    new Set(products.map((item) => item.brand))
   );
   const allConditionValues = Array.from(
-    new Set(memoizedProducts.map((item) => item.condition))
+    new Set(products.map((item) => item.condition))
   );
 
   // Get all unique category and subcategory values from the dataSource
   const allCategoryValues = Array.from(
-    new Set(memoizedProducts.map((item) => item.category))
+    new Set(products.map((item) => item.category))
   );
   const allSubcategoryValues = Array.from(
-    new Set(memoizedProducts.map((item) => item.subcategory))
+    new Set(products.map((item) => item.subcategory))
   );
 
   // All Columns
@@ -494,11 +484,7 @@ const VendorProducts = ({ vendorDatastate }) => {
           return (
             <>
               <p>{skuid}</p>
-              <Button
-                type="link"
-                icon={<EditOutlined />}
-                onClick={() => handleEditClickCatChange(record, 'skuid')}
-              />
+
             </>
           ); // Render the SKUID as it is for non-variant products
         }
@@ -512,7 +498,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       key: "ad_title",
       width: 200,
 
-      render: (ad_title) => (
+      render: (ad_title, record) => (
         <Tooltip title={ad_title}>
           <div
             style={{
@@ -524,6 +510,11 @@ const VendorProducts = ({ vendorDatastate }) => {
           >
             {ad_title}
           </div>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEditClickCatChange(record, 'ad_title')}
+          />
         </Tooltip>
       ),
     },
@@ -544,6 +535,11 @@ const VendorProducts = ({ vendorDatastate }) => {
           >
             {additionaldescription}
           </div>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEditClickCatChange(record, 'additionaldescription')}
+          />
         </Tooltip>
       ),
     },
@@ -893,7 +889,9 @@ const VendorProducts = ({ vendorDatastate }) => {
               type === 'brand' ? record.brand :
                 type === 'skuid' ? record.skuid :
                   type === 'quantity' ? record.quantity :
-                    ''; // Add a default value if none of the conditions match
+                    type === 'ad_title' ? record.ad_title :
+                      type === 'additionaldescription' ? record.additionaldescription :
+                        ''; // Add a default value if none of the conditions match
 
     const categoryOptions = {};
     optionsArray.forEach((option) => {
@@ -902,13 +900,17 @@ const VendorProducts = ({ vendorDatastate }) => {
 
     // Open a Swal alert with an input field and a default value
     const { value: newValue } = await Swal.fire({
-      title: `Edit ${type === 'category' ? 'Category' : type === 'subcategory' ? 'Subcategory' : 'Value'} `,
-      input: type === 'category' || type === 'subcategory' ? 'select' : 'text',
+      title: `Edit ${type === 'category' ? 'Category' : type === 'subcategory' ? 'Subcategory' : 'Value'}`,
+      input: type === 'category' || type === 'subcategory' ? 'select' :
+        type === 'additionaldescription' ? 'textarea' :
+          type === 'sellingprice' || type === 'mrp' || type === 'quantity' ? 'number' :
+            'text',
       inputValue: currentValue,
       inputOptions: type === 'category' || type === 'subcategory' ? categoryOptions : currentValue,
       showCancelButton: true,
       confirmButtonText: 'Save',
     });
+
 
     if (newValue !== undefined) {
       try {
@@ -1097,7 +1099,7 @@ const VendorProducts = ({ vendorDatastate }) => {
 
           if (response.ok) {
             message.success("Item deleted successfully");
-            setProducts(memoizedProducts.filter((item) => item.id !== key));
+            setProducts(products.filter((item) => item.id !== key));
           } else {
             // Handle error response
             const errorData = await response.json();
@@ -1432,13 +1434,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                 label="Selling Price"
                 name="sellingprice"
                 className="col-span-1"
-                rules={[
-                  {
-                    required: true,
-                    message: "Selling Price is required",
-                  },
 
-                ]}
               >
                 <InputNumber />
               </Form.Item>
@@ -1635,6 +1631,7 @@ const VendorProducts = ({ vendorDatastate }) => {
               >
                 <Select
                   id="category"
+                  showSearch
                   placeholder="Select category"
                   className="w-full"
                   onChange={(category) => handleCategoryChange(category)}
@@ -1674,6 +1671,8 @@ const VendorProducts = ({ vendorDatastate }) => {
               >
                 <Select
                   id="subcategory"
+                  showSearch
+
                   placeholder="Select subcategory"
                   className="w-full"
                   onChange={(subcategory) =>
@@ -1857,9 +1856,6 @@ const VendorProducts = ({ vendorDatastate }) => {
     },
   ];
 
-  console.log(selectRowProduct);
-
-
   const handleDeleteSelected = async () => {
     try {
       // Implement your API call here to delete selected products
@@ -1884,7 +1880,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       // Successful deletion
       // Update the products list by filtering out the deleted products
       setProducts(
-        memoizedProducts.filter(
+        products.filter(
           (product) => !selectedRowKeys.includes(product.id)
         )
       );
@@ -2268,7 +2264,34 @@ const VendorProducts = ({ vendorDatastate }) => {
     console.log('Form Data:', formData);
   };
 
-  console.log(SelectedRowProduct, 'sa');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = async () => {
+    if (searchTerm.trim() === '') {
+      setPage(1);
+      setPageSize(10);
+      callVendorProducts();
+      return;
+    }
+
+    try {
+      // Send a request to your backend with the search term
+      const response = await fetch(`${AdminUrl}/api/getSearchedProducts_Panel?searchTerm=${searchTerm}&subcatNameBackend=${subcatNameBackend}&page=${page}&pageSize=${pageSize}`);
+
+      if (response.ok) {
+        const data = await response.json();
+
+        setProducts(data.products);
+        setTotalCount(parseInt(data?.totalCount) || 0);
+        setAllProducts(data.products);
+        // setSubcategoryCount(parseInt(data?.totalCount) || 0); // Assuming totalCount represents subcategory count
+      }
+
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    }
+  };
+
   return vendorDatastate && vendorDatastate.length > 0 ? (
     <>
       {!vendorDatastate?.[0].email_verification_status ||
@@ -2366,6 +2389,15 @@ const VendorProducts = ({ vendorDatastate }) => {
             </button>
           </div>
 
+          <div className="mt-5  flex justify-center">
+            <Search
+              placeholder="Enter your search term"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onSearch={handleSearch}
+              className="w-1/2"
+            />
+          </div>
           <div className="overflow-auto mt-4 border-none
              ">
 
@@ -2399,7 +2431,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                 >
                   <Table
                     columns={columns}
-                    dataSource={memoizedProducts}
+                    dataSource={products}
                     pagination={false}
                     rowClassName={(record) =>
                       selectedRowKeys.includes(record.id)
@@ -2416,12 +2448,12 @@ const VendorProducts = ({ vendorDatastate }) => {
                           <Checkbox
                             checked={
                               selectedRowKeys.length ===
-                              memoizedProducts.length
+                              products.length
                             }
                             indeterminate={
                               selectedRowKeys.length > 0 &&
                               selectedRowKeys.length <
-                              memoizedProducts.length
+                              products.length
                             }
                             onChange={handleSelectAllRows}
                           >
@@ -2477,7 +2509,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                         <div className="h-[60vh]  overflow-auto">
                           <Table
                             columns={columns}
-                            dataSource={memoizedProducts}
+                            dataSource={products}
                             pagination={false}
                             rowClassName={(record) =>
                               selectedRowKeys.includes(record.id) ? "selected-row" : ""
@@ -2487,12 +2519,12 @@ const VendorProducts = ({ vendorDatastate }) => {
                                 <div className="flex items-center ">
                                   <Checkbox
                                     checked={
-                                      selectedRowKeys.length === memoizedProducts.length
+                                      selectedRowKeys.length === products.length
                                     }
                                     indeterminate={
                                       selectedRowKeys.length > 0 &&
                                       selectedRowKeys.length <
-                                      memoizedProducts.length
+                                      products.length
                                     }
                                     onChange={handleSelectAllRows}
                                   >

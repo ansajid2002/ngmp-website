@@ -17,18 +17,21 @@ const ManageCategory = ({ adminLoginData }) => {
   const [fileList, setFileList] = useState([]);
   const [selectedKey, setSelectedKey] = useState(null);
   const [selectedSubKey, setSelectedSubKey] = useState(null);
+  const [ModalSubMaincategories, setModalSubMaincategories] = useState(null);
   const [DeletemodalVisibleRole, setDeleteModalCategory] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [DeleteSubcategoryModal, setDeleteSubcategoryModal] = useState(false);
 
   const [selectedRow, setSelectedRow] = useState([]);
   const [subselectedRow, setSubSelectedRow] = useState([]);
+  const [SubMainSelectedRow, setSelectedSubMainSelectedRow] = useState([]);
   const [type, setType] = useState("");
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
+
 
   // Fetch data using useEffect
   useEffect(() => {
@@ -205,12 +208,6 @@ const ManageCategory = ({ adminLoginData }) => {
       fixed: 'left',
       render: (record) => (
         <Space size="middle" className="flex">
-          {/* Edit Icon */}
-          <FiEdit3
-            onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
-            className="text-green-600 w-6 h-6 cursor-pointer"
-          />
-
           {/* Delete Icon */}
           <FiTrash2
             onClick={() => handleSubcatModal(record.subcategory_id)} // Replace 'id' with 'category_id'
@@ -220,6 +217,24 @@ const ManageCategory = ({ adminLoginData }) => {
       ),
     },
     { title: 'Subcategory Name', dataIndex: 'subcategory_name', key: 'subcategory_name' },
+    {
+      title: "Sub Main categories",
+      dataIndex: "Subcategories",
+      key: "Subcategories",
+      width: 250,
+      defaultSortOrder: 'ascend', // Set the default sorting order to ascending
+      render: (_, record) => (
+        <>
+          <div onClick={() => {
+            setSelectedSubMainSelectedRow(record)
+            setSelectedSubKey(record.subcategory_id)
+            setModalSubMaincategories(true)
+          }} className='cursor-pointer'>
+            <p className='text-base text-blue-800'>View Subcategories ({record?.nested_subcategories?.length || 0})</p>
+          </div>
+        </>
+      ),
+    },
     {
       title: 'Image',
       dataIndex: 'subcategory_image_url',
@@ -272,6 +287,83 @@ const ManageCategory = ({ adminLoginData }) => {
     // Add more columns as needed
   ];
 
+  const subcategory_main_columns = [
+    {
+      title: "Actions",
+      key: "actions",
+      width: 120,
+      fixed: 'left',
+      render: (record) => (
+        <Space size="middle" className="flex">
+          {/* Edit Icon */}
+          <FiEdit3
+            onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
+            className="text-green-600 w-6 h-6 cursor-pointer"
+          />
+
+          {/* Delete Icon */}
+          <FiTrash2
+            onClick={() => handleSubcatModal(record.subcategory_id)} // Replace 'id' with 'category_id'
+            className="text-red-600 w-6 h-6 cursor-pointer"
+          />
+        </Space>
+      ),
+    },
+    { title: 'Sub Main category Name', dataIndex: 'nested_subcategory_name', key: 'nested_subcategory_name' },
+
+    {
+      title: 'Image',
+      dataIndex: 'image_url',
+      key: 'image_url',
+      width: 100,
+      render: (imageUrl, row, index) => {
+        if (imageUrl) {
+          return (
+            <div className="overflow-hidden flex">
+              <Image
+                width={50}
+                height={50}
+                src={`${AdminUrl}/uploads/SubMaincategoryImage/${imageUrl}`}
+                className="w-full h-full object-contain border-4  rounded-full"
+              />
+
+              <FaEdit className='text-gray-500 cursor-pointer' onClick={() => {
+                setUploadImageButtonModal(true)
+                setSelectedKey(index)
+                setType('submaincategory')
+              }} />
+            </div>
+          );
+        } else {
+          return (
+            <FaEdit className='text-gray-500 cursor-pointer' onClick={() => {
+              setUploadImageButtonModal(true)
+              setSelectedKey(index)
+              setType('submaincategory')
+            }} />
+          );
+        }
+      },
+    },
+
+    {
+      title: "Status",
+      dataIndex: "subcat_status",
+      key: "subcat_status",
+      render: (subcat_status, record, index) => (
+        <>
+          <Switch
+            checked={subcat_status}
+            onChange={(checked) => handleSwitchChange(checked, index, 'submaincategory')}
+            className='bg-red-500'
+          />
+          <p>{subcat_status}</p>
+        </>
+      ),
+    },
+    // Add more columns as needed
+  ];
+
   const handleUpdate = (key) => {
     setSelectedKey(key)
     setModalVisible(true)
@@ -299,11 +391,13 @@ const ManageCategory = ({ adminLoginData }) => {
         body: JSON.stringify({
           categoryId: categoryId,
           status: checked,
-          type
+          type,
+          SubMainSelectedRow
         }),
       });
 
       if (response.ok) {
+        const data = await response.json()
         setData((prevCategoryData) => {
           const updatedCategoryData = [...prevCategoryData];
           let categoryIndex;
@@ -329,6 +423,7 @@ const ManageCategory = ({ adminLoginData }) => {
               // Update subcategory status within the category
               if (subcategoryIndex !== -1) {
                 updatedCategoryData[categoryIndex].subcategories[subcategoryIndex].subcat_status = checked;
+                updatedCategoryData[categoryIndex].subcategories[subcategoryIndex].nested_subcategories[categoryId].status = checked;
               }
             } else {
               // Invalid type provided
@@ -338,8 +433,6 @@ const ManageCategory = ({ adminLoginData }) => {
 
           return updatedCategoryData;
         });
-
-        console.log(categoryData);
         // Show a success notification if the request was successful
         const statusMessage = checked ? 'enabled' : 'disabled';
         notification.success({
@@ -416,6 +509,7 @@ const ManageCategory = ({ adminLoginData }) => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('selectedKey', selectedKey);
+      formData.append('SubMainSelectedRow', JSON.stringify(SubMainSelectedRow));
 
       if (type === 'category') {
         fetch(`${AdminUrl}/api/UploadCategoryImage`, {
@@ -493,6 +587,38 @@ const ManageCategory = ({ adminLoginData }) => {
             console.error('Network error:', error);
           });
       }
+      else if (type === 'submaincategory') {
+        fetch(`${AdminUrl}/api/UploadSubMaincatgeoryImage`, {
+          method: 'POST',
+          body: formData,
+        })
+          .then(async (response) => {
+            if (response.ok) {
+              // Handle success
+              const data = await response.json()
+
+              console.log(data?.file);
+              SubMainSelectedRow.nested_subcategories[selectedKey].image_url = data?.file;
+              notification.success({
+                message: 'Success',
+                description: 'SubCategory Image updated successfully!',
+              });
+
+              setUploadImageButtonModal(false)
+              setCategoryLoading(false)
+              setFileList([])
+              setSelectedKey(null)
+              console.log('File sent to the backend successfully');
+            } else {
+              // Handle error
+              console.error('Error sending file to the backend');
+            }
+          })
+          .catch((error) => {
+            // Handle network error
+            console.error('Network error:', error);
+          });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -541,9 +667,6 @@ const ManageCategory = ({ adminLoginData }) => {
             const newData = result.data;
 
             // Append the new data to the existing data
-            const updatedData = [...newData, ...categoryData];
-
-            // Update the state with the updated data
             setData([
               ...categoryData,
               {
@@ -767,6 +890,7 @@ const ManageCategory = ({ adminLoginData }) => {
       });
     }
   };
+  console.log(SubMainSelectedRow);
   return (
     <div className="mt-10 sm:ml-72 sm:p-0 p-4 mb-44 ">
       <h1 className="text-4xl text-gray-700 font-bold mb-10">
@@ -813,7 +937,7 @@ const ManageCategory = ({ adminLoginData }) => {
         onOk={handleSaveCategories}
         onCancel={() => setModalVisible(false)}
         okText={selectedKey === null ? "Create" : "Update"}
-        width={800}
+        width={1200}
         okButtonProps={{ style: { backgroundColor: "green" } }}
       >
         <Form {...formItemLayout} form={form}>
@@ -875,13 +999,12 @@ const ManageCategory = ({ adminLoginData }) => {
           </Form.Item>
 
           <hr className='mb-8' />
-          <Form.List name="subcategories" >
+          <Form.List name="subcategories">
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ key, name, fieldKey, ...restField }) => (
-                  <div className='border-b mb-4'>
+                  <div className='border-b mb-4' key={key}>
                     <Form.Item
-                      key={key}
                       label={`Name ${key + 1}`}
                       {...restField}
                       name={[name, "subcategory_name"]}
@@ -896,7 +1019,6 @@ const ManageCategory = ({ adminLoginData }) => {
                       <Input />
                     </Form.Item>
                     <Form.Item
-                      key={key}
                       label={`Description ${key + 1}`}
                       {...restField}
                       name={[name, "subcategory_description"]}
@@ -904,17 +1026,86 @@ const ManageCategory = ({ adminLoginData }) => {
                       rules={[
                         {
                           required: true,
-                          message: "Please enter the subcategory name!",
+                          message: "Please enter the subcategory description!",
                         },
                       ]}
                     >
                       <Input />
                     </Form.Item>
 
+                    {/* Nested Subcategories */}
+                    <Form.List name={[name, "nested_subcategories"]}>
+                      {(nestedFields, { add: addNested, remove: removeNested }) => (
+                        <>
+                          {nestedFields.map(({ key: nestedKey, name: nestedName, fieldKey: nestedFieldKey, ...nestedRestField }) => (
+                            <div className='border-b mb-4' key={nestedKey}>
+                              <Form.Item
+                                label={`Nested Subcategory Name ${nestedKey + 1}`}
+                                {...nestedRestField}
+                                wrapperCol={{ offset: 2, span: 14 }}
+                                labelCol={{ offset: 2, span: 8 }}
+                                name={[nestedName, "nested_subcategory_name"]}
+                                fieldKey={[nestedFieldKey, "nested_subcategory_name"]}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Please enter the nested subcategory name!",
+                                  },
+                                ]}
+                              >
+                                <Input />
+                              </Form.Item>
+                              <Form.Item
+                                label={`Nested Subcategory Description ${nestedKey + 1}`}
+                                {...nestedRestField}
+                                wrapperCol={{ offset: 2, span: 14 }}
+                                labelCol={{ offset: 2, span: 8 }}
+                                name={[nestedName, "nested_subcategory_description"]}
+                                fieldKey={[nestedFieldKey, "nested_subcategory_description"]}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Please enter the nested subcategory description!",
+                                  },
+                                ]}
+                              >
+                                <Input />
+                              </Form.Item>
+                            </div>
+                          ))}
+
+                          {/* Buttons for Nested Subcategories */}
+                          <Form.Item wrapperCol={{ offset: 6, span: 14 }} className='flex justify-center items-center'>
+                            <Button
+                              type="dashed"
+                              onClick={() => addNested()}
+                              icon={<PlusOutlined />}
+                              className='flex justify-center items-center'
+                            >
+                              Add Nested Subcategory
+                            </Button>
+                          </Form.Item>
+
+                          {nestedFields.length > 0 && (
+                            <Form.Item wrapperCol={{ offset: 6, span: 14 }}>
+                              <Button
+                                type="dashed"
+                                onClick={() => removeNested(nestedFields.length - 1)}
+                                icon={<MinusCircleOutlined />}
+                                className='flex justify-center items-center'
+                              >
+                                Remove Last Nested Subcategory
+                              </Button>
+                            </Form.Item>
+                          )}
+                        </>
+                      )}
+                    </Form.List>
                   </div>
                 ))}
 
-                <Form.Item wrapperCol={{ offset: 6, span: 14 }} className='flex  justify-center items-center'>
+                {/* Buttons for Subcategories */}
+                <Form.Item wrapperCol={{ offset: 6, span: 14 }} className='flex justify-center items-center'>
                   <Button
                     type="dashed"
                     onClick={() => add()}
@@ -932,7 +1123,6 @@ const ManageCategory = ({ adminLoginData }) => {
                       onClick={() => remove(fields.length - 1)}
                       icon={<MinusCircleOutlined />}
                       className='flex justify-center items-center'
-
                     >
                       Remove Last Subcategory
                     </Button>
@@ -941,6 +1131,8 @@ const ManageCategory = ({ adminLoginData }) => {
               </>
             )}
           </Form.List>
+
+
         </Form>
       </Modal>
 
@@ -964,6 +1156,16 @@ const ManageCategory = ({ adminLoginData }) => {
         title="Subcategories"
       >
         <Table dataSource={selectedRow?.subcategories} columns={subcategory_columns} />
+      </Modal>
+
+      <Modal
+        visible={ModalSubMaincategories}
+        onCancel={() => setModalSubMaincategories(false)}
+        footer={null}
+        width={600}
+        title="Sub Main categories"
+      >
+        <Table dataSource={SubMainSelectedRow?.nested_subcategories || []} columns={subcategory_main_columns} />
       </Modal>
 
       <Modal

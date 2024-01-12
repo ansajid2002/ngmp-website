@@ -97,15 +97,7 @@ export const commonFormFields = [
         rules: [
           { required: true, message: "Please input the Country of Origin!" },
         ],
-        component: (
-          <Select showSearch>
-            <Select.Option value="India">India</Select.Option>
-            <Select.Option value="Somalia">Somalia</Select.Option>
-            <Select.Option value="Kenya">Kenya</Select.Option>
-            <Select.Option value="Ethopia">Ethopia</Select.Option>
-            <Select.Option value="France">France</Select.Option>
-          </Select>
-        ),
+        component: <Input />,
         notes:
           "Example: If the product is from India, select India from the list.",
       },

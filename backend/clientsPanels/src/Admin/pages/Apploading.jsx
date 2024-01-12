@@ -112,8 +112,7 @@ const Apploading = () => {
         const formData = new FormData();
         instance.files[0] && formData.append('bannerUrl', instance.files[0]); // Assuming you want to send the first file
         formData.append('id', instanceIndex);
-        console.log(instance);
-        console.log(formData);
+
         // Replace 'backendUploadUrl' with your actual backend API endpoint
         const backendUploadUrl = `${AdminUrl}/api/uploadApploadingscreen`;
         // Send a POST request to the backend

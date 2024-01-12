@@ -195,4 +195,69 @@ app.post('/UploadSubcatgeoryImage', uploadSubcategory.single('file'), async (req
 });
 
 
+
+// Handle file upload
+// img storage path
+const imgConfigSubMaincatgeory = multer.diskStorage({
+  destination: (req, file, callback) => {
+    console.log(file);
+    callback(null, "./uploads/SubMaincategoryImage");
+  },
+  filename: (req, file, callback) => {
+    callback(null, `SubMaincategoryImage-${Date.now()} - ${file.originalname}`);
+  },
+});
+
+// img filter
+const isSubMainCategory = (req, file, callback) => {
+  if (file.mimetype.startsWith("image")) {
+    callback(null, true);
+  } else {
+    callback(new Error("Only images are allowed"));
+  }
+};
+
+const uploadSubMaincategory = multer({
+  storage: imgConfigSubMaincatgeory,
+  fileFilter: isSubMainCategory,
+});
+
+app.post('/UploadSubMaincatgeoryImage', uploadSubMaincategory.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file provided.' });
+    }
+
+    const file = req.file;
+    const { SubMainSelectedRow, selectedKey } = req.body
+    const subcatData = JSON.parse(SubMainSelectedRow);
+    const { nested_subcategories } = subcatData
+
+    // Update nested_subcat_status for the matched nested subcategory
+    const update = nested_subcategories && nested_subcategories.map((item, index) => {
+      if (index === parseInt(selectedKey)) {
+        // Assuming your object has a 'status' property, update it here
+        return {
+          ...item,
+          image_url: file.filename  // Replace 'newStatus' with the desired status value
+        };
+      }
+      return item
+    })
+
+    const updateQuery = 'UPDATE subcategories SET nested_subcategories = $1 WHERE subcategory_id = $2 RETURNING *;';
+    const values = [
+      JSON.stringify(update), // Convert the array to a JSON string
+      subcatData?.subcategory_id
+    ];
+
+    const { rows } = await pool.query(updateQuery, values);
+
+    res.status(200).json({ file: file.filename, message: 'SubCategory image updated successfully.', file: file.filename });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error occurred while storing the category picture.' });
+  }
+});
+
 module.exports = app;

@@ -19,7 +19,7 @@ const VariantsCrud = ({
   const [formFields, setFormFields] = useState([
     { attributeName: "", attributeValues: [] },
   ]);
-console.log(attributeData,"attributeData")
+  console.log(attributeData, "attributeData")
   const [form] = Form.useForm();
 
   const id = vendorDatastate?.[0].id;
@@ -28,8 +28,8 @@ console.log(attributeData,"attributeData")
     const fetchData = async () => {
       try {
         const response = await getAllVendorProductvariants(id);
-        console.log(response,"response from attributes table");
-        setAttributeData(response.filter((single) => single.subcategory === selectedSubcategory ))
+        console.log(response, "response from attributes table");
+        setAttributeData(response.filter((single) => single.subcategory === selectedSubcategory))
 
         // setAttributeData(response);
         const initialFormFields = response.map((attribute) => ({
@@ -364,7 +364,6 @@ const VariantForm = ({
         ...values,
       };
 
-      console.log(formData, 'asa');
 
       // Pass the form data to the parent component
       onSave(formData, data, variant);
@@ -423,10 +422,6 @@ const VariantForm = ({
           name="sellingPrice"
           className="col-span-1"
           rules={[
-            {
-              required: true,
-              message: "Selling Price is required",
-            },
             {
               type: "number",
               min: 1,

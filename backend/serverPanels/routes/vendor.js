@@ -1215,7 +1215,7 @@ const fetchRejectedVendors = async (page, pageSize) => {
 // Fetch rejected vendors for all categories
 app.get("/rejected-products", async (req, res) => {
   try {
-    const { vendorPage, vendorPageSize } = req.query
+    const { vendorPage = 1, vendorPageSize = 10 } = req.query
     const { totalVendors, rejectedVendors } = await fetchRejectedVendors(vendorPage, vendorPageSize);
 
     const modifiedRejectedVendors = rejectedVendors.map((vendor) => ({
@@ -1229,6 +1229,22 @@ app.get("/rejected-products", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.get('/product-rejected', async (req, res) => {
+  try {
+    const { vendodid } = req.query
+
+    const query = "SELECT * FROM products WHERE vendorid = $1 AND status = 2"
+    const value = [vendodid]
+
+    const { rows } = await pool.query(query, value)
+
+    res.status(200).json(rows)
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
 
 app.get('/getVendorProductsAR', async (req, res) => {
   try {
@@ -2036,6 +2052,113 @@ app.get("/getSearchedProducts", async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm;
     const page = parseInt(req.query.pageNumber) || 1; // Page number, default to 1
+    const limit = parseInt(req.query.pageSize) || 10; // Number of items to fetch, default to 10
+
+    if (!searchTerm) {
+      return res
+        .status(400)
+        .json({ error: "Missing search term in the query parameter." });
+    }
+
+    // Use parameterized query to prevent SQL injection
+    const countQuery = {
+      text: `
+        SELECT 
+          COUNT(*) as total_count
+        FROM 
+          products 
+        WHERE 
+          (ad_title ILIKE $1 OR 
+          additionaldescription ILIKE $1 OR 
+          searchkeywords ILIKE $1) AND 
+          status = 1
+      `,
+      values: [`%${searchTerm}%`],
+    };
+
+    const countResult = await pool.query(countQuery);
+    const totalCount = countResult.rows[0].total_count;
+
+    // Use parameterized query to prevent SQL injection
+    const query = {
+      text: `
+        SELECT 
+          *
+        FROM 
+          products 
+        WHERE 
+          (ad_title ILIKE $1 OR 
+          additionaldescription ILIKE $1 OR 
+          searchkeywords ILIKE $1) AND 
+          status = 1
+        LIMIT $2 OFFSET $3
+      `,
+      values: [`%${searchTerm}%`, limit, (page - 1) * limit],
+    };
+
+    const result = await pool.query(query);
+    const products = result.rows;
+
+    let AllProducts = []
+
+    for (const product of products) {
+      if (product.isvariant === "Variant") {
+        const variantData = await fetchVariantData(pool, product.uniquepid);
+        if (variantData && variantData.length > 0) {
+          // Update the product's mrp and sellingprice using the first entry in variantData
+          product.mrp = variantData[0].variant_mrp;
+          product.sellingprice = variantData[0].variant_sellingprice;
+          product.label = variantData[0].label; // Replace with the desired label
+
+          if (product.currency_symbol !== 'USD') {
+            // Convert mrp and sellingprice to floats
+            const mrpAsFloat = parseFloat(variantData[0].variant_mrp);
+            const sellingPriceAsFloat = parseFloat(
+              variantData[0].variant_sellingprice
+            );
+
+            if (!isNaN(mrpAsFloat) && !isNaN(sellingPriceAsFloat)) {
+              // Calculate the exchanged mrp and sellingprice based on the conversion rate
+              product.sellingprice = sellingPriceAsFloat.toFixed(2);
+              product.mrp = mrpAsFloat.toFixed(2);
+              product.currency_symbol = 'USD'; // Update the currency symbol
+            }
+          }
+        }
+      }
+
+      if (product.vendorid) {
+        const vendorInfo = await fetchVendorInfo(pool, product.vendorid);
+        product.vendorInfo = vendorInfo;
+      }
+
+      // Check if the product's currency_symbol is not equal to the desired currency
+      // Convert the selling price to a float
+      const sellingPriceAsFloat = parseFloat(product.sellingprice);
+      const mrpAsFloat = parseFloat(product.mrp);
+
+
+      if (!isNaN(sellingPriceAsFloat)) {
+        // Round to two decimal places
+        product.sellingprice = sellingPriceAsFloat.toFixed(2);
+        product.mrp = mrpAsFloat.toFixed(2);
+        product.currency_symbol = 'USD'; // Update the currency symbol
+      }
+
+      AllProducts.push(product);
+    }
+
+    res.status(200).json({ totalCount, products: AllProducts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/getSearchedProducts_Panel", async (req, res) => {
+  try {
+    const searchTerm = req.query.searchTerm;
+    const page = parseInt(req.query.page) || 1; // Page number, default to 1
     const limit = parseInt(req.query.pageSize) || 10; // Number of items to fetch, default to 10
 
     if (!searchTerm) {

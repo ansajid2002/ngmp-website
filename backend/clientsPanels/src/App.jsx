@@ -202,6 +202,8 @@ function AdminRoutes() {
 
   return (
     <>
+      <div id="google_translate_element"></div>
+
       {superad ? (
         <>
           <AdminSidebar adminLoginData={adminLoginData} />

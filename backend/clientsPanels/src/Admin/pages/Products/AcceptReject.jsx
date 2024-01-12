@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import { FiAlertCircle, FiCheckCircle, FiClock } from "react-icons/fi";
 import moment from "moment";
 import axios from "axios";
+import Search from "antd/es/input/Search";
 
 const AcceptReject = () => {
   const [rejectedProducts, setRejectedProducts] = useState(null);
@@ -82,42 +83,42 @@ const AcceptReject = () => {
     setApproveModal(false);
   };
 
-  useEffect(() => {
-    const fetchRejectedProducts = async () => {
-      try {
-        const response = await fetch(`${AdminUrl}/api/rejected-products?vendorPage=${vendorPage}&vendorPageSize=${vendorPageSize}`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-
-        // Group products by vendorId and create products array
-        const productsByVendor = {};
-        data?.rejectedVendors.forEach((product) => {
-          const { vendorid, ...productData } = product;
-          if (!productsByVendor[vendorid]) {
-            productsByVendor[vendorid] = {
-              vendorid,
-              vendorname: product.vendorname,
-              totalProductsVendor: parseInt(product.vendor_row_count) || 0,
-              products: [],
-            };
-          }
-          // productsByVendor[vendorid].products.push(productData);
-        });
-
-        const modifiedData = Object.values(productsByVendor);
-        setRejectedProducts(modifiedData);
-
-        settotalVendors(parseInt(data?.totalvendors) || 0)
-        setExpandedRowKeys(data.map((product) => product.vendorid));
-      } catch (error) {
-        console.error("Error fetching rejected products:", error);
+  const fetchRejectedProducts = async () => {
+    try {
+      const response = await fetch(`${AdminUrl}/api/rejected-products?vendorPage=${vendorPage}&vendorPageSize=${vendorPageSize}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    };
+      const data = await response.json();
 
+      // Group products by vendorId and create products array
+      const productsByVendor = {};
+      data?.rejectedVendors.forEach((product) => {
+        const { vendorid, ...productData } = product;
+        if (!productsByVendor[vendorid]) {
+          productsByVendor[vendorid] = {
+            vendorid,
+            vendorname: product.vendorname,
+            totalProductsVendor: parseInt(product.vendor_row_count) || 0,
+            products: [],
+          };
+        }
+        // productsByVendor[vendorid].products.push(productData);
+      });
+
+      const modifiedData = Object.values(productsByVendor);
+      setRejectedProducts(modifiedData);
+
+      settotalVendors(parseInt(data?.totalvendors) || 0)
+      setExpandedRowKeys(data && data.map((product) => product.vendorid));
+    } catch (error) {
+      console.error("Error fetching rejected products:", error);
+    }
+  };
+
+  useEffect(() => {
     !rejectedProducts && fetchRejectedProducts();
-  }, []);
+  }, [rejectedProducts]);
 
   const getVendorChunkProducts = async (vendorId, page, pageSize) => {
     try {
@@ -138,7 +139,6 @@ const AcceptReject = () => {
       console.log(error);
     }
   }
-
 
   const openVendorProfileModal = (vendor, rejectedProducts) => {
     console.log(vendorInfo, 'vend');
@@ -252,7 +252,6 @@ const AcceptReject = () => {
       dataIndex: "vendorname",
       key: "vendorname",
       render: (_, record) => {
-        console.log(record);
         return (
           <>
             <p className="font-bold text-xl">
@@ -268,7 +267,6 @@ const AcceptReject = () => {
                 // Create an array to store unique pids
                 const uniquePidsArray = [];
 
-                console.log(vendorProducts[record.vendorid]);
                 // Iterate through each product in the array
                 vendorProducts && vendorProducts[record.vendorid].forEach((product) => {
                   const pid = product.uniquepid;
@@ -313,7 +311,7 @@ const AcceptReject = () => {
         return (
           <>
             <p>{record.uniquepid}</p>
-            <p>Sku id: {record.skuid}</p>
+            <p>{record.skuid && 'Sku id :' + record.skuid}</p>
           </>
         );
       },
@@ -669,6 +667,61 @@ const AcceptReject = () => {
     // Assuming the backend endpoint is 'http://your-backend-api.com/bulkProductApprove'
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = async (page, pageSize) => {
+
+    if (searchTerm.trim() === '') {
+      setvendorPage(1);
+      setvendorPageSize(10);
+      fetchRejectedProducts()
+      return;
+    }
+
+    try {
+      // Send a request to your backend with the search term
+      const response = await fetch(`${AdminUrl}/api/getSearchedProducts_Panel?searchTerm=${searchTerm}&page=${page}&pageSize=${pageSize}`);
+
+      if (response.ok) {
+        const data = await response.json();
+
+        const productsByVendor = {};
+        data?.products.forEach(async (product) => {
+          const { vendorid, ...productData } = product;
+          if (!productsByVendor[vendorid]) {
+            productsByVendor[vendorid] = {
+              vendorid,
+              vendorname: product?.vendorInfo?.vendorname,
+              totalProductsVendor: data?.totalCount,
+              products: [],
+            };
+            console.log(data);
+            // const vendorProduct = await getVendorChunkProducts(vendorid, 1, 10);
+            setExpandedRowKeys([vendorid]);
+            setVendorProducts({ [vendorid]: data?.products || [] });
+            console.log({ [vendorid]: parseInt(data?.totalCount) || 0 }, 'asas');
+            setVendorTotalProducts({ [vendorid]: parseInt(data?.totalCount) || 0 });
+          }
+          // productsByVendor[vendorid].products.push(productData);
+        });
+
+        const modifiedData = Object.values(productsByVendor);
+        setRejectedProducts(modifiedData);
+
+        // settotalVendors(parseInt(data?.totalCount) || 0)
+
+        // setProducts(data.products);
+        // setTotalCount(parseInt(data?.totalCount) || 0);
+        // setAllProducts(data.products);
+        // setSubcategoryCount(parseInt(data?.totalCount) || 0); // Assuming totalCount represents subcategory count
+      }
+
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    }
+  };
+
+
   return (
     <div className="sm:p-4 sm:ml-64">
       <div className="lg:w-1/2 md:w-3/4 sm:w-full p-2">
@@ -679,6 +732,16 @@ const AcceptReject = () => {
           Manage your product approvals with ease by accepting or rejecting
           product submissions.
         </p>
+      </div>
+
+      <div className="mt-5  flex justify-center">
+        <Search
+          placeholder="Enter your search term"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onSearch={() => handleSearch(1, 10)}
+          className="w-1/2"
+        />
       </div>
 
       <Table
@@ -720,23 +783,24 @@ const AcceptReject = () => {
           onExpand: async (expanded, record) => {
             console.log(record, expanded);
             if (expanded) {
-              // Fetch vendor products for the expanded row
+              handleSearch()
               const vendorProduct = await getVendorChunkProducts(record.vendorid, 1, 10);
               setExpandedRowKeys([record.vendorid]);
               setVendorProducts({ [record.vendorid]: vendorProduct?.products || [] });
               setVendorTotalProducts({ [record.vendorid]: parseInt(vendorProduct?.totalProducts) || 0 });
+
             } else {
               // Collapse all rows
               setExpandedRowKeys([]);
               setVendorProducts({});
-              setVendorTotalProducts(0)
+              setVendorTotalProducts(0);
             }
           },
           expandedRowRender: (record) => (
             <>
               <Table
                 columns={columns.slice(1)} // Exclude the Vendor Name column
-                dataSource={vendorProducts[record.vendorid] || []}
+                dataSource={vendorProducts && vendorProducts[record.vendorid] || []}
                 rowKey="productId"
                 pagination={false}
               />
@@ -745,12 +809,19 @@ const AcceptReject = () => {
                   total={vendorTotalProducts[record.vendorid] || 0}
                   showSizeChanger
                   showQuickJumper
-                  defaultCurrent={1}
                   showTotal={(total) => `Total ${total} items`}
                   responsive={true}
                   onChange={async (page, pageSize) => {
-                    const vendorProduct = await getVendorChunkProducts(record.vendorid, page, pageSize);
-                    setVendorProducts({ [record.vendorid]: vendorProduct?.products || [] });
+                    if (searchTerm.trim() !== '') {
+                      setPage(page)
+                      setPageSize(pageSize)
+                      handleSearch(page, pageSize)
+                    } else {
+                      setPage(page)
+                      setPageSize(pageSize)
+                      const vendorProduct = await getVendorChunkProducts(record.vendorid, page, pageSize);
+                      setVendorProducts({ [record.vendorid]: vendorProduct?.products || [] });
+                    }
                   }}
                 />
               </div>
@@ -765,8 +836,7 @@ const AcceptReject = () => {
           total={totalvendors || 0}
           showSizeChanger
           showQuickJumper
-          defaultCurrent={2}
-          current={1}
+          current={vendorPage}
           showTotal={(total) => `Total ${total} items`}
           responsive={true}
           onChange={(page, pageSize) => {
