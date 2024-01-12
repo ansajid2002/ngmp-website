@@ -6,6 +6,7 @@ const multer = require("multer");
 const bcrypt = require("bcrypt");
 const sendEmail = require("./nodemailer");
 const fs = require("fs/promises"); // For reading the HTML template
+const jwt = require('jsonwebtoken'); 
 
 app.use(express.json());
 app.use(cors());
@@ -163,6 +164,170 @@ app.post("/addcustomers", async (req, res) => {
   }
 });
 
+app.post("/getAppleUserData", async (req, res) => {
+  try {
+    const userInfo = req.body;
+    const response = jwt.decode(req.body.identityToken);
+    console.log(response.email, "1");
+
+    if (response && response.email) {
+      const userData = await fetchUserDataFromDB(response.email);
+      console.log("2");
+
+      if (userData) {
+        console.log("3");
+        // If userdata is found, add apple_id to it
+        userData.apple_id = userInfo?.apple_id || userInfo.user;
+
+        // Update the user data in the database
+        await updateUserDataInDB(userData);
+
+        return res.status(200).json({ status: 200, message: "Account already registered with this email. Please log in with email and password.", userdata: userData });
+
+      } else {
+        console.log("4");
+        const newCustomer = createNewCustomer(userInfo, response);
+
+        const insertedCustomerData = await insertCustomerData(newCustomer);
+        console.log("5");
+
+        if (insertedCustomerData) {
+          return res.status(200).json({ status: 200, userdata: insertedCustomerData });
+        }
+      }
+    } else {
+      console.error(`Failed to fetch user data. Status: ${userInfoResponse.status}`);
+      return res.status(500).json({ error: 'Failed to fetch user data' });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+async function updateUserDataInDB(userData) {
+  try {
+    const query = `
+      UPDATE customers
+      SET
+        given_name = $1,
+        family_name = $2,
+        email = $3,
+        password = $4,
+        phone_number = $5,
+        address_line_1 = $6,
+        address_line_2 = $7,
+        city = $8,
+        state = $9,
+        zip_code = $10,
+        country = $11,
+        bio = $12,
+        status = $13,
+        apple_id = $14,
+        picture = $15
+      WHERE email = $3
+    `;
+    const values = [
+      userData.given_name,
+      userData.family_name,
+      userData.email,
+      userData.password,
+      userData.phone_number,
+      userData.address_line_1,
+      userData.address_line_2,
+      userData.city,
+      userData.state,
+      userData.zip_code,
+      userData.country,
+      userData.bio,
+      userData.status,
+      userData.apple_id,
+      userData.picture,
+    ];
+
+    await pool.query(query, values);
+    console.log("66");
+  } catch (error) {
+    console.error('Error updating user data:', error);
+    console.log("7");
+    throw error;
+  }
+}
+
+async function fetchUserDataFromDB(email) {
+  try {
+    const query = "SELECT * FROM customers WHERE email = $1";
+    const value = [email];
+    const userData = await pool.query(query, value);
+
+    return userData?.rows[0];
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    throw error;
+  }
+}
+
+function createNewCustomer(userInfo, response) {
+  return {
+    given_name: userInfo?.fullname?.givenName || "",
+    family_name: userInfo?.fullname?.familyName || "",
+    email: response?.email || "",
+    password: "",
+    phone_number: "",
+    address_line_1: "",
+    address_line_2: "",
+    city: "",
+    state: "",
+    zip_code: "",
+    country: "",
+    bio: "",
+    status: 3,
+    apple_id: userInfo?.user || "",
+    picture: "",
+    
+  };
+}
+
+async function insertCustomerData(newCustomer) {
+  try {
+    const insertCustomerQuery = `
+      INSERT INTO customers
+      (given_name, family_name, email, phone_number, address_line_1, address_line_2, 
+        city, state, zip_code, country, bio, password, verification_code, 
+        verification_expire_date, apple_id, picture, verified_with, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 3)
+      RETURNING *;
+    `;
+
+    const insertCustomerValues = [
+      newCustomer.given_name,
+      newCustomer.family_name,
+      newCustomer.email,
+      newCustomer.phone_number,
+      newCustomer.address_line_1,
+      newCustomer.address_line_2,
+      newCustomer.city,
+      newCustomer.state,
+      newCustomer.zip_code,
+      newCustomer.country,
+      newCustomer.bio,
+      '',
+      null,
+      null,
+      newCustomer.apple_id,
+      newCustomer.picture,
+      '{Google}',
+    ];
+
+    const { rows } = await pool.query(insertCustomerQuery, insertCustomerValues);
+
+    return rows[0];
+  } catch (error) {
+    console.error('Error inserting customer data:', error);
+    throw error;
+  }
+}
+
 // Create a route to receive the access token
 app.post('/getGoogleUserData', async (req, res) => {
   const { accessToken } = req.body;
@@ -178,18 +343,46 @@ app.post('/getGoogleUserData', async (req, res) => {
     if (userInfoResponse.ok) {
       const userInfo = await userInfoResponse.json();
 
-      const query = "SELECT * FROM customers WHERE email = $1"
-      const value = [userInfo?.email]
-      const userdata = await pool.query(query, value)
+      const query = "SELECT * FROM customers WHERE email = $1";
+      const value = [userInfo?.email];
+      const userdata = await pool.query(query, value);
+      console.log("1");
       if (userdata?.rows?.length > 0) {
-        const gid = await userdata.rows[0].google_id
+        console.log("2");
+        const existingCustomer = userdata.rows[0];
+        const gid = existingCustomer.google_id;
+        console.log(gid, "gid....................");
+
         if (gid) {
-          // if not null then send the userdata 
-          return res.status(200).json({ status: 200, userdata: userdata?.rows[0] });
+          console.log("3");
+          // If not null then send the userdata 
+          return res.status(200).json({ status: 200, userdata: existingCustomer });
         } else {
-          return res.status(401).json({ status: 401, message: "Account Already registered with Email, Kindly Login with Email and Password" });
+          console.log("4");
+          existingCustomer.given_name = userInfo?.given_name || "";
+          existingCustomer.family_name = userInfo?.family_name || "";
+          existingCustomer.email = userInfo?.email || "";
+          existingCustomer.password = "";
+          existingCustomer.phone_number = "";
+          existingCustomer.address_line_1 = "";
+          existingCustomer.address_line_2 = "";
+          existingCustomer.city = "";
+          existingCustomer.state = "";
+          existingCustomer.zip_code = "";
+          existingCustomer.country = "";
+          existingCustomer.bio = "";
+          existingCustomer.status = 3;
+          existingCustomer.google_id = userInfo?.id;
+          existingCustomer.picture = userInfo?.picture;
+          // Update the user data in the database
+          await updateUserDataInDB(existingCustomer);
+          console.log("4.5");
+
+          // Send the updated object as the response
+          return res.status(200).json({ status: 200, userdata: existingCustomer });
         }
       }
+      console.log("5");
 
       const newCustomer = {
         // Extract customer details from the request body
@@ -205,52 +398,43 @@ app.post('/getGoogleUserData', async (req, res) => {
         zip_code: "",
         country: "",
         bio: "",
-        status: 1,
+        status: 3,
         google_id: userInfo?.id,
         picture: userInfo?.picture
       };
 
-      const insertCustomerQuery = `
-          INSERT INTO customers
-          (given_name, family_name, email, 
-            phone_number, address_line_1, address_line_2, 
-            city, state, zip_code, country, bio, password, verification_code, 
-            verification_expire_date, google_id, picture, verified_with, status)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 3)
-          RETURNING *;
-        `;
+      const existingCustomer = userdata?.rows[0] || {};
 
-      const insertCustomerValues = [
-        newCustomer.given_name,
-        newCustomer.family_name,
-        newCustomer.email,
-        newCustomer.phone_number,
-        newCustomer.address_line_1,
-        newCustomer.address_line_2,
-        newCustomer.city,
-        newCustomer.state,
-        newCustomer.zip_code,
-        newCustomer.country,
-        newCustomer.bio,
-        '', // Store the hashed password
-        null,
-        null,
-        newCustomer.google_id,
-        newCustomer.picture,
-        '{Google}'
+      // Check and update fields only if they are empty
+      const fieldsToUpdate = [
+        'given_name',
+        'family_name',
+        'phone_number',
+        'address_line_1',
+        'address_line_2',
+        'city',
+        'state',
+        'zip_code',
+        'country',
+        'bio',
+        'password',
+        'verification_code',
+        'verification_expire_date',
+        'picture',
+        'verified_with'
       ];
 
-      const { rows } = await pool.query(
-        insertCustomerQuery,
-        insertCustomerValues
-      );
+      fieldsToUpdate.forEach(field => {
+        if (!existingCustomer[field] && newCustomer[field]) {
+          existingCustomer[field] = newCustomer[field];
+        }
+      });
 
-      const insertedCustomerData = rows[0];
+      // Update the user data in the database
+      await updateUserDataInDB(existingCustomer);
 
-      if (insertedCustomerData) {
-        return res.status(200).json({ status: 200, userdata: insertedCustomerData });
-      }
-      // Send the user information back to the frontend
+      return res.status(200).json({ status: 200, userdata: existingCustomer });
+
     } else {
       console.error(`Failed to fetch user data. Status: ${userInfoResponse.status}`);
       res.status(500).json({ error: 'Failed to fetch user data' });
@@ -260,6 +444,58 @@ app.post('/getGoogleUserData', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+async function updateUserDataInDB(userData) {
+  try {
+    const query = `
+      UPDATE customers
+      SET
+        given_name = $1,
+        family_name = $2,
+        email = $3,
+        password = $4,
+        phone_number = $5,
+        address_line_1 = $6,
+        address_line_2 = $7,
+        city = $8,
+        state = $9,
+        zip_code = $10,
+        country = $11,
+        bio = $12,
+        status = $13,
+        google_id = $14,
+        picture = $15,
+        verified_with = $16
+      WHERE email = $3
+    `;
+    const values = [
+      userData.given_name,
+      userData.family_name,
+      userData.email,
+      userData.password,
+      userData.phone_number,
+      userData.address_line_1,
+      userData.address_line_2,
+      userData.city,
+      userData.state,
+      userData.zip_code,
+      userData.country,
+      userData.bio,
+      userData.status,
+      userData.google_id,
+      userData.picture,
+      '{Google}'
+    ];
+
+    await pool.query(query, values);
+  } catch (error) {
+    console.error('Error updating user data:', error);
+    throw error;
+  }
+}
+
+
+
 
 app.post('/getWebGoogleLogin', async (req, res) => {
   const { email, id } = req.body;
@@ -283,7 +519,6 @@ app.post('/getWebGoogleLogin', async (req, res) => {
   }
 }
 );
-
 app.post('/getFacebookData', async (req, res) => {
   const { accessToken } = req.body;
 
@@ -326,7 +561,7 @@ app.post('/getFacebookData', async (req, res) => {
         zip_code: "",
         country: "",
         bio: "",
-        status: 0,
+        status: 3,
         google_id: userInfo?.id,
         picture: userInfo?.picture
       };
@@ -381,7 +616,11 @@ app.post('/getFacebookData', async (req, res) => {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-});
+
+  res.status(200).send("verifiying")
+})
+
+
 
 const generateRandomNumber = () => {
   const characters =
@@ -401,43 +640,49 @@ app.post("/customerLoginEmail", async (req, res) => {
   const loggedid = generateRandomNumber();
 
   try {
-    const query = "SELECT * FROM customers WHERE email = $1";
-    const { rows } = await pool.query(query, [email]);
-
-    if (rows.length === 0) {
-      // If no customer with the email is found, send a response
-      return res.status(401).json({ status: 401, message: "Account doesn't exist" });
-    }
-
-    if (rows[0].google_id !== null) {
-      // If google_id is not null, send a response saying "Kindly Login with Google"
+    if (!password) {
+      // If the password is empty, send a response
       return res.status(401).json({
         status: 401,
         message: "This account needs to be logged in with Google",
       });
     }
 
-    const hashedPassword = rows[0].password; // Assuming your password column is named "password"
+    const query = "SELECT * FROM customers WHERE email = $1";
+    const { rows } = await pool.query(query, [email]);
+
+    if (rows.length === 0) {
+      return res.status(401).json({ status: 401, message: "Account doesn't exist" });
+    }
+
+    const hashedPassword = rows[0].password;
+    console.log(hashedPassword,"hashed----------------");
+    if (!hashedPassword) {
+      return res.status(401).json({
+        status: 401,
+        message: "This account needs to be logged in with Google",
+      });
+    }
     const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
     if (!passwordMatch) {
-      // If the passwords don't match, send an authentication error response
       return res.status(401).json({ status: 401, message: "Incorrect password" });
     }
+
+  
 
     if (rows[0].status === 1) {
       return res.status(401).json({ status: 401, message: "Account Blocked, Kindly Contact support for assistance." });
     }
 
-
     if (rows[0].status === 0) {
       const otp = Math.floor(1000 + Math.random() * 9000);
       const verificationExpireDate = new Date();
       verificationExpireDate.setMinutes(
-        verificationExpireDate.getMinutes() + 30
-      ); // Set expiration to 30 minutes from now
+        verificationExpireDate.getMinutes() + 30                                                                                                                                                                                        
+      );
 
-      const toEmail = rows[0].email; // Get the user's email from the database
+      const toEmail = rows[0].email;
       const subject = "Account Verification";
       const htmlContent = `
           <p>Hello, ${rows[0].given_name} ${rows[0].family_name}</p>
@@ -445,32 +690,27 @@ app.post("/customerLoginEmail", async (req, res) => {
           <p>If you did not request this verification, please ignore this email.</p>
         `;
 
-      const query = `
-      UPDATE customers
-      SET verification_code = $1, verification_expire_date = $2
-      WHERE customer_id = $3;
-    `;
+      const updateQuery = `
+        UPDATE customers
+        SET verification_code = $1, verification_expire_date = $2
+        WHERE customer_id = $3;
+      `;
 
-      // Execute the SQL query with parameters
-      await pool.query(query, [
+      await pool.query(updateQuery, [
         otp,
         verificationExpireDate,
         rows[0].customer_id,
       ]);
 
-      // Call the sendMail function to send the email
       sendEmail(toEmail, subject, htmlContent)
         .then(() => {
-          // If the email is sent successfully, return a response to the user
           return res.status(200).json({
             status: 301,
             user: rows[0],
-            message:
-              "Account not verified. An email with verification instructions has been sent to your Gmail account. Please check your Gmail inbox and follow the instructions to verify your account.",
+            message: "Account not verified. An email with verification instructions has been sent to your Gmail account. Please check your Gmail inbox and follow the instructions to verify your account.",
           });
         })
         .catch((error) => {
-          // If there's an error sending the email, handle it appropriately
           console.error("Error sending verification email:", error);
           return res.status(500).json({
             status: 500,
@@ -488,16 +728,15 @@ app.post("/customerLoginEmail", async (req, res) => {
 
       const customerData = { ...updatedRows[0] };
       delete customerData.password;
-      // res.status(200).json({ status: 200, message: "Login successful" });
-      res.status(200).json({ status: 200, message: "Login successful", loggedid, customerData });
 
+      res.status(200).json({ status: 200, message: "Login successful", loggedid, customerData });
     }
   } catch (error) {
     console.log(error);
     res.status(500).json({ status: 500, message: "Internal server error" });
-
   }
 });
+
 
 app.post("/verifyVerificationCodeCustomer", async (req, res) => {
   try {
@@ -567,7 +806,7 @@ app.post("/updatecustomer", async (req, res) => {
       zip_code: req.body.values.zip_code,
       country: req.body.values.country,
       bio: req.body.values.bio,
-      status: 0,
+      status: 3,
     };
 
     // Update the customer in the "customers" table
@@ -1234,7 +1473,7 @@ app.post("/getGoogleuserByid", async (req, res) => {
         zip_code: "",
         country: "",
         bio: "",
-        status: 1,
+        status: 3,
         google_id: id,
         picture: picture
       };
