@@ -8,6 +8,7 @@ import {
   RiFlagFill,
   RiOrderPlayLine,
   RiVoiceprintFill,
+  RiWallet2Fill,
 } from "react-icons/ri";
 import { FiEdit3 } from "react-icons/fi";
 import Cookies from "js-cookie";
@@ -101,6 +102,17 @@ export const links = [
         name: "Vendors Claims",
         icon: <RiVoiceprintFill />,
         to: "/Admin/VendorClaimsAdimin",
+      }
+    ]
+  },
+  {
+    title: 'Manage Wallet',
+    links: [
+      {
+        id: 14,
+        name: "Customer Wallet",
+        icon: <RiWallet2Fill />,
+        to: "/Admin/Customers/Wallet",
       }
     ]
   },

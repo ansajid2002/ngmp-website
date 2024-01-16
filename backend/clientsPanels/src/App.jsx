@@ -59,6 +59,7 @@ import MediaLibrary from "./Vendors/MediaLibrary";
 import VendorPolicies from "./Vendors/components/VendorPolicies";
 import Apploading from "./Admin/pages/Apploading";
 import BulkApprove from "./Admin/pages/Products/BulkApprove";
+import Wallet from "./Admin/pages/Customers/Wallet";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
 
@@ -162,6 +163,7 @@ function AdminRoutes() {
       "/Admin/AdminChatwithCustomers",
       "/Admin/wallets",
       "/Admin/Products/BulkApprove",
+      "/Admin/Customers/Wallet"
     ];
     const checkSuperAdmin = SuperAdmin.includes(path);
     setsuperadmin(checkSuperAdmin);
@@ -305,6 +307,10 @@ function AdminRoutes() {
             <Route
               path="/Admin/Products/BulkApprove"
               element={<BulkApprove adminLoginData={adminLoginData} />}
+            />
+            <Route
+              path="/Admin/Customers/Wallet"
+              element={<Wallet adminLoginData={adminLoginData} />}
             />
           </Routes>
         </>

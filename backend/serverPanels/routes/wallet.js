@@ -146,6 +146,145 @@ app.get('/fetchCustomerTransaction', async (req, res) => {
     }
 });
 
+app.get('/AllfetchCustomerTransaction', async (req, res) => {
+    try {
+        const { page, pageSize, search } = req.query;
+
+        // Base query for transactions
+        const baseQuery = `
+            SELECT ct.*, c.given_name, c.family_name, c.picture
+            FROM customer_transactions ct
+            JOIN customers c ON ct.customer_id = c.customer_id
+        `;
+
+        // Where condition for search
+        const searchCondition = search
+            ? `WHERE (ct.description ILIKE $1 OR c.given_name ILIKE $1 OR c.family_name ILIKE $1 OR c.email ILIKE $1 OR ct.wallet_txn_id ILIKE $1)`
+            : '';
+
+        let transactionsQuery;
+
+        if (search || (parseInt(page) && parseInt(pageSize))) {
+            transactionsQuery = {
+                text: `
+                        ${baseQuery}
+                        WHERE (ct.description ILIKE $1 OR c.given_name ILIKE $1 OR c.family_name ILIKE $1 OR c.email ILIKE $1 OR ct.wallet_txn_id ILIKE $1)
+                        ORDER BY ct.datetime DESC
+                        LIMIT $2 OFFSET $3
+                    `,
+                values: [`%${search}%`, pageSize, (page - 1) * pageSize],
+            };
+        } else {
+            transactionsQuery = {
+                text: `
+                        ${baseQuery}
+                        ORDER BY ct.datetime DESC
+                    `,
+                values: [],
+            };
+        }
+
+
+        console.log(search, parseInt(page), parseInt(pageSize));
+        const totalCountQuery = {
+            text: `
+                SELECT COUNT(*) as total
+                FROM customer_transactions ct
+                JOIN customers c ON ct.customer_id = c.customer_id
+                ${searchCondition};
+            `,
+            values: search ? [`%${search}%`] : [],
+        };
+
+        const debitCountQuery = {
+            text: `
+                SELECT COUNT(*) as debitCount
+                FROM customer_transactions ct
+                JOIN customers c ON ct.customer_id = c.customer_id
+                ${searchCondition} AND ct.amount < 0;
+            `,
+            values: search ? [`%${search}%`] : [],
+        };
+
+        const creditCountQuery = {
+            text: `
+                SELECT COUNT(*) as creditCount
+                FROM customer_transactions ct
+                JOIN customers c ON ct.customer_id = c.customer_id
+                ${searchCondition} AND ct.amount > 0;
+            `,
+            values: search ? [`%${search}%`] : [],
+        };
+
+        const totalAmountTransferredQuery = {
+            text: `
+                SELECT COALESCE(SUM(ABS(ct.amount)), 0) as totalAmountTransferred
+                FROM customer_transactions ct
+                JOIN customers c ON ct.customer_id = c.customer_id
+                ${searchCondition};
+            `,
+            values: search ? [`%${search}%`] : [],
+        };
+
+        const totalDebitAmountQuery = {
+            text: `
+                SELECT COALESCE(SUM(ct.amount), 0) as totalDebitAmount
+                FROM customer_transactions ct
+                JOIN customers c ON ct.customer_id = c.customer_id
+                ${searchCondition} AND ct.amount < 0;
+            `,
+            values: search ? [`%${search}%`] : [],
+        };
+
+        const totalCreditAmountQuery = {
+            text: `
+                SELECT COALESCE(SUM(ct.amount), 0) as totalCreditAmount
+                FROM customer_transactions ct
+                JOIN customers c ON ct.customer_id = c.customer_id
+                ${searchCondition} AND ct.amount > 0;
+            `,
+            values: search ? [`%${search}%`] : [],
+        };
+
+        const [
+            transactionsResult,
+            totalCountResult,
+            debitCountResult,
+            creditCountResult,
+            totalAmountTransferredResult,
+            totalDebitAmountResult,
+            totalCreditAmountResult,
+        ] = await Promise.all([
+            pool.query(transactionsQuery),
+            pool.query(totalCountQuery),
+            pool.query(debitCountQuery),
+            pool.query(creditCountQuery),
+            pool.query(totalAmountTransferredQuery),
+            pool.query(totalDebitAmountQuery),
+            pool.query(totalCreditAmountQuery),
+        ]);
+
+        console.log(debitCountResult.rows[0].debitcount);
+        const paginatedData = {
+            transactions: transactionsResult.rows,
+            total: parseInt(totalCountResult.rows[0].total, 10),
+            debitCount: parseInt(debitCountResult.rows[0].debitcount),
+            creditCount: parseInt(creditCountResult.rows[0].creditcount),
+            totalAmountTransferred: parseFloat(totalAmountTransferredResult.rows[0].totalamounttransferred),
+            totalDebitAmount: parseFloat(totalDebitAmountResult.rows[0].totaldebitamount),
+            totalCreditAmount: parseFloat(totalCreditAmountResult.rows[0].totalcreditamount),
+        };
+
+        res.json(paginatedData);
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
+
 
 const fetchWalletToken = async (customerId) => {
     try {
