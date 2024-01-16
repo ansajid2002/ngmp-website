@@ -6,7 +6,7 @@ const multer = require("multer");
 const bcrypt = require("bcrypt");
 const sendEmail = require("./nodemailer");
 const fs = require("fs/promises"); // For reading the HTML template
-const jwt = require('jsonwebtoken'); 
+const jwt = require('jsonwebtoken');
 
 app.use(express.json());
 app.use(cors());
@@ -284,7 +284,7 @@ function createNewCustomer(userInfo, response) {
     status: 3,
     apple_id: userInfo?.user || "",
     picture: "",
-    
+
   };
 }
 
@@ -656,7 +656,7 @@ app.post("/customerLoginEmail", async (req, res) => {
     }
 
     const hashedPassword = rows[0].password;
-    console.log(hashedPassword,"hashed----------------");
+    console.log(hashedPassword, "hashed----------------");
     if (!hashedPassword) {
       return res.status(401).json({
         status: 401,
@@ -669,7 +669,7 @@ app.post("/customerLoginEmail", async (req, res) => {
       return res.status(401).json({ status: 401, message: "Incorrect password" });
     }
 
-  
+
 
     if (rows[0].status === 1) {
       return res.status(401).json({ status: 401, message: "Account Blocked, Kindly Contact support for assistance." });
@@ -679,7 +679,7 @@ app.post("/customerLoginEmail", async (req, res) => {
       const otp = Math.floor(1000 + Math.random() * 9000);
       const verificationExpireDate = new Date();
       verificationExpireDate.setMinutes(
-        verificationExpireDate.getMinutes() + 30                                                                                                                                                                                        
+        verificationExpireDate.getMinutes() + 30
       );
 
       const toEmail = rows[0].email;
@@ -1545,4 +1545,32 @@ app.post("/getAllVerifiedCustomer", async (req, res) => {
   }
 })
 
+
+app.get('/usersList', async (req, res) => {
+  const { search, page = 1, pageSize = 10 } = req.query;
+
+  try {
+    // Using ILIKE for case-insensitive search in PostgreSQL
+    const query = `
+        SELECT customer_id, given_name, family_name, phone_number, email, picture
+        FROM customers
+        WHERE LOWER(given_name) LIKE $1
+          OR LOWER(family_name) LIKE $1
+          OR LOWER(phone_number) LIKE $1
+          OR LOWER(email) LIKE $1
+        ORDER BY given_name
+        LIMIT $2 OFFSET $3;
+      `;
+
+
+    const offset = (page - 1) * pageSize;
+    const result = await pool.query(query, [`%${search.toLowerCase()}%`, pageSize, offset]);
+
+    const users = result.rows;
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 module.exports = app;

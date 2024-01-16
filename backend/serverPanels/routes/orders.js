@@ -66,12 +66,50 @@ function generateRandomOrderID(length) {
   return paddedNumber;
 }
 
+
+const generateRandomWalletId = () => {
+  const min = 10 ** 11; // 10^11 (minimum 12-digit number)
+  const max = 10 ** 12 - 1; // 10^12 - 1 (maximum 12-digit number)
+
+  const randomWalletId = Math.floor(Math.random() * (max - min + 1)) + min;
+  return `WTXN${randomWalletId.toString()}`;
+};
+
+const fetchWalletToken = async (customerId) => {
+  try {
+    // Query to calculate the remaining wallet amount
+    const remainingBalanceQuery = {
+      text: `
+              SELECT COALESCE(SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END), 0) as remaining_balance
+              FROM customer_transactions
+              WHERE customer_id = $1;
+          `,
+      values: [customerId],
+    };
+
+    const [remainingBalanceResult] = await Promise.all([
+      pool.query(remainingBalanceQuery),
+    ]);
+
+    const totalBalance = remainingBalanceResult.rows.length > 0
+      ? parseFloat(remainingBalanceResult.rows[0].remaining_balance)
+      : 0;
+
+    return { totalBalance };
+  } catch (error) {
+    console.error('Error fetching remaining balance:', error);
+    throw new Error('Internal Server Error');
+  }
+};
+
+
 app.post("/Insertorders", async (req, res) => {
   try {
     const { customer_id } = req.body[0]?.customerData
     const customerEmail = req.body[0]?.customerData?.email
     const orders = req.body[0]?.orders
     const { id } = req.body[0]?.paymentIntent
+    const { selectedPaymentMode } = req.body[0]
     // const { street, city, country, region, postalCode, name, given_name, family_name, phone_number, email } = req.body[0]?.shipping_address
     const { given_name_address, family_name_address, apt_address, subregion_address, city_address, country_address, region_address, zip_address, phone_address, email_address } = req.body[0]?.shipping_address
     const date = new Date();
@@ -101,7 +139,7 @@ app.post("/Insertorders", async (req, res) => {
         refund_amount: 0,
         fees_paid: 0,
         tax_collected: 0,
-        payment_method: 'Stripe',
+        payment_method: selectedPaymentMode,
         payment_status: 'Paid',
         order_date,
         order_status,
@@ -112,7 +150,7 @@ app.post("/Insertorders", async (req, res) => {
 
     const insertedOrders = []
     const insertedAddress = []
-
+    let totalPaidAmount = 0
     for (const order of transformedOrders) {
       const currentDate = new Date();
 
@@ -159,6 +197,8 @@ app.post("/Insertorders", async (req, res) => {
         ]
       );
 
+      totalPaidAmount += parseFloat(order.total_amount)
+
       const insertedOrderId = result.rows[0].order_id; // Get the inserted order_id
 
       const resultAddress = await pool.query(
@@ -185,8 +225,6 @@ app.post("/Insertorders", async (req, res) => {
       insertedOrders.push(result.rows[0]);
       insertedAddress.push(resultAddress.rows[0]);
 
-
-
       let deleteQuery = `
             DELETE FROM cart
             WHERE customer_id = $1
@@ -195,6 +233,41 @@ app.post("/Insertorders", async (req, res) => {
       const queryParams = [customer_id];
 
       await pool.query(deleteQuery, queryParams);
+
+
+    }
+
+    if (selectedPaymentMode === 'Wallet') {
+      const paginatedData = await fetchWalletToken(customer_id);
+
+      const walletId = generateRandomWalletId();
+
+      // Insert data into the customer_transactions table
+      const query = `
+              INSERT INTO customer_transactions (
+                  customer_id,
+                  datetime,
+                  description,
+                  amount,
+                  closing_balance,
+                  wallet_txn_id,
+                  send_to_user,
+                  invoiceId,
+                  status
+              ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          `;
+
+      await pool.query(query, [
+        customer_id,
+        new Date(),
+        'Paid for Products',
+        -parseFloat(totalPaidAmount),
+        parseFloat(paginatedData?.totalBalance) - parseFloat(totalPaidAmount),
+        walletId,
+        'Nile Global Market-place',
+        0,
+        'paid',
+      ]);
     }
 
     // Calculate the overall total price
@@ -210,6 +283,7 @@ app.post("/Insertorders", async (req, res) => {
           <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${parseFloat(order.total_amount).toFixed(2)}</td>
           <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.quantity}</td>
           <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.label || ''}</td>
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.payment_method || ''}</td>
         </tr>
       `).join('');
 
@@ -225,6 +299,7 @@ app.post("/Insertorders", async (req, res) => {
                 <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Product Price</th>
                 <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Quantity</th>
                 <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Label</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Payment Method</th>
               </tr>
               ${orderDetailsHTML}
               <tr>
@@ -263,7 +338,7 @@ app.post("/Insertorders", async (req, res) => {
     const insertedPayment = paymentResult.rows[0];
 
 
-    // Use the sendEmail function to send the email with the updated HTML content
+    // // Use the sendEmail function to send the email with the updated HTML content
     await sendEmail(customerEmail, `Order #${order_id}`, emailBody)
 
     res.status(200).json({ message: 'Orders inserted successfully', insertedOrders, insertedAddress, insertedPayment });

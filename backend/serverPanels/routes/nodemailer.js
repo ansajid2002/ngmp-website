@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 // Create a function to send emails
-const sendEmail = async (toEmail, subject, htmlContent) => {
+const sendEmail = async (toEmail, subject, htmlContent, attachment) => {
   try {
     let transporter = nodemailer.createTransport({
       name: 'nilegmp.com',
@@ -16,7 +16,7 @@ const sendEmail = async (toEmail, subject, htmlContent) => {
     //   service: "gmail",
     //   auth: {
     //     user: "ks615044@gmail.com", // Update with your Gmail email
-    //     pass: "vbgabjbjxwyahlji", // Update with your Gmail password or an app-specific password
+    //     pass: "yfzadtumtklusmio", // Update with your Gmail password or an app-specific password
     //   },
     // });
 
@@ -25,6 +25,7 @@ const sendEmail = async (toEmail, subject, htmlContent) => {
       to: toEmail,
       subject: subject,
       html: htmlContent,
+      attachments: attachment ? [{ filename: 'wallet_statement.pdf', content: attachment, encoding: 'base64' }] : undefined,
     };
 
     await transporter.verify();

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Statement</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        /* Add your styles here */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body style="padding: 20px;">
+    <img src="https://stg.nilegmp.com/_next/static/media/mainlogo.9ab225b7.svg" width="200" height="200" />
+    <!-- Customer Information Table -->
+    <h2>Customer Information</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Given Name</th>
+                <th>Family Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Available Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{givenName}</td>
+                <td>{familyName}</td>
+                <td>{email}</td>
+                <td>{phoneNumber}</td>
+                <td>{availableBalance}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Transaction Details Table -->
+    <h2>Transaction Details</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Sr.No</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Wallet Txn Id</th>
+                <th>Debit</th>
+                <th>Credit</th>
+                <th>BALANCE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data rows will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <!-- Transaction Counts Table -->
+    <h2>Transaction Counts</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Transaction Count</th>
+                <th>Debit Count</th>
+                <th>Credit Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{transactionCount}</td>
+                <td>{debitCount}</td>
+                <td>{creditCount}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Balance Summary Table -->
+    <h2>Balance Summary</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Opening Balance</th>
+                <th>Total Debit Amount</th>
+                <th>Total Credit Amount</th>
+                <th>Closing BALANCE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{openingBalance}</td>
+                <td>{totalDebitAmount}</td>
+                <td>{totalCreditAmount}</td>
+                <td>{closingBalance}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
