@@ -72,9 +72,7 @@ const CategoryPageSlick = ({ newcategoriesdata }) => {
                     .replace(
                       /\s/g,
                       ""
-                    )}/${single.subcategories[0].subcategory_name
-                    .replace(/[^\w\s]/g, "")
-                    .replace(/\s/g, "")}`}
+                    )}/${single.subcategories?.[0]?.subcategory_name?.replace(/[^\w\s]/g, "").replace(/\s/g, "")}`}
                   className="text-center"
                 >
                   <div className=" overflow-hidden mx-auto border h-[100px] w-[100px] lg:w-[140px] lg:h-[140px] rounded-full flex items-center justify-center">

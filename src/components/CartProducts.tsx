@@ -33,7 +33,6 @@ const CartProducts = ({ removeData = true }) => {
       prod_slug,
       uniquepid,
     } = item;
-    const AddressData = useAppSelector((state) => state.address.AddressData)
 
     const handleRemove = async (item: any) => {
       try {

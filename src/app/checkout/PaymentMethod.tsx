@@ -7,24 +7,35 @@ import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import Input from "@/shared/Input/Input";
 import Radio from "@/shared/Radio/Radio";
 import StripeCheckButton from "../Checkout";
+import { useAppSelector } from "@/redux/store";
+import { formatCurrency } from "@/components/AvailableToken";
 
 interface Props {
   isActive: boolean;
   onCloseActive: () => void;
   onOpenActive: () => void;
+  selectedAddress: any
 }
 
 const PaymentMethod: FC<Props> = ({
   isActive,
   onCloseActive,
   onOpenActive,
+  selectedAddress
 }) => {
+
+
   const [mothodActive, setMethodActive] = useState<
     "Stripe" | "Internet-banking" | "Wallet"
   >("Stripe");
+  const [selectedMethod, setSelected] = useState('')
+
+
+  const { walletTotal } = useAppSelector((store) => store.wallet)
 
   const renderStripe = () => {
     const active = mothodActive === "Stripe";
+
     return (
       <div className="flex items-start space-x-4 sm:space-x-6">
         <Radio
@@ -32,7 +43,10 @@ const PaymentMethod: FC<Props> = ({
           name="payment-method"
           id="Stripe"
           defaultChecked={active}
-          onChange={(e) => setMethodActive(e as any)}
+          onChange={(e) => {
+            setSelected('Stripe')
+            setMethodActive(e as any)
+          }}
         />
         <div className="flex-1">
           <label
@@ -248,6 +262,22 @@ const PaymentMethod: FC<Props> = ({
     );
   };
 
+
+  const { cartItems } = useAppSelector((store) => store.cart);
+
+  const calculateSubtotal = () => {
+    let subtotal = 0;
+
+    if (true) {
+      cartItems.forEach((item: any) => {
+        subtotal += parseFloat(item.sellingprice) * item.added_quantity;
+      });
+    }
+
+    return subtotal;
+  };
+
+
   const renderWallet = () => {
     const active = mothodActive === "Wallet";
     return (
@@ -257,7 +287,10 @@ const PaymentMethod: FC<Props> = ({
           name="payment-method"
           id="Wallet"
           defaultChecked={active}
-          onChange={(e) => setMethodActive(e as any)}
+          onChange={(e) => {
+            setSelected('Wallet')
+            setMethodActive(e as any)
+          }}
         />
         <div className="flex-1">
           <label
@@ -305,7 +338,7 @@ const PaymentMethod: FC<Props> = ({
                 />
               </svg>
             </div>
-            <p className="font-medium">Google / Apple Wallet</p>
+            <p className={`font-medium ${calculateSubtotal() < walletTotal ? 'text-green-600' : 'text-red-500 cursor-not-allowed'}`}>Wallet {formatCurrency(walletTotal)}</p>
           </label>
           <div className={`mt-6 mb-4 space-y-6 ${active ? "block" : "hidden"}`}>
             <div className="text-sm prose dark:prose-invert">
@@ -390,7 +423,7 @@ const PaymentMethod: FC<Props> = ({
               </svg>
             </h3>
             <div className="font-semibold mt-1 text-sm">
-              <span className="">Pay with Stripe</span>
+              <span className="">Pay with {selectedMethod || 'Stripe'}</span>
             </div>
           </div>
           <button
@@ -412,7 +445,7 @@ const PaymentMethod: FC<Props> = ({
           {/* <div>{renderInterNetBanking()}</div> */}
 
           {/* ==================== */}
-          {/* <div>{renderWallet()}</div> */}
+          <div>{renderWallet()}</div>
 
           <div className="flex pt-6">
             {/* <ButtonPrimary
@@ -421,7 +454,7 @@ const PaymentMethod: FC<Props> = ({
             >
               Confirm order
             </ButtonPrimary> */}
-            <StripeCheckButton />
+            <StripeCheckButton selectedAddress={selectedAddress} mothodActive_ACTIVE={selectedMethod} />
 
             <ButtonSecondary className="ml-3" onClick={onCloseActive}>
               Cancel

@@ -14,11 +14,11 @@ const ThankYou = () => {
   const dispatch = useDispatch()
   const router = useRouter()
   const { cartItems } = useAppSelector((store) => store.cart);
-  const customerData = useAppSelector((state) => state.customerData)
+  const { customerData } = useAppSelector((state) => state.customerData)
   const [defaultAddress, setDefaultAddress] = useState(null);
   const [sendedResponse, setSendedResponse] = useState(true);
   const [orderData, setOrderData] = useState(null);
-  const id = customerData?.customerData?.customer_id || null
+  const id = customerData?.customer_id || null
 
   const makePayment = async () => {
     try {

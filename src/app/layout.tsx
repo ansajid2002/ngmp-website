@@ -13,8 +13,6 @@ import NextTopLoader from "nextjs-toploader";
 import AuthProvider from "@/components/AuthProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
-import type { Metadata } from "next";
-import { usePathname } from "next/navigation";
 
 const poppins = {
   fontFamily:

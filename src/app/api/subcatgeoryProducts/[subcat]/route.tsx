@@ -7,6 +7,8 @@ async function getSubcategoryProducts(subcat: string) {
     try {
         const apiUrl = `${AdminUrl}/api/getProductBySubcategories?subcat=${subcat}&currency=USD&pageNumber=1&pageSize=10`;
 
+        console.log(apiUrl);
+
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
@@ -29,6 +31,7 @@ async function getSubcategoryProducts(subcat: string) {
 
 export async function GET(request: Request, { params }: { params: { subcat: string } }) {
     const { subcat } = params;
+
 
     // Fetch product variant based on the provided parameters
     const subcatProducts = await getSubcategoryProducts(subcat);

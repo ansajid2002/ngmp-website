@@ -24,6 +24,7 @@ import {
   Wallet,
 } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
+import { formatCurrency } from "../AvailableToken";
 
 export default function AvatarDropdown() {
   const customerData = useAppSelector((state) => state.customerData);
@@ -39,6 +40,7 @@ export default function AvatarDropdown() {
     google_id,
   } = customerData?.customerData || {};
 
+  const { walletTotal } = useAppSelector((state) => state.wallet);
 
 
   useEffect(() => {
@@ -100,11 +102,9 @@ export default function AvatarDropdown() {
 
                           <div className="flex-grow">
                             <h4 className="font-semibold">{`${given_name} ${family_name}`}</h4>
-                            <p className="text-xs mt-0.5">{`${
-                              state && state?.trim() !== "" ? state + "," : ""
-                            } ${
-                              country && country?.trim() !== "" ? country : ""
-                            }`}</p>
+                            <p className="text-xs mt-0.5">{`${state && state?.trim() !== "" ? state + "," : ""
+                              } ${country && country?.trim() !== "" ? country : ""
+                              }`}</p>
                           </div>
                         </div>
 
@@ -132,10 +132,10 @@ export default function AvatarDropdown() {
                           onClick={() => close()}
                         >
                           <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <Wallet size={20} />
+                            <Wallet size={20} className="text-green-700" />
                           </div>
                           <div className="ml-4">
-                            <p className="text-sm font-medium ">{"Wallet"}</p>
+                            <p className="text-sm font-bold text-green-700">{"Wallet"} {formatCurrency(walletTotal)}</p>
                           </div>
                         </Link>
                         {/* ------------------ 2 --------------------- */}
