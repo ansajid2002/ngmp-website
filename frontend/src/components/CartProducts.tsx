@@ -101,7 +101,7 @@ const CartProducts = ({ removeData = true }) => {
             product_uniqueid: uniquepid,
             category: replacecategory,
             subcategory: replacesubcategory,
-            quantity: 1, // Increment the quantity by 1
+            added_quantity: 1, // Increment the quantity by 1
             variantlabel: label,
           };
 
@@ -144,7 +144,7 @@ const CartProducts = ({ removeData = true }) => {
             product_uniqueid: uniquepid,
             category: replacecategory,
             subcategory: replacesubcategory,
-            quantity: -1, // Decrement the quantity by 1
+            added_quantity: -1, // Decrement the quantity by 1
             variantlabel: label,
           };
 

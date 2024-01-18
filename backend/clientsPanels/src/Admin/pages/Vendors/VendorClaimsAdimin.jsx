@@ -8,6 +8,7 @@ import {
   Space,
   Image,
   Select,
+  Pagination,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { AdminUrl } from "../../constant";
@@ -18,7 +19,7 @@ import { NavLink } from "react-router-dom";
 
 const VendorClaimsAdimin = () => {
   const [error, setError] = useState(null);
-  const [claimsData, setClaims] = useState([]);
+  const [claimsData, setClaims] = useState(null);
   const [visible, showModal] = useState(false);
   const [desc, setDescription] = useState("");
   const [openReply, setOpenReply] = useState(false);
@@ -27,6 +28,8 @@ const VendorClaimsAdimin = () => {
   const [claimStatus, setClaimStatus] = useState("");
   const [closureText, setClosureText] = useState("");
   const [previewImages, setPreviewImages] = useState([]);
+  const [total, settotal] = useState(0);
+  const [page, setPage] = useState(1);
 
   const [form] = Form.useForm();
 
@@ -35,7 +38,7 @@ const VendorClaimsAdimin = () => {
       title: "Claim ID",
       dataIndex: "claim_id",
       key: "claim_id",
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.claim_id - b.claim_id,
     },
     {
@@ -63,6 +66,8 @@ const VendorClaimsAdimin = () => {
       title: "Claim Status",
       dataIndex: "claim_status",
       key: "claim_status",
+      width: 150,
+
       filters: [
         { text: "Pending", value: "Pending" },
         { text: "Ongoing", value: "Ongoing" },
@@ -75,8 +80,8 @@ const VendorClaimsAdimin = () => {
             status === "Pending"
               ? "orange"
               : status === "Ongoing"
-              ? "blue"
-              : "green"
+                ? "blue"
+                : "green"
           }
         >
           {status}
@@ -113,6 +118,8 @@ const VendorClaimsAdimin = () => {
       title: "Video",
       dataIndex: "video_files",
       key: "video_files",
+      width: 150,
+
       render: (video_files) => (
         <Space>
           <a
@@ -129,6 +136,8 @@ const VendorClaimsAdimin = () => {
       title: "Images",
       dataIndex: "image_files",
       key: "image_files",
+      width: 150,
+
       render: (image_files) => (
         <Space className="gap-2 flex">
           <a
@@ -145,6 +154,7 @@ const VendorClaimsAdimin = () => {
       dataIndex: "claim_date",
       key: "claim_date",
       defaultSortOrder: "ascend",
+      width: 150,
 
       render: (date) => moment(date).format("LLL"),
       sorter: (a, b) => new Date(b.claim_date) - new Date(a.claim_date), // Sorting function
@@ -179,41 +189,48 @@ const VendorClaimsAdimin = () => {
       title: "Response Date",
       dataIndex: "reply_date",
       key: "reply_date",
+      width: 150,
+
       render: (date) => (date ? moment(date).format("LLL") : "N/A"),
     },
     {
       title: "Closure Description",
       dataIndex: "closure_description",
       key: "closure_description",
+      width: 250,
+
     },
     {
       title: "Closure Date",
       dataIndex: "closure_date",
       key: "closure_date",
+      width: 250,
       render: (date) => (date ? moment(date).format("LLL") : "N/A"),
     },
 
     // Add other columns as needed
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch coupons by vendorId
-        const claimResponse = await fetch(`${AdminUrl}/api/getAllClaims`);
-        if (!claimResponse.ok) {
-          setClaims([]);
-        }
-        const claimsData = await claimResponse.json();
-        console.log(claimsData);
-        setClaims(claimsData);
-      } catch (err) {
-        setError(err.message);
+  const fetchData = async (page, pageSize) => {
+    try {
+      // Fetch coupons by vendorId
+      const claimResponse = await fetch(`${AdminUrl}/api/getAllClaims?page=${page}&pageSize=${pageSize}`);
+      if (!claimResponse.ok) {
+        setClaims([]);
       }
-    };
+      const claimsData = await claimResponse.json();
+      console.log(claimsData);
+      setClaims(claimsData?.claims);
+      settotal(claimsData?.totalClaims);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
-    fetchData();
-  }, []);
+
+  useEffect(() => {
+    !claimsData && fetchData(1, 10);
+  }, [claimsData]);
 
   const handleOpenReply = (record) => {
     form.setFieldsValue({
@@ -250,13 +267,13 @@ const VendorClaimsAdimin = () => {
         prevClaims.map((claim) =>
           claim.claim_id === claimId
             ? {
-                ...claim,
-                reply_description: replyText,
-                claim_status: claimStatus,
-                closure_description: closureText,
-                reply_date: response.data.reply_date, // Adjust this based on your API response
-                closure_date: response.data.closure_date,
-              }
+              ...claim,
+              reply_description: replyText,
+              claim_status: claimStatus,
+              closure_description: closureText,
+              reply_date: response.data.reply_date, // Adjust this based on your API response
+              closure_date: response.data.closure_date,
+            }
             : claim
         )
       );
@@ -308,7 +325,22 @@ const VendorClaimsAdimin = () => {
             columns={columns}
             rowKey="coupon_id"
             pagination={false}
+            scroll={{
+              x: 1200,
+              y: 600
+            }}
           />
+          <div className="flex justify-end mt-10">
+            <Pagination
+              total={total}
+              defaultCurrent={1}
+              current={page}
+              onChange={(page, pageSize) => {
+                setPage(page)
+                fetchData(page, pageSize)
+              }}
+            />
+          </div>
         </div>
       )}
 
@@ -379,8 +411,8 @@ const VendorClaimsAdimin = () => {
               type="default"
               className={
                 !replyText.trim() ||
-                replyText.length < 5 ||
-                replyText.length > 200
+                  replyText.length < 5 ||
+                  replyText.length > 200
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-500 text-white"
               }

@@ -50,8 +50,9 @@ const ThankYou = () => {
     {
       orders: cartItems,
       shipping_address: defaultAddress,
-      customerData: customerData?.customerData,
-      paymentIntent: []
+      customerData: customerData,
+      paymentIntent: [],
+      selectedPaymentMode
     }
   ]
 
@@ -118,7 +119,7 @@ const ThankYou = () => {
     orderData ? <div className="py-10 px-5 md:px-20">
       <div className="space-y-3">
         <h1>
-          Hey <span className="font-medium">{customerData?.customerData?.given_name}</span>,
+          Hey <span className="font-medium">{customerData?.given_name} {customerData?.family_name}</span>,
         </h1>
         <h2 className="flex items-end font-medium text-[#ed642b] gap-1 md:gap-2">
           <Check size={20} />
@@ -213,7 +214,7 @@ const ThankYou = () => {
           ))}
         </div>
       </div>
-    </div> : router.push('/account-order')
+    </div> : "Loading..."
   );
 };
 

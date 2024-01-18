@@ -15,7 +15,7 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true }) => {
       });
     }
 
-    return subtotal;
+    return subtotal.toFixed(2);
   };
 
   return (

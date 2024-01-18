@@ -49,9 +49,9 @@ const SingleVendorsDetails = ({ data }) => {
     const fetchRating = async () => {
       const shopReviewData = await getReviewData(null, data?.id)
       const nonEmptyReviews = shopReviewData && shopReviewData.ratingsData.filter((entry: any) => entry.review_text?.trim() !== '');
-      const nonEmptyReviewCount = nonEmptyReviews.length;
+      const nonEmptyReviewCount = nonEmptyReviews && nonEmptyReviews.length;
 
-      const totalRating = nonEmptyReviews.reduce((sum: any, entry: any) => sum + entry.rating, 0);
+      const totalRating = nonEmptyReviews && nonEmptyReviews.reduce((sum: any, entry: any) => sum + entry.rating, 0);
       const averageRating = nonEmptyReviewCount > 0 ? totalRating / nonEmptyReviewCount : 0;
 
 
@@ -96,7 +96,7 @@ const SingleVendorsDetails = ({ data }) => {
         <div className="sticky top-0 bg-white z-10">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-medium">{products && products?.length || "0"} Items</h2>
-            <TabFilters showOnlySort={false} />
+            {/* <TabFilters showOnlySort={false} /> */}
           </div>
           {/* <ProductCard /> */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-8 gap-y-10 mt-8 lg:mt-10">

@@ -102,6 +102,12 @@ export const links = [
         name: "Vendors Claims",
         icon: <RiVoiceprintFill />,
         to: "/Admin/VendorClaimsAdimin",
+      },
+      {
+        id: 16,
+        name: "Customers Claims",
+        icon: <RiVoiceprintFill />,
+        to: "/Admin/CustomerClaimAdimin",
       }
     ]
   },

@@ -109,7 +109,7 @@ app.post("/Insertorders", async (req, res) => {
     const customerEmail = req.body[0]?.customerData?.email
     const orders = req.body[0]?.orders
     const { id } = req.body[0]?.paymentIntent
-    const { selectedPaymentMode } = req.body[0]
+    const { selectedPaymentMode } = req.body[0] || 'Stripe'
     // const { street, city, country, region, postalCode, name, given_name, family_name, phone_number, email } = req.body[0]?.shipping_address
     const { given_name_address, family_name_address, apt_address, subregion_address, city_address, country_address, region_address, zip_address, phone_address, email_address } = req.body[0]?.shipping_address
     const date = new Date();
@@ -271,47 +271,10 @@ app.post("/Insertorders", async (req, res) => {
     }
 
     // Calculate the overall total price
-    // Calculate the overall total price with discounts applied
     const overallTotalPrice = insertedOrders.reduce((total, order) => {
       const discountedPrice = parseFloat(order.total_amount); // Convert to a number
       return total + discountedPrice;
     }, 0).toFixed(2);
-
-    const orderDetailsHTML = insertedOrders.map((order) => `
-        <tr>
-          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.product_name}</td>
-          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${parseFloat(order.total_amount).toFixed(2)}</td>
-          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.quantity}</td>
-          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.label || ''}</td>
-          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.payment_method || ''}</td>
-        </tr>
-      `).join('');
-
-    const emailBody = `
-        <html>
-          <body>
-            <h1>Your Order Placed Successfully</h1>
-            <p>Thank you for placing your order with us.</p>
-            <p>Order details:</p>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Product Name</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Product Price</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Quantity</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Label</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Payment Method</th>
-              </tr>
-              ${orderDetailsHTML}
-              <tr>
-                <td colspan="3" style="text-align: right; border: none; padding: 8px;"><strong>Overall Total Price:</strong></td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">$${overallTotalPrice}</td>
-              </tr>
-            </table>
-
-            <p>For any inquiries, please contact us.</p>
-          </body>
-        </html>
-      `;
 
     const paymentResult = await pool.query(
       `INSERT INTO payments (customer_id, order_id, payment_date, payment_method, payment_amount, payment_status,
@@ -337,6 +300,41 @@ app.post("/Insertorders", async (req, res) => {
 
     const insertedPayment = paymentResult.rows[0];
 
+    const orderDetailsHTML = insertedOrders.map((order) => `
+        <tr>
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.product_name}</td>
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${parseFloat(order.total_amount).toFixed(2)}</td>
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.quantity}</td>
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.label || ''}</td>
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.payment_method || ''}</td>
+        </tr>
+      `).join('');
+
+    const emailBody = `
+      <html>
+        <body>
+          <h1>Your Order Placed Successfully</h1>
+          <p>Thank you for placing your order with us.</p>
+          <p>Order details:</p>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Product Name</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Product Price</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Quantity</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Label</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Payment Method</th>
+            </tr>
+            ${orderDetailsHTML}
+            <tr>
+              <td colspan="3" style="text-align: right; border: none; padding: 8px;"><strong>Overall Total Price:</strong></td>
+              <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">$${overallTotalPrice}</td>
+            </tr>
+          </table>
+
+          <p>For any inquiries, please contact us.</p>
+        </body>
+      </html>
+    `;
 
     // // Use the sendEmail function to send the email with the updated HTML content
     await sendEmail(customerEmail, `Order #${order_id}`, emailBody)

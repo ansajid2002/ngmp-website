@@ -60,6 +60,7 @@ import VendorPolicies from "./Vendors/components/VendorPolicies";
 import Apploading from "./Admin/pages/Apploading";
 import BulkApprove from "./Admin/pages/Products/BulkApprove";
 import Wallet from "./Admin/pages/Customers/Wallet";
+import CustomerClaimsAdimin from "./Admin/pages/Vendors/CustomerClaimsAdimin";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
 
@@ -159,6 +160,7 @@ function AdminRoutes() {
       "/Admin/MobileBanner",
       "/Admin/customersAddress",
       "/Admin/VendorClaimsAdimin",
+      "/Admin/CustomerClaimAdimin",
       "/Admin/attributes",
       "/Admin/AdminChatwithCustomers",
       "/Admin/wallets",
@@ -280,6 +282,10 @@ function AdminRoutes() {
             <Route
               path="/Admin/VendorClaimsAdimin"
               element={<VendorClaimsAdimin conversionRates={conversionRates} adminLoginData={adminLoginData} />}
+            />
+            <Route
+              path="/Admin/CustomerClaimAdimin"
+              element={<CustomerClaimsAdimin conversionRates={conversionRates} adminLoginData={adminLoginData} />}
             />
             <Route
               path="/Admin/attributes"
