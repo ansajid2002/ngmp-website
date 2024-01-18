@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
-const StripeCheckButton = ({ mothodActive_ACTIVE, selectedAddress }: any) => {
+const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: any) => {
 
     const { cartItems } = useAppSelector((store) => store.cart)
     const { customerData } = useAppSelector((store) => store.customerData)
@@ -36,6 +36,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE, selectedAddress }: any) => {
         image: item.images?.[0]
     }));
 
+
     const checkoutData = [
         {
             orders: cartItems,
@@ -45,6 +46,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE, selectedAddress }: any) => {
             selectedPaymentMode: mothodActive_ACTIVE
         }
     ]
+
 
     const handleClick = async () => {
         setLoading(true)
@@ -65,6 +67,8 @@ const StripeCheckButton = ({ mothodActive_ACTIVE, selectedAddress }: any) => {
             const responseData = await response.json();
             router.push('/thank-you', { scroll: false })
         } else if (mothodActive_ACTIVE === 'Stripe') {
+            console.log(mothodActive_ACTIVE);
+
             const stripe = await getStripePromise()
 
             const response = await fetch("/api/Checkout", {
@@ -76,7 +80,6 @@ const StripeCheckButton = ({ mothodActive_ACTIVE, selectedAddress }: any) => {
 
             const data = await response.json()
             if (data.session) {
-                console.log(data);
 
                 // stripe?.redirectToCheckout({ sessionId: data.session.url })
                 window.location.href = data.session.url
@@ -88,13 +91,13 @@ const StripeCheckButton = ({ mothodActive_ACTIVE, selectedAddress }: any) => {
     return (
         <div>
             {/* {
-                mothodActive_ACTIVE !== 'Wallet' calculateSubtotal() <= walletTotal : <ButtonPrimary
+                mothodActive_ACTIVE  !== 'Wallet' calculateSubtotal() <= walletTotal : <ButtonPrimary
                     className={`w-full max-w-[240px] ${loading && 'animate-pulse'}`}
                     onClick={handleClick}
                     disabled={loading}
                 >
                     {loading ? 'Redirecting to checkout...' : 'Confirm order'}
-                </ButtonPrimary> : <ButtonPrimary className="w-full max-w-[240px] bg-red-500">{mothodActive_ACTIVE} Insufficient Balance....</ButtonPrimary>
+                </ButtonPrimary> : <ButtonPrimary className="w-full max-w-[240px] bg-red-500">{mothodActive_ACTIVE } Insufficient Balance....</ButtonPrimary>
             } */}
             {/* <button onClick={handleClick}>Checkout</button> */}
             {/* {calculateSubtotal()} {walletTotal} */}

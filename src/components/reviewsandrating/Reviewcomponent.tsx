@@ -31,7 +31,7 @@ const Reviewcomponent = ({ product_id, showmorebtn = false, vendorID }) => {
     const getReviews = async () => {
         const data = await getReviewData(product_id, vendorID)
 
-        setReviewData(data.ratingsData)
+        setReviewData(data?.ratingsData || [])
     }
 
     useEffect(() => {

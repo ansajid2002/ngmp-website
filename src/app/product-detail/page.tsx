@@ -1124,8 +1124,7 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || responseData?.images?.[0]
-                }`}
+              src={`${selectedImage ? `${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage}` : (responseData?.images?.[0] ? `${AdminUrl}/uploads/UploadedProductsFromVendors/${responseData.images[0]}` : "/placeholder.png")}`}
               className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
               alt="Main Product Image"
               loading="lazy"
