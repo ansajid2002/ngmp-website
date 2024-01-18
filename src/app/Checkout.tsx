@@ -15,6 +15,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE, selectedAddress }: any) => {
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
     const router = useRouter()
+
     const calculateSubtotal = () => {
         let subtotal = 0;
 
@@ -86,8 +87,19 @@ const StripeCheckButton = ({ mothodActive_ACTIVE, selectedAddress }: any) => {
 
     return (
         <div>
+            {/* {
+                mothodActive_ACTIVE !== 'Wallet' calculateSubtotal() <= walletTotal : <ButtonPrimary
+                    className={`w-full max-w-[240px] ${loading && 'animate-pulse'}`}
+                    onClick={handleClick}
+                    disabled={loading}
+                >
+                    {loading ? 'Redirecting to checkout...' : 'Confirm order'}
+                </ButtonPrimary> : <ButtonPrimary className="w-full max-w-[240px] bg-red-500">{mothodActive_ACTIVE} Insufficient Balance....</ButtonPrimary>
+            } */}
+            {/* <button onClick={handleClick}>Checkout</button> */}
+            {/* {calculateSubtotal()} {walletTotal} */}
             {
-                calculateSubtotal() <= walletTotal ? <ButtonPrimary
+                mothodActive_ACTIVE !== 'Wallet' || walletTotal >= calculateSubtotal() ? <ButtonPrimary
                     className={`w-full max-w-[240px] ${loading && 'animate-pulse'}`}
                     onClick={handleClick}
                     disabled={loading}
@@ -95,7 +107,6 @@ const StripeCheckButton = ({ mothodActive_ACTIVE, selectedAddress }: any) => {
                     {loading ? 'Redirecting to checkout...' : 'Confirm order'}
                 </ButtonPrimary> : <ButtonPrimary className="w-full max-w-[240px] bg-red-500">Insufficient Balance....</ButtonPrimary>
             }
-            {/* <button onClick={handleClick}>Checkout</button> */}
         </div>
     )
 }

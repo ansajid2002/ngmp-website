@@ -17,7 +17,7 @@ const nextConfig = {
     SELLERURL: process.env.SELLERURL
   },
   images: {
-    domains: ['localhost', 'https://nileadmin.websitetest.info', 'https://admin.nilegmp.com', '192.168.1.5'], // Add the IP address to the list of allowed domains
+    domains: ['localhost', 'https://nileadmin.websitetest.info', 'https://admin.nilegmp.com', '192.168.1.7'], // Add the IP address to the list of allowed domains
     remotePatterns: [
       {
         protocol: "https",
