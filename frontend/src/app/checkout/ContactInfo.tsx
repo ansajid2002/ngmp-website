@@ -19,15 +19,12 @@ const ContactInfo: FC<Props> = ({ isActive, onCloseActive, onOpenActive }) => {
 
   const { given_name, family_name, email, picture, google_id }: any = customerData?.customerData || {}
   let profile_pic = ''
-  if (picture) {
-    if (google_id && google_id.trim() != "") {
-      profile_pic = picture
-    } else {
-      profile_pic = `${AdminUrl}/uploads/customerProfileImages/${picture}`
-    }
-  } else {
-    profile_pic = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAABcCAMAAADUMSJqAAAAMFBMVEWzs7P////MzMywsLCsrKz09PS5ubn5+fne3t7CwsLt7e3p6enb29vw8PC/v7/X19fgW9LbAAABlElEQVRoge2Y6Y6DMAyEcQw5OMr7v22BdlW14AnFjlbazfxGH8ZDfKRpqqqqqn5VzOXY3rlU6gXsaNE0+7YE39NDQ7KncxuedJputnhuU6SXomVu2AV6l1lu2E+009jasN0evRprEbvANqFzEtiLrXr6p5WGrvIss6lTmsogcKKbDn5DbBpVeYFZIep18AjhQcPOwakkvGjk/xY+QnhXFF7yECnhA4ZrKhd3kK1yVGxCL82XE5M7/KTpRpl/RRd5I/fPH/nL7Lyhk+J3yTqqatFtD9nK0cVDuAqdOf9OOxUBT3WVZYPLw4XBDiAe02gyRAtDlwVamnPVbj7pR4kxmf03+n5tCWYb10F1VBSsT/jO0sFm3WqOy5eRnUv1OtgULU7Qxj7uRxZrLntpunDK+xFuPejRU7p+BcDMDvcK6tbrl+8/gNnnyA+FYU7+ixcsj6aYa83vXxDdqQytIeMBUdCQcuHn04ziT/jc5kcsqB6VHLiLnxEolniOOCMwsFd4hf8ZeAAFwKkFaherJbOrqqqqjHQH7BMP7RUmI8IAAAAASUVORK5CYII='
-  }
+  profile_pic = picture
+    ? picture.startsWith('https')
+      ? picture // Display direct image
+      : `${AdminUrl}/uploads/customerProfileImages/${picture}` // Display image with AdminUrl
+    : "/avatarplaceholder.png"; // Display placeholder if item.picture is not available
+
 
   const renderAccount = () => {
     return (

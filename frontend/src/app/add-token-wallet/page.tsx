@@ -1,127 +1,131 @@
-import { AddTokenToWalletForm } from "@/components/AddTokenToWalletForm";
-import HowItWorksInfoGraphic from "@/components/wallet/HowItWorksInfoGraphic";
-import { Wallet } from "lucide-react";
-import Link from "next/link";
-import React from "react";
+'use client'
 
-const page = () => {
-  // const features = [
-  //   {
-  //     id: 1,
-  //     title: "Instant Transaction:",
-  //     list: [
-  //       "Enjoy lightning-fast transactions for quick and efficient payments.",
-  //       "Instantly transfer funds to other Nile Wallet users.",
-  //     ],
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Security Measures:",
-  //     list: [
-  //       "State-of-the-art encryption ensures the security of your financial data.",
-  //       "Two-factor authentication (2FA) adds an extra layer of protection to your account.",
-  //     ],
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Multi-Currency Support:",
-  //     list: [
-  //       "Nile Wallet supports multiple currencies, allowing you to manage funds in your preferred currency.",
-  //     ],
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Transaction History:",
-  //     list: [
-  //       "Access a detailed transaction history to track your spending and monitor your financial activities.",
-  //     ],
-  //   },
-  // ];
+import { Button, Input } from 'antd';
+import { ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import React, { useState } from 'react';
+import { AdminUrl } from '../layout';
+import { useAppSelector } from '@/redux/store';
+
+const AddMoney = () => {
+  const [edahabNumber, setEdahabNumber] = useState('');
+  const [amount, setAmount] = useState('');
+  const [loadingButton, setLoadingButton] = useState(false);
+  const { customerData } = useAppSelector((state) => state.customerData);
+  const customer_id = customerData?.customer_id
+
+  const handleAmountOptionClick = (selectedAmount: any) => {
+    setAmount(selectedAmount);
+  };
+
+  const handleAddMoney = async () => {
+    setLoadingButton(true)
+
+    try {
+      if (edahabNumber.trim() === '') return alert('eDahab Number is Required..')
+      if (amount.trim() === '') return alert('Amount is Required..')
+      // Call your API to add money and get the payment link
+      const response = await fetch(`/api/Issue-Invoice/issue`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: parseFloat(amount), customerId: customer_id, edahabNumber, returnUrl: 'https://www.stg.nilegmp.com/ThankYou' }),
+      });
+
+      const data = await response.json();
+
+      console.log(data);
+
+      if (response.ok) {
+        // Check StatusCode and show a simple alert or validation errors
+        if (data.StatusCode === 0) {
+          // Show a simple alert with a link to pay
+          console.log(data);
+          if (data.StatusCode === 0) {
+            window.location.href = `https://edahab.net/API/Payment?invoiceId=${data.InvoiceId}`;
+          }
+
+
+        } else {
+          // Show validation errors in an alert
+          const validationErrors = data.ValidationErrors.map((error: any) => error.ErrorMessage).join('\n');
+        }
+      } else {
+        // Show a simple alert with an error message
+        alert('Failed to issue invoice. Please try again later.');
+      }
+    } catch (error) {
+      // Handle errors
+      console.error('Error adding money:', error);
+
+      // Show a simple alert with an error message
+      alert('An error occurred. Please try again later.');
+    } finally {
+      setLoadingButton(false)
+    }
+  };
+
   return (
-    <div className="md:px-10 pt-5 bg-gradient-to-b from-[#063B69]">
-      <div className="flex flex-col-reverse md:flex-row m-3 bg-white px-4 py-5 md:p-10 rounded-t-3xl">
-        <div className="md:w-1/2 md:pr-20 space-y-5">
-          {/* <div className="flex gap-2 items-center justify-start mb-3">
-            <Wallet size={30} color="#063b69" />
-            <h2 className="text-2xl font-bold text-[#063b69]">
-              How Nile Wallet System Works!
-            </h2>
-          </div> */}
-          {/* <div>
-            {features?.map((item: any, index: any) => (
-              <div key={index} className="py-2 space-y-1">
-                <h3 className="text-xl font-semibold text-[#ed642b]">
-                  {item.title}
-                </h3>
-                <ul className="list-disc px-5 text-[0.9rem] text-gray-800 leading-snug">
-                  {item.list?.map((item: any, index: any) => (
-                    <li>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div> */}
-          <div className="space-y-5">
-            <HowItWorksInfoGraphic />
-            <div className="space-y-2">
-              <h3 className="text-2xl font-semibold text-[#063b69]">
-                Support and Assistance
-              </h3>
-              <p className="text-[0.9rem] text-gray-800 leading-snug">
-                If you have any questions or encounter issues while using Nile
-                Wallet, our dedicated support team is here to help. Visit the '
-                <Link
-                  href={"/SupportCenter?querys=BuyingOnNile"}
-                  target="blank"
+    <div className="md:px-10 pt-5 bg-gradient-to-b from-[#063B69] md:space-y-8">
+      <div>
+        <ul className="flex items-center justify-center gap-1 text-white">
+          <Link href="/" className=" text-gray-300">
+            Home
+          </Link>
+          <ChevronRight size={20} />
+          <Link href="/wallet">Wallet</Link>
+          <ChevronRight size={20} />
+          <li>Add Token to Wallet</li>
+        </ul>
+      </div>
+
+      {/* Wallet Details */}
+
+      <div className="bg-white h-full p-4 rounded-md">
+        <h1 className="text-xl font-semibold tracking-wide md:text-2xl">Add Money to Nile Wallet</h1>
+
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+          {/* Input for eDAHAB Number */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700">eDAHAB Number</label>
+            <Input
+              type="number"
+              value={edahabNumber}
+              onChange={(e) => setEdahabNumber(e.target.value)}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Input for Amount */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700">Amount</label>
+            <Input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+            />
+            <div className="flex items-center gap-2">
+              {[500, 1000, 2000, 5000].map((option) => (
+                <button
+                  key={option}
+                  onClick={() => handleAmountOptionClick(option)}
+                  className="px-3 py-2 my-4 mx-2 border border-blue-500 text-blue-500 rounded-md hover:text-white hover:bg-blue-500"
                 >
-                  <span className="text-[#ed642b] font-medium">Support</span>
-                </Link>
-                ' section for FAQs, tutorials, and{" "}
-                <Link href={"/contact-us"} target="blank">
-                  <span className="text-[#ed642b] font-medium">contact</span>
-                </Link>{" "}
-                information.
-              </p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-2xl font-semibold text-[#063b69]">
-                Terms and Conditions
-              </h3>
-              <p className="text-[0.9rem] text-gray-800 leading-snug">
-                Before using Nile Wallet, make sure to review the{" "}
-                <Link href={"/company/terms-conditions"} target="blank">
-                  <span className="text-[#ed642b] font-medium">
-                    terms and conditions
-                  </span>
-                </Link>{" "}
-                to understand your rights and responsibilities. By using Nile
-                Wallet, you agree to abide by these terms.
-              </p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-2xl font-semibold text-[#063b69]">
-                Stay Connected
-              </h3>
-              <p className="text-[0.9rem] text-gray-800 leading-snug">
-                Follow us on social media to stay updated on new features,
-                promotions, and security tips.{" "}
-                <Link href={"/wallet"} target="blank">
-                  <span className="text-[#ed642b] font-medium">
-                    Nile Wallet
-                  </span>
-                </Link>{" "}
-                is committed to providing a secure and user-friendly experience
-                for all our users.
-              </p>
+                  ${option}
+                </button>
+              ))}
             </div>
           </div>
         </div>
-        <div className="md:w-1/2 mb-5">
-          <AddTokenToWalletForm />
+
+        <div className='flex justify-center items-center my-10'>
+          <Button loading={loadingButton} onClick={handleAddMoney} className='bg-blue-500 text-white !hover:text-white ' > Add Money</Button>
         </div>
       </div>
     </div>
   );
 };
 
-export default page;
+export default AddMoney;

@@ -13,11 +13,12 @@ import { useAppSelector } from "@/redux/store";
 const Page = () => {
   const [singleUser, setSingleUser] = useState(null);
   const [user, setUser] = React.useState("");
-  const onChange = ({ target }) => setUser(target.value);
+  const onChange = ({ target }: any) => setUser(target.value);
   const [approvedCustomers, setApprovedCustomers] = useState(null);
   const [filteredCustomers, setFilteredCustomers] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const customerData = useAppSelector((state) => state.customerData);
+  const { walletTotal } = useAppSelector((state) => state.wallet);
 
   // console.log(customerData.customerData.email, "PROFILE DATAAAAAAAAAAAAAA");
 
@@ -90,7 +91,7 @@ const Page = () => {
         <div className="lg:w-[45%] mb-10 lg:mb-0">
           {/* ----------- */}
           <div>
-            <AvailableToken />
+            <AvailableToken walletTotal={walletTotal} />
           </div>
           {/* ------------ */}
           <div className="pt-4 pb-1 ">
@@ -127,7 +128,7 @@ const Page = () => {
           </div>
 
           {/* ------------ */}
-          <div className=" h-48 lg:h-52 max-w-[28rem] overflow-hidden overflow-y-scroll scroll-smooth scroll">
+          <div className=" h-96 lg:h-52 max-w-[28rem] overflow-hidden overflow-y-scroll scroll-smooth scroll">
             {isLoading ? (
               <>
                 {skely.map(() => (
@@ -152,10 +153,11 @@ const Page = () => {
                         alt="User Profile"
                         className="h-full w-full object-cover"
                         src={
-                          (item &&
-                            item.picture &&
-                            `${AdminUrl}/uploads/customerProfileImages/${item.picture}`) ||
-                          "/avatarplaceholder.png"
+                          item && item.picture
+                            ? item.picture.startsWith('https')
+                              ? item.picture // Display direct image
+                              : `${AdminUrl}/uploads/customerProfileImages/${item.picture}` // Display image with AdminUrl
+                            : "/avatarplaceholder.png"
                         }
                         width={100}
                         height={100}
@@ -175,7 +177,7 @@ const Page = () => {
             )}
           </div>
         </div>
-        <TokenTransferChat customerData={singleUser} />
+        <TokenTransferChat walletTotal={walletTotal} singleUser={singleUser} />
       </div>
     </div>
   );

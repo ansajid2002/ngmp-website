@@ -87,7 +87,13 @@ app.get('/fetchCustomerTransaction', async (req, res) => {
                     SELECT ct.*, c.given_name, c.family_name, c.picture
                     FROM customer_transactions ct
                     JOIN customers c ON ct.customer_id = c.customer_id
-                    WHERE ct.customer_id = $1 AND (ct.description ILIKE $2 OR c.given_name ILIKE $2 OR c.family_name ILIKE $2)
+                    WHERE ct.customer_id = $1 
+                    AND (
+                        ct.description ILIKE $2 
+                        OR c.given_name ILIKE $2 
+                        OR c.family_name ILIKE $2
+                        OR ct.wallet_txn_id ILIKE $2
+                    )
                     ORDER BY ct.datetime DESC
                     LIMIT $3 OFFSET $4;
                 `,
@@ -99,7 +105,13 @@ app.get('/fetchCustomerTransaction', async (req, res) => {
                     SELECT COUNT(*) as total
                     FROM customer_transactions ct
                     JOIN customers c ON ct.customer_id = c.customer_id
-                    WHERE ct.customer_id = $1 AND (ct.description ILIKE $2 OR c.given_name ILIKE $2 OR c.family_name ILIKE $2);
+                    WHERE ct.customer_id = $1 
+                    AND (
+                        ct.description ILIKE $2 
+                        OR c.given_name ILIKE $2 
+                        OR c.family_name ILIKE $2
+                        OR ct.wallet_txn_id ILIKE $2
+                    );
                 `,
                 values: [customer_id, `%${search}%`],
             };
@@ -152,7 +164,7 @@ app.get('/AllfetchCustomerTransaction', async (req, res) => {
 
         // Base query for transactions
         const baseQuery = `
-            SELECT ct.*, c.given_name, c.family_name, c.picture
+            SELECT ct.*, c.given_name, c.family_name, c.picture, c.email
             FROM customer_transactions ct
             JOIN customers c ON ct.customer_id = c.customer_id
         `;
@@ -282,9 +294,31 @@ app.get('/AllfetchCustomerTransaction', async (req, res) => {
     }
 });
 
+app.get('/AllfetchCustomerTransaction_Customer_ID', async (req, res) => {
+    try {
+        const { customer_id } = req.query;
 
+        // Base query for transactions
+        const baseQuery = `
+            SELECT ct.*, c.given_name, c.family_name, c.picture, c.email
+            FROM customer_transactions ct
+            JOIN customers c ON ct.customer_id = c.customer_id
+            WHERE ct.customer_id = $1;
+        `;
 
+        const value = [customer_id]
 
+        const { rows } = await pool.query(baseQuery, value)
+
+        const paginatedData = {
+            transactions: rows
+        }
+        res.json(paginatedData);
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 const fetchWalletToken = async (customerId) => {
     try {
@@ -482,9 +516,11 @@ app.post('/transfertofriend', async (req, res) => {
         const receiverCustomerId = selectedUser?.customer_id;
         const { given_name, family_name } = selectedUser
 
+
         const walletId = generateRandomWalletId();
         // Check if the totalAmount is within the limit
         if (totalAmount <= totalBalance) {
+
             // Add money to the receiver's account
             await addMoneyToAccount(receiverCustomerId, totalAmount, datetime, given_name, family_name, customerData, walletId);
 

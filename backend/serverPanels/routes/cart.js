@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const pool = require('../config')
-const bcrypt = require('bcrypt');
 const cors = require('cors');
 
 app.use(express.json())
@@ -331,6 +330,8 @@ app.put('/cartWebsite', async (req, res) => {
 });
 
 app.post('/addProductcart', async (req, res) => {
+    console.log(req.body);
+
     try {
         let {
             customer_id,
@@ -342,7 +343,6 @@ app.post('/addProductcart', async (req, res) => {
             variantlabel,
             mrp,
             sellingprice,
-            c_symbol
         } = req.body;
         // Check if the product is already in the cart for the specified customer
         let checkCartQuery;
@@ -387,7 +387,7 @@ app.post('/addProductcart', async (req, res) => {
                 values.push(variantlabel);
             }
 
-            console.log(values,"values");
+            console.log(values, "values");
             await pool.query(updateQuery, values);
 
 

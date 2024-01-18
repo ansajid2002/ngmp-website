@@ -84,6 +84,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
   // const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [SelectedMainSubcategory, setSelectedMainSubcategory] = useState(null);
   const [selectedCategoryType, setSelectedCategoryType] = useState("Products");
   const [formValues, setFormValues] = useState([]);
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
@@ -113,16 +114,14 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [bulkEditOption, setBulkEditOption] = useState(null); // State to store selected bulk edit option
   const [BulkModal, showBulkEditOption] = useState(false); // State to store selected bulk edit option
   const [SelectedRowProduct, setSelectedRowProduct] = useState(null); // State to store selected bulk edit option
+  const [condition, setCondition] = useState('New');
+  const [listing_type, setType] = useState('');
 
   const handleConditionChange = (value) => {
     setConditionToggle(value);
+    setCondition(value);
   };
 
-  const handleAdditionalInfoChange = (e) => {
-    setAdditionalInfo(`${e.target.value}`
-
-    );
-  };
   const id = vendorDatastate?.[0].id;
 
   const [locationData, setLocationData] = useState({
@@ -329,12 +328,13 @@ const VendorProducts = ({ vendorDatastate }) => {
 
   const [currentStep, setCurrentStep] = useState(0);
 
-  const handleNext = async () => {
+  const handleNext = async (type = '') => {
     try {
       await form.validateFields();
       await formitem.validateFields();
 
       if (currentStep < steps.length - 1) {
+        setType(type)
         if (currentStep === 2) {
           if (selectedCurrency === "Select Currency") {
             // Show a currency error message
@@ -1073,6 +1073,8 @@ const VendorProducts = ({ vendorDatastate }) => {
     setSelectedSubcategory(
       selectedRow?.subcategory?.replace(/[^\w\s]/g, "").replace(/\s/g, "")
     );
+
+    setSelectedMainSubcategory(selectedRow?.nested_subcat_slug)
     setSelectedCurrency(selectedRow?.currency_symbol);
     setUploadImages(selectedRow?.images);
     setcatSubcatDisable(true);
@@ -1144,8 +1146,6 @@ const VendorProducts = ({ vendorDatastate }) => {
       const vendorId = vendorDatastate[0].id;
       // Update the status value to 0
       // Check if an object with the same name already exists
-      values.condition = `${conditionToggle},${additionalInfo}`
-      console.log(values, "vlaues from onfinsih");
       values.status = 0;
       const existingIndex = formValues.findIndex(
         (item) => item.name === values.name
@@ -1166,6 +1166,7 @@ const VendorProducts = ({ vendorDatastate }) => {
           SelectedUniqueId,
           FilteredVariantData,
           ProductVariantType,
+          listing_type
         };
       } else {
         // Add a new object to the array if it doesn't exist
@@ -1179,6 +1180,7 @@ const VendorProducts = ({ vendorDatastate }) => {
           SelectedUniqueId,
           FilteredVariantData,
           ProductVariantType,
+          listing_type
         });
       }
 
@@ -1311,6 +1313,19 @@ const VendorProducts = ({ vendorDatastate }) => {
     value === "Variant" ? setvariantAddModal(true) : setvariantAddModal(false);
   };
 
+  const getAdditionalInfoOptions = () => {
+    switch (condition) {
+      case 'New':
+        return ['Brand New', 'Open Box'];
+      case 'Used':
+        return ['Like New', 'Very Good', 'Good'];
+      case 'Refurbished':
+        return ['Manufacturer Refurbished', 'Seller Refurbished', 'Certified Refurbished', 'As-Is Refurbished'];
+      default:
+        return [];
+    }
+  };
+
   const categoryFormMap = {
     Products: (
       <>
@@ -1387,11 +1402,21 @@ const VendorProducts = ({ vendorDatastate }) => {
             </Select>
           </Form.Item>
 
-          {conditionToggle === 'Used' && (
-            <Form.Item label="Additional Information">
-              <Input value={additionalInfo} onChange={handleAdditionalInfoChange} />
-            </Form.Item>
-          )}
+          {/* <Form.Item
+            label="Additional Information">
+            <Input value={additionalInfo} onChange={handleAdditionalInfoChange} />
+          </Form.Item> */}
+
+          <Form.Item name='additonal_condition' label="Additional Condition">
+            <Select onChange={(value) => setAdditionalInfo(value)}>
+              {getAdditionalInfoOptions().map((option) => (
+                <Select.Option key={option} value={option}>
+                  {option}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
           <Form.Item
             label="Product Type"
             name="productType"
@@ -1557,6 +1582,8 @@ const VendorProducts = ({ vendorDatastate }) => {
 
   const fields = getFieldsByCategory(selectedSubcategory);
 
+  console.log(filteredSubcategories);
+
   const steps = [
     {
       title: `Category Type `,
@@ -1614,7 +1641,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       title: `Select Category`,
       content: (
         <Form onFinish={onFinish} form={form}>
-          <div className="grid grid-col-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-col-1 md:grid-cols-3 gap-4">
             <div className="flex justify-between items-center">
               <label htmlFor="category" className="mr-4 mb-5">
                 Category:
@@ -1693,6 +1720,47 @@ const VendorProducts = ({ vendorDatastate }) => {
                 </Select>
               </Form.Item>
             </div>
+
+            {
+              filteredSubcategories?.[0] && filteredSubcategories?.[0].nested_subcategories && <div className="flex justify-between items-center">
+                <label htmlFor="subcategory" className="mr-4 mb-5">
+                  Nested Subcategory:
+                </label>
+                <Form.Item
+                  name="nested_subcat"
+                  className="w-full"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select the product Nested subcategory!",
+                    },
+                  ]}
+                >
+                  <Select
+                    id="nested_subcat"
+                    showSearch
+                    placeholder="Select Nested subcategory"
+                    className="w-full"
+                    onChange={(subcategory) =>
+                      setSelectedMainSubcategory(subcategory)
+                    }
+                    value={SelectedMainSubcategory || undefined}
+                    disabled={catSubcatDisable}
+                    allowClear // Add this prop to enable clearing the selected value
+                  >
+                    {filteredSubcategories && filteredSubcategories?.[0].nested_subcategories?.map((subcategory) => (
+                      <Select.Option
+                        key={subcategory.nested_subcategory_name}
+                        value={subcategory.nested_subcategory_name}
+                      >
+                        {subcategory.nested_subcategory_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            }
+
           </div>
         </Form>
       ),
@@ -2671,19 +2739,36 @@ const VendorProducts = ({ vendorDatastate }) => {
                       </Button>
                     </Form.Item>
                   )}
-                  {currentStep < steps.length - 1 && (
-                    <Form.Item>
+                  {
+                    currentStep > 1 && <Form.Item>
                       <Button
-                        onClick={handleNext}
+                        onClick={() => handleNext('Draft')}
                         size="large"
                         spellCheck="true"
-                        className="border-none text-sm w-full bg-blue-500 text-white !hover:text-white"
+                        className="border-none text-sm w-full  text-red-500 !hover:text-white"
                         style={{ zIndex: 2 }} // Add higher z-index to prioritize this button
                       >
-                        Next
+                        Save as Draft
                       </Button>
                     </Form.Item>
+                  }
+                  {currentStep < steps.length - 1 && (
+                    <>
+                      <Form.Item>
+                        <Button
+                          onClick={handleNext}
+                          size="large"
+                          spellCheck="true"
+                          className="border-none text-sm w-full bg-blue-500 text-white !hover:text-white"
+                          style={{ zIndex: 2 }} // Add higher z-index to prioritize this button
+                        >
+                          Next
+                        </Button>
+                      </Form.Item>
+
+                    </>
                   )}
+
                   {currentStep === steps.length - 1 && (
                     <Form.Item>
                       <Button

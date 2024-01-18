@@ -516,11 +516,12 @@ const checkSkuidExists = async (sku) => {
 
 app.post("/addVendorProduct", async (req, res) => {
   try {
-    const { subcategory, category, locationData, length, ...productData } = req.body[0];
+    console.log(listing_type);
+    const { subcategory, category, nested_subcat, additonal_condition, listing_type, locationData, length, ...productData } = req.body[0];
     const uniquepid = generateUniqueID();
     const replaceSubcategory = subcategory.trim();
     const replacecategory = category.trim();
-    const prodSlug = slug(productData?.ad_title);
+    const prodSlug = slug(productData?.ad_title) || '';
     const replacecategorySlug = category
       .replace(/[^\w\s]/g, "")
       .replace(/\s/g, "");
@@ -551,8 +552,8 @@ app.post("/addVendorProduct", async (req, res) => {
       INSERT INTO products (ad_title, city, state, country, currency_symbol, category, subcategory, vendorid,
       uniquepid, skuid, mrp, sellingprice, countryoforigin, manufacturername, packerdetails,
       additionaldescription, searchkeywords, keyfeatures, videourl, status, images, category_type,
-      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug, width, height, weight, length, product_ship_from, estimate_delivery_by)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, NOW(), $31, $32, $33, $34, $35, $36, $37)
+      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug, width, height, weight, length, product_ship_from, estimate_delivery_by, nested_subcat, nested_subcat_slug, additonal_condition)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, NOW(), $31, $32, $33, $34, $35, $36, $37, $38, $39, $40)
       RETURNING *;
     `;
 
@@ -593,7 +594,10 @@ app.post("/addVendorProduct", async (req, res) => {
       productData.weight,
       length,
       productData.product_ship_from,
-      productData.estimate_delivery_by
+      productData.estimate_delivery_by,
+      nested_subcat,
+      slug(nested_subcat || '') || '',
+      additonal_condition
     ];
 
     if (productData.FilteredVariantData.length > 0) {
@@ -664,12 +668,12 @@ app.post("/addVendorProduct", async (req, res) => {
 
 app.post("/updateVendorProduct", async (req, res) => {
   try {
-    const { subcategory, length, ...productData } = req.body[0]; // Exclude category, isvariant, skuid, countryoforigin
+    const { subcategory, nested_subcat, additonal_condition, length, ...productData } = req.body[0]; // Exclude category, isvariant, skuid, countryoforigin
     const replaceSubcategory = subcategory && subcategory
       .replace(/[^\w\s]/g, "")
       .replace(/\s/g, "");
     const { ProductVariantType, SelectedUniqueId, FilteredVariantData } = productData;
-    const prodSlug = slug(productData?.ad_title);
+    const prodSlug = slug(productData?.ad_title) || '';
 
     // Update the product in the 'products' table
     const updateProductQuery = `
@@ -696,7 +700,10 @@ app.post("/updateVendorProduct", async (req, res) => {
                               length = $18,
                               weight = $19,
                               product_ship_from = $20,
-                              estimate_delivery_by = $21
+                              estimate_delivery_by = $21,
+                              nested_subcat = $22,
+                              nested_subcat_slug = $23,
+                              additonal_condition = $24
                             WHERE uniquepid = $14
                             RETURNING *;
                             `;
@@ -722,7 +729,10 @@ app.post("/updateVendorProduct", async (req, res) => {
       length,
       productData.weight,
       productData.product_ship_from,
-      productData.estimate_delivery_by
+      productData.estimate_delivery_by,
+      nested_subcat,
+      slug(nested_subcat || '') || '',
+      additonal_condition
     ];
 
     // Execute the 'products' table update query
@@ -1915,6 +1925,7 @@ app.get("/getexploreproducts", async (req, res) => {
 
 app.get("/getProductBySubcategories", async (req, res) => {
   const { subcat, category, pageNumber = 1, pageSize = 10 } = req.query;
+  console.log(req.query);
   try {
     // Check if vendorid is provided in the URL and use it in your query
     // Use vendorid in your query or function

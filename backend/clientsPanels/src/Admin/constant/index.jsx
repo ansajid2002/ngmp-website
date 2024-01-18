@@ -89,7 +89,7 @@ export const links = [
         name: "Customer",
         icon: <FaUserCheck />,
         dropdown: true,
-        dropList: [{ name: "View Customers", to: "/Admin/customers" }, { name: "Customers Address", to: "/Admin/customersAddress" }, { name: "Manage Wallets", to: "/Admin/wallets" }],
+        dropList: [{ name: "View Customers", to: "/Admin/customers" }, { name: "Customers Address", to: "/Admin/customersAddress" }],
 
       },
     ]

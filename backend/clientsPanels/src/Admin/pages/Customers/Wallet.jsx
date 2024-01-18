@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Spin, Pagination, Input, Typography } from 'antd';
+import { Table, Spin, Pagination, Input, Typography, Image } from 'antd';
 import { Card, Metric, Text } from "@tremor/react";
 
 import { AdminUrl } from "../../constant";
@@ -12,6 +12,7 @@ const Wallet = () => {
     const [loading, setLoading] = useState(true);
     const [totalTransaction, setTotalTransactions] = useState(true);
     const [searchValue, setSearchValue] = useState('');
+    const [page, setPage] = useState(1);
 
     const fetchData = async (page, pageSize) => {
         setLoading(true)
@@ -42,7 +43,7 @@ const Wallet = () => {
 
     const columns = [
         {
-            title: 'Transaction ID',
+            title: 'ID',
             dataIndex: 'transaction_id',
             key: 'transaction_id',
             width: 130
@@ -55,6 +56,31 @@ const Wallet = () => {
             render: (datetime) => (
                 <p>{moment(datetime).format("LLL")}</p>
             )
+        },
+        {
+            title: 'Sender',
+            dataIndex: '_',
+            key: '_',
+            width: 250,
+            render: (text, record) => {
+                const imageUrl = record.picture
+                    ? (record.picture.startsWith('https') ? record.picture : `${AdminUrl}/uploads/customerProfileImages/${record.picture}`)
+                    : '/noimage.jpg';
+
+                return (
+                    <div>
+                        <div className='flex justify-center'>
+                            <Image src={imageUrl} width={80} className='rounded-full' />
+                        </div>
+                        <div className='flex flex-col justify-center p-2'>
+                            <p className='text-lg font-semibold text-gray-700 text-center'>{record.given_name} {record.family_name}</p>
+                            <p className='text-base font-light'>{record.email}</p>
+                        </div>
+                    </div >
+                );
+            },
+
+
         },
         {
             title: 'Description',
@@ -204,7 +230,11 @@ const Wallet = () => {
                         <Pagination
                             total={totalTransaction}
                             defaultCurrent={1}
-                            onChange={(page, pageSize) => fetchData(page, pageSize, searchValue)}
+                            current={page}
+                            onChange={(page, pageSize) => {
+                                setPage(page)
+                                fetchData(page, pageSize, searchValue)
+                            }}
                         />
                     </div>
                 </>

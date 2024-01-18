@@ -1034,7 +1034,7 @@ const ProductDetailPage = ({ searchParams }) => {
           variantlabel: selectLabel,
           mrp: mrpData || responseData?.mrp,
           sellingprice: sellingPriceData || responseData?.sellingprice,
-          quantity: qualitySelected,
+          added_quantity: qualitySelected,
         };
 
         const response = await fetch(`/api/cart/addCarts`, {

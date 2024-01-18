@@ -21,7 +21,11 @@ const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null)
   const customerData = useAppSelector((state) => state.customerData)
   const { cartItems } = useAppSelector((state) => state.cart)
-  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    cartItems && cartItems?.length === 0 && router.push('/')
+  }, [cartItems])
 
   const handleScrollToEl = (id: string) => {
     const element = document.getElementById(id);
@@ -70,6 +74,7 @@ const CheckoutPage = () => {
 
             <div id="PaymentMethod" className="scroll-mt-24">
               <PaymentMethod
+                selectedAddress={selectedAddress}
                 isActive={tabActive === "PaymentMethod"}
                 onOpenActive={() => {
                   if (selectedAddress) {
@@ -87,6 +92,8 @@ const CheckoutPage = () => {
       </div>
     );
   };
+
+
 
   return (
     <div className="nc-CheckoutPage">

@@ -2,7 +2,7 @@ import WalletDetails from "@/components/wallet/WalletDetails";
 import { ChevronRight } from "lucide-react";
 import React from "react";
 
-const Page = () => {
+const Wallet = () => {
   return (
     <div className="md:px-10 pt-5 bg-gradient-to-b from-[#063B69] md:space-y-8">
       <div>
@@ -19,4 +19,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default Wallet;
