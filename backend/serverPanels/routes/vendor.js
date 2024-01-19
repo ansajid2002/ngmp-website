@@ -1924,28 +1924,77 @@ app.get("/getexploreproducts", async (req, res) => {
 
 
 app.get("/getProductBySubcategories", async (req, res) => {
-  const { subcat, category, pageNumber = 1, pageSize = 10 } = req.query;
+  const { subcat, category, pageNumber = 1, pageSize = 10, sortMethod, selected } = req.query;
   console.log(req.query);
   try {
-    // Check if vendorid is provided in the URL and use it in your query
-    // Use vendorid in your query or function
-    // const products = await AllProductsVendors(pool, null, currency, subcat);
-    const offset = (pageNumber - 1) * parseInt(pageSize);
     let AllProducts = [];
     let products;
-    if (subcat !== "All") {
-      products = await pool.query(
-        "Select * from products WHERE slug_subcat = $1 AND status = 1 ORDER BY id OFFSET $2 LIMIT $3",
-        [subcat, offset, pageSize]
-      );
-    } else {
-      products = await pool.query(
-        "Select * from products WHERE slug_cat = $1 AND status = 1 ORDER BY id OFFSET $2 LIMIT $3",
-        [category, offset, pageSize]
-      );
+
+    let orderByClause = "id"; // Default order by id if no specific sorting method is provided
+
+    if (sortMethod) {
+      switch (sortMethod.toLowerCase()) {
+        case "relevance":
+          orderByClause = "random()";
+          break;
+        case "most recent":
+          orderByClause = "updated_at_product";
+          break;
+        case "price low to high":
+          orderByClause = "mrp ASC";
+          break;
+        case "price high to low":
+          orderByClause = "mrp DESC";
+          break;
+        // Add more cases if needed for additional sorting methods
+        default:
+          break;
+      }
     }
 
-    for (const product of products.rows) {
+    if (selected) {
+      selectedValues = selected.split(',');
+
+      if (subcat !== "All") {
+        // Generate placeholders for the IN clause
+        const placeholders = selectedValues.map((value, index) => `$${index + 2}`).join(',');
+
+        products = await pool.query(
+          `SELECT * FROM products 
+           WHERE slug_subcat = $1 AND status = 1 AND nested_subcat_slug IN (${placeholders}) 
+           ORDER BY ${orderByClause} OFFSET $${selectedValues.length + 2} LIMIT $${selectedValues.length + 3}`,
+          [subcat, ...selectedValues, (pageNumber - 1) * 10, pageSize]
+        );
+      } else {
+        // Generate placeholders for the IN clause
+        const placeholders = selectedValues.map((value, index) => `$${index + 2}`).join(',');
+
+        products = await pool.query(
+          `SELECT * FROM products 
+           WHERE slug_cat = $1 AND status = 1 AND nested_subcat_slug IN (${placeholders}) 
+           ORDER BY ${orderByClause} OFFSET $${selectedValues.length + 2} LIMIT $${selectedValues.length + 3}`,
+          [category, ...selectedValues, (pageNumber - 1) * 10, pageSize]
+        );
+      }
+    } else {
+      if (subcat !== "All") {
+        products = await pool.query(
+          "SELECT * FROM products WHERE slug_subcat = $1 AND status = 1 ORDER BY " + orderByClause + " OFFSET $2 LIMIT $3",
+          [subcat, (pageNumber - 1) * 10, pageSize]
+        );
+
+
+      } else {
+        products = await pool.query(
+          "SELECT * FROM products WHERE slug_cat = $1 AND status = 1 ORDER BY " + orderByClause + " OFFSET $2 LIMIT $3",
+          [category, (pageNumber - 1) * 10, pageSize]
+        );
+      }
+    }
+
+
+
+    for (const product of products?.rows) {
       if (product.isvariant === "Variant") {
         const variantData = await fetchVariantData(pool, product.uniquepid);
         if (variantData && variantData.length > 0) {
@@ -1963,11 +2012,10 @@ app.get("/getProductBySubcategories", async (req, res) => {
       AllProducts.push(product);
     }
 
-    console.log(AllProducts?.length);
     res.status(200).json({ AllProducts });
   } catch (error) {
     // Handle the error and send an error response to the client
-    console.error("Error in /AllProductsVendors route:", error);
+    console.error("Error in /getProductBySubcategories route:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -2513,6 +2561,44 @@ app.post("/bulkEditProduct", async (req, res) => {
     }
 
     res.status(200).json({ message: 'Bulk edit successful' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+const slugify = (text) => {
+  return text.toString().toLowerCase()
+    .replace(/\s+/g, '-')       // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
+    .replace(/\-\-+/g, '-')     // Replace multiple - with single -
+    .replace(/^-+/, '')         // Trim - from start of text
+    .replace(/-+$/, '');        // Trim - from end of text
+};
+
+app.post("/fetchCategoryProductsCount", async (req, res) => {
+  try {
+    const { selectedValues } = req.body;
+
+    // Convert each value in selectedValues to a slug
+    const slugs = selectedValues.map(value => slugify(value));
+
+    // Use a placeholder for each slug in the query
+    const placeholders = slugs.map((value, index) => `$${index + 1}`).join(',');
+
+    // Construct the SQL query
+    const query = `
+      SELECT COUNT(*) as total_product_count
+      FROM products
+      WHERE nested_subcat_slug IN (${placeholders});
+    `;
+
+    // Use the Pool client to execute the query
+    const result = await pool.query(query, slugs);
+
+
+    // Return the total count as JSON
+    res.json({ totalProductCount: result.rows[0].total_product_count });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

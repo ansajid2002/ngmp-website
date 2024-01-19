@@ -441,8 +441,8 @@ const AcceptReject = () => {
         { text: "Approved", value: 1 },
         { text: "Rejected", value: 2 },
       ],
-      onFilter: (value, record) => record.productstatus === value,
-      sorter: (a, b) => a.productstatus - b.productstatus,
+      onFilter: (value, record) => record.status === value,
+      sorter: (a, b) => a.status - b.status,
     },
     {
       title: "Uploaded at",

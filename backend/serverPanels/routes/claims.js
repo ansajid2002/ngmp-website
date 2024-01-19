@@ -243,6 +243,9 @@ app.get("/getClaimsofCustomers", async (req, res) => {
       queryParams.push(`%${search}%`);
     }
 
+    // Add ORDER BY clause to sort by customer_claim_id in descending order (most recent first)
+    query += " ORDER BY customer_claim_id DESC";
+
     // Add pagination to the query
     if (page && pageSize) {
       const offset = (parseInt(page) - 1) * parseInt(pageSize);
@@ -265,13 +268,11 @@ app.get("/getClaimsofCustomers", async (req, res) => {
 
 
 
-
 const storageCustomer = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./uploads/Customer_Claims");
   },
   filename: (req, file, cb) => {
-    console.log(file);
     cb(
       null,
       `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
@@ -307,9 +308,8 @@ app.post(
       const videoFile = req.files["video"][0];
       const imageFiles = req.files["image"];
       const additionalText = req.body.additionalText;
-      console.log(req.body);
       const id = req.body.customer_id;
-      const filenames = imageFiles.map((file) => file.filename);
+      const filenames = imageFiles && imageFiles.map((file) => file.filename);
 
       // Convert the array of filenames to a JSON string
       const jsonbData = JSON.stringify(filenames);
@@ -329,6 +329,7 @@ app.post(
         jsonbData,
       ]);
 
+      console.log(result.rows[0]);
       res.json({
         data: result.rows[0],
         message: "Claims Sended to Admin Successfully",
