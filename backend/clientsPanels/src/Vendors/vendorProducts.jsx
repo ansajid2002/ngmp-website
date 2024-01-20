@@ -82,7 +82,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [subcategories, setSubcategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
-  // const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [SelectedMainSubcategory, setSelectedMainSubcategory] = useState(null);
   const [selectedCategoryType, setSelectedCategoryType] = useState("Products");
@@ -1867,7 +1867,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             formValues={formValues}
             selectRowProduct={selectRowProduct}
             callVendorProducts={callVendorProducts}
-            handlNext={handleNext}
+            handlNext={() => handleNext('')}
             selectedKey={selectedKey}
           />
         </>
@@ -2756,7 +2756,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                     <>
                       <Form.Item>
                         <Button
-                          onClick={handleNext}
+                          onClick={() => handleNext('')}
                           size="large"
                           spellCheck="true"
                           className="border-none text-sm w-full bg-blue-500 text-white !hover:text-white"
@@ -2832,6 +2832,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             }}
           >
             <VariantsCrud
+              category={selectedCategoryId}
               selectedSubcategory={selectedSubcategory}
               vendorDatastate={vendorDatastate}
               onSave={handleVariantsData}

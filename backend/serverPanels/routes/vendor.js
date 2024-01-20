@@ -516,7 +516,6 @@ const checkSkuidExists = async (sku) => {
 
 app.post("/addVendorProduct", async (req, res) => {
   try {
-    console.log(listing_type);
     const { subcategory, category, nested_subcat, additonal_condition, listing_type, locationData, length, ...productData } = req.body[0];
     const uniquepid = generateUniqueID();
     const replaceSubcategory = subcategory.trim();
@@ -552,7 +551,7 @@ app.post("/addVendorProduct", async (req, res) => {
       INSERT INTO products (ad_title, city, state, country, currency_symbol, category, subcategory, vendorid,
       uniquepid, skuid, mrp, sellingprice, countryoforigin, manufacturername, packerdetails,
       additionaldescription, searchkeywords, keyfeatures, videourl, status, images, category_type,
-      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug, width, height, weight, length, product_ship_from, estimate_delivery_by, nested_subcat, nested_subcat_slug, additonal_condition)
+      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug, width, height, weight, length, product_ship_from, mogadishudistrict_ship_from, nested_subcat, nested_subcat_slug , additonal_condition)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, NOW(), $31, $32, $33, $34, $35, $36, $37, $38, $39, $40)
       RETURNING *;
     `;
@@ -577,7 +576,7 @@ app.post("/addVendorProduct", async (req, res) => {
       productData.searchkeywords,
       productData.keyfeatures,
       productData.videourl,
-      productData.status,
+      listing_type === 'Draft' ? 3 : productData.status,
       productData.images,
       productData.selectedCategoryType,
       productData.ProductVariantType,
@@ -593,11 +592,12 @@ app.post("/addVendorProduct", async (req, res) => {
       productData.height,
       productData.weight,
       length,
-      productData.product_ship_from,
+      productData.mogadishudistrict_ship_from,
       productData.estimate_delivery_by,
       nested_subcat,
       slug(nested_subcat || '') || '',
-      additonal_condition
+      additonal_condition,
+      // productData.mogadishudistrict_ship_from
     ];
 
     if (productData.FilteredVariantData.length > 0) {
@@ -668,7 +668,7 @@ app.post("/addVendorProduct", async (req, res) => {
 
 app.post("/updateVendorProduct", async (req, res) => {
   try {
-    const { subcategory, nested_subcat, additonal_condition, length, ...productData } = req.body[0]; // Exclude category, isvariant, skuid, countryoforigin
+    const { subcategory, nested_subcat, additonal_condition, length, listing_type, ...productData } = req.body[0]; // Exclude category, isvariant, skuid, countryoforigin
     const replaceSubcategory = subcategory && subcategory
       .replace(/[^\w\s]/g, "")
       .replace(/\s/g, "");
@@ -701,6 +701,7 @@ app.post("/updateVendorProduct", async (req, res) => {
                               weight = $19,
                               product_ship_from = $20,
                               estimate_delivery_by = $21,
+                              mogadishudistrict_ship_from = $20,
                               nested_subcat = $22,
                               nested_subcat_slug = $23,
                               additonal_condition = $24
@@ -728,11 +729,12 @@ app.post("/updateVendorProduct", async (req, res) => {
       productData.height,
       length,
       productData.weight,
-      productData.product_ship_from,
+      productData.mogadishudistrict_ship_from,
       productData.estimate_delivery_by,
       nested_subcat,
       slug(nested_subcat || '') || '',
       additonal_condition
+      // productData.mogadishudistrict_ship_from
     ];
 
     // Execute the 'products' table update query
@@ -887,31 +889,89 @@ app.post("/updateProductSpecifications", async (req, res) => {
 });
 
 app.post("/DeleteVendorProduct", async (req, res) => {
+  const client = await pool.connect();
+
   try {
     const { key } = req.body;
-    // Delete the product with the given id and subcatNameBackend
-    let query;
-    query = `
-            DELETE FROM products
-            WHERE id = $1;
-        `;
 
-    const values = [key];
+    // Use a transaction to ensure atomicity
+    await client.query("BEGIN");
 
-    await pool.query(query, values);
+    // Step 1: Get the uniquepid from the products table
+    const getProductUniquepidQuery = `
+      SELECT uniquepid
+      FROM products
+      WHERE id = $1;
+    `;
+
+    const getProductUniquepidValues = [key];
+    const result = await client.query(getProductUniquepidQuery, getProductUniquepidValues);
+
+    if (result.rows.length === 0) {
+      // If no product found with the given id, rollback and send an error response
+      await client.query("ROLLBACK");
+      return res.status(404).json({
+        status: 404,
+        message: "Product not found",
+      });
+    }
+
+    const uniquepid = result.rows[0].uniquepid;
+    console.log("Uniquepid:", uniquepid);
+
+    // Step 2: Delete the product from the products table
+    const deleteProductQuery = `
+      DELETE FROM products
+      WHERE id = $1;
+    `;
+
+    const deleteProductValues = [key];
+    await client.query(deleteProductQuery, deleteProductValues);
+    console.log("Product deleted");
+
+    // Step 3: Delete the product from the cart table
+    const deleteCartQuery = `
+      DELETE FROM cart
+      WHERE product_uniqueid = $1;
+    `;
+
+    const deleteCartValues = [uniquepid];
+    await client.query(deleteCartQuery, deleteCartValues);
+    console.log("Cart deleted");
+
+    // Step 4: Delete the product from the wishlist table
+    const deleteWishlistQuery = `
+      DELETE FROM customer_wishlist
+      WHERE uniqueid = $1;
+    `;
+
+    const deleteWishlistValues = [uniquepid];
+    await client.query(deleteWishlistQuery, deleteWishlistValues);
+    console.log("Wishlist deleted");
+
+    // Commit the transaction
+    await client.query("COMMIT");
 
     res.status(200).json({
       status: 200,
       message: "Product deleted successfully",
     });
   } catch (error) {
+    // Rollback the transaction in case of an error
+    await client.query("ROLLBACK");
+
     console.error("Error deleting product:", error);
     res.status(500).json({
       status: 500,
       message: "Internal server error",
     });
+  } finally {
+    // Release the client back to the pool
+    client.release();
   }
 });
+
+
 async function fetchProductDataFromDB(productIds, id) {
   try {
     let sql = '';
@@ -2434,17 +2494,31 @@ app.get("/generateReport", async (req, res) => {
 
 app.get("/getAllVendorAttributes", async (req, res) => {
   try {
-    // Query the database to get all attributes for the specified vendor
-    const query = "SELECT * FROM attributes";
-    const { rows } = await pool.query(query);
+    const { category } = req.query;
 
-    // Send the attributes as JSON response
-    res.json(rows);
+    // Query the database to get the attribute_cat_id for the specified category
+    const getCategoryQuery = "SELECT attribute_cat_id FROM categories WHERE category_name = $1";
+    const categoryResult = await pool.query(getCategoryQuery, [category]);
+
+    // Check if the category was found
+    if (categoryResult.rows.length === 0) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const attribute_cat_id = categoryResult.rows[0].attribute_cat_id;
+
+    // Query the database to get all attributes for the specified attribute_cat_id
+    const getAttributesQuery = "SELECT * FROM attributes WHERE attribute_id = ANY($1)";
+    const attributesResult = await pool.query(getAttributesQuery, [attribute_cat_id]);
+
+    // Send the attributes as a JSON response
+    res.json(attributesResult.rows);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch vendor attributes" });
   }
 });
+
 
 app.get("/variant-products", async (req, res) => {
   try {

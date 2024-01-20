@@ -12,7 +12,7 @@ app.use((req, res, next) => {
 
 async function fetchVendorInfo(pool, vendorId) {
     const vendorInfo = await pool.query(
-        "SELECT id, vendorname, brand_logo, brand_name, registration_date, country_code, mobile_number, vendor_profile_picture_url, followers, following  FROM vendors WHERE id = $1",
+        "SELECT id, vendorname, brand_logo, brand_name, registration_date, country_code, mobile_number, vendor_profile_picture_url, followers, following,company_name,company_city,company_state,company_country,company_zip_code,shipping_address  FROM vendors WHERE id = $1",
         [vendorId]
     );
     return vendorInfo.rows[0];
@@ -205,11 +205,19 @@ app.get('/cart', async (req, res) => {
 
         // Construct the SQL query to calculate total_quantity and group by product_uniqueid
         const query = `
-                SELECT product_uniqueid, variantlabel, mrp, sellingprice, SUM(quantity) as total_quantity
-                FROM cart
-                WHERE customer_id = $1::integer
-                GROUP BY product_uniqueid, variantlabel, mrp, sellingprice
-            `;
+            SELECT
+                product_uniqueid,
+                variantlabel,
+                mrp,
+                sellingprice,
+                SUM(quantity) as total_quantity
+            FROM
+                cart
+            WHERE
+                customer_id = $1::integer
+            GROUP BY
+                product_uniqueid, variantlabel, mrp, sellingprice
+        `;
         const queryParams = [customer_id];
 
         const cartData = await pool.query(query, queryParams);
@@ -240,6 +248,7 @@ app.get('/cart', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 app.get('/cartTotal', async (req, res) => {
     const { customer_id } = req.query;
@@ -330,6 +339,7 @@ app.put('/cartWebsite', async (req, res) => {
 });
 
 app.post('/addProductcart', async (req, res) => {
+    console.log("calledd///");
     console.log(req.body);
 
     try {
@@ -343,7 +353,8 @@ app.post('/addProductcart', async (req, res) => {
             variantlabel,
             mrp,
             sellingprice,
-        } = req.body;
+            c_symbol
+                } = req.body;
         // Check if the product is already in the cart for the specified customer
         let checkCartQuery;
         let queryParams = [customer_id, product_uniqueid];
@@ -372,6 +383,7 @@ app.post('/addProductcart', async (req, res) => {
             // Product already exists in the cart; update the quantity
             const existingQuantity = existingCartItem.rows[0].quantity;
             const updatedQuantity = existingQuantity + added_quantity; // Change 'quantity' to 'added_quantity'
+            // const updatedQuantity =  added_quantity; // Change 'quantity' to 'added_quantity'
 
             // Create an UPDATE query to update the quantity
             let updateQuery = `
@@ -406,7 +418,7 @@ app.post('/addProductcart', async (req, res) => {
                         quantity,
                         mrp,
                         sellingprice,
-                        variantlabel
+                        variantlabel,
                     )
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 `;
@@ -424,8 +436,119 @@ app.post('/addProductcart', async (req, res) => {
                         quantity,
                         mrp,
                         sellingprice,
-                        variantlabel
+                        variantlabel                    )
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, null)
+                `;
+
+                await pool.query(insertQuery, [customer_id, vendor_id, product_uniqueid, category, subcategory, added_quantity, mrp, sellingprice]); // Change 'quantity' to 'added_quantity'
+
+            }
+
+        }
+
+        res.status(201).json({ message: 'Data inserted or updated successfully' });
+    } catch (error) {
+        console.error('Error inserting/updating data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+app.post('/addProductcartlogin', async (req, res) => {
+    console.log("calledd///");
+    try {
+        let {
+            customer_id,
+            vendor_id,
+            product_uniqueid,
+            category,
+            subcategory,
+            added_quantity, // Change 'quantity' to 'added_quantity'
+            variantlabel,
+            mrp,
+            sellingprice,
+            c_symbol
+                } = req.body;
+        // Check if the product is already in the cart for the specified customer
+        let checkCartQuery;
+        let queryParams = [customer_id, product_uniqueid];
+        if (variantlabel) {
+            // Include variantlabel in the query if it exists
+            checkCartQuery = `
+                SELECT * FROM cart
+                WHERE customer_id = $1
+                AND product_uniqueid = $2
+                AND variantlabel = $3
+            `;
+            queryParams.push(variantlabel);
+        } else {
+            // If variantlabel is not provided, select without it
+            checkCartQuery = `
+                SELECT * FROM cart
+                WHERE customer_id = $1
+                AND product_uniqueid = $2
+            `;
+        }
+
+        const existingCartItem = await pool.query(checkCartQuery, queryParams);
+
+
+        if (existingCartItem.rows.length > 0) {
+            // Product already exists in the cart; update the quantity
+            const existingQuantity = existingCartItem.rows[0].quantity;
+            // const updatedQuantity = existingQuantity + added_quantity; // Change 'quantity' to 'added_quantity'
+            const updatedQuantity =  added_quantity; // Change 'quantity' to 'added_quantity'
+
+            // Create an UPDATE query to update the quantity
+            let updateQuery = `
+                UPDATE cart
+                SET quantity = $1
+                WHERE customer_id = $2
+                AND product_uniqueid = $3`;
+
+            const values = [updatedQuantity, customer_id, product_uniqueid];
+
+            if (variantlabel) {
+                updateQuery += ` AND variantlabel = $4`;
+                values.push(variantlabel);
+            }
+
+            console.log(values,"values");
+            await pool.query(updateQuery, values);
+
+
+        } else {
+            // Product is not in the cart; insert a new row
+            let insertQuery;
+            if (variantlabel) {
+                // Include variantlabel in the INSERT query if it exists
+                insertQuery = `
+                    INSERT INTO cart (
+                        customer_id,
+                        vendor_id,
+                        product_uniqueid,
+                        category,
+                        subcategory,
+                        quantity,
+                        mrp,
+                        sellingprice,
+                        variantlabel,
                     )
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                `;
+                await pool.query(insertQuery, [customer_id, vendor_id, product_uniqueid, category, subcategory, added_quantity, mrp, sellingprice, variantlabel]); // Change 'quantity' to 'added_quantity'
+
+            } else {
+                // If variantlabel is not provided, insert without it
+                insertQuery = `
+                    INSERT INTO cart (
+                        customer_id,
+                        vendor_id,
+                        product_uniqueid,
+                        category,
+                        subcategory,
+                        quantity,
+                        mrp,
+                        sellingprice,
+                        variantlabel                    )
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, null)
                 `;
 

@@ -12,7 +12,9 @@ const VariantsCrud = ({
   FilteredVariantData,
   SelectedUniqueId,
   onCancel,
+  category
 }) => {
+  // console.log(category);
   const [attributeData, setAttributeData] = useState([]);
   const [variants, setVariants] = useState(variantsValueArray);
   const [formdata, setformdata] = useState(FilteredVariantData);
@@ -27,9 +29,9 @@ const VariantsCrud = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getAllVendorProductvariants(id);
+        const response = await getAllVendorProductvariants(category);
         console.log(response, "response from attributes table");
-        setAttributeData(response.filter((single) => single.subcategory === selectedSubcategory))
+        setAttributeData(response)
 
         // setAttributeData(response);
         const initialFormFields = response.map((attribute) => ({
@@ -43,8 +45,8 @@ const VariantsCrud = ({
       }
     };
 
-    id && fetchData();
-  }, [id, variantsValueArray]);
+    fetchData();
+  }, [variantsValueArray]);
 
   const handleAddAttribute = () => {
     // Filter out attribute names that have already been selected

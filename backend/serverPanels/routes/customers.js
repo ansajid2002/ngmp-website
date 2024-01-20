@@ -1213,7 +1213,7 @@ app.post("/UpdateCustomerPassword", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
+ 
 app.get('/getCustomersAddress/:cid', async (req, res) => {
   try {
     const cid = req.params.cid

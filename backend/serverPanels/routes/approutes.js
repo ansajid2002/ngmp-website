@@ -1,6 +1,8 @@
 const express = require('express');
-const app = express();
+const fs = require('fs');
+const path = require('path');
 const pool = require('../config')
+const app = express();
 const cors = require('cors');
 const multer = require('multer');
 
@@ -204,9 +206,147 @@ app.get("/getSubcategorygroupByCatId", async (req, res) => {
         res.status(200).json(specificCategory)
     } catch (error) {
         // Handle the error appropriately
-        console.error("Error fetching subcategories:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+app.get("/getmogadishudistrict", async (req, res) => {
+    const { customer_id } = req.query
+    try {
+        const query = "SELECT mogadishudistrict_customer FROM customers WHERE customer_id = $1";
+
+        // Use catId as a parameter in the query
+        const result = await pool.query(query, [customer_id]);
+        console.log(result, "result");
+
+        const districtData = result.rows;
+        res.status(200).json(districtData);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+
+    }
+})
+
+app.post("/getmogadishudistrict", async (req, res) => {
+    const { customer_id, district } = req.body;
+    console.log(req.body);
+
+    try {
+        const query = "UPDATE customers SET mogadishudistrict_customer = $2 WHERE customer_id = $1 RETURNING *";
+        const result = await pool.query(query, [customer_id, district]);
+
+        // Check if the update was successful
+        if (result.rows.length > 0) {
+            const updatedCustomer = result.rows[0];
+            console.log(updatedCustomer.mogadishudistrict_customer, "updatedCustomer");
+            res.status(200).json({ message: "District updated successfully", customer: updatedCustomer.mogadishudistrict_customer });
+        } else {
+            res.status(404).json({ error: "Customer not found" });
+        }
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
+app.get("/getShippingRate", async (req, res) => {
+    const { origin, destination } = req.query;
+
+    try {
+        const filePath = path.join(__dirname, '../JSON/', 'shippingrates.json');
+        const rawData = fs.readFileSync(filePath);
+        const shippingRates = JSON.parse(rawData);
+
+        // Find the rate based on origin and destination
+        const rate = findShippingRate(shippingRates, origin, destination);
+
+        if (rate !== undefined) {
+            res.json({ rate });
+        } else {
+            res.status(404).json({ error: "Shipping rate not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.get("/translations/:language", (req, res) => {
+    try {
+        const language = req.params.language;
+        const filePath = path.join(__dirname, '../JSON/', `${language}.json`)
+
+        const rawData = fs.readFileSync(filePath);
+        const translations = JSON.parse(rawData)
+        res.json(translations)
+    } catch (error) {
+        console.error('Error reading translation file:', error);
+        res.status(500).send('Internal Server Error');
+    }
+})
+
+function findShippingRate(shippingRates, origin, destination) {
+    const rateObject = shippingRates.find(rate => rate.shippedFrom === origin);
+
+    if (rateObject) {
+        const destinationRate = rateObject.shippedTo.find(item => item.toDistrict === destination);
+        return destinationRate ? destinationRate.rate : undefined;
+    }
+
+    return undefined;
+}
+
 module.exports = app   
+
+
+
+// Raise Ticket
+// Inbox
+// Select Mogadishu District
+// CANCEL
+// Select Language
+// View Raised Ticket
+// Search Ticket by ID:
+// Enter Ticket ID
+// Raise a New Ticket
+// Recent Ticket's
+// No Ticket found
+// Ticket Id:
+// Body ,
+// Date ,
+// Reply ,
+// Mogadishu Districts,
+// NGMP ID : ,
+// Posted By,
+// Message Seller,
+// No Product Found...,
+// Sort By,
+// Filter,
+// Close,
+// Relevance,
+// Most Recent,
+// Price Low to High,
+// Price High to Low,
+//  Hi Welcome Back ! 👋,
+// Hello again you have been missed!,
+// Email address,
+// Password,
+// Forgot Passowrd ?,
+// Or Login with,
+// Register,
+// Don't have an account ? ,
+// Create Account,
+// Discover great deals and shop with ease!,
+// First Name,
+// Last Name,
+// Email address,
+// Mobile Number,
+// Confirm Password,
+// I agree to the terms and conditions,
+// No Product Found !,
+// You don't have any item eligible for shipping,
+// No Address Selected,
+// Proceed to checkout,
+// Loading...,
+// List Price:,
+// Pickup Info ,
+// Items For Shipping,
+// Insufficent Balance

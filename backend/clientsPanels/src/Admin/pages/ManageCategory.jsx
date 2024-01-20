@@ -25,7 +25,11 @@ const ManageCategory = ({ adminLoginData }) => {
   const [selectedRow, setSelectedRow] = useState([]);
   const [subselectedRow, setSubSelectedRow] = useState([]);
   const [SubMainSelectedRow, setSelectedSubMainSelectedRow] = useState([]);
+  const [attributes, setAttributes] = useState([]);
   const [type, setType] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [selectedAttributes, setSelectedAttributes] = useState([]);
+
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -57,6 +61,15 @@ const ManageCategory = ({ adminLoginData }) => {
       fetchData();
     }
   }, [adminLoginData, pagination.current, pagination.pageSize]);
+
+  const handleShowAttributes = (attributes) => {
+    setSelectedAttributes(attributes);
+    setVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setVisible(false);
+  };
 
   // Define your columns and handleTableChange function as before
   const columns = [
@@ -119,6 +132,21 @@ const ManageCategory = ({ adminLoginData }) => {
           </div>
         </>
       ),
+    },
+    {
+      title: 'Attribute Linked',
+      dataIndex: 'attributes',
+      key: 'attributes',
+      width: 200,
+      render: (_, record) => {
+        return (
+          <div className='text-center'>
+            <p className='cursor-pointer text-blue-950' onClick={() => handleShowAttributes(record.attributes)}>
+              {record.attributes?.length}
+            </p>
+          </div>
+        );
+      },
     },
     {
       title: 'Image',
@@ -648,6 +676,7 @@ const ManageCategory = ({ adminLoginData }) => {
       // Validate the form fields
       form.validateFields().then(async values => {
         if (selectedKey === null) {
+
           // Send the values to the backend
           const response = await fetch(`${AdminUrl}/api/addNewCategories`, {
             method: 'POST',
@@ -890,7 +919,44 @@ const ManageCategory = ({ adminLoginData }) => {
       });
     }
   };
-  console.log(SubMainSelectedRow);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${AdminUrl}/api/GetAttributesByVendor`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Assuming the backend responds with JSON data containing attributes
+        const responseData = await response.json();
+        const transformedData = responseData.attributes.map((attribute) => ({
+          attribute_id: attribute.attribute_id, // Add this line
+          name: attribute.attribute_name,
+          values: attribute.attribute_values,
+          category: attribute.category,
+          subcategory: attribute.subcategory
+        }));
+
+        // Assuming responseData is the JSON response from your backend
+        // Transform the data and set it in your component's state
+        setAttributes(transformedData);
+      } catch (error) {
+        console.error("Error:", error);
+        // Handle the error as needed, e.g., show an error message to the user
+      }
+    };
+
+    // Fetch data when the component mounts
+    fetchData();
+  }, []);
+
   return (
     <div className="mt-10 sm:ml-72 sm:p-0 p-4 mb-44 ">
       <h1 className="text-4xl text-gray-700 font-bold mb-10">
@@ -985,6 +1051,26 @@ const ManageCategory = ({ adminLoginData }) => {
           >
             <Input.TextArea />
           </Form.Item>
+          <Form.Item
+            label="Select Attribute"
+            name="attribute_cat_id"
+            rules={[
+              {
+                required: true,
+                message: 'Please select Attribute',
+              },
+            ]}
+          >
+            <Select showSearch mode="multiple" onChange={(values) => { /* Handle multiple values here */ }}>
+              {attributes &&
+                attributes.map((item, index) => (
+                  <Select.Option key={index} value={item.attribute_id}>
+                    {item.name} ({item.values?.join(', ')})
+                  </Select.Option>
+                ))}
+            </Select>
+          </Form.Item>
+
 
           {/* Category Status Input */}
           <Form.Item
@@ -1254,6 +1340,24 @@ const ManageCategory = ({ adminLoginData }) => {
           Are you sure you want to delete this category{" "}
           <b>({`${subselectedRow?.subcategory_name}`}) </b>?
         </p>
+      </Modal>
+
+      <Modal
+        title="Attributes"
+        visible={visible}
+        onCancel={handleCloseModal}
+        footer={[
+          <Button key="close" onClick={handleCloseModal}>
+            Close
+          </Button>,
+        ]}
+      >
+        {selectedAttributes.map((attribute, index) => (
+          <div className='mb-5'>
+            <p className='text-xl font-semibold text-gray-700' key={index}>{attribute.attribute_name}</p>
+            <p className='text-base uppercase tracking-widest' key={index}>{attribute?.attribute_values?.join(', ')}</p>
+          </div>
+        ))}
       </Modal>
     </div>
   );

@@ -162,7 +162,20 @@ export const links = [
       },
 
     ]
+  },
+  {
+    title: 'Manage Delivery',
+    links: [
+      {
+        id: 25,
+        name: "Deliver Order",
+        icon: <RiChatSmile2Fill />,
+        to: "/Admin/OrderDelivery",
+      },
+
+    ]
   }
+
 ];
 
 export const adminData = async () => {
@@ -261,9 +274,9 @@ export const subcategoriesData = async () => {
 };
 
 
-export const getAllVendorProductvariants = async (vendorId) => {
+export const getAllVendorProductvariants = async (category) => {
   try {
-    const response = await fetch(`${AdminUrl}/api/getAllVendorAttributes`, {
+    const response = await fetch(`${AdminUrl}/api/getAllVendorAttributes?category=${category}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

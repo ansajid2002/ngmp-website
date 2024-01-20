@@ -1,0 +1,1664 @@
+[
+   
+    {
+        "shippedFrom" : "WARTA NABADA",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 10
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 4
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "HODAN",
+        "shippedTo" : [
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 8
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 8
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "XAMAR WEYNE",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 7
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 1.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 6.5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "ABDIAZIZ",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 10
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "HELIWAA",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 4.5 
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 7
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 10.5
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 4.5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "KAXDA",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 7
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 5.5
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 5.5
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 8
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 7
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 6.5
+            }
+        ]
+    },
+    {
+        "shippedFrom" : "WAABERI",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 5.5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 8
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 8
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "SHANGANI",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 5.5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "HOLWADAG",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 5.5
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "KAARAN",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 10
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 4
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "WADAJIR",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 5.5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 8
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "DARUSALAM",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 5.5
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 7
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 5.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 5.5
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 6.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 11
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 8
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "XAMAR JAJAB",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 2
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 7
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "BOONDHERE",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 5.5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 6.5
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 5.5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "SHIBIS",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 2.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 10
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "YAAQSHID",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 4.5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "DHARKENLEY",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 5
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 4
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 3.5
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 4.5
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 3
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 7
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 6
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 5
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "AFGOOYE",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 8
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 10
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 8
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 10
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 8
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 10.5
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 8
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 10
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 8
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 7
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 9
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 10
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 11
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 10.5
+            }
+        ]
+        
+
+    },
+
+    {
+        "shippedFrom" : "DAYNILE",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "GUBUDLEY",
+                "rate" : 0
+            }
+        ]
+        
+
+    },
+    {
+        "shippedFrom" : "GUBUDLEY",
+        "shippedTo" : [
+            {
+                "toDistrict" : "HODAN",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "KAARAN",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WADAJIR",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "YAAQSHID",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "ABDIAZIZ",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "KAXDA",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "HELIWAA",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "DAYNILE",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "SHIBIS",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "HOLWADAG",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "BOONDHERE",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "XAMAR WEYNE",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "XAMAR JAJAB",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WAABERI",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "DHARKENLEY",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "SHANGANI",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "AFGOOYE",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "DARUSALAM",
+                "rate" : 0
+            },
+            {
+                "toDistrict" : "WARTA NABADA",
+                "rate" : 0
+            }
+        ]
+        
+
+    }
+  
+  
+]

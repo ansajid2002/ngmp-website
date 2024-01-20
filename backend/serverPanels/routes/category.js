@@ -35,14 +35,14 @@ app.get("/getAllCatgeoryWithSubcategory", async (req, res) => {
 
         // Fetch categories
         const categoriesQuery = `
-        SELECT categories.*, COUNT(products.category) AS product_count
-        FROM categories
-        LEFT JOIN products ON categories.category_name = products.category
-        GROUP BY categories.category_id
-        ORDER BY categories.category_id
-        OFFSET $1
-        LIMIT $2
-    `;
+            SELECT categories.*, COUNT(products.category) AS product_count
+            FROM categories
+            LEFT JOIN products ON categories.category_name = products.category
+            GROUP BY categories.category_id
+            ORDER BY categories.category_id
+            OFFSET $1
+            LIMIT $2
+        `;
 
         const categoriesResult = await pool.query(categoriesQuery, [offset, pageSize]);
         const categories = categoriesResult.rows;
@@ -57,14 +57,41 @@ app.get("/getAllCatgeoryWithSubcategory", async (req, res) => {
         const subcategoriesResult = await pool.query(subcategoriesQuery);
         const groupedSubcategories = groupSubcategoriesByParentCategoryId(subcategoriesResult.rows);
 
+        const attributeIds = categories
+            .map(category => category.attribute_cat_id)
+            .filter(id => id !== null && id !== undefined);
+
+        const attributeQuery = `
+            SELECT * FROM attributes WHERE attribute_id IN (${attributeIds.join(",")})
+        `;
+
+        console.log(attributeQuery);
+
+        let groupedAttributes = [];
+
+        if (attributeIds.length > 0) {
+            const attributeResult = await pool.query(attributeQuery);
+            groupedAttributes = groupAttributesByCategoryId(attributeResult.rows) || [];
+        }
+
         // Append subcategories to the corresponding categories
         const data = categories.map(category => {
             const parentId = category.category_id;
+            const attribute_cat_id = category.attribute_cat_id || [];
+
+            // Use attribute_cat_id to find attributes in groupedAttributes
+            const attributesForCategory = attribute_cat_id.reduce((result, categoryId) => {
+                const attributes = groupedAttributes[categoryId] || [];
+                return result.concat(attributes);
+            }, []);
+
             return {
                 ...category,
                 subcategories: groupedSubcategories[parentId] || [],
+                attributes: attributesForCategory || [],
             };
         });
+
 
         // You can use another query to get the total count
         const countQuery = 'SELECT COUNT(*) FROM categories';
@@ -81,6 +108,17 @@ app.get("/getAllCatgeoryWithSubcategory", async (req, res) => {
     }
 });
 
+
+function groupAttributesByCategoryId(attributes) {
+    return attributes.reduce((result, attribute) => {
+        const categoryId = attribute.attribute_id;
+        if (!result[categoryId]) {
+            result[categoryId] = [];
+        }
+        result[categoryId].push(attribute);
+        return result;
+    }, {});
+}
 // Helper function to group subcategories by parent_category_id
 function groupSubcategoriesByParentCategoryId(subcategories) {
     const groupedSubcategories = {};
@@ -147,7 +185,7 @@ app.post("/updateCategoryStatus", async (req, res) => {
 
 app.post("/addNewCategories", async (req, res) => {
     try {
-        const { category_type, category_name, category_description, category_status, subcategories = [] } = req.body;
+        const { category_type, category_name, category_description, category_status, subcategories = [], attribute_cat_id } = req.body;
         // Check if the category with the same name already exists
         const existingCategoryQuery = 'SELECT category_name FROM categories WHERE category_name = $1';
         const existingCategoryResult = await pool.query(existingCategoryQuery, [category_name]);
@@ -159,8 +197,8 @@ app.post("/addNewCategories", async (req, res) => {
 
         // Insert the main category into the "categories" table
         const insertCategoryQuery = `
-            INSERT INTO categories (category_type, category_name, category_description, category_status)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO categories (category_type, category_name, category_description, category_status, attribute_cat_id)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
         `;
 
@@ -169,6 +207,7 @@ app.post("/addNewCategories", async (req, res) => {
             category_name,
             category_description,
             category_status,
+            attribute_cat_id
         ]);
 
         const categoryId = isNaN(categoryResult.rows[0].category_id) ? null : categoryResult.rows[0].category_id;
@@ -228,7 +267,7 @@ app.post("/addNewCategories", async (req, res) => {
 app.post("/updateCategory", async (req, res) => {
     try {
         const categoryId = req.body.selectedKey; // Get the category ID from the URL parameter
-        const { category_name, category_description, category_status, category_type, subcategories } = req.body.values;
+        const { category_name, category_description, category_status, category_type, subcategories, attribute_cat_id } = req.body.values;
 
         // Check if the category with the given ID exists in the database
         const checkQuery = 'SELECT * FROM categories WHERE category_id = $1';
@@ -241,8 +280,8 @@ app.post("/updateCategory", async (req, res) => {
         }
 
         // If the category exists, proceed with the update
-        const updateQuery = 'UPDATE categories SET category_name = $1, category_description = $2, category_status = $4, category_type = $5 WHERE category_id = $3 RETURNING *';
-        const updateValues = [category_name, category_description, categoryId, category_status, category_type];
+        const updateQuery = 'UPDATE categories SET category_name = $1, category_description = $2, category_status = $4, category_type = $5, attribute_cat_id = $6 WHERE category_id = $3 RETURNING *';
+        const updateValues = [category_name, category_description, categoryId, category_status, category_type, attribute_cat_id];
         const { rows } = await pool.query(updateQuery, updateValues);
 
         // Update or insert subcategories

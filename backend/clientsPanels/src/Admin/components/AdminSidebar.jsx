@@ -267,57 +267,59 @@ const AdminSidebar = ({ adminLoginData }) => {
                                     {links.map((item, index) => {
                                         return (
                                             <>
-                                                <h1 key={index} className="mt-5 text-gray-400">{item.title}</h1>
-                                                {item.links.map((link, index) => {
-                                                    const showLink = adminLoginData[0].role_id?.includes(link.id);
-                                                    return (
-                                                        <>
-                                                            {showLink && (
-                                                                <li key={index}>
-                                                                    {link.dropdown ? (
-                                                                        <>
-                                                                            <button
-                                                                                type="button"
-                                                                                className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg group dark:text-white  dark:hover:bg-gray-700 ${currentUrl === link.to && 'bg-gray-300'} `}
-                                                                                onClick={() => handleDropdown(`dropdown-example${index}`)}
-                                                                                aria-controls={`dropdown-example${index}`}
-                                                                                data-collapse-toggle={`dropdown-example${index}`}
-                                                                            >
-                                                                                {link.icon}
-                                                                                <span className="flex-1 ml-3 text-left whitespace-nowrap line-clamp-1" sidebar-toggle-item>
-                                                                                    {link.name}
-                                                                                </span>
-                                                                                <svg sidebar-toggle-item className={`w-6 h-6`} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                                                                                </svg>
-                                                                            </button>
-                                                                            <ul id={`dropdown-example${index}`} className={`${currentUrl === link.to ? '' : 'hidden'} py-2 space-y-2`}>
-                                                                                {link.dropList.map((drplist, indList) => {
-                                                                                    return drplist.name != '' ? (
-                                                                                        <li key={indList}>
-                                                                                            <Link to={drplist.to}>
-                                                                                                <a className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-9 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 text-sm ${currentUrl === drplist.to ? `font-semibold text-[#EC642A]` : 'font-normal text-gray-700'}`}>{drplist.name}</a>
-                                                                                            </Link>
-                                                                                        </li>
-                                                                                    ) : '';
-                                                                                })}
-                                                                            </ul>
-                                                                        </>
-                                                                    ) : (
+                                                {item.links && item.links?.length > 0 && <h1 key={index} className="mt-5 text-gray-400">{item.title}</h1 >}
+                                                {
+                                                    item.links.map((link, index) => {
+                                                        const showLink = adminLoginData[0].role_id?.includes(link.id);
+                                                        return (
+                                                            <>
+                                                                {showLink && (
+                                                                    <li key={index}>
+                                                                        {link.dropdown ? (
+                                                                            <>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg group dark:text-white  dark:hover:bg-gray-700 ${currentUrl === link.to && 'bg-gray-300'} `}
+                                                                                    onClick={() => handleDropdown(`dropdown-example${index}`)}
+                                                                                    aria-controls={`dropdown-example${index}`}
+                                                                                    data-collapse-toggle={`dropdown-example${index}`}
+                                                                                >
+                                                                                    {link.icon}
+                                                                                    <span className="flex-1 ml-3 text-left whitespace-nowrap line-clamp-1" sidebar-toggle-item>
+                                                                                        {link.name}
+                                                                                    </span>
+                                                                                    <svg sidebar-toggle-item className={`w-6 h-6`} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                                                                                    </svg>
+                                                                                </button>
+                                                                                <ul id={`dropdown-example${index}`} className={`${currentUrl === link.to ? '' : 'hidden'} py-2 space-y-2`}>
+                                                                                    {link.dropList.map((drplist, indList) => {
+                                                                                        return drplist.name != '' ? (
+                                                                                            <li key={indList}>
+                                                                                                <Link to={drplist.to}>
+                                                                                                    <a className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-9 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 text-sm ${currentUrl === drplist.to ? `font-semibold text-[#EC642A]` : 'font-normal text-gray-700'}`}>{drplist.name}</a>
+                                                                                                </Link>
+                                                                                            </li>
+                                                                                        ) : '';
+                                                                                    })}
+                                                                                </ul>
+                                                                            </>
+                                                                        ) : (
 
 
-                                                                        <Link to={link.to}>
-                                                                            <a className={`flex items-center p-2  dark:hover:text-gray-300 font-semibold  ${currentUrl === link.to ? `text-[#EC642A]` : 'font-normal text-gray-700'}`}>
-                                                                                {link.icon}
-                                                                                <span className="ml-3">{link.name}</span>
-                                                                            </a>
-                                                                        </Link>
-                                                                    )}
-                                                                </li>
-                                                            )}
-                                                        </>
-                                                    );
-                                                })}
+                                                                            <Link to={link.to}>
+                                                                                <a className={`flex items-center p-2  dark:hover:text-gray-300 font-semibold  ${currentUrl === link.to ? `text-[#EC642A]` : 'font-normal text-gray-700'}`}>
+                                                                                    {link.icon}
+                                                                                    <span className="ml-3">{link.name}</span>
+                                                                                </a>
+                                                                            </Link>
+                                                                        )}
+                                                                    </li>
+                                                                )}
+                                                            </>
+                                                        );
+                                                    })
+                                                }
 
                                             </>
                                         );

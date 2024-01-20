@@ -13,15 +13,7 @@ const AdminAttributes = () => {
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalValues, setModalValues] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [subcategories, setSubcategories] = useState([]);
-    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-    const [filteredSubcategories, setFilteredSubcategories] = useState([]);
-    const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-    const [selectedCategoryType, setSelectedCategoryType] = useState("Products");
-    const [selectedCategory, setSelectedCategory] = useState(null);
 
-    console.log(selectedSubcategory,"selectedSubcategory");
     const showModal = () => {
         setVisible(true);
     };
@@ -61,11 +53,9 @@ const AdminAttributes = () => {
 
         // Fetch data when the component mounts
         fetchData();
-    }, [selectedCategory, selectedSubcategory]);
+    }, []);
 
     const handleOk = async () => {
-        if (!selectedCategory) return alert('Kindly select category')
-        if (!selectedSubcategory) return alert('Kindly select subcategory')
         if (attributeName && attributeValues.length > 0) {
             if (selectedAttributeIndex !== null) {
                 // Update the existing attribute at the selected index
@@ -73,8 +63,8 @@ const AdminAttributes = () => {
                 updatedAttributes[selectedAttributeIndex] = {
                     name: attributeName,
                     values: attributeValues,
-                    category: selectedCategory,
-                    subcategory: selectedSubcategory
+                    category: '',
+                    subcategory: ''
                 };
                 setAttributes(updatedAttributes);
 
@@ -83,8 +73,8 @@ const AdminAttributes = () => {
                         attributeName: attributeName,
                         attributeValues: attributeValues,
                         type: "update",
-                        category: selectedCategory,
-                        subcategory: selectedSubcategory
+                        category: '',
+                        subcategory: ''
                     };
 
                     const response = await fetch(`${AdminUrl}/api/SetAttributesValues`, {
@@ -121,15 +111,15 @@ const AdminAttributes = () => {
                 }
             } else {
                 // Add a new attribute
-                const newAttribute = { name: attributeName, values: attributeValues, category: selectedCategory, subcategory: selectedSubcategory };
+                const newAttribute = { name: attributeName, values: attributeValues };
 
                 try {
                     const dataToSend = {
                         attributeName: attributeName,
                         attributeValues: attributeValues,
                         type: "add",
-                        category: selectedCategory,
-                        subcategory: selectedSubcategory
+                        category: '',
+                        subcategory: ''
                     };
 
                     const response = await fetch(`${AdminUrl}/api/SetAttributesValues`, {
@@ -181,15 +171,13 @@ const AdminAttributes = () => {
             })
         }
     };
-console.log(attributeValue,"attributeValue");
+
     const handleCancel = () => {
         setVisible(false);
         setEditModalVisible(false);
         setSelectedAttributeIndex(null);
         setAttributeName("");
         setAttributeValues([]);
-        setSelectedCategory(null)
-        setSelectedSubcategory(null)
     };
 
     const addAttributeValue = () => {
@@ -214,16 +202,12 @@ console.log(attributeValue,"attributeValue");
     const handleEditAttribute = (index) => {
         setSelectedAttributeIndex(index);
         setEditModalVisible(true);
-        setSelectedCategory(null)
-        setSelectedSubcategory(null)
 
         // Pre-fill edit modal fields with selected attribute's data
         const selectedAttribute = attributes[index];
 
-        console.log(selectedAttribute,"selectedAttribute");
+        console.log(selectedAttribute, "selectedAttribute");
         setAttributeName(selectedAttribute.name);
-        setSelectedCategory(selectedAttribute.category);
-        setSelectedSubcategory(selectedAttribute.subcategory);
         setAttributeValues(selectedAttribute.values);
     };
 
@@ -237,18 +221,18 @@ console.log(attributeValue,"attributeValue");
     };
 
     const columns = [
-        {
-            title: "Catgeory",
-            dataIndex: "category",
-            key: "category",
-            width: 150
-        },
-        {
-            title: "Subcatgeory",
-            dataIndex: "subcategory",
-            key: "subcategory",
-            width: 150
-        },
+        // {
+        //     title: "Catgeory",
+        //     dataIndex: "category",
+        //     key: "category",
+        //     width: 150
+        // },
+        // {
+        //     title: "Subcatgeory",
+        //     dataIndex: "subcategory",
+        //     key: "subcategory",
+        //     width: 150
+        // },
         {
             title: "Attribute Name",
             dataIndex: "name",
@@ -347,88 +331,10 @@ console.log(attributeValue,"attributeValue");
         }
     };
 
-    const categoryFunction = async () => {
-        try {
-            // Your API call to fetch categories data
-            const response = await fetch(`${AdminUrl}/api/getAllProductCatgeory`);
-            const data = await response.json();
-            setCategories(data);
-        } catch (err) {
-            console.log(err);
-        }
-    };
 
-    const subcategoryFunction = async () => {
-        try {
-            // Your API call to fetch subcategories data
-            const response = await fetch(`${AdminUrl}/api/getAllSubcategories`);
-            const data = await response.json();
-            setSubcategories(data);
-        } catch (err) {
-            console.log(err);
-        }
-    };
 
-    const handleCategoryChange = (categoryId) => {
-        const selectedCategory = categories.find(
-            (category) => category.category_name === categoryId
-        );
 
-        setSelectedCategoryId(categoryId);
-        setSelectedSubcategory(null);
-        setSelectedCategory(
-            selectedCategory
-                ? selectedCategory.category_name.replace(/[^\w\s]/g, "")
-                    .replace(/\s/g, "")
-                : ""
-        );
-        setFilteredSubcategories([]);
-        document.getElementById("subcategory").value = "";
-    };
 
-    const handleSubcategoryChange = (subcategoryId) => {
-        // Find the selected subcategory object from the filteredSubcategories array
-        const selectedSubcategorys = filteredSubcategories.find(
-            (subcategory) => subcategory.subcategory_name === subcategoryId
-        );
-        // Set the subcategory name in state
-        setSelectedSubcategory(
-            selectedSubcategorys
-                ? selectedSubcategorys.subcategory_name
-                    .replace(/[^\w\s]/g, "")
-                    .replace(/\s/g, "")
-                : ""
-        );
-    };
-
-    useEffect(() => {
-        // Check if 'categories' and 'subcategories' are empty
-        const categoriesEmpty = categories === null || categories.length === 0;
-        const subcategoriesEmpty = subcategories.length === 0;
-
-        // Fetch data only if both 'categories' and 'subcategories' are empty
-        if (categoriesEmpty || subcategoriesEmpty) {
-            categoryFunction();
-            subcategoryFunction();
-        }
-    }, [categories, subcategories]);
-
-    // useEffect to filter subcategories based on the selected category ID
-    useEffect(() => {
-        // Find the corresponding category ID from the categories array
-        const selectedCategory = categories.find(
-            (category) => category.category_name === selectedCategoryId
-        );
-
-        if (selectedCategory) {
-            // Filter subcategories based on the selected category ID
-            const filteredSubcategories = subcategories.filter(
-                (subcategory) =>
-                    subcategory.parent_category_id === selectedCategory.category_id
-            );
-            setFilteredSubcategories(filteredSubcategories);
-        }
-    }, [selectedCategoryId, categories, subcategories]);
 
     return (
         <div className="sm:ml-72">
@@ -472,8 +378,8 @@ console.log(attributeValue,"attributeValue");
                 }}
                 width={700}
             >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-                    <div className="flex justify-between items-center">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4"> */}
+                {/* <div className="flex justify-between items-center">
                         <Select
                             id="category"
                             placeholder="Select category"
@@ -498,8 +404,8 @@ console.log(attributeValue,"attributeValue");
                                 ))}
                         </Select>
 
-                    </div>
-
+                    </div> */}
+                {/* 
                     <div className="flex justify-between items-center">
 
                         <Select
@@ -521,8 +427,8 @@ console.log(attributeValue,"attributeValue");
                                 </Select.Option>
                             ))}
                         </Select>
-                    </div>
-                </div>
+                    </div> */}
+                {/* </div> */}
                 <Input
                     value={attributeName}
                     onChange={(e) => setAttributeName(e.target.value)}
