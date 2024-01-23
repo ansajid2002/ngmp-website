@@ -1213,7 +1213,7 @@ app.post("/UpdateCustomerPassword", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
- 
+
 app.get('/getCustomersAddress/:cid', async (req, res) => {
   try {
     const cid = req.params.cid
@@ -1557,7 +1557,7 @@ app.get('/usersList', async (req, res) => {
         WHERE LOWER(given_name) LIKE $1
           OR LOWER(family_name) LIKE $1
           OR LOWER(phone_number) LIKE $1
-          OR LOWER(ecdmail) LIKE $1cd
+          OR LOWER(ecdmail) LIKE $1
         ORDER BY given_name
         LIMIT $2 OFFSET $3;
       `;

@@ -67,7 +67,7 @@ const Delivery = ({ adminLoginData }) => {
             fixed: 'left',
             width: 200,
             render: (text, record) => (
-               !record.ispickup && <Button onClick={() => handleUpdateStatus(record.order_id)}>Update Status</Button>
+                !record.ispickup && <Button onClick={() => handleUpdateStatus(record.order_id)}>Update Status</Button>
             ),
         },
         {
@@ -308,7 +308,7 @@ const Delivery = ({ adminLoginData }) => {
                             value={selectedStatus}
                         >
                             <Radio value="Confirmed">Confirmed</Radio>
-                            
+
                             <Radio value="Out for Delivery">Out for Delivery</Radio>
                             <Radio value="Delivered">Deliver</Radio>
                         </Radio.Group>

@@ -1188,14 +1188,15 @@ app.post('/updateOrderStatus', async (req, res) => {
   try {
     const { orderId, newStatus, otp } = req.body;
 
+    console.log(req.body);
     // Verify OTP only for "Delivered" or "Shipped" status
-    if ((newStatus === 'Delivered' || newStatus === 'Shipped') && !otp) {
+    if (!otp) {
       res.status(400).json({ error: 'OTP is required for "Delivered" or "Shipped" status' });
       return;
     }
 
     // Verify OTP logic only when the new status is "Delivered" or "Shipped"
-    if ((newStatus === 'Delivered' || newStatus === 'Shipped') && otp) {
+    if (otp) {
       const orderQuery = 'SELECT seller_otp, customer_otp FROM vendorproductorder WHERE order_id = $1';
       const orderResult = await pool.query(orderQuery, [orderId]);
 
