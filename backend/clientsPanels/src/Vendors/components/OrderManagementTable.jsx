@@ -16,16 +16,21 @@ import {
   Dropdown,
   Menu,
   Input,
+  InputNumber,
 } from "antd";
 import {
+  FaBoxOpen,
   FaCheck,
   FaClock,
   FaCross,
   FaExchangeAlt,
   FaFilePdf,
   FaMapPin,
+  FaShippingFast,
   FaTimes,
   FaTruck,
+  FaTruckMoving,
+  FaTruckPickup,
   FaUndo,
 } from "react-icons/fa";
 import { AdminUrl } from "../../Admin/constant";
@@ -49,6 +54,7 @@ import moment from "moment";
 import CreateShip from "./CreateShip";
 import { FiMap } from "react-icons/fi";
 import { websiteUrl } from "../../App";
+import { AiOutlineDeliveredProcedure } from "react-icons/ai";
 
 const OrderManagementTable = ({
   vendorDatastate,
@@ -68,7 +74,9 @@ const OrderManagementTable = ({
   const [filteredDateRange, setFilteredDateRange] = useState(null);
   const [ShipmentModal, setShipmentModal] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  console.log(type, "Type");
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  // console.log(type, "Type");
   const vendorId = vendorDatastate?.[0].id;
   const { confirm } = Modal; // Import the Modal component
 
@@ -77,19 +85,7 @@ const OrderManagementTable = ({
     const value = e.target.value;
     setSearchValue(value);
 
-    const filteredProducts = vendorOrder && vendorOrder
-      .filter(order => {
-        const orderidMatch = order.orderid.toString().includes(value);
-        const firstnameMatch = order.first_name && order.first_name.toLowerCase().includes(value.toLowerCase());
-        const lastnameMatch = order.last_name && order.last_name.toLowerCase().includes(value.toLowerCase());
-        const productNameMatch = order.product_name && order.product_name.toLowerCase().includes(value.toLowerCase());
-        const productUniqueIdMatch = order.product_uniqueid.toString().includes(value);
-        const skuidOrderMatch = order.skuid_order && order.skuid_order.toLowerCase().includes(value.toLowerCase());
-        const transactionId = order.transaction_id && order.transaction_id.toLowerCase().includes(value.toLowerCase());
-
-        // You can adjust the conditions based on your requirements
-        return orderidMatch || firstnameMatch || lastnameMatch || productNameMatch || productUniqueIdMatch || skuidOrderMatch || transactionId;
-      });
+    callVendorProductOrder(1, 10, value)
 
     setFilteredOrder(filteredProducts);
   };
@@ -105,24 +101,25 @@ const OrderManagementTable = ({
   };
   const showCustomerDetailsModal = (product) => {
     setSelectedCustomer(product);
+    console.log(product);
     setCustomerModalVisible(true);
   };
 
-  const callVendorProductOrder = async () => {
+  const callVendorProductOrder = async (page, pageSize, value) => {
     try {
       const response = await fetch(`${AdminUrl}/api/VendorProductOrder`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ type, vendorId }),
+        body: JSON.stringify({ type, vendorId, page, pageSize, value }),
       });
 
       if (response.ok) {
         // Handle successful response
         const data = await response.json();
         setvendorOrder(data);
-        setFilteredOrder(data)
+        setFilteredOrder(data);
         setDownloadOrders(data);
       } else {
         // Handle error response
@@ -135,8 +132,10 @@ const OrderManagementTable = ({
   };
 
   useEffect(() => {
-    callVendorProductOrder();
+
+    callVendorProductOrder(page, pageSize, searchValue);
   }, []);
+
 
   const statusColorMap = {
     Ordered: "blue",
@@ -220,14 +219,14 @@ const OrderManagementTable = ({
       },
       // Add filter properties
     },
+   
+
     {
       title: "Order ID",
       dataIndex: "orderid",
       key: "orderid",
       width: 80,
       render: (orderid, record) => {
-
-
         return (
           <Button type="link" onClick={() => showProductDetailsModal(record)}>
             {orderid}
@@ -283,7 +282,7 @@ const OrderManagementTable = ({
       render: (customer_info, record) => {
         return (
 
-          <p onClick={() => showCustomerDetailsModal(record)} className=" font-sans text-left text-sm font-semibold cursor-pointer hover:text-gray-400 min-w-[100px] line-clamp-2">{`${record.first_name} ${record.last_name}`}
+          <p onClick={() => showCustomerDetailsModal(record?.customerInfo)} className=" font-sans text-left text-sm font-semibold cursor-pointer hover:text-gray-400 min-w-[100px] line-clamp-2">{`${record.customerInfo?.given_name} ${record.customerInfo?.family_name}`} <br />  CID - ({record.customerInfo?.customer_id})
           </p>
         )
       }
@@ -295,20 +294,19 @@ const OrderManagementTable = ({
       key: "created_at",
       width: 250,
       sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at),
-      render: (created_at) => {
-        const formattedDate = new Date(created_at).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        });
+      render: (created_at, record) => {
+        // const formattedDate = new Date(created_at).toLocaleDateString("en-US", {
+        //   year: "numeric",
+        //   month: "short",
+        //   day: "numeric",
+        //   hour: "numeric",
+        //   minute: "numeric",
+        //   hour12: true,
+        // });
 
-        return <p className="text-[12px]">{formattedDate}</p>;
+        return <p className="text-[12px]">{moment(record.created_at).format('LLL')}</p>;
       },
     },
-
     {
       title: "Status",
       dataIndex: "order_status",
@@ -343,37 +341,7 @@ const OrderManagementTable = ({
       key: "payment_status",
       width: 80,
     },
-    {
-      title: "Actions",
-      dataIndex: "actions",
-      key: "actions",
-      width: 300, // Adjust the width as needed
-      render: (text, record) => (
-        <Space>
-          <Dropdown
-            overlay={
-              <Menu
-                onClick={({ key }) => handleActionClick(key, record.order_id, record.orderid, record.vendor_id)}
-              >
-                <Menu.Item key="confirm">Confirmed</Menu.Item>
-                <Menu.Item key="cancel">Cancel</Menu.Item>
-                <Menu.Item key="return">Return</Menu.Item>
-                <Menu.Item key="exchange">Exchange</Menu.Item>
-                <Menu.Item key="refund">Refunded</Menu.Item>
-              </Menu>
-            }
-            trigger={["click"]}
-          >
-            <Button type="button" icon={<MoreOutlined />} />
-          </Dropdown>
-          {
-            record.order_status === 'Ordered' || record.order_status === 'Confirmed' && <Button onClick={() => handleShipmentModal(record)}>
-              Make Shipment
-            </Button>
-          }
-        </Space>
-      ),
-    },
+
   ];
 
 
@@ -726,7 +694,22 @@ const OrderManagementTable = ({
             },
           }}
           rowKey="created_at"
+          scroll={{
+            x: 1200,
+            y: 600
+          }}
         />
+        <div className="flex justify-center mt-10">
+          <Pagination
+            current={page}
+            total={vendorOrder?.[0]?.totalCount}
+            onChange={(page, pageSize) => {
+              setPage(page)
+              setPageSize(pageSize)
+              callVendorProductOrder(page, pageSize, searchValue)
+            }}
+          />
+        </div>
       </div>
 
     );
@@ -794,6 +777,31 @@ const OrderManagementTable = ({
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(vendorFullAddress)}`;
     window.open(mapUrl, '_blank');
   };
+
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const handleButtonClick = (order) => {
+    setModalVisible(true);
+    setSelectedOrder(order)
+  };
+
+  const handleModalOk = () => {
+    // Handle the logic for Ship or Delivered/Picked Up by Customer
+    // ...
+
+    console.log(selectedOrder);
+
+    // Close the modal
+    // setModalVisible(false);
+  };
+
+  const handleModalCancel = () => {
+    // Close the modal
+    setModalVisible(false);
+  };
+
 
   return (
     <div className="mb-72">
@@ -1126,7 +1134,7 @@ const OrderManagementTable = ({
                   <Descriptions.Item label="Email">{selectedCustomer.email}</Descriptions.Item>
                   <Descriptions.Item label="Phone Number">{selectedCustomer.phone_number}</Descriptions.Item>
                   <Descriptions.Item label="Name">
-                    {`${selectedCustomer.first_name} ${selectedCustomer.last_name}`}
+                    {`${selectedCustomer.given_name} ${selectedCustomer.family_name}`}
                   </Descriptions.Item>
                   <Descriptions.Item label="Country">{selectedCustomer.selected_country}</Descriptions.Item>
                   <Descriptions.Item label="City">{selectedCustomer.selected_city}</Descriptions.Item>
@@ -1147,6 +1155,33 @@ const OrderManagementTable = ({
 
       <Modal open={ShipmentModal} onCancel={() => setShipmentModal(false)} title="Create Shipment" width={1000}>
         <CreateShip product={selectedProduct} />
+      </Modal>
+
+      <Modal
+        title="Select Action"
+        visible={modalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+        okText={"Update Status"}
+        okButtonProps={{ style: { background: 'blue' } }}
+      >
+        {/* Add your Ship and Delivered/Picked Up by Customer options here */}
+        <div className="grid md:grid-cols-3 grid-cols-1 gap-4 py-10">
+          <Button type="default" className="flex justify-center items-center gap-3 border border-blue-500 text-blue-500 py-4 text-lg" onClick={() => handleAction('Shipped')}>
+            <FaShippingFast /> Ship
+          </Button>
+          <Button type="default" className="flex justify-center items-center gap-3 border border-green-500 text-green-500 py-4 text-lg" onClick={() => handleAction('Delivered')}>
+            <FaTruckMoving />  Delivered
+          </Button>
+          <Button type="default" className="flex justify-center items-center gap-3 border border-orange-500 text-orange-500 py-4 text-lg" onClick={() => handleAction('Picked')}>
+            <FaTruckPickup /> Picked
+          </Button>
+        </div>
+
+        <div className="flex flex-col w-full space-y-1">
+          <label htmlFor="Verify Receiver" className="text-sm text-gray-600"> Verify Receiver</label>
+          <InputNumber className="p-2 w-full" placeholder="Enter 4 digit Verification Code" maxLength={4} />
+        </div>
       </Modal>
     </div>
   );

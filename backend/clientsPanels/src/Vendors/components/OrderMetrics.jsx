@@ -1113,8 +1113,8 @@ export default function OrderMetrics({ vendorDatastate, type }) {
   return (
     <div>
       <div className="relative flex justify-end items-center p-2 mb-4">
-        <div className="relative flex items-center justify-end ">
-          <span className="mr-2 font-bold">{PreviousCurrency} to: </span>
+        {/* <div className="relative flex items-center justify-end ">
+          <span className="mr-2 font-bold">USD</span>
           <Select
             value={selectedCurrency}
             onChange={handleCurrencySelectChange}
@@ -1126,7 +1126,7 @@ export default function OrderMetrics({ vendorDatastate, type }) {
               </Option>
             ))}
           </Select>
-        </div>
+        </div> */}
         <div className="ml-4">
           <span className="mr-2 font-bold">Select Year: </span>
           <Select

@@ -62,6 +62,7 @@ import BulkApprove from "./Admin/pages/Products/BulkApprove";
 import Wallet from "./Admin/pages/Customers/Wallet";
 import CustomerClaimsAdimin from "./Admin/pages/Vendors/CustomerClaimsAdimin";
 import Delivery from "./Admin/pages/Delivey";
+import VerifyReceiver from "./Vendors/components/VerifyReceiver";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
 
@@ -194,7 +195,8 @@ function AdminRoutes() {
       "/Vendors/create/create",
       "/Vendors/coupons/expired",
       "/Vendors/ClaimForm",
-      "/Vendors/ChatwithCustomers"
+      "/Vendors/ChatwithCustomers",
+      "/Vendors/verifyReceiver",
     ];
     const checkVendorPanel = VendorPanel.includes(path);
     setvendorExists(checkVendorPanel);
@@ -436,6 +438,10 @@ function AdminRoutes() {
               <Route
                 path="/Vendors/ChatwithCustomers"
                 element={<ChatwithCustomers vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/verifyReceiver"
+                element={<VerifyReceiver vendorDatastate={vendorDatastate} />}
               />
               {/* ... other routes */}
             </Routes>

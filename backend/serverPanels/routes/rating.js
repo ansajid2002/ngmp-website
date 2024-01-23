@@ -12,15 +12,17 @@ app.use((req, res, next) => {
 });
 
 app.post('/rateVendorProducts', async (req, res) => {
-    const { vendor_id, customer_id, product_uniqueid, rating, label } = req.body;
+    const { vendor_id, customer_id, product_uniqueid, rating, label, order_id } = req.body;
 
+    console.log(order_id
+        );
     try {
         // Check if the 'label' exists and is not null
         if (label !== undefined && label !== null) {
             // Check if a row with the provided 'label' already exists
             const existingRow = await req.pool.query(
-                'SELECT * FROM ratings_and_reviews WHERE vendor_id = $1 AND customer_id = $2 AND product_uniqueid = $3 AND label = $4',
-                [vendor_id, customer_id, product_uniqueid, label]
+                'SELECT * FROM ratings_and_reviews WHERE vendor_id = $1 AND customer_id = $2 AND product_uniqueid = $3 AND label = $4 AND rate_order_id = $5',
+                [vendor_id, customer_id, product_uniqueid, label, order_id]
             );
 
             if (existingRow.rows.length > 0) {
@@ -35,8 +37,8 @@ app.post('/rateVendorProducts', async (req, res) => {
             } else {
                 // If no row exists, insert a new one
                 const insertResult = await req.pool.query(
-                    'INSERT INTO ratings_and_reviews (vendor_id, customer_id, product_uniqueid, rating, label, created_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING *',
-                    [vendor_id, customer_id, product_uniqueid, rating, label]
+                    'INSERT INTO ratings_and_reviews (vendor_id, customer_id, product_uniqueid, rating, label, created_at, rate_order_id) VALUES ($1, $2, $3, $4, $5, NOW(), $6) RETURNING *',
+                    [vendor_id, customer_id, product_uniqueid, rating, label, order_id]
                 );
                 responseMessage = 'Rating added successfully';
                 responseData = insertResult.rows[0]; // Store the inserted data
@@ -44,8 +46,8 @@ app.post('/rateVendorProducts', async (req, res) => {
         } else {
             // If 'label' is not provided or is null, check based on 'product_uniqueid'
             const existingRow = await req.pool.query(
-                'SELECT * FROM ratings_and_reviews WHERE vendor_id = $1 AND customer_id = $2 AND product_uniqueid = $3',
-                [vendor_id, customer_id, product_uniqueid]
+                'SELECT * FROM ratings_and_reviews WHERE vendor_id = $1 AND customer_id = $2 AND product_uniqueid = $3 AND rate_order_id = $4',
+                [vendor_id, customer_id, product_uniqueid, order_id]
             );
 
             if (existingRow.rows.length > 0) {
@@ -60,8 +62,8 @@ app.post('/rateVendorProducts', async (req, res) => {
             } else {
                 // If no row exists, insert a new one
                 const insertResult = await req.pool.query(
-                    'INSERT INTO ratings_and_reviews (vendor_id, customer_id, product_uniqueid, rating, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *',
-                    [vendor_id, customer_id, product_uniqueid, rating]
+                    'INSERT INTO ratings_and_reviews (vendor_id, customer_id, product_uniqueid, rating, created_at, rate_order_id) VALUES ($1, $2, $3, $4, NOW(), $5) RETURNING *',
+                    [vendor_id, customer_id, product_uniqueid, rating, order_id]
                 );
                 responseMessage = 'Rating added successfully';
                 responseData = insertResult.rows[0]; // Store the inserted data
@@ -159,6 +161,7 @@ app.post('/addReview', async (req, res) => {
             [id]
         );
 
+        console.log(id);
         if (existingReview.rows.length === 0) {
             return res.status(404).json({ error: 'Review not found' });
         }

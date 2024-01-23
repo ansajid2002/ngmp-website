@@ -14,31 +14,81 @@ app.use((req, res, next) => {
 });
 
 app.post("/VendorProductOrder", async (req, res) => {
-  const { type, vendorId } = req.body;
+  const { type, vendorId, page = 1, pageSize = 10, value = '' } = req.body;
   try {
+    // Query to fetch vendorproductorder details
     let query = `
-      SELECT vpo.*, cda.*, p.*
+      SELECT vpo.*
       FROM vendorproductorder vpo
-      LEFT JOIN customer_delivery_address cda ON vpo.order_id = cda.unique_order_id
-      LEFT JOIN products p ON vpo.product_uniqueid = p.uniquepid
     `;
 
+
     if (type !== "admin") {
-      // If the type is not "admin," fetch data for the specified vendor_id
-      query += " WHERE vpo.vendor_id = $1;";
-    } else {
-      // If the type is "admin," fetch all data without specifying a vendor_id
-      query += ";";
+      query += " WHERE vpo.vendor_id = $1";
     }
 
-    const { rows } = await pool.query(
-      query,
-      type !== "admin" ? [vendorId] : []
+    if (value && value.trim() != '') {
+      console.log(value);
+    }
+    // Implement pagination in your SQL query
+    query += ` ORDER BY vpo.created_at DESC LIMIT $2 OFFSET $3;`;
+
+    const offset = (page - 1) * pageSize;
+
+    const { rows } = await pool.query(query, type !== "admin" ? [vendorId, pageSize, offset] : [pageSize, offset]);
+
+    // Fetch customer delivery address details
+    const deliveryAddressDetails = await Promise.all(
+      rows.map(async (row) => {
+        const addressDetails = await pool.query(
+          "SELECT * FROM customer_delivery_address WHERE unique_order_id = $1;",
+          [row.order_id]
+        );
+
+        return { ...row, deliveryAddress: addressDetails.rows[0] || {} };
+      })
     );
+
+    // Fetch product details
+    const productDetails = await Promise.all(
+      deliveryAddressDetails.map(async (row) => {
+        const productDetails = await pool.query(
+          "SELECT * FROM products WHERE uniquepid = $1;",
+          [row.product_uniqueid]
+        );
+
+        return { ...row, productDetails: productDetails.rows[0] || {} };
+      })
+    );
+
+    // Fetch customer details based on customer_id
+    const rowsWithCustomerInfo = await Promise.all(
+      productDetails.map(async (row) => {
+        const customerDetails = await pool.query(
+          "SELECT * FROM customers WHERE customer_id = $1;",
+          [row.customer_id]
+        );
+
+        const customerInfo = customerDetails.rows[0] || {};
+        delete customerInfo.password
+        return { ...row, customerInfo };
+      })
+    );
+
+
+    const totalCountQuery = `
+      SELECT COUNT(*) as total_count
+      FROM vendorproductorder
+      WHERE vendor_id = $1;
+    `;
+
+    const totalCountResult = await pool.query(totalCountQuery, [vendorId]);
+    const totalCount = parseInt(totalCountResult.rows[0].total_count, 10);
+
 
     // Fetch additional details from the vendors table for each vendor_id
     const rowsWithVendorProfiles = await Promise.all(
-      rows.map(async (row) => {
+      rowsWithCustomerInfo.map(async (row) => {
         const vendorDetails = await pool.query(
           "SELECT brand_name, email, country_code, mobile_number, status, vendor_profile_picture_url, brand_logo, vendorname, company_city, company_zip_code, company_state, company_country, shipping_address FROM vendors WHERE id = $1;",
           [row.vendor_id]
@@ -46,7 +96,7 @@ app.post("/VendorProductOrder", async (req, res) => {
 
         const vendorProfile = vendorDetails.rows[0] || {};
 
-        return { ...row, vendorProfile };
+        return { ...row, vendorProfile, totalCount };
       })
     );
 
@@ -57,14 +107,25 @@ app.post("/VendorProductOrder", async (req, res) => {
   }
 });
 
-function generateRandomOrderID(length) {
-  // Generate a random number with the specified length
-  const randomNumber = Math.floor(Math.random() * Math.pow(10, length));
 
-  // Convert the random number to a string and pad it with leading zeros if needed
-  const paddedNumber = randomNumber.toString().padStart(length, '0');
-  return paddedNumber;
+function generateRandomOrderID(length) {
+  // Ensure the length is at least 1
+  if (length < 1) {
+    throw new Error('Length must be at least 1');
+  }
+
+  // Generate the first digit without starting with zero
+  const firstDigit = Math.floor(Math.random() * 9) + 1;
+
+  // Generate the remaining digits
+  const remainingDigits = Array.from({ length: length - 1 }, () => Math.floor(Math.random() * 10)).join('');
+
+  // Concatenate the first digit and remaining digits
+  const randomOrderID = `${firstDigit}${remainingDigits}`;
+
+  return randomOrderID;
 }
+
 
 
 const generateRandomWalletId = () => {
@@ -109,18 +170,14 @@ function generateRandomOtp() {
 
 app.post("/Insertorders", async (req, res) => {
   try {
-
-    // console.log(req.body);
-    // return
     const { customer_id } = req.body[0]?.customerData
     const customerEmail = req.body[0]?.customerData?.email
     const orders = req.body[0]?.orders
     const { id } = req.body[0]?.paymentIntent
-    const { selectedPaymentMode, checkoutItems } = req.body[0] || 'Stripe'
+    const { selectedPaymentMode, checkoutItems, order_date } = req.body[0] || 'Stripe'
     // const { street, city, country, region, postalCode, name, given_name, family_name, phone_number, email } = req.body[0]?.shipping_address
     const { given_name_address = '', family_name_address = '', apt_address = '', subregion_address = '', city_address = '', country_address = '', region_address = '', zip_address = '', phone_address = '', email_address = '' } = req.body[0]?.shipping_address || []
-    const date = new Date();
-    const order_date = date.toISOString();
+
     const order_status = 'Ordered'
     const order_id = generateRandomOrderID(8)
 
@@ -187,14 +244,14 @@ app.post("/Insertorders", async (req, res) => {
       futureDate.setDate(currentDate.getDate() + randomDays);
 
       const result = await pool.query(
-        `INSERT INTO vendorproductorder (orderid, vendor_id, product_uniqueid, customer_id, order_date, total_amount, order_status, product_name,  product_image, currency_symbol, payment_method, payment_status, category, subcategory, product_type, transaction_id, commission_fee, withdrawal_amount, refund_amount, fees_paid, tax_collected, quantity, city, state, country, label, tentative_delivery_date, skuid_order, ispickup, seller_otp, customer_otp)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31)
+        `INSERT INTO vendorproductorder (orderid, vendor_id, product_uniqueid, customer_id, order_date, total_amount, order_status, product_name,  product_image, currency_symbol, payment_method, payment_status, category, subcategory, product_type, transaction_id, commission_fee, withdrawal_amount, refund_amount, fees_paid, tax_collected, quantity, city, state, country, label, tentative_delivery_date, skuid_order, ispickup, seller_otp, customer_otp, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32)
          RETURNING *`, // Use RETURNING * to return all columns
         [
           order.order_id,
           order.vendor_id,
           order.product_uniqueid,
-          order.customer_id,
+          customer_id,
           order.order_date,
           order.total_amount,
           order.order_status,
@@ -221,7 +278,9 @@ app.post("/Insertorders", async (req, res) => {
           order.skuid_order,
           order.ispickup,
           order.sellerOtp,
-          order.customerotp
+          order.customerotp,
+          order.order_date,
+
         ]
       );
 
@@ -398,8 +457,16 @@ app.get('/getAllCustomerOrder/:customer_id', async (req, res) => {
           vpo.created_at DESC;
       `;
 
+    const getRatingofThatOrder = `SELECT * FROM ratings_and_reviews WHERE customer_id = $1`
+    const valueAppend = [customer_id]
 
+    const getResultofRating = await pool.query(getRatingofThatOrder, valueAppend)
     const { rows } = await pool.query(query, [customer_id]);
+
+    rows.forEach(order => {
+      order.ratings_and_reviews = getResultofRating.rows.filter(rating => parseInt(rating.rate_order_id) === parseInt(order.order_id) && rating.product_uniqueid != 'vendor');
+    });
+
     res.json(rows);
   } catch (error) {
     console.error('Error executing SQL query:', error);
@@ -1074,8 +1141,8 @@ app.post('/getDeliverOrder', async (req, res) => {
         totalCountQuery = `SELECT COUNT(*) FROM vendorproductorder WHERE order_status IN ('Confirmed', 'Shipped', 'Out for Delivery')`;
         break;
       case 'Completed':
-        orderStatusQuery = `SELECT * FROM vendorproductorder WHERE order_status = 'Delivered' LIMIT ${validatedPageSize} OFFSET ${offset}`;
-        totalCountQuery = `SELECT COUNT(*) FROM vendorproductorder WHERE order_status = 'Delivered'`;
+        orderStatusQuery = `SELECT * FROM vendorproductorder WHERE order_status IN ('Delivered', 'Picked') LIMIT ${validatedPageSize} OFFSET ${offset}`;
+        totalCountQuery = `SELECT COUNT(*) FROM vendorproductorder WHERE order_status IN ('Delivered', 'Picked')`;
         break;
       case 'New Order':
         orderStatusQuery = `SELECT * FROM vendorproductorder WHERE order_status IN ('Ordered', 'Confirmed', 'Shipped', 'Out for Delivery') LIMIT ${validatedPageSize} OFFSET ${offset}`;
@@ -1117,33 +1184,40 @@ app.post('/getDeliverOrder', async (req, res) => {
   }
 });
 
-
 app.post('/updateOrderStatus', async (req, res) => {
   try {
     const { orderId, newStatus, otp } = req.body;
 
-    // Verify OTP logic
-    const orderQuery = 'SELECT seller_otp, customer_otp FROM vendorproductorder WHERE order_id = $1';
-    const orderResult = await pool.query(orderQuery, [orderId]);
-
-    if (!orderResult.rows || orderResult.rows.length === 0) {
-      res.status(404).json({ error: 'Order not found' });
+    // Verify OTP only for "Delivered" or "Shipped" status
+    if ((newStatus === 'Delivered' || newStatus === 'Shipped') && !otp) {
+      res.status(400).json({ error: 'OTP is required for "Delivered" or "Shipped" status' });
       return;
     }
 
-    const storedSellerOtp = orderResult.rows[0].seller_otp;
-    const storedCustomerOtp = orderResult.rows[0].customer_otp;
+    // Verify OTP logic only when the new status is "Delivered" or "Shipped"
+    if ((newStatus === 'Delivered' || newStatus === 'Shipped') && otp) {
+      const orderQuery = 'SELECT seller_otp, customer_otp FROM vendorproductorder WHERE order_id = $1';
+      const orderResult = await pool.query(orderQuery, [orderId]);
 
-    // Verify seller OTP for statuses other than "Delivered"
-    if (newStatus !== 'Delivered' && otp !== storedSellerOtp) {
-      res.status(401).json({ error: 'Invalid Seller OTP' });
-      return;
-    }
+      if (!orderResult.rows || orderResult.rows.length === 0) {
+        res.status(404).json({ error: 'Order not found' });
+        return;
+      }
 
-    // Verify customer OTP for "Delivered" status
-    if (newStatus === 'Delivered' && otp !== storedCustomerOtp) {
-      res.status(401).json({ error: 'Invalid Customer OTP' });
-      return;
+      const storedSellerOtp = orderResult.rows[0].seller_otp;
+      const storedCustomerOtp = orderResult.rows[0].customer_otp;
+
+      // Verify seller OTP for statuses other than "Delivered"
+      if (newStatus !== 'Delivered' && otp !== storedSellerOtp) {
+        res.status(401).json({ error: 'Invalid Seller OTP' });
+        return;
+      }
+
+      // Verify customer OTP for "Delivered" status
+      if (newStatus === 'Delivered' && otp !== storedCustomerOtp) {
+        res.status(401).json({ error: 'Invalid Customer OTP' });
+        return;
+      }
     }
 
     // Assuming vendorproductorder has a column named order_status
@@ -1153,6 +1227,64 @@ app.post('/updateOrderStatus', async (req, res) => {
     const result = await pool.query(updateQuery, values);
 
     res.status(200).json({ success: true, message: 'Order status updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.post("/fetchOrderProducts", async (req, res) => {
+  try {
+    const { vendorid, otp, selectedAction } = req.body;
+
+    // Perform a query to fetch data based on vendorid and otp
+    const query = `
+      SELECT *
+      FROM vendorproductorder
+      WHERE vendor_id = $1 AND seller_otp = $2;
+    `;
+
+    const result = await pool.query(query, [vendorid, otp]);
+
+    // Check if any rows were returned
+    if (result.rows.length > 0) {
+      // Data found, you can now handle the data or send it in the response
+      const orderProducts = result.rows;
+
+      // You can perform additional actions based on the selectedAction if needed
+
+      res.status(200).json(orderProducts);
+    } else {
+      // No data found for the given vendorid and otp
+      res.status(404).json({ error: 'No matching data found' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post("/shipSelectedProducts", async (req, res) => {
+  try {
+    const { vendorid, selectedAction, selectedOrderIds } = req.body;
+
+    // Validate the inputs if needed
+
+    // Update the order_status for selectedOrderIds in the database
+    const updateQuery = `
+          UPDATE vendorproductorder
+          SET order_status = $1
+          WHERE vendor_id = $2 AND order_id IN (${selectedOrderIds.map((_, index) => `$${index + 3}`).join(', ')});
+      `;
+
+    const updateParams = [selectedAction, vendorid, ...selectedOrderIds];
+
+    await pool.query(updateQuery, updateParams);
+
+    console.log(`Order status updated for selectedOrderIds: ${selectedOrderIds}`);
+
+    res.status(200).json({ success: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });

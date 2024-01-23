@@ -62,6 +62,15 @@ const Delivery = ({ adminLoginData }) => {
 
     const columns = [
         {
+            title: 'Action',
+            key: 'action',
+            fixed: 'left',
+            width: 200,
+            render: (text, record) => (
+               !record.ispickup && <Button onClick={() => handleUpdateStatus(record.order_id)}>Update Status</Button>
+            ),
+        },
+        {
             title: 'Order ID',
             dataIndex: 'order_id',
             key: 'order_id',
@@ -71,7 +80,7 @@ const Delivery = ({ adminLoginData }) => {
             title: 'Order Status',
             dataIndex: 'order_status',
             key: 'order_status',
-            width: 80,
+            width: 100,
             render: (text) => {
                 let color = '';
 
@@ -91,6 +100,9 @@ const Delivery = ({ adminLoginData }) => {
                     case 'Delivered':
                         color = 'darkgreen';
                         break;
+                    case 'Picked':
+                        color = 'darkgreen';
+                        break;
                     default:
                         color = 'black';
                 }
@@ -102,11 +114,13 @@ const Delivery = ({ adminLoginData }) => {
             title: 'Product Name',
             dataIndex: 'product_name', // Assuming the product_info is an object within your data
             key: 'product_name',
-            width: 300,
+            width: 200,
             render: (_, record) => (
                 <div>
                     <p className='font-semibold text-gray-700'>{record.product_name}</p>
                     <p>Id - {record.orderid}</p>
+                    <p>OTP - {record.seller_otp}</p>
+                    <p className='text-red-500 font-semibold text-xl'> {record.ispickup && 'Product will be pickup by Customer'}</p>
                 </div>
             )
         },
@@ -131,7 +145,7 @@ const Delivery = ({ adminLoginData }) => {
             title: 'Customer Info',
             dataIndex: 'customer_info', // Assuming customer_info is a string, you might want to format it appropriately
             key: 'customer_info',
-            width: 200,
+            width: 300,
             render: (_, record) => (
                 <div>
                     <p className='font-semibold text-gray-700'>{record.customer_info?.given_name} {record.customer_info?.family_name}</p>
@@ -148,7 +162,7 @@ const Delivery = ({ adminLoginData }) => {
             title: 'Delivery Address',
             dataIndex: 'delivery_address',
             key: 'delivery_address',
-            fixed: 'right',
+            width: 200,
             render: (address, record) => {
                 const fullAddress = `${record?.delivery_address?.street_address}, ${record?.delivery_address?.apartment}, ${record?.delivery_address?.selected_city}, ${record?.delivery_address?.selected_state}, ${record?.delivery_address?.zip_code}, ${record?.delivery_address?.selected_country}`;
                 const mapLink = `https://www.google.com/maps?q=${encodeURIComponent(fullAddress)}`;
@@ -169,14 +183,7 @@ const Delivery = ({ adminLoginData }) => {
                 }
             },
         },
-        {
-            title: 'Action',
-            key: 'action',
-            fixed: 'right',
-            render: (text, record) => (
-                <Button onClick={() => handleUpdateStatus(record.order_id)}>Update Status</Button>
-            ),
-        },
+
     ];
 
     const handleUpdateStatus = (orderId) => {
@@ -203,10 +210,6 @@ const Delivery = ({ adminLoginData }) => {
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
             // Handle the response
             const result = await response.json();
             console.log('Update status response:', result);
@@ -215,11 +218,10 @@ const Delivery = ({ adminLoginData }) => {
             Swal.fire({
                 icon: result.success ? 'success' : 'error',
                 title: result.success ? 'Success' : 'Error',
-                text: result.message,
+                text: result.success ? result.message : `Error: ${result.error}`,
             });
 
             // Close the modal
-            setModalVisible(false);
 
             // If the update was successful, update the order status in your component state
             if (result.success) {
@@ -229,6 +231,8 @@ const Delivery = ({ adminLoginData }) => {
                         order.order_id === orderId ? { ...order, order_status: selectedStatus } : order
                     );
                 });
+                setModalVisible(false);
+
             }
         } catch (error) {
             console.error('Error updating order status:', error);
@@ -236,11 +240,10 @@ const Delivery = ({ adminLoginData }) => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'An error occurred while updating the order status.',
+                text: `An error occurred while updating the order status: ${error.message}`,
             });
         }
     };
-
 
 
     // Function to handle the modal cancel/close
@@ -250,76 +253,80 @@ const Delivery = ({ adminLoginData }) => {
     };
 
     return (
-        <div className="sm:p-4 sm:ml-72">
-            <Tabs defaultActiveKey="New Order" onChange={handleTabChange}>
-                <TabPane tab="New Order" key="New Order">
-                    <Table columns={columns} dataSource={data} pagination={false} />
-                    <div className='flex justify-end mt-10'>
-                        <Pagination
-                            current={pagination.current}
-                            pageSize={pagination.pageSize}
-                            total={totalCount}
-                            onChange={handlePaginationChange}
-                        />
-                    </div>
-                </TabPane>
-                <TabPane tab="Dispatched" key="Dispatched">
-                    <Table columns={columns} dataSource={data} pagination={false} />
-                    <div className='flex justify-end mt-10'>
-                        <Pagination
-                            current={pagination.current}
-                            pageSize={pagination.pageSize}
-                            total={totalCount}
-                            onChange={handlePaginationChange}
-                        />
-                    </div>
-                </TabPane>
-                <TabPane tab="Completed" key="Completed">
-                    <Table columns={columns} dataSource={data} pagination={false} />
-                    <div className='flex justify-end mt-10'>
-                        <Pagination
-                            current={pagination.current}
-                            pageSize={pagination.pageSize}
-                            total={totalCount}
-                            onChange={handlePaginationChange}
-                        />
-                    </div>
-                </TabPane>
-                {/* Add TabPane for other tabs as needed */}
-            </Tabs>
-
-            <Modal
-                title="Update Order Status"
-                visible={modalVisible}
-                onOk={handleModalOk}
-                onCancel={handleModalCancel}
-                okButtonProps={{ style: { background: 'blue' } }}
-                okText={"Update Status"}
-            >
-                <div className='p-4 my-10'>
-                    <Radio.Group
-                        onChange={(e) => setSelectedStatus(e.target.value)}
-                        value={selectedStatus}
-                    >
-                        <Radio value="Confirmed">Confirmed</Radio>
-                        <Radio value="Shipped">Shipped</Radio>
-                        <Radio value="Out for Delivery">Out for Delivery</Radio>
-                        <Radio value="Delivered">Delivered</Radio>
-                    </Radio.Group>
-
-                    {selectedStatus === 'Shipped' && (
-                        <div className='mt-5 space-y-3'>
-                            <label>Verify OTP:</label>
-                            <Input
-                                type="text"
-                                value={otpInput}
-                                onChange={(e) => setOtpInput(e.target.value)}
-                            />
-                        </div>
-                    )}
+        adminLoginData || adminLoginData?.length > 0 ? (
+            <div className="sm:p-4 sm:ml-72">
+                <div className="table-responsive overflow-hidden overflow-x-auto mt-4 ">
+                    <Tabs defaultActiveKey="New Order" onChange={handleTabChange}>
+                        <TabPane tab="New Order" key="New Order">
+                            <Table columns={columns} scroll={{ x: 1200, y: 600 }} dataSource={data} pagination={false} />
+                            <div className='flex justify-end mt-10'>
+                                <Pagination
+                                    current={pagination.current}
+                                    pageSize={pagination.pageSize}
+                                    total={totalCount}
+                                    onChange={handlePaginationChange}
+                                />
+                            </div>
+                        </TabPane>
+                        <TabPane tab="Dispatched" key="Dispatched">
+                            <Table columns={columns} scroll={{ x: 1200, y: 600 }} dataSource={data} pagination={false} />
+                            <div className='flex justify-end mt-10'>
+                                <Pagination
+                                    current={pagination.current}
+                                    pageSize={pagination.pageSize}
+                                    total={totalCount}
+                                    onChange={handlePaginationChange}
+                                />
+                            </div>
+                        </TabPane>
+                        <TabPane tab="Completed" key="Completed">
+                            <Table columns={columns} scroll={{ x: 1200, y: 600 }} dataSource={data} pagination={false} />
+                            <div className='flex justify-end mt-10'>
+                                <Pagination
+                                    current={pagination.current}
+                                    pageSize={pagination.pageSize}
+                                    total={totalCount}
+                                    onChange={handlePaginationChange}
+                                />
+                            </div>
+                        </TabPane>
+                        {/* Add TabPane for other tabs as needed */}
+                    </Tabs>
                 </div>
-            </Modal>
-        </div>
+
+                <Modal
+                    title="Update Order Status"
+                    visible={modalVisible}
+                    onOk={handleModalOk}
+                    onCancel={handleModalCancel}
+                    okButtonProps={{ style: { background: 'blue' } }}
+                    okText={"Update Status"}
+                >
+                    <div className='p-4 my-10'>
+                        <Radio.Group
+                            onChange={(e) => setSelectedStatus(e.target.value)}
+                            value={selectedStatus}
+                        >
+                            <Radio value="Confirmed">Confirmed</Radio>
+                            
+                            <Radio value="Out for Delivery">Out for Delivery</Radio>
+                            <Radio value="Delivered">Deliver</Radio>
+                        </Radio.Group>
+
+                        {selectedStatus === 'Delivered' && (
+                            <div className='mt-5 space-y-3'>
+                                <label>Verify OTP:</label>
+                                <Input
+                                    type="text"
+                                    value={otpInput}
+                                    onChange={(e) => setOtpInput(e.target.value)}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </Modal>
+            </div>
+        ) : ""
     );
 };
 

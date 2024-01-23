@@ -8,6 +8,7 @@ import {
   AiOutlineTag,
 } from "react-icons/ai";
 import { FaFileInvoice, FaHandRock, FaListOl } from "react-icons/fa";
+import { FcApproval } from "react-icons/fc";
 import { IoIosStats, IoIosDocument, IoIosChatbubbles } from "react-icons/io";
 
 export const vendorLinks = [
@@ -54,6 +55,12 @@ export const vendorLinks = [
         name: "Orders",
         icon: <AiOutlineShoppingCart />,
         to: "/Vendors/Orders",
+      },
+      {
+        id: 13,
+        name: "Verify Receiver",
+        icon: <FcApproval />,
+        to: "/Vendors/verifyReceiver",
       },
 
       {

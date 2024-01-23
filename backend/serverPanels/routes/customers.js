@@ -1557,7 +1557,7 @@ app.get('/usersList', async (req, res) => {
         WHERE LOWER(given_name) LIKE $1
           OR LOWER(family_name) LIKE $1
           OR LOWER(phone_number) LIKE $1
-          OR LOWER(email) LIKE $1
+          OR LOWER(ecdmail) LIKE $1cd
         ORDER BY given_name
         LIMIT $2 OFFSET $3;
       `;
