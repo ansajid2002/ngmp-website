@@ -49,6 +49,8 @@ const MainNav2Logged = () => {
     };
   }, []);
 
+
+
   const handleSearchInput = async (text: string) => {
     setSearchText(text);
     try {
@@ -121,7 +123,7 @@ const MainNav2Logged = () => {
               onChange={(e) => handleSearchInput(e.target.value)}
               // onFocus={() => setFocusInput(true)}
               onClick={() => setFocusInput(true)}
-              // onBlur={() => setFocusInput(false)}
+            // onBlur={() => setFocusInput(false)}
             />
             <button type="button" onClick={() => setSearchText("")}>
               <XMarkIcon className="w-5 h-5" />

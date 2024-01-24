@@ -149,7 +149,7 @@ export default function CartDropdown() {
       });
     }
 
-    return subtotal;
+    return subtotal.toFixed(2);
   };
 
   // console.log(cartItems, "CARTTTTTTT");

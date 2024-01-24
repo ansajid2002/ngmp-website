@@ -49,7 +49,7 @@ const Reviewcomponent = ({ product_id, showmorebtn = false, vendorID }) => {
             {
                 !showmorebtn && <div className='mb-4 space-y-4'>
                     <h1 className='text-base md:text-xl font-semibold mb-2'>Add your Valuable Review</h1>
-                    <StarRating selectedRating={0} ratingData={[]} item={{ vendor_id: vendorID, customer_id, product_uniqueid: 'vendor', label: null }} />
+                    <StarRating order_id={null} selectedRating={0} ratingData={[]} item={{ vendor_id: vendorID, customer_id, product_uniqueid: 'vendor', label: null }} />
                     <hr />
                 </div>
             }

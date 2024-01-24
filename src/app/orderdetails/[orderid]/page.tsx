@@ -11,8 +11,6 @@ import { useAppSelector } from "@/redux/store";
 
 const { Step } = Steps;
 
-
-
 const OrderDetails = () => {
   const params = useParams();
   const customerData = useAppSelector((state) => state.customerData);
@@ -25,57 +23,38 @@ const OrderDetails = () => {
 
   const data = [
     {
-      title: "Order Confirmed",
-      subtitle: "Thu, 3rd Nov",
-      content: "Your order has been placed",
+      title: "Ordered",
+      descriptions: [
+
+      ],
     },
     {
       title: "Shipped",
-      subtitle: "Thu, 4th Nov",
-      content: "Your order has been shipped",
+      descriptions: [
+
+      ],
     },
     {
-      title: "Out For Delivery",
-      subtitle: "Thu, 5th Nov",
-      content: "Your order is out for delivery",
+      title: "Out for Delivery",
+      descriptions: [
+
+      ],
     },
     {
       title: "Delivered",
-      subtitle: "Thu, 6th Nov",
-      content: "Your order has been delivered",
+      descriptions: [
+
+      ],
     },
   ];
 
+
+
   const onStepHover = (index: number) => {
-    console.log("onHover:", index);
     setCurrent(index);
   };
 
 
-  const priceDetailsData = [
-    {
-      id: 1,
-      title: "Price(1 item)",
-      amount: "$2,400",
-    },
-    {
-      id: 6,
-      title: "Shipping fee",
-      amount: "0",
-    },
-  ];
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
   const fetchOrderDetails = async () => {
     try {
 
@@ -119,7 +98,24 @@ const OrderDetails = () => {
     created_at = '',
     label = '',
     tentative_delivery_date = '',
+    ispickup,
+    seller_otp,
+    customer_otp
   } = orderData || {};
+
+  console.log(ispickup);
+
+  const filteredProgressData = ispickup
+    ? data
+      .filter(step => step.title !== 'Shipped' && step.title !== 'Out for Delivery')
+      .map(step => (step.title === 'Delivered' ? { ...step, title: 'Picked' } : step))
+    : data;
+
+  console.log(filteredProgressData);
+
+  const currentProgressIndex = filteredProgressData.findIndex((step) => step.title === order_status);
+
+  console.log(currentProgressIndex);
 
   const { vendorname = '' } = orderData?.vendor || {};
 
@@ -167,6 +163,14 @@ const OrderDetails = () => {
     }
   }, [tentative_delivery_date]);
 
+
+  const dateParts = tentative_delivery_date && tentative_delivery_date?.split(" ");
+  // Extract the month and day values
+  const month = dateParts[1];
+  const day = dateParts[2];
+
+  // Format the date as "Mon DD"
+  const formattedDate = `${month} ${day}`;
   return (
     !orderData ?
       <div className="w-full h-screen flex justify-center items-center">
@@ -178,15 +182,42 @@ const OrderDetails = () => {
         <div className="md:flex items-start justify-between bg-white mx-3 md:mx-10 border shadow-xl my-3 p-3 md:p-6">
           {/* 1 */}
           <div className=" md:w-[50%] space-y-1 md:pr-10 md:border-r-2 border-b-2 md:border-b-0 pb-5 md:pb-0 border-gray-300">
-            <h2 className="font-medium">Delivery Address</h2>
-            <h2 className="font-medium">{first_name} {last_name}</h2>
-            <p className="">
-              {street_address} {apartment} {selected_city},
-              {selected_state} {zip_code} {selected_country}
-            </p>
-            <h3 className="font-medium">
-              Phone number <span className="font-normal">{phone_number} </span>
-            </h3>
+            {
+              tentative_delivery_date &&
+                order_status != 'Ordered' || order_status != 'Shipped' ? <h1 className="text-sm font-semibold text-green-600 md:text-xl">{`${'Arriving on ' + formattedDate}`}</h1> : order_status
+            }
+            <div className={`border-t-4 border-b-4 p-4 border-gray-200 space-y-1 ${(order_status === 'Delivered' || order_status === 'Picked') && 'bg-green-700'}`}>
+              {
+                order_status === 'Delivered' || order_status === 'Picked' ?
+                  <>
+                    <h1 className="text-lg text-green-100 font-semibold tracking-widest">Order {order_status} successfully...</h1>
+
+                  </> : <>
+                    <h1 className="text-base font-semibold">
+                      OTP for {ispickup ? 'pickup' : 'delivery'}:
+                      <h1 className="text-lg font-semibold">{ispickup ? seller_otp : customer_otp}</h1>
+                    </h1>
+                    <h1>
+                      {ispickup
+                        ? 'Tell this PIN to the shop owner to confirm pickup'
+                        : 'Tell this PIN to the delivery agent to get the delivery'}
+                    </h1>
+                  </>
+              }
+            </div>
+            {
+              !ispickup && <>
+                <h2 className="font-medium">Delivery Address</h2>
+                <h2 className="font-medium">{first_name} {last_name}</h2>
+                <p className="">
+                  {street_address} {apartment} {selected_city},
+                  {selected_state} {zip_code} {selected_country}
+                </p>
+                <h3 className="font-medium">
+                  Phone number <span className="font-normal">{phone_number} </span>
+                </h3>
+              </>
+            }
           </div>
           {/* 2 */}
           <div className="md:w-[50%] md:space-y-5 md:pl-10 pt-5 md:pt-0">
@@ -275,12 +306,12 @@ const OrderDetails = () => {
           </div>
           <div className="w-full pt-14">
             <div>
-              <Steps current={currentStep}>
-                {data.map((item, index) => (
+              <Steps current={currentProgressIndex}>
+                {filteredProgressData.map((item, index) => (
                   <Step
                     key={index}
                     title={item.title}
-                    description={item.subtitle}
+                    description={''}
                     onMouseEnter={() => onStepHover(index)}
                     onMouseLeave={() => setCurrent(currentStep)}
                   />

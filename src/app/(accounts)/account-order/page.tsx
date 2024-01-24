@@ -107,23 +107,11 @@ const AccountOrder = () => {
       order_status,
       label,
       product_uniqueid,
+      ratings_and_reviews,
+      ispickup
     } = product;
 
-    const ratingData =
-      reviewItems &&
-      reviewItems.find((ratingItem: any) => {
-        // Convert the product_uniqueid to an integer for comparison
-        const itemProductUniqueId = parseInt(ratingItem.product_uniqueid, 10);
-
-        if (label && ratingItem.label === label) {
-          // Check if the label matches
-          return true;
-        } else if (itemProductUniqueId === product_uniqueid) {
-          // Check if the product_uniqueid matches
-          return true;
-        }
-        return false
-      });
+    console.log(product);
 
 
     return (
@@ -150,10 +138,13 @@ const AccountOrder = () => {
                 </h3>
 
                 <div className="md:flex gap-2 md:gap-4 items-center">
-                  <h1 className={`text-lg font-semibold ${order_status === "Delivered" && "text-green-700"}`}>{order_status}</h1>
+                  <h1 className={`text-sm font-semibold ${ispickup ? 'text-green-500' : 'text-orange-600'}`}>
+                    {(order_status !== 'Delivered' && order_status !== 'Picked') ? (ispickup ? 'Pickup' : 'will be deliver soon...') : ''}
+                  </h1>
+                  <h1 className={`text-lg font-semibold ${(order_status === "Delivered" || order_status === 'Picked') && "text-green-700"}`}>{(order_status === "Delivered" || order_status === 'Picked') && order_status}</h1>
                   {
-                    order_status === 'Delivered' && <div className="md:ml-4">
-                      <StarRating selectedRating={ratingData?.rating} ratingData={ratingData} item={product} />
+                    order_status === 'Delivered' && <div className="">
+                      <StarRating order_id={order_id} selectedRating={ratings_and_reviews?.[0]?.rating} ratingData={ratings_and_reviews} item={product} />
                     </div>
                   }
                 </div>

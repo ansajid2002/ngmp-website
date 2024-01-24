@@ -1,10 +1,7 @@
 "use client";
 
-import Label from "@/components/Label/Label";
 import React, { FC, useState } from "react";
-import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
-import Input from "@/shared/Input/Input";
 import Radio from "@/shared/Radio/Radio";
 import StripeCheckButton from "../Checkout";
 import { useAppSelector } from "@/redux/store";
@@ -23,13 +20,10 @@ const PaymentMethod: FC<Props> = ({
   onOpenActive,
   selectedAddress
 }) => {
-
-
   const [mothodActive, setMethodActive] = useState<
     "Stripe" | "Internet-banking" | "Wallet"
   >("Stripe");
-  const [selectedMethod, setSelected] = useState('')
-
+  const [selectedMethod, setSelected] = useState('Stripe')
 
   const { walletTotal } = useAppSelector((store) => store.wallet)
 

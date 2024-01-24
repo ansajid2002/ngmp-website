@@ -9,8 +9,6 @@ import { useAppSelector } from "@/redux/store";
 const CartDetails = () => {
   const { cartItems } = useAppSelector((store) => store.cart);
 
-  console.log(cartItems, "CARTDETAILS");
-
   return cartItems?.length === 0 ? (
     <div className="py-10 text-center">
       <h2 className="text-2xl text-gray-700 font-bold capitalize">
@@ -39,7 +37,7 @@ const CartDetails = () => {
           <CartProducts />
         </div>
         <div className="border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 my-10 lg:my-0 lg:mx-10 xl:mx-16 2xl:mx-20 flex-shrink-0"></div>
-        <FetchCartPrice />
+        <FetchCartPrice checkoutLink={false} />
       </div>
     </main>
   );

@@ -13,27 +13,71 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
     const { customerData } = useAppSelector((store) => store.customerData)
     const { walletTotal } = useAppSelector((store) => store.wallet)
     const [loading, setLoading] = useState(false)
-    const dispatch = useDispatch()
     const router = useRouter()
 
-    const calculateSubtotal = () => {
+    // const calculateSubtotal = () => {
+    //     let subtotal = 0;
+
+    //     if (true) {
+    //         cartItems.forEach((item: any) => {
+    //             subtotal += parseFloat(item.sellingprice) * item.added_quantity;
+    //         });
+    //     }
+
+    //     return subtotal;
+    // };
+
+    const calculatePRICE = () => {
+        return cartItems.map((item) => {
+            const price = item.sellingprice > 0 ? parseFloat(item.sellingprice) : parseFloat(item.mrp);
+            return price;
+        });
+    };
+
+
+    const calculateSubtotalAndShippingCost = () => {
         let subtotal = 0;
+        let totalShippingCost = 0;
 
         if (true) {
             cartItems.forEach((item: any) => {
                 subtotal += parseFloat(item.sellingprice) * item.added_quantity;
+
+                // Check if the selected option is 'pickup' before calculating shippingCost
+                if (item.selectedOption !== 'pickup') {
+                    totalShippingCost += parseFloat(item.shippingCost) || 0;
+                }
             });
         }
 
-        return subtotal;
+        return {
+            subtotal: subtotal.toFixed(2),
+            shippingCost: totalShippingCost.toFixed(2),
+        };
     };
+
+    // Example usage
+
+    const { subtotal, shippingCost } = calculateSubtotalAndShippingCost();
+
+    const calculateTotalCost = () => {
+
+        const totalCost = (parseFloat(subtotal) + parseFloat(shippingCost)).toFixed(2);
+
+        return totalCost;
+    };
+
+    // Example usage
+    const totalCost = calculateTotalCost();
+
 
     const products = cartItems.map((item, index) => ({
         product: index + 1,
         name: item.ad_title,
-        price: parseFloat(item.sellingprice),
+        price: calculatePRICE()[index], // Access the calculated price by index
         quantity: item.added_quantity,
-        image: item.images?.[0]
+        image: item.images?.[0],
+        shippingCost
     }));
 
 
@@ -50,6 +94,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
 
     const handleClick = async () => {
         setLoading(true)
+        localStorage.setItem('selectedPaymentMode', mothodActive_ACTIVE)
         if (mothodActive_ACTIVE === 'Wallet') {
             const response = await fetch(`/api/Customers/InsertOrders`, {
                 method: 'POST',
@@ -67,7 +112,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
             const responseData = await response.json();
             router.push('/thank-you', { scroll: false })
         } else if (mothodActive_ACTIVE === 'Stripe') {
-            console.log(mothodActive_ACTIVE);
+
 
             const stripe = await getStripePromise()
 
@@ -90,24 +135,13 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
 
     return (
         <div>
-            {/* {
-                mothodActive_ACTIVE  !== 'Wallet' calculateSubtotal() <= walletTotal : <ButtonPrimary
-                    className={`w-full max-w-[240px] ${loading && 'animate-pulse'}`}
-                    onClick={handleClick}
-                    disabled={loading}
-                >
-                    {loading ? 'Redirecting to checkout...' : 'Confirm order'}
-                </ButtonPrimary> : <ButtonPrimary className="w-full max-w-[240px] bg-red-500">{mothodActive_ACTIVE } Insufficient Balance....</ButtonPrimary>
-            } */}
-            {/* <button onClick={handleClick}>Checkout</button> */}
-            {/* {calculateSubtotal()} {walletTotal} */}
             {
-                mothodActive_ACTIVE !== 'Wallet' || walletTotal >= calculateSubtotal() ? <ButtonPrimary
+                mothodActive_ACTIVE !== 'Wallet' || parseFloat(walletTotal) >= totalCost ? <ButtonPrimary
                     className={`w-full max-w-[240px] ${loading && 'animate-pulse'}`}
                     onClick={handleClick}
                     disabled={loading}
                 >
-                    {loading ? 'Redirecting to checkout...' : 'Confirm order'}
+                    {loading ? 'Redirecting to checkout...' : `Pay ${totalCost || 0}`}
                 </ButtonPrimary> : <ButtonPrimary className="w-full max-w-[240px] bg-red-500">Insufficient Balance....</ButtonPrimary>
             }
         </div>

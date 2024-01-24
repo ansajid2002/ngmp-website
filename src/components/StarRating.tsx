@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, message } from 'antd';
 import { AdminUrl } from '@/app/layout';
 
-const StarRating = ({ enable = true, selectedRating, ratingData, item }) => {
+const StarRating = ({ enable = true, order_id, selectedRating, ratingData, item }) => {
     console.log(selectedRating);
 
     const [rating, setRating] = useState(selectedRating);
@@ -24,6 +24,7 @@ const StarRating = ({ enable = true, selectedRating, ratingData, item }) => {
                 product_uniqueid: product_uniqueid,
                 rating: newRating,
                 label: label,
+                order_id
             };
 
             // Send the POST request with the data

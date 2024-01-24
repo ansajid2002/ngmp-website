@@ -43,8 +43,31 @@ const SiteHeader = ({ session }: any) => {
 
   useEffect(() => {
     dispatch(updateCustomerData(updateCustomer));
+    getmgdistrict()
   }, [dispatch]);
 
+
+  const getmgdistrict = async () => {
+    if (updateCustomer?.customer_id === null || updateCustomer?.customer_id === undefined) {
+      // Handle the case when customerId is null or undefined, such as displaying an error message or taking appropriate action.
+      return;
+    }
+    try {
+      const response = await fetch(`${AdminUrl}/api/getmogadishudistrict?customer_id=${updateCustomer?.customer_id}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP errsor! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data[0]?.mogadishudistrict_customer) {
+        localStorage.setItem('selectedDistrict', data[0]?.mogadishudistrict_customer);
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
   return (
     <>
       {path !== "/auth/signIn" &&

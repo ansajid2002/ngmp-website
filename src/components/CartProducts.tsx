@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppSelector } from "@/redux/store";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import Prices from "./Prices";
 import Link from "next/link";
@@ -32,6 +32,9 @@ const CartProducts = ({ removeData = true }) => {
       added_quantity,
       prod_slug,
       uniquepid,
+      mogadishudistrict_ship_from,
+      shippingCost,
+      selectedOption
     } = item;
 
     const handleRemove = async (item: any) => {
@@ -169,12 +172,47 @@ const CartProducts = ({ removeData = true }) => {
     };
 
     const getvalueData = (i: number, type: string, data: any) => {
+      console.log(data);
+
       if (type === "inc") {
         handleIncrement(data);
       } else if (type === "dec") {
         handleDecrement(data);
       }
     };
+
+    const storedDistrict = localStorage.getItem('selectedDistrict');
+
+    const renderShippingAvailability = () => {
+      return (
+        <div>
+          {
+            selectedOption === 'pickup' ? <div className="flex justify-center">
+              <h1 className="text-red-600 font-semibold text-sm md:text-xl">Only Pickup Available</h1>
+            </div> :
+              mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
+                {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
+                <h1 className="text-green-600 font-semibold text-sm md:text-xl">Shipping Fee : ${shippingCost}, From {mogadishudistrict_ship_from} To {storedDistrict}</h1>
+              </div> : (
+                !mogadishudistrict_ship_from ? (
+                  <div className="flex justify-center">
+                    <h1 className="text-red-600 font-semibold text-sm md:text-xl">Only Pickup Available</h1>
+                  </div>
+                ) : (
+                  !storedDistrict ? (
+                    <div className="flex justify-center">
+                      <a className="text-blue-600 font-semibold text-sm md:text-xl" href="/select-district" target="_blank">Choose District</a>
+                    </div>
+                  ) : (
+                    <p>Both mogadishudistrict_ship_from and storedDistrict are not present</p>
+                  )
+                )
+              )
+          }
+
+        </div>
+      )
+    }
 
     return (
       <div
@@ -223,25 +261,10 @@ const CartProducts = ({ removeData = true }) => {
                   />
                 </div>
 
-                <div className="mt-3 flex justify-between gap-4 w-full sm:hidden relative">
-                  <select
-                    name="qty"
-                    id="qty"
-                    className="form-select text-sm rounded-md py-1 border-gray-200 dark:border-gray-700 relative z-10 dark:bg-gray-800 "
-                    value={added_quantity}
-                  >
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                  </select>
-                </div>
+
               </div>
 
-              <div className="hidden sm:block text-center relative">
+              <div className=" text-center relative">
                 <NcInputNumber
                   defaultValue={added_quantity}
                   className="relative z-10"
@@ -256,6 +279,7 @@ const CartProducts = ({ removeData = true }) => {
             </div>
           </div>
 
+          {renderShippingAvailability()}
           {removeData && (
             <div className="flex mt-auto pt-4 items-end justify-between text-sm">
               <div className="flex">

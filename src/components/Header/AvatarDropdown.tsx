@@ -18,6 +18,7 @@ import {
   Info,
   LogOut,
   MapPin,
+  MousePointerSquare,
   Star,
   Store,
   User,
@@ -56,47 +57,56 @@ export default function AvatarDropdown() {
     }
   }, [customerData, picture, google_id]);
 
+  const redirectToLogin = (path: string) => {
+    if (customerData?.customerData) {
+      return path
+    } else {
+      return '/auth/signIn'
+    }
+  }
   return (
     <div className="AvatarDropdown">
-      {customerData?.customerData ? (
-        <Popover className="relative">
-          {({ open, close }) => (
-            <>
-              <Popover.Button className=" bg-gray-100 rounded-full transition-all lg:px-4 lg:py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex  gap-2">
-                <Image
-                  src={profileImage}
-                  alt={given_name}
-                  width={30}
-                  height={30}
-                  className="rounded-full"
-                />
 
-                <div className="right-2tCoT hidden lg:flex justify-start flex-col">
-                  <div className="">
-                    <div className="hello-7Ci9B textColor-3r-He line-clamp-1">
-                      <p className="line-clamp-1">
-                        {given_name ? `${given_name}` : <Skeleton />}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="title-1fzdZ textColor-3r-He titleCls-2B1Yu">
-                    <p className=" line-clamp-1">Orders &amp; Account</p>
+      <Popover className="relative">
+        {({ open, close }) => (
+          <>
+            <Popover.Button className=" bg-gray-100 rounded-full transition-all lg:px-4 lg:py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex  gap-2">
+              <Image
+                src={profileImage}
+                alt={given_name}
+                width={30}
+                height={30}
+                className="rounded-full"
+              />
+
+              <div className="right-2tCoT hidden lg:flex justify-start flex-col">
+                <div className="">
+                  <div className="hello-7Ci9B textColor-3r-He line-clamp-1">
+                    <p className="line-clamp-1">
+                      {given_name ? `${given_name}` : <Skeleton />}
+                    </p>
                   </div>
                 </div>
-              </Popover.Button>
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-200"
-                enterFrom="opacity-0 trangray-y-1"
-                enterTo="opacity-100 trangray-y-0"
-                leave="transition ease-in duration-150"
-                leaveFrom="opacity-100 trangray-y-0"
-                leaveTo="opacity-0 trangray-y-1"
-              >
-                <Popover.Panel className="absolute z-10 w-screen max-w-[260px] px-4 mt-3.5 -right-10 sm:right-0 sm:px-0">
-                  {customerData?.customerData && (
-                    <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
-                      <div className="relative grid grid-cols-1 gap-5 bg-white dark:bg-neutral-800 py-7 px-6">
+                <div className="title-1fzdZ textColor-3r-He titleCls-2B1Yu">
+                  <p className=" line-clamp-1">Orders &amp; Account</p>
+                </div>
+              </div>
+            </Popover.Button>
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-200"
+              enterFrom="opacity-0 trangray-y-1"
+              enterTo="opacity-100 trangray-y-0"
+              leave="transition ease-in duration-150"
+              leaveFrom="opacity-100 trangray-y-0"
+              leaveTo="opacity-0 trangray-y-1"
+            >
+              <Popover.Panel className="absolute z-10 w-screen max-w-[260px] px-4 mt-3.5 -right-10 sm:right-0 sm:px-0">
+
+                <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div className="relative grid grid-cols-1 gap-5 bg-white dark:bg-neutral-800 py-7 px-6">
+                    {
+                      customerData?.customerData && <>
                         <div className="flex items-center space-x-3">
                           <Avatar imgUrl={profileImage} sizeClass="w-12 h-12" />
 
@@ -109,179 +119,186 @@ export default function AvatarDropdown() {
                         </div>
 
                         <div className="w-full border-b gap-5 border-neutral-200 dark:border-neutral-700" />
+                      </>
+                    }
 
-                        {/* ------------------ 1 --------------------- */}
-                        <Link
-                          href={"/account"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <User size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">
-                              {"My Account"}
-                            </p>
-                          </div>
-                        </Link>
 
-                        <Link
-                          href={"/wallet"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <Wallet size={20} className="text-green-700" />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-bold text-green-700">{"Wallet"} {formatCurrency(walletTotal)}</p>
-                          </div>
-                        </Link>
-                        {/* ------------------ 2 --------------------- */}
-                        <Link
-                          href={"/account-order"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <Container size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">{"My Order"}</p>
-                          </div>
-                        </Link>
-
-                        <Link
-                          href={"/my-reviews"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <Star size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">
-                              {"My Reviews"}
-                            </p>
-                          </div>
-                        </Link>
-
-                        <Link
-                          href={"/followed-shops"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <Store size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">
-                              {"Followed Shops"}
-                            </p>
-                          </div>
-                        </Link>
-
-                        <Link
-                          href={"/browsing-history"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <History size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">
-                              {"Browsing History"}
-                            </p>
-                          </div>
-                        </Link>
-
-                        <Link
-                          href={"/your-address"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <MapPin size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">
-                              {"Addresses"}
-                            </p>
-                          </div>
-                        </Link>
-
-                        <Link
-                          href={"/notifications"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <BellDot size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">
-                              {"Notifications"}
-                            </p>
-                          </div>
-                        </Link>
-
-                        {/* ------------------ 2 --------------------- */}
-                        <Link
-                          href={"/account-savelists"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <Heart size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">{"Wishlist"}</p>
-                          </div>
-                        </Link>
-
-                        {/* ------------------ 2 --------------------- */}
-                        <Link
-                          href={"/SupportCenter?querys=BuyingOnNile"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <Info size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">{"Help"}</p>
-                          </div>
-                        </Link>
-
-                        {/* ------------------ 2 --------------------- */}
-                        <Link
-                          href={"/#"}
-                          className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                          onClick={() => close()}
-                        >
-                          <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                            <LogOut size={20} />
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-sm font-medium ">
-                              <Link href={"/api/auth/signout"}>
-                                {"Log out"}
-                              </Link>
-                            </p>
-                          </div>
-                        </Link>
+                    {/* ------------------ 1 --------------------- */}
+                    <Link
+                      href={redirectToLogin("/account")}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        <User size={20} />
                       </div>
-                    </div>
-                  )}
-                </Popover.Panel>
-              </Transition>
-            </>
-          )}
-        </Popover>
-      ) : (
-        <>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium ">
+                          {"My Account"}
+                        </p>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href={redirectToLogin("/wallet")}
+
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        <Wallet size={20} className="text-green-700" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-bold text-green-700">{"Wallet"} {formatCurrency(walletTotal)}</p>
+                      </div>
+                    </Link>
+                    {/* ------------------ 2 --------------------- */}
+                    <Link
+                      href={redirectToLogin("/account-order")}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        <Container size={20} />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium ">{"My Order"}</p>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href={(redirectToLogin("/my-reviews"))}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        <Star size={20} />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium ">
+                          {"My Reviews"}
+                        </p>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href={(redirectToLogin("/followed-shops"))}
+
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        <Store size={20} />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium ">
+                          {"Followed Shops"}
+                        </p>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href={"/select-district"}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        {/* <History size={20} /> */}
+                        <MousePointerSquare size={20} />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium ">
+                          {"Select District"}
+                        </p>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href={(redirectToLogin("/your-address"))}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        <MapPin size={20} />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium ">
+                          {"Addresses"}
+                        </p>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href={(redirectToLogin("/notifications"))}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        <BellDot size={20} />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium ">
+                          {"Notifications"}
+                        </p>
+                      </div>
+                    </Link>
+
+                    {/* ------------------ 2 --------------------- */}
+                    <Link
+                      href={(redirectToLogin("/account-savelists"))}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        <Heart size={20} />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium ">{"Wishlist"}</p>
+                      </div>
+                    </Link>
+
+                    {/* ------------------ 2 --------------------- */}
+                    <Link
+                      href={"/SupportCenter?querys=BuyingOnNile"}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                        <Info size={20} />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium ">{"Help"}</p>
+                      </div>
+                    </Link>
+
+                    {/* ------------------ 2 --------------------- */}
+                    {
+                      customerData?.customerData && <Link
+                        href={"/api/auth/signout"}
+                        className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                        onClick={() => close()}
+                      >
+                        <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                          <LogOut size={20} />
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-sm font-medium ">
+                            <Link href={"/api/auth/signout"}>
+                              {"Log out"}
+                            </Link>
+                          </p>
+                        </div>
+                      </Link>
+                    }
+                  </div>
+                </div>
+
+              </Popover.Panel>
+            </Transition>
+          </>
+        )}
+      </Popover>
+      {/* <>
           <Link href={"/auth/signIn"}>
             <div className="rounded-full mr-1 lg:px-4 lg:py-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transform hover:scale-105 focus:outline-none flex items-center gap-2 cursor-pointer transition-transform duration-100">
               <svg
@@ -311,7 +328,7 @@ export default function AvatarDropdown() {
             </div>
           </Link>
         </>
-      )}
+      )} */}
     </div>
   );
 }
