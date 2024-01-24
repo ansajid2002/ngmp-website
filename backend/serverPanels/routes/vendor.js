@@ -1420,9 +1420,10 @@ app.post("/approve-product", async (req, res) => {
 
 async function fetchVendorInfo(pool, vendorId) {
   const vendorInfo = await pool.query(
-    "SELECT id, vendorname, brand_logo, brand_name, registration_date, country_code, mobile_number, vendor_profile_picture_url, followers, following  FROM vendors WHERE id = $1",
+    "SELECT id, vendorname, brand_logo, brand_name, registration_date, country_code,company_district, mobile_number, vendor_profile_picture_url, followers, following  FROM vendors WHERE id = $1",
     [vendorId]
   );
+  console.log(vendorInfo.rows[0],"FETCHED");
   return vendorInfo.rows[0];
 }
 

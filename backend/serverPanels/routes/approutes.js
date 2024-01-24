@@ -5,6 +5,7 @@ const pool = require('../config')
 const app = express();
 const cors = require('cors');
 const multer = require('multer');
+const exceljs = require('exceljs');
 
 app.use(express.json())
 app.use(cors())
@@ -283,6 +284,120 @@ app.get("/translations/:language", (req, res) => {
     }
 })
 
+
+app.post("/writeTranslations", async (req, res) => {
+    try {
+      const translations = req.body;
+  
+      // Assuming req.body is an object containing language as a key and translation as a value
+      console.log(req.body, "body coming from panel");
+  
+      // Write translations to files
+      await writeTranslationsToFiles(translations);
+  
+      res.status(200).json({ success: true, message: 'Translations have been saved.' });
+    } catch (error) {
+      console.error('Error writing translation files:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  });
+  
+const writeTranslationsToFiles = async (translations) => {
+    await Promise.all(Object.keys(translations).map(async (language) => {
+      try {
+        const jsonFolderPath = path.join(__dirname, '..', 'JSON');
+        const fileName = `${language.toLowerCase()}.json`;
+        const filePath = path.join(jsonFolderPath, fileName);
+        console.log(filePath, "fp filepath");
+  
+        // Write to file, replacing old content
+        await new Promise((resolve, reject) => {
+          fs.writeFile(filePath, JSON.stringify(translations[language], null, 2), (err) => {
+            if (err) reject(err);
+            else {
+              console.log('File written successfully:', filePath);
+              resolve();
+            }
+          });
+        });
+      } catch (writeError) {
+        console.error(`Error writing translation file for ${language}:`, writeError.message);
+      }
+    }));
+  };
+
+
+
+  ////////////////////READ TRANSLATIONS//////////////////////////
+  // Function to read translation files and return Excel data
+  const readTranslationsAndGenerateExcel = () => {
+    const jsonFolderPath = path.join(__dirname, '..', 'JSON');
+    const languages = [ 'so', 'hi', 'sw','am', 'ar', 'fr']; // Add more languages as needed
+    const translations = {};
+  
+    try {
+      languages.forEach((language) => {
+        const fileName = `${language.toLowerCase()}.json`;
+        const filePath = path.join(jsonFolderPath, fileName);
+  
+        // Read translation file synchronously
+        const fileData = fs.readFileSync(filePath, 'utf-8');
+        translations[language] = JSON.parse(fileData);
+      });
+  
+      // Generate Excel data
+      const workbook = new exceljs.Workbook();
+      const worksheet = workbook.addWorksheet('Translations');
+  
+      // Add headers
+      worksheet.addRow(['English', ...languages]);
+  
+      // Get all keys available in any language (assuming all languages have the same keys)
+      const allKeys = Object.keys(translations[languages[0]]);
+  
+      // Add data rows
+      allKeys.forEach((key) => {
+        const rowData = [key];
+        languages.forEach((language) => {
+          rowData.push(translations[language][key] || ''); // Handle missing translations
+        });
+        worksheet.addRow(rowData);
+      });
+  
+      return workbook;
+    } catch (readError) {
+      console.error('Error reading translation files:', readError.message);
+      throw readError;
+    }
+  };
+  
+  
+  app.get("/getTranslationsAsExcel", (req, res) => {
+    try {
+      const workbook = readTranslationsAndGenerateExcel();
+  
+      // Send Excel file as response
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=translations.xlsx');
+  
+      workbook.xlsx.write(res).then(() => {
+        res.end();
+      });
+  
+    } catch (error) {
+      console.error('Error generating Excel file:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
+  ////////////////////READ TRANSLATIONS//////////////////////////
+  
+  
+
+
+
+
+
 function findShippingRate(shippingRates, origin, destination) {
     const rateObject = shippingRates.find(rate => rate.shippedFrom === origin);
 
@@ -294,7 +409,7 @@ function findShippingRate(shippingRates, origin, destination) {
     return undefined;
 }
 
-module.exports = app   
+module.exports = app
 
 
 

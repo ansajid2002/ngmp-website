@@ -2,21 +2,10 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import LikeButton from "@/components/LikeButton";
-import { StarIcon } from "@heroicons/react/24/solid";
 import BagIcon from "@/components/BagIcon";
 import NcInputNumber from "@/components/NcInputNumber";
-import { PRODUCTS } from "@/data/data";
-import {
-  NoSymbolIcon,
-  ClockIcon,
-  SparklesIcon,
-} from "@heroicons/react/24/outline";
-import IconDiscount from "@/components/IconDiscount";
 import Prices from "@/components/Prices";
 import toast from "react-hot-toast";
-import detail1JPG from "@/images/products/detail1.jpg";
-import detail2JPG from "@/images/products/detail2.jpg";
-import detail3JPG from "@/images/products/detail3.jpg";
 import NotifyAddTocart from "./NotifyAddTocart";
 // import Image from "next/image";
 import { Image, Rate } from "antd";
@@ -44,6 +33,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   // const LIST_IMAGES_DEMO = [detail1JPG, detail2JPG, detail3JPG];
 
   const [inFavorite, setinFavorite] = useState(false);
+  const [shippingRate, setShippingrate] = useState(0);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
   useEffect(() => {
@@ -68,6 +58,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     slug_subcat,
     slug_cat,
     additionaldescription,
+    mogadishudistrict_ship_from
   } = item;
 
 
@@ -297,19 +288,31 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   };
 
   const notifyAddTocart = async () => {
+    const { category, subcategory, uniquepid, vendorid, id } = singleData;
+    const shipping = mogadishudistrict_ship_from && storedDistrict ? 'shipping' : 'pickup'
     const updatedSingleData = {
       ...singleData,
       added_quantity: qualitySelected, // This adds the productToAdd object as a property of singleData
       mrp: mrpData, // Set the mrp value here
       sellingprice: sellingPriceData, // Set the sellingprice value here
       label: selectLabel, // Set the sellingprice value here
+      shippingCost: shippingRate,
+      selectedOption: shipping
     };
 
-    const { category, subcategory, uniquepid, vendorid } = singleData;
     const replacecategory = category.replace(/[^\w\s]/g, "").replace(/\s/g, "");
     const replacesubcategory = subcategory
       .replace(/[^\w\s]/g, "")
       .replace(/\s/g, "");
+
+    const existingSelectedOptionsString = localStorage.getItem('selectedOptions');
+    const existingSelectedOptions = existingSelectedOptionsString ? JSON.parse(existingSelectedOptionsString) : {};
+
+    // Update the selectedOption for the current item in the local storage
+    existingSelectedOptions[uniquepid] = shipping;
+    localStorage.setItem('selectedOptions', JSON.stringify(existingSelectedOptions));
+
+
 
     if (customerId) {
       try {
@@ -337,7 +340,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const responseData = await response.json();
+        // const responseData = await response.json();
         dispatch(addItem(updatedSingleData));
         setisUniquepidMatched(true);
       } catch (error) {
@@ -411,6 +414,61 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     ));
   };
 
+  const storedDistrict = localStorage.getItem('selectedDistrict');
+
+  const renderShippingAvailability = () => {
+    return (
+      <div>
+        {
+          mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
+            {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
+            <h1 className="text-green-600 font-semibold">Shipping Fee : ${shippingRate}, From {mogadishudistrict_ship_from} To {storedDistrict}</h1>
+          </div> : (
+            !mogadishudistrict_ship_from ? (
+              <div className="flex justify-center">
+                <h1 className="text-red-600 font-semibold">Only Pickup Available</h1>
+              </div>
+            ) : (
+              !storedDistrict ? (
+                <div className="flex justify-center">
+                  <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">Choose District</a>
+                </div>
+              ) : (
+                <p>Both mogadishudistrict_ship_from and storedDistrict are not present</p>
+              )
+            )
+          )
+        }
+
+      </div>
+    )
+  }
+
+  const renderCost = async () => {
+    try {
+      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${mogadishudistrict_ship_from}&destination=${storedDistrict}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.rate === 0) {
+          setShippingrate(0)
+        }
+        else {
+          setShippingrate(data.rate)
+        }
+      }
+      else {
+        console.log("fetching failed ");
+      }
+    } catch (error) {
+      console.log(error, "ERROR FETCHING RATES");
+    }
+    // return <h1>Hello</h1>
+  }
+
+  useEffect(() => {
+    mogadishudistrict_ship_from && storedDistrict && renderCost()
+  }, [])
+
   const renderSectionContent = () => {
     return (
       <div className="space-y-5">
@@ -423,6 +481,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
               {ad_title}
             </Link>
           </h2>
+
 
           <div className="flex items-center mt-1 space-x-4 sm:space-x-5">
             {/* <div className="flex text-xl font-semibold">$112.00</div> */}
@@ -464,6 +523,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
         {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
         {isvariant === "Variant" && <div className="">{renderVariants()}</div>}
+
+        {renderShippingAvailability()}
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
         {isUniquepidMatched ? (

@@ -27,6 +27,21 @@ const CheckoutPage = () => {
     cartItems && cartItems?.length === 0 && router.push('/')
   }, [cartItems])
 
+  const checkoutItems = localStorage.getItem('selectedOptions');
+
+  let shippingIds = [];
+
+  // Parse the JSON string
+  const selectedOptions = JSON.parse(checkoutItems);
+
+  // Check if the selected option is "pickup" and store the item ID
+  for (const itemId in selectedOptions) {
+    if (selectedOptions[itemId] === 'shipping') {
+      shippingIds.push(parseInt(itemId));
+    }
+  }
+
+
   const handleScrollToEl = (id: string) => {
     const element = document.getElementById(id);
     setTimeout(() => {
@@ -57,20 +72,22 @@ const CheckoutPage = () => {
         </div>
         {
           customerData?.customerData && <>
-            <div id="ShippingAddress" className="scroll-mt-24">
-              <ShippingAddress
-                isActive={tabActive === "ShippingAddress"}
-                onOpenActive={() => {
-                  setTabActive("ShippingAddress");
-                  handleScrollToEl("ShippingAddress");
-                }}
-                onCloseActive={() => {
-                  setTabActive("PaymentMethod");
-                  handleScrollToEl("PaymentMethod");
-                }}
-                onChangeAddress={handleChangeAddress}
-              />
-            </div>
+            {
+              shippingIds?.length > 0 && <div id="ShippingAddress" className="scroll-mt-24">
+                <ShippingAddress
+                  isActive={tabActive === "ShippingAddress"}
+                  onOpenActive={() => {
+                    setTabActive("ShippingAddress");
+                    handleScrollToEl("ShippingAddress");
+                  }}
+                  onCloseActive={() => {
+                    setTabActive("PaymentMethod");
+                    handleScrollToEl("PaymentMethod");
+                  }}
+                  onChangeAddress={handleChangeAddress}
+                />
+              </div>
+            }
 
             <div id="PaymentMethod" className="scroll-mt-24">
               <PaymentMethod
@@ -81,7 +98,12 @@ const CheckoutPage = () => {
                     setTabActive("PaymentMethod");
                     handleScrollToEl("PaymentMethod");
                   } else {
-                    alert('No Address Selected')
+                    if (shippingIds.length > 0) {
+                      alert('No Address Selected')
+                    } else {
+                      setTabActive("PaymentMethod");
+                      handleScrollToEl("PaymentMethod");
+                    }
                   }
                 }}
                 onCloseActive={() => setTabActive("PaymentMethod")}
@@ -92,7 +114,6 @@ const CheckoutPage = () => {
       </div>
     );
   };
-
 
 
   return (

@@ -14,6 +14,7 @@ import { FiEdit3 } from "react-icons/fi";
 import Cookies from "js-cookie";
 import { FaDesktop, FaHandPaper, FaHandRock, FaMobile, FaTruckLoading, FaUserCheck } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
+import { IoLanguage } from "react-icons/io5";
 
 export const AdminUrl = "http://localhost:3001";
 
@@ -174,7 +175,19 @@ export const links = [
       },
 
     ]
-  }
+  },
+  {
+    title: 'Upload Languages Files',
+    links: [
+      {
+        id: 26,
+        name: "Languages Files",
+        icon: <IoLanguage />,
+        to: "/Admin/Languages",
+      },
+
+    ]
+  },
 
 ];
 

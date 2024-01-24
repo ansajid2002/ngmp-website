@@ -55,19 +55,40 @@ const NavigationItem: FC<NavigationItemProps> = ({
     });
   };
 
+  const storedDistrict = localStorage.getItem('selectedDistrict') || '';
+
   useEffect(() => {
     const fetchCart = async (customerId: any) => {
       try {
         if (!customerId) return;
         const response = await fetch(`/api/cart/${customerId}`, {
-          method: "PUT", // Change the request method to PUT
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           next: { revalidate: 3 },
         });
         const data = await response.json();
-        dispatch(addCarts(data?.cartData));
+
+        const updatedCartData = await Promise.all(
+          data?.cartData.map(async (item: any) => {
+            let shippingCost = await renderCost(item.mogadishudistrict_ship_from, storedDistrict);
+            const selectedOption = item.mogadishudistrict_ship_from ? 'shipping' : 'pickup';
+
+            // Retrieve existing selectedOptions from localStorage
+            const existingSelectedOptionsString = localStorage.getItem('selectedOptions');
+            const existingSelectedOptions = existingSelectedOptionsString ? JSON.parse(existingSelectedOptionsString) : {};
+
+            // Update the selectedOption for the current item in the local storage
+            existingSelectedOptions[item.uniquepid] = selectedOption;
+            localStorage.setItem('selectedOptions', JSON.stringify(existingSelectedOptions));
+
+            return { ...item, shippingCost, selectedOption };
+          })
+        );
+
+
+        dispatch(addCarts(updatedCartData));
       } catch (error) {
         console.error("Error fetching cart data:", error);
       }
@@ -75,6 +96,30 @@ const NavigationItem: FC<NavigationItemProps> = ({
 
     fetchCart(customerId);
   }, [customerId, dispatch]);
+
+  const renderCost = async (mogadishudistrict_ship_from: string, storedDistrict: string) => {
+    try {
+      if (!mogadishudistrict_ship_from) return
+      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${mogadishudistrict_ship_from}&destination=${storedDistrict}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.rate === 0) {
+          return 0
+        }
+        else {
+          // setShippingrate(data.rate)
+          return data.rate
+
+        }
+      }
+      else {
+        console.log("fetching failed ");
+      }
+    } catch (error) {
+      console.log(error, "ERROR FETCHING RATES");
+    }
+    return 0
+  }
 
   useEffect(() => {
     const fetchWishlist = async (customerId: any) => {
@@ -113,9 +158,8 @@ const NavigationItem: FC<NavigationItemProps> = ({
                 <div>
                   <div
                     key={999}
-                    className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${
-                      categoryTitle === "Featured Category" && "bg-[#00000010]"
-                    }`}
+                    className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === "Featured Category" && "bg-[#00000010]"
+                      }`}
                     onMouseEnter={() => {
                       setHoveredItem(featuredData);
                       setCategoryTitle("Featured Category");
@@ -136,9 +180,8 @@ const NavigationItem: FC<NavigationItemProps> = ({
                   {menu.children?.map((item, index) => (
                     <div
                       key={index}
-                      className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${
-                        categoryTitle === item.category_name && "bg-[#00000010]"
-                      }`}
+                      className={`flex items-center justify-between  py-2 rounded-md cursor-pointer px-4 w-full ${categoryTitle === item.category_name && "bg-[#00000010]"
+                        }`}
                       onMouseEnter={() => {
                         setHoveredItem(item.subcategories);
                         setCategoryTitle(item.category_name);
@@ -176,14 +219,13 @@ const NavigationItem: FC<NavigationItemProps> = ({
                       return (
                         <div className="mx-4 w-[140px] mb-4 ">
                           <Link
-                            href={`/category/${
-                              categoryTitle &&
+                            href={`/category/${categoryTitle &&
                               categoryTitle
                                 ?.replace(/[^\w\s]/g, "")
                                 .replace(/\s/g, "")
-                            }/${singlesubcat.subcategory_name
-                              .replace(/[^\w\s]/g, "")
-                              .replace(/\s/g, "")}`}
+                              }/${singlesubcat.subcategory_name
+                                .replace(/[^\w\s]/g, "")
+                                .replace(/\s/g, "")}`}
                             target="_blank"
                           >
                             <div className="h-32 w-32">
@@ -345,11 +387,10 @@ const NavigationItem: FC<NavigationItemProps> = ({
     return (
       <div className="h-20 flex-shrink-0 group flex items-center">
         <Link
-          className={`relative inline-flex justify-center  items-center group text-sm lg:text-[15px] font-medium text-gray-700 dark:text-gray-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-gray-900 transition-colors duration-300 ease-in-out hover:bg-gray-100  ${
-            menuCurrentHovers[0] == item.id &&
+          className={`relative inline-flex justify-center  items-center group text-sm lg:text-[15px] font-medium text-gray-700 dark:text-gray-300 py-2.5 px-4 xl:px-5 rounded-full hover:text-gray-900 transition-colors duration-300 ease-in-out hover:bg-gray-100  ${menuCurrentHovers[0] == item.id &&
             item.type &&
             "bg-gray-100 dark:bg-gray-800 dark:text-gray-200"
-          } `}
+            } `}
           href={{
             pathname: item.href || undefined,
           }}
@@ -361,14 +402,13 @@ const NavigationItem: FC<NavigationItemProps> = ({
           {subcatname && item.slug === "categories"
             ? subcatname
             : category && item.slug === "categories"
-            ? category
-            : item.name}
+              ? category
+              : item.name}
 
           {item.type && (
             <ChevronDownIcon
-              className={`ml-1 -mr-1 h-4 w-4 transition-all  ${
-                menuCurrentHovers[0] == item.id && "rotate-180 text-gray-700"
-              }`}
+              className={`ml-1 -mr-1 h-4 w-4 transition-all  ${menuCurrentHovers[0] == item.id && "rotate-180 text-gray-700"
+                }`}
               aria-hidden="true"
             />
           )}

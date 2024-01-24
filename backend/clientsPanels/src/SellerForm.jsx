@@ -11,6 +11,35 @@ const SellerForm = ({ onModal }) => {
     const [loading, setLoading] = useState(false);
     const [selectedKey, setSelectedKey] = useState(null);
 
+    const [showDistrictSelect, setShowDistrictSelect] = useState(false);
+    const cities = [
+        "WARTA NABADA",
+        "KAARAN",
+        "WADAJIR",
+        "YAAQSHID",
+        "ABDIAZIZ",
+        "KAXDA",
+        "HELIWAA",
+        "DAYNILE",
+        "SHIBIS",
+        "HOLWADAG",
+        "BOONDHERE",
+        "XAMAR WEYNE",
+        "XAMAR JAJAB",
+        "WAABERI",
+        "DHARKENLEY",
+        "SHANGANI",
+        "AFGOOYE",
+        "DARUSALAM",
+        "GUBUDLEY",
+        "HODAN",
+    ];
+    const handleCountryChange = (value) => {
+        // Update state based on the selected country value
+        console.log(value,"value");
+        setShowDistrictSelect(value);
+    };
+
     const handleNext = async () => {
         try {
             await form.validateFields();
@@ -367,6 +396,7 @@ const SellerForm = ({ onModal }) => {
     const CompanyDetailsForm = () => {
 
         const onFinish = async (values) => {
+            console.log(values,"company sajid values");
             setLoading(true)
 
             try {
@@ -507,10 +537,28 @@ const SellerForm = ({ onModal }) => {
                         <Form.Item
                             label="Country"
                             name="company_country"
+
                             rules={[{ required: true, message: "Please enter country" }]}
                         >
-                            <Input className="border border-gray-300 rounded-md" />
+                            <Input className="border border-gray-300 rounded-md"   onBlur={(e) => {
+                                const value = e.target.value
+                                setShowDistrictSelect(value.toLowerCase())
+                            }} />
                         </Form.Item>
+                        {showDistrictSelect === "somalia" && (
+                            <Form.Item
+                                label="Mogadishu District"
+                                name="company_district"
+                                rules={[{ required: true, message: "Please enter district" }]}
+                            >
+                                <Select placeholder="Select Ship From Location" showSearch>
+                                    {cities.map((city) => (
+                                        <Select.Option key={city} value={city}>
+                                            {city}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>)}
 
                         <Form.Item
                             label="State"

@@ -30,9 +30,6 @@ function SignIn({ showImage = true }) {
   const customerData = useAppSelector((state) => state.customerData);
   const cartItems = useAppSelector((state) => state.cart.cartItems);
 
-
-  const router = useRouter();
-
   const updateCartData = async (customerId: number) => {
     try {
       for (const cartItem of cartItems) {
@@ -102,6 +99,35 @@ function SignIn({ showImage = true }) {
       cartData.forEach((item: any) => {
         dispatch(addItem(item));
       });
+
+      const storedDistrict = localStorage.getItem('selectedDistrict');
+
+      // Check if storedDistrict is not null or undefined before using it
+      if (storedDistrict) {
+        console.log('Selected District from localStorage:', storedDistrict);
+        // Use the storedDistrict as needed
+        if (storedDistrict.trim() !== '') {
+          const response = await fetch(`/api/Customers/DistrictSelect`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              customer_id: customerId,
+              district: storedDistrict,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          localStorage.setItem('selectedDistrict', storedDistrict);
+
+        }
+      } else {
+        console.log('No district selected in localStorage');
+      }
       // Dispatch an action to update the cart items in the Redux store
     } catch (error) {
       console.error("Error updating cart:", error);

@@ -20,6 +20,22 @@ const ThankYou = () => {
   const [orderData, setOrderData] = useState(null);
   const id = customerData?.customer_id || null
 
+  const checkoutItems = localStorage.getItem('selectedOptions');
+  const selectedPaymentMode = localStorage.getItem('selectedPaymentMode');
+
+  let pickupItemIds = [];
+
+  // Parse the JSON string
+  const selectedOptions = JSON.parse(checkoutItems);
+
+  // Check if the selected option is "pickup" and store the item ID
+  for (const itemId in selectedOptions) {
+    if (selectedOptions[itemId] === 'pickup') {
+      pickupItemIds.push(parseInt(itemId));
+    }
+  }
+
+
   const makePayment = async () => {
     try {
       setSendedResponse(false)
@@ -39,19 +55,24 @@ const ThankYou = () => {
       const responseData = await response.json();
       setOrderData(cartItems || [])
       dispatch(emptyCart());
-
+      localStorage.removeItem('selectedOptions')
+      localStorage.removeItem('selectedPaymentMode')
     } catch (error) {
       console.log(error);
-
     }
   }
+
+  const date = new Date();
+  const order_date = date.toISOString();
 
   const checkoutData = [
     {
       orders: cartItems,
       shipping_address: defaultAddress,
       customerData: customerData,
-      paymentIntent: [],
+      paymentIntent: [{ id: 'website' }],
+      checkoutItems: pickupItemIds,
+      order_date,
       selectedPaymentMode
     }
   ]
@@ -107,13 +128,17 @@ const ThankYou = () => {
 
   const adjustedLength = orderData && orderData.length - 1;
   const totalSellingPrice = orderData && orderData.reduce(
-    (total, item) => total + parseFloat(item.sellingprice),
+    (total, item) => total + (parseFloat(item.sellingprice) * item.added_quantity),
+    0
+  );
+  const totoalShipping = orderData && orderData.reduce(
+    (total, item) => total + (parseFloat(item.shippingCost) || 0),
     0
   );
 
   const subtotal = totalSellingPrice && totalSellingPrice.toFixed(2);
 
-  const total = parseFloat(subtotal) + parseFloat(tax);
+  const total = parseFloat(subtotal) + parseFloat(totoalShipping);
 
   return (
     orderData ? <div className="py-10 px-5 md:px-20">
@@ -160,7 +185,7 @@ const ThankYou = () => {
           <div className="flex items-center justify-end md:justify-normal gap-5 text-gray-700 font-medium">
             <div className="text-right space-y-1">
               <h2>Sub-total</h2>
-              <h2>+ Tax</h2>
+              <h2>Shipping Cost</h2>
               <h2 className="font-bold text-black">Total</h2>
             </div>
             <div className="text-right space-y-1">
@@ -170,7 +195,7 @@ const ThankYou = () => {
               </h2>
               <h3>
                 <span>$</span>
-                {tax}
+                {totoalShipping}
               </h3>
               <h4 className="font-bold text-black">
                 <span>$</span>
@@ -207,7 +232,7 @@ const ThankYou = () => {
               </div>
               <div>
                 <h2 className="text-gray-700 font-medium md:text-lg">
-                  ${item.sellingprice}
+                  ${item.sellingprice} x {item.added_quantity} = ${item.sellingprice * item.added_quantity}
                 </h2>
               </div>
             </div>

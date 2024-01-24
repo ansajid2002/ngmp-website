@@ -333,5 +333,57 @@
   "Home": "Nyumbani",
   "Categories": "Jamii",
   "Cart": "Gari",
-  "fetching location data": "Inapata data ya eneo"
+  "fetching location data": "Inapata data ya eneo",
+  "Raise Ticket": "Fungua tiketi",
+  "Inbox": "Kasha la barua pepe",
+  "Select Mogadishu District": "Chagua Wilaya ya Mogadishu",
+
+  "Select Language": "Chagua Lugha",
+  "View Raised Ticket": "Tazama tiketi iliyofunguliwa",
+  "Search Ticket by ID:": "Tafuta tiketi kwa ID",
+  "Enter Ticket ID": "Ingiza ID ya tiketi",
+  "Raise a New Ticket": "Fungua tiketi mpya",
+  "Recent Ticket's": "Tiketi za Hivi Karibuni",
+  "No Ticket found": "Hakuna tiketi iliyopatikana",
+  "Ticket Id:": "ID ya Tiketi:",
+  "Body ": "Mwili ",
+  "Date ": "Tarehe ",
+  "Reply ": "Jibu ",
+  "Mogadishu Districts": "Wilaya za Mogadishu",
+  "NGMP ID :": "Kitambulisho cha NGMP :",
+
+  "Message Seller": "Ujumbe kwa Muuzaji",
+  "No Product Found...": "Hakuna Bidhaa Iliyopatikana...",
+
+  "Close": "Funga",
+
+  "Price Low to High": "Bei Chini hadi Juu",
+  "Price High to Low": "Bei Juu hadi Chini",
+  "Hi Welcome Back ! 👋": "Habari, Karibu Tena ! 👋",
+  "Hello again you have been missed!": "Halo tena, umekosa!",
+  "Email address": "Anwani ya Barua pepe",
+  "Password": "Nenosiri",
+  "Forgot Passowrd ?": "Umesahau Nenosiri?",
+  "Or Login with": "Au Ingia na",
+    "Register": "Jiandikishe",
+    "Don't have an account ?": "Huna akaunti?",
+    "Create Account": "Tengeneza Akaunti",
+    "Discover great deals and shop with ease!": "Gundua ofa nzuri na nunua kwa urahisi!",
+    "First Name": "Jina la Kwanza",
+    "Last Name": "Jina la Mwisho",
+   
+    "Mobile Number": "Nambari ya Simu",
+    "Confirm Password": "Thibitisha Nenosiri",
+    "I agree to the terms and conditions": "Nakubaliana na sheria na masharti",
+  
+    "You don't have any item eligible for shipping": "Huna bidhaa yoyote inayostahili kwa usafirishaji",
+    "No Address Selected": "Hakuna Anwani Iliyochaguliwa",
+    "Proceed to checkout": "Nenda kwenye malipo",
+    "Loading...": "Inapakia...",
+    "List Price :": "Bei ya Orodha:",
+    "Pickup Info": "Maelezo ya Kukusanywa",
+    "Items For Shipping": "Vitu kwa Usafirishaji",
+    "Insufficient Balance": "Salio Halitoshi",
+    "Sign Up" : "Jisajili"
+
 }

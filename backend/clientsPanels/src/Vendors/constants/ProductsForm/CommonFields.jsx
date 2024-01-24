@@ -87,21 +87,21 @@ export const commonFormFields = [
     label: "Shipping Information",
     name: "productInformation",
     children: [
-      {
-        label: "Shipping District (if the shipping city is MOGADISHU)",
-        name: "mogadishudistrict_ship_from",
-        rules: [
-          {  message: "Please input the Product Ship From location" },
-        ],
-        component:  <Select placeholder="Select Ship From Location" showSearch>
-       {cities.map(city => (
-            <Select.Option key={city} value={city}>
-              {city}
-            </Select.Option>
-          ))}
-      </Select>,
-        notes: "Example: Warehouse A",
-      },
+      // {
+      //   label: "Shipping District (if the shipping city is MOGADISHU)",
+      //   name: "mogadishudistrict_ship_from",
+      //   rules: [
+      //     {  message: "Please input the Product Ship From location" },
+      //   ],
+      //   component:  <Select placeholder="Select Ship From Location" showSearch>
+      //  {cities.map(city => (
+      //       <Select.Option key={city} value={city}>
+      //         {city}
+      //       </Select.Option>
+      //     ))}
+      // </Select>,
+      //   notes: "Example: Warehouse A",
+      // },
       {
         label: "Product Ship From",
         name: "product_ship_from",

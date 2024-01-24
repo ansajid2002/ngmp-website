@@ -1,21 +1,54 @@
 "use client";
 import { useAppSelector } from "@/redux/store";
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
-import React from "react";
-
-const FetchCartPrice = ({ showTitle = true, showCheckout = true }) => {
+import React, { useState } from "react";
+import { formatCurrency } from "./AvailableToken";
+import { useRouter } from "next/navigation";
+import { ShippingModal } from '../components/Modals/ShippingModal'
+const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true }) => {
   const { cartItems } = useAppSelector((store) => store.cart);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const navigation = useRouter()
 
-  const calculateSubtotal = () => {
+  const calculateSubtotalAndShippingCost = () => {
     let subtotal = 0;
+    let totalShippingCost = 0;
 
     if (true) {
       cartItems.forEach((item: any) => {
         subtotal += parseFloat(item.sellingprice) * item.added_quantity;
+
+        // Check if the selected option is 'pickup' before calculating shippingCost
+        if (item.selectedOption !== 'pickup') {
+          totalShippingCost += parseFloat(item.shippingCost) || 0;
+        }
       });
     }
 
-    return subtotal.toFixed(2);
+    return {
+      subtotal: subtotal.toFixed(2),
+      shippingCost: totalShippingCost.toFixed(2),
+    };
+  };
+
+
+  // Example usage
+  const { subtotal, shippingCost } = calculateSubtotalAndShippingCost();
+
+
+  const calculateTotalCost = () => {
+    const { subtotal, shippingCost } = calculateSubtotalAndShippingCost();
+
+    const totalCost = (parseFloat(subtotal) + parseFloat(shippingCost)).toFixed(2);
+
+    return totalCost;
+  };
+
+  // Example usage
+  const totalCost = calculateTotalCost();
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
 
   return (
@@ -26,30 +59,34 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true }) => {
           <div className="flex justify-between pb-4">
             <span>Subtotal</span>
             <span className="font-semibold text-gray-900 dark:text-gray-200">
-              ${calculateSubtotal()}
+              {/* ${calculateSubtotal()} */}
+              {formatCurrency(subtotal)}
             </span>
           </div>
           <div className="flex justify-between py-4">
             <span>Shpping estimate</span>
             <span className="font-semibold text-gray-900 dark:text-gray-200">
-              0
+              {formatCurrency(shippingCost)}
             </span>
           </div>
-          <div className="flex justify-between py-4">
+          {/* <div className="flex justify-between py-4">
             <span>Tax estimate</span>
             <span className="font-semibold text-gray-900 dark:text-gray-200">
               0
             </span>
-          </div>
+          </div> */}
           <div className="flex justify-between font-semibold text-gray-900 dark:text-gray-200 text-base pt-4">
             <span>Order total</span>
-            <span>${calculateSubtotal()}</span>
+            {/* <span>${calculateSubtotal()}</span> */}
+            {formatCurrency(totalCost)}
           </div>
         </div>
         {showCheckout && (
           <>
-            <ButtonPrimary href="/checkout" className="mt-8 w-full">
-              Checkout
+            <ButtonPrimary onClick={() => {
+              checkoutLink ? navigation.push('/checkout') : setIsModalVisible(true)
+            }} className="mt-8 w-full">
+              Continue to Pay {formatCurrency(totalCost)}
             </ButtonPrimary>
             <div className="mt-5 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center">
               <p className="block relative pl-5">
@@ -105,8 +142,11 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true }) => {
             </div>
           </>
         )}
+        <ShippingModal visible={isModalVisible} onCancel={handleCancel} cartItems={cartItems} />
+
+
       </div>
-    </div>
+    </div >
   );
 };
 

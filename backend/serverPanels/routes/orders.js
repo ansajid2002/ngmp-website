@@ -174,7 +174,7 @@ app.post("/Insertorders", async (req, res) => {
     const customerEmail = req.body[0]?.customerData?.email
     const orders = req.body[0]?.orders
     const { id } = req.body[0]?.paymentIntent
-    const { selectedPaymentMode, checkoutItems, order_date } = req.body[0] || 'Stripe'
+    const { selectedPaymentMode, checkoutItems = [], order_date } = req.body[0] || 'Stripe'
     // const { street, city, country, region, postalCode, name, given_name, family_name, phone_number, email } = req.body[0]?.shipping_address
     const { given_name_address = '', family_name_address = '', apt_address = '', subregion_address = '', city_address = '', country_address = '', region_address = '', zip_address = '', phone_address = '', email_address = '' } = req.body[0]?.shipping_address || []
 
@@ -188,8 +188,7 @@ app.post("/Insertorders", async (req, res) => {
       const category = order.category.trim()
       const subcategory = order.subcategory.trim()
 
-      const pickup = checkoutItems.includes(order.uniquepid)
-
+      const pickup = checkoutItems.includes(parseInt(order.uniquepid))
       if (vendorIdToOtpMap.has(order.vendorid)) {
         otp = vendorIdToOtpMap.get(order.vendorid);
       } else {
@@ -988,7 +987,6 @@ function padZero(number) {
 app.post("/manageStatus", async (req, res) => {
   try {
     const { order_id, status, vendorId, orderid } = req.body;
-    console.log(req.body);
     const date = new Date(); // Replace this with your date object
     const formattedDate = `${date.getFullYear()}-${padZero(
       date.getMonth() + 1
@@ -1106,7 +1104,6 @@ app.get('/getOrderDetails', async (req, res) => {
           res.status(404).json({ error: 'Vendor not found' });
         }
       } else {
-        console.log('Customer not found');
         res.status(404).json({ error: 'Customer not found' });
       }
     } else {
@@ -1188,7 +1185,6 @@ app.post('/updateOrderStatus', async (req, res) => {
   try {
     const { orderId, newStatus, otp } = req.body;
 
-    console.log(req.body);
     // Verify OTP only for "Delivered" or "Shipped" status
     if (!otp) {
       res.status(400).json({ error: 'OTP is required for "Delivered" or "Shipped" status' });

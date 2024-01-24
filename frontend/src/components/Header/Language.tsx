@@ -39,11 +39,11 @@ export default function AvatarDropdown() {
             <Popover.Button
               className={`w-9 h-9 sm:w-14 sm:h-10 rounded-md  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex items-center justify-center`}
             >
-              <img
+              {/* <img
                 className="md:w-6 md:h-6"
                 src={languageImg.src}
                 alt="language"
-              />
+              /> */}
               <span className="ml-1 font-medium uppercase">{languageCode}</span>
               {/* <span>{lcode}</span> */}
             </Popover.Button>
@@ -66,12 +66,12 @@ export default function AvatarDropdown() {
                         onClick={() => ChangeLanguageIcon(item)}
                       >
                         <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                          <img
+                          {/* <img
                             width="24"
                             height="24"
                             src={item.img.src}
                             alt="selected language"
-                          />
+                          /> */}
                           <div className="ml-2 lg:ml-4">
                             <p className="text-sm font-medium capitalize">
                               {item.label}

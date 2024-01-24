@@ -62,6 +62,7 @@ import BulkApprove from "./Admin/pages/Products/BulkApprove";
 import Wallet from "./Admin/pages/Customers/Wallet";
 import CustomerClaimsAdimin from "./Admin/pages/Vendors/CustomerClaimsAdimin";
 import Delivery from "./Admin/pages/Delivey";
+import Languages from "./Admin/pages/Languages"
 import VerifyReceiver from "./Vendors/components/VerifyReceiver";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
@@ -168,7 +169,8 @@ function AdminRoutes() {
       "/Admin/wallets",
       "/Admin/Products/BulkApprove",
       "/Admin/Customers/Wallet",
-      "/Admin/OrderDelivery"
+      "/Admin/OrderDelivery",
+      "/Admin/Languages"
     ];
     const checkSuperAdmin = SuperAdmin.includes(path);
     setsuperadmin(checkSuperAdmin);
@@ -298,6 +300,10 @@ function AdminRoutes() {
             <Route
               path="/Admin/OrderDelivery"
               element={<Delivery conversionRates={conversionRates} adminLoginData={adminLoginData} />}
+            />
+            <Route
+              path="/Admin/Languages"
+              element={<Languages conversionRates={conversionRates} adminLoginData={adminLoginData} />}
             />
             <Route
               path="/Admin/Orders/all"

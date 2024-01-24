@@ -638,7 +638,7 @@ const generateRandomNumber = () => {
 app.post("/customerLoginEmail", async (req, res) => {
   const { email, password } = req.body;
   const loggedid = generateRandomNumber();
-
+  console.log(password,"pass");
   try {
     if (!password) {
       // If the password is empty, send a response
@@ -1557,7 +1557,7 @@ app.get('/usersList', async (req, res) => {
         WHERE LOWER(given_name) LIKE $1
           OR LOWER(family_name) LIKE $1
           OR LOWER(phone_number) LIKE $1
-          OR LOWER(ecdmail) LIKE $1
+          OR LOWER(email) LIKE $1
         ORDER BY given_name
         LIMIT $2 OFFSET $3;
       `;

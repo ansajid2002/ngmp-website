@@ -12,7 +12,7 @@ app.use((req, res, next) => {
 
 async function fetchVendorInfo(pool, vendorId) {
     const vendorInfo = await pool.query(
-        "SELECT id, vendorname, brand_logo, brand_name, registration_date, country_code, mobile_number, vendor_profile_picture_url, followers, following,company_name,company_city,company_state,company_country,company_zip_code,shipping_address  FROM vendors WHERE id = $1",
+        "SELECT id, vendorname, brand_logo, brand_name, registration_date, country_code, mobile_number,company_district, vendor_profile_picture_url, followers, following,company_name,company_city,company_state,company_country,company_zip_code,shipping_address  FROM vendors WHERE id = $1",
         [vendorId]
     );
     return vendorInfo.rows[0];
