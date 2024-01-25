@@ -41,12 +41,30 @@ const SupportCenterDropdown = () => {
                     </Link>
 
                     <Link
+                      href={"/company/privacy-policy"}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <p className="text-sm font-medium">
+                        {"Privacy Policy"}
+                      </p>
+                    </Link>
+                    <Link
                       href={"/company/terms-conditions"}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
                     >
                       <p className="text-sm font-medium">
                         {"Terms & Conditions"}
+                      </p>
+                    </Link>
+                    <Link
+                      href={"/company/refund-policy"}
+                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      onClick={() => close()}
+                    >
+                      <p className="text-sm font-medium">
+                        {"Refund Policy"}
                       </p>
                     </Link>
 

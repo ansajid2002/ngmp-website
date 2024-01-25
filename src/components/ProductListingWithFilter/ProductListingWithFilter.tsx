@@ -78,14 +78,15 @@ const ProductListingWithFilter = ({ searchTerm }: any) => {
     return (
         <div className="flex px-2 md:px-10">
             {/* Left Side (Sticky) */}
-            <div className={`sticky left-0  h-1/2 bg-gray-200 w-1/4 ${visible ? 'top-36' : "top-0"} transition-all duration-150 ease-in-out`}>
+            {/* <div className={`sticky left-0  h-1/2 bg-gray-200 w-1/4 ${visible ? 'top-36' : "top-0"} transition-all duration-150 ease-in-out`}>
                 {/* Your left side content goes here */}
-                <p>{searchTerm}</p>
-            </div>
+            {/* <p>{searchTerm}</p> */}
+            {/* </div> */}
+            {/* } */}
 
             {/* Right Side (Scrollable) */}
             <div className="flex-1 overflow-y-auto scrollbar-hidden">
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-10 mt-8 lg:mt-10">
                     {getSearchedProducts?.length !== 0 ?
                         getSearchedProducts.map((item, index) => <ProductCard data={item} />)
                         :
@@ -106,7 +107,7 @@ const ProductListingWithFilter = ({ searchTerm }: any) => {
                     }
                 </div>
             </div>
-        </div>
+        </div >
 
     )
 }
