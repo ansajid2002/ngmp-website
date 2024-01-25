@@ -14,10 +14,11 @@ const nextConfig = {
   env: {
     BASEURL: process.env.BASEURL,
     HOMEURL: process.env.HOMEURL,
-    SELLERURL: process.env.SELLERURL
+    SELLERURL: process.env.SELLERURL,
+    PRODUCTIMAGEURL: process.env.PRODUCTIMAGEURL,
   },
   images: {
-    domains: ['localhost', 'https://nileadmin.websitetest.info', 'https://admin.nilegmp.com', '192.168.1.7'], // Add the IP address to the list of allowed domains
+    domains: ['localhost', 'https://ngmp-products.s3.us-east-005.backblazeb2.com', 'https://admin.nilegmp.com', '192.168.1.7'], // Add the IP address to the list of allowed domains
     remotePatterns: [
       {
         protocol: "https",
@@ -34,7 +35,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "placekitten.com",
+        hostname: "ngmp-products.s3.us-east-005.backblazeb2.com",
         port: "",
         pathname: "/**",
       },

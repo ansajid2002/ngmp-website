@@ -29,7 +29,7 @@ import ModalViewAllReviews from "./ModalViewAllReviews";
 import NotifyAddTocart from "@/components/NotifyAddTocart";
 // import Image from "next/image";
 import AccordionInfo from "@/components/AccordionInfo";
-import { AdminUrl, HomeUrl } from "../layout";
+import { AdminUrl, HomeUrl, ProductImageUrl } from "../layout";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
 import { addItem } from "@/redux/slices/cartSlice";
@@ -128,9 +128,10 @@ const ProductDetailPage = ({ searchParams }) => {
 
   const cartItems = useAppSelector((state) => state.cart.cartItems);
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
-  const dispatch = useDispatch();
+  const [shippingRate, setShippingrate] = useState(0);
 
-  // console.log(responseData, "FALAMAAAA");
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handlePutRequest = async () => {
@@ -149,12 +150,13 @@ const ProductDetailPage = ({ searchParams }) => {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const responseData = await response.json();
+        const responseDataProduct = await response.json();
 
-        setResponseData(responseData?.product);
-        console.log(responseData?.product, "RRRRRRRRRRRRRRRRRRRRR");
+        setResponseData(responseDataProduct?.product);
 
-        setSellerId(responseData.product.vendorid);
+        responseDataProduct?.product?.mogadishudistrict_ship_from && renderCost(responseDataProduct?.product?.mogadishudistrict_ship_from)
+
+        setSellerId(responseDataProduct.product.vendorid);
         // console.log(sellerId, "SELLLERDATATATATATATAT");
       } catch (error) {
         console.error("Error processing request:", error);
@@ -196,10 +198,6 @@ const ProductDetailPage = ({ searchParams }) => {
     sellerId && fetchData();
     // If you want to perform some action when singleVendors changes, do it here
   }, [sellerId]);
-
-  console.log("responseData");
-  console.log(responseData);
-  console.log("responseData");
 
 
   useEffect(() => {
@@ -528,6 +526,60 @@ const ProductDetailPage = ({ searchParams }) => {
     ));
   };
 
+  const storedDistrict = localStorage.getItem('selectedDistrict');
+
+  const renderShippingAvailability = () => {
+    return (
+      <div>
+        {
+          responseData?.mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
+            {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
+            <h1 className="text-green-600 font-semibold">Shipping Fee : ${shippingRate}, From {responseData?.mogadishudistrict_ship_from} To {storedDistrict}</h1>
+          </div> : (
+            !responseData?.mogadishudistrict_ship_from ? (
+              <div className="flex justify-center">
+                <h1 className="text-red-600 font-semibold">Only Pickup Available</h1>
+              </div>
+            ) : (
+              !storedDistrict ? (
+                <div className="flex justify-center">
+                  <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">Choose District</a>
+                </div>
+              ) : (
+                <p>Both mogadishudistrict_ship_from and storedDistrict are not present</p>
+              )
+            )
+          )
+        }
+
+      </div>
+    )
+  }
+
+  const renderCost = async (origin) => {
+    try {
+      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${origin}&destination=${storedDistrict}`)
+      if (response.ok) {
+        const data = await response.json()
+        console.log(data, 'data');
+
+        if (data.rate === 0) {
+          setShippingrate(0)
+        }
+        else {
+          setShippingrate(data.rate)
+        }
+      }
+      else {
+        console.log("fetching failed ");
+      }
+    } catch (error) {
+      console.log(error, "ERROR FETCHING RATES");
+    }
+    // return <h1>Hello</h1>
+  }
+
+
   const renderSectionContent = () => {
     if (!responseData) {
       return (
@@ -607,7 +659,7 @@ const ProductDetailPage = ({ searchParams }) => {
         )}
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
-
+        {renderShippingAvailability()}
         {isUniquepidMatched ? (
           <div className="flex space-x-3.5">
             {/* <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
@@ -1008,12 +1060,16 @@ const ProductDetailPage = ({ searchParams }) => {
   };
 
   const notifyAddTocart = async () => {
+    const shipping = responseData?.mogadishudistrict_ship_from && storedDistrict ? 'shipping' : 'pickup'
+
     const updatedSingleData = {
       ...responseData,
       added_quantity: qualitySelected, // This adds the productToAdd object as a property of singleData
       mrp: mrpData || responseData?.mrp,
       sellingprice: sellingPriceData || responseData?.sellingprice,
       label: selectLabel, // Set the sellingprice value here
+      shippingCost: shippingRate,
+      selectedOption: shipping
     };
 
     const replacecategory = responseData?.category
@@ -1062,7 +1118,7 @@ const ProductDetailPage = ({ searchParams }) => {
     toast.custom(
       (t) => (
         <NotifyAddTocart
-          productImage={`${AdminUrl}/uploads/UploadedProductsFromVendors/${responseData?.images?.[0]}`}
+          productImage={`${ProductImageUrl}/${responseData?.images?.[0]}`}
           qualitySelected={qualitySelected}
           show={t.visible}
           sizeSelected={sizeSelected}
@@ -1107,7 +1163,7 @@ const ProductDetailPage = ({ searchParams }) => {
                 <div className="w-full h-full p-1 md:aspect-w-1 md:aspect-h-1">
                   <img
                     sizes=""
-                    src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                    src={`${ProductImageUrl}/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
                     alt={`Product Detail ${index + 1}`}
@@ -1124,7 +1180,7 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              src={`${selectedImage ? `${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage}` : (responseData?.images?.[0] ? `${AdminUrl}/uploads/UploadedProductsFromVendors/${responseData.images[0]}` : "/placeholder.png")}`}
+              src={`${selectedImage ? `${ProductImageUrl}/${selectedImage}` : (responseData?.images?.[0] ? `${ProductImageUrl}/${responseData.images[0]}` : "/placeholder.png")}`}
               className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
               alt="Main Product Image"
               loading="lazy"

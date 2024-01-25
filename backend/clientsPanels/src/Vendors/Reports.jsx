@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DatePicker, Button, Typography, Table, Card, Row, Col } from "antd";
-import { AdminUrl } from "../Admin/constant";
+import { AdminUrl, ProductImageUrl } from "../Admin/constant";
 const { Title, Text } = Typography;
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -356,7 +356,7 @@ const Reports = ({ vendorDatastate }) => {
                                 cover={
                                   <img
                                     alt={product.ad_title}
-                                    src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${product.images?.[0]}`}
+                                    src={`${ProductImageUrl}/${product.images?.[0]}`}
                                   />
                                 }
                               >

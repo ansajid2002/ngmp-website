@@ -8,7 +8,7 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const slug = require("slug");
-
+const b2 = require("./b2");
 
 // const fs = require("fs/promises");
 const fs = require("fs");
@@ -24,6 +24,11 @@ app.use((req, res, next) => {
   req.pool = pool;
   next();
 });
+
+// Set the bucket name and folder where the banners are stored
+const bucketName = "NGMP-PRODUCTS";
+const folderName = "products";
+
 
 const generateRandomNumber = () => {
   const characters =
@@ -1071,19 +1076,9 @@ app.post("/deleteProducts", async (req, res) => {
     // Unlink images from folder if they exist
     imageFilenames.length > 0 &&
       imageFilenames.forEach((filenamesArray) => {
-        filenamesArray.forEach((filename) => {
-          const imagePath = path.join(
-            __dirname,
-            "..",
-            "uploads",
-            "UploadedProductsFromVendors",
-            filename
-          );
+        filenamesArray.forEach(async (filename) => {
+          await b2.deleteFile(bucketName, null, filename)
 
-          // Check if the image file exists before unlinking
-          if (fs.existsSync(imagePath)) {
-            fs.unlinkSync(imagePath); // Unlink the image file
-          }
         });
       });
 
@@ -1096,17 +1091,20 @@ app.post("/deleteProducts", async (req, res) => {
 
 
 // Multer configuration for file upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/UploadedProductsFromVendors/"); // Destination folder for uploaded files
-  },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now(); // Get the current timestamp
-    const extension = path.extname(file.originalname); // Get the file extension
-    const filename = `${timestamp}-${file.originalname}`; // Create the new filename with timestamp
-    cb(null, filename);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads/UploadedProductsFromVendors/"); // Destination folder for uploaded files
+//   },
+//   filename: (req, file, cb) => {
+//     const timestamp = Date.now(); // Get the current timestamp
+//     const filename = `${timestamp}-${file.originalname}`; // Create the new filename with timestamp
+//     cb(null, filename);
+//   },
+// });
+
+
+
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage });
 
@@ -1126,30 +1124,38 @@ app.post(
         id = parseInt(concatenatedString);
       }
 
-      const newImages = req.files.map((file) => `${file.filename}`);
+      // Validate if files are present
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ error: "No files were uploaded." });
+      }
+
+      // const newImages = req.files.map((file) => `${file.filename}`);
 
       let existingImages = [];
 
-      // Define a common function for updating images
-      const query = `
-      SELECT images
-      FROM products
-      WHERE id = $1;
-    `;
-
-      const result = await pool.query(query, [id]);
-
-      if (result.rows[0]) {
-        existingImages = result.rows[0].images || [];
+      try {
+        // Upload images to the specified bucket and folder
+        const uploadResult = await b2.uploadMultipleFiles(
+          bucketName,
+          folderName,
+          req.files
+        );
+        existingImages = uploadResult.uploadedFileUrls;
+      } catch (uploadError) {
+        // Handle the error if there's an issue uploading the file
+        console.error("Error uploading files:", uploadError);
+        await client.query("ROLLBACK");
+        return res
+          .status(500)
+          .json({ error: "Internal Server Error", details: uploadError.message });
       }
 
-      existingImages = [...existingImages, ...newImages];
 
       const updateQuery = `
-      UPDATE products
-      SET images = $1
-      WHERE id = $2;
-    `;
+        UPDATE products
+        SET images = $1
+        WHERE id = $2;
+      `;
 
       const updateValues = [
         existingImages, // Convert images array to a PostgreSQL array representation
@@ -1158,7 +1164,7 @@ app.post(
 
       await pool.query(updateQuery, updateValues);
 
-      // Send response with updated images
+      //   // Send response with updated images
       res.status(200).json({
         status: 200,
         message: "Product images updated successfully",
@@ -1176,54 +1182,46 @@ app.post(
 
 app.post("/removeImage", async (req, res) => {
   try {
-    const { productId, imageIndex } = req.body;
-    const query = `
-        SELECT images
-        FROM products
-        WHERE id = $1;
-      `;
+    const { productId, image, imageIndex } = req.body;
+    console.log(image)
 
-    const result = await pool.query(query, [productId]);
-
-    if (result.rows.length > 0) {
-      const images = result.rows[0]["images"];
-      const removedImage = images.splice(imageIndex, 1)[0]; // Remove and get the image at the specified index
-
-      console.log("Removed Image:", removedImage); // Debugging
-
-      const updateQuery = `
-          UPDATE products
-          SET images = $1
-          WHERE id = $2;
+    const deleteFile = await b2.deleteFile(bucketName, null, image)
+    if (deleteFile.success) {
+      const query = `
+          SELECT images
+          FROM products
+          WHERE id = $1;
         `;
 
-      await pool.query(updateQuery, [images, productId]);
+      const result = await pool.query(query, [productId]);
 
-      // Unlink the image file from the folder
-      const imagePath = path.join(
-        __dirname,
-        "..",
-        "uploads",
-        "UploadedProductsFromVendors",
-        removedImage
-      );
+      if (result.rows.length > 0) {
+        const images = result.rows[0]["images"];
+        images.splice(imageIndex, 1)[0]; // Remove and get the image at the specified index
 
-      console.log("Image Path:", imagePath); // Debugging
+        const updateQuery = `
+            UPDATE products
+            SET images = $1
+            WHERE id = $2;
+          `;
 
-      fs.unlinkSync(imagePath);
+        await pool.query(updateQuery, [images, productId]);
 
-      // Send response with updated images
-      res.status(200).json({
-        status: 200,
-        message: "Image removed successfully",
-        updatedImages: images,
-      });
-    } else {
-      res.status(400).json({
-        status: 400,
-        message: "Product not found",
-      });
+
+        // Send response with updated images
+        res.status(200).json({
+          status: 200,
+          message: "Image removed successfully",
+          updatedImages: images,
+        });
+      } else {
+        res.status(400).json({
+          status: 400,
+          message: "Product not found",
+        });
+      }
     }
+
   } catch (error) {
     console.error("Error removing image:", error);
     res.status(500).json({
@@ -1423,7 +1421,7 @@ async function fetchVendorInfo(pool, vendorId) {
     "SELECT id, vendorname, brand_logo, brand_name, registration_date, country_code,company_district, mobile_number, vendor_profile_picture_url, followers, following  FROM vendors WHERE id = $1",
     [vendorId]
   );
-  console.log(vendorInfo.rows[0],"FETCHED");
+  console.log(vendorInfo.rows[0], "FETCHED");
   return vendorInfo.rows[0];
 }
 

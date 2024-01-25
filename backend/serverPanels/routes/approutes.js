@@ -40,9 +40,6 @@ const SubcatAll = async (res) => {
         const sortedCategories = categoriesWithSubcategories.sort(
             (a, b) => a.category_id - b.category_id
         );
-        // console.log(sortedCategories);
-
-        // const responseData = 
 
         return sortedCategories
     } catch (error) {
@@ -81,7 +78,6 @@ app.get("/getAllCategoriesData", async (req, res) => {
     try {
         const subcatData = await SubcatAll(res)
         let response = subcatData
-        console.log(response, "Res");
         res.status(200).json(response)
 
     } catch (error) {
@@ -147,7 +143,6 @@ app.get("/getServicesData", async (req, res) => {
 app.get("/getCatgeory", async (req, res) => {
     try {
         const productCatgeories = await fetchCatDataOFType('Products')
-        // console.log(productCatgeories);
         res.status(200).json(productCatgeories);
     } catch (error) {
         console.log(error);
@@ -158,7 +153,6 @@ app.get("/getCatgeory", async (req, res) => {
 app.get("/getAllCategory", async (req, res) => {
     try {
         const productCatgeories = await fetchCatDataOFType()
-        // console.log(productCatgeories);
         res.status(200).json(productCatgeories);
     } catch (error) {
         console.log(error);
@@ -184,7 +178,6 @@ app.get("/getFeaturedSubcategories", async (req, res) => {
 });
 app.get("/getSubcategoriesByCatId", async (req, res) => {
     const { catId } = req.query;
-    // console.log(catId);
     try {
         const query = "SELECT * FROM subcategories WHERE parent_category_id = $1";
 
@@ -217,7 +210,6 @@ app.get("/getmogadishudistrict", async (req, res) => {
 
         // Use catId as a parameter in the query
         const result = await pool.query(query, [customer_id]);
-        console.log(result, "result");
 
         const districtData = result.rows;
         res.status(200).json(districtData);
@@ -229,7 +221,6 @@ app.get("/getmogadishudistrict", async (req, res) => {
 
 app.post("/getmogadishudistrict", async (req, res) => {
     const { customer_id, district } = req.body;
-    console.log(req.body);
 
     try {
         const query = "UPDATE customers SET mogadishudistrict_customer = $2 WHERE customer_id = $1 RETURNING *";
@@ -238,7 +229,6 @@ app.post("/getmogadishudistrict", async (req, res) => {
         // Check if the update was successful
         if (result.rows.length > 0) {
             const updatedCustomer = result.rows[0];
-            console.log(updatedCustomer.mogadishudistrict_customer, "updatedCustomer");
             res.status(200).json({ message: "District updated successfully", customer: updatedCustomer.mogadishudistrict_customer });
         } else {
             res.status(404).json({ error: "Customer not found" });
@@ -290,7 +280,6 @@ app.post("/writeTranslations", async (req, res) => {
       const translations = req.body;
   
       // Assuming req.body is an object containing language as a key and translation as a value
-      console.log(req.body, "body coming from panel");
   
       // Write translations to files
       await writeTranslationsToFiles(translations);
@@ -308,7 +297,6 @@ const writeTranslationsToFiles = async (translations) => {
         const jsonFolderPath = path.join(__dirname, '..', 'JSON');
         const fileName = `${language.toLowerCase()}.json`;
         const filePath = path.join(jsonFolderPath, fileName);
-        console.log(filePath, "fp filepath");
   
         // Write to file, replacing old content
         await new Promise((resolve, reject) => {
@@ -392,8 +380,58 @@ const writeTranslationsToFiles = async (translations) => {
   
   ////////////////////READ TRANSLATIONS//////////////////////////
   
-  
+  app.post('/storeNotification', async (req, res) => {
+    const { customerId, notification_type, message, timestamp } = req.body;
 
+    try {
+        // Check if a notification with the same notification_type and customerId exists
+        const existingNotification = await pool.query(
+            'SELECT * FROM notifications WHERE notification_type = $1 AND customer_id = $2',
+            [notification_type, customerId]
+        );
+
+        if (existingNotification.rows.length > 0) {
+            console.log("OLD");
+            // Update existing notification
+            const result = await pool.query(
+                'UPDATE notifications SET message = $1, timestamp = $2 WHERE notification_type = $3 AND customer_id = $4 RETURNING *',
+                [message, timestamp, notification_type, customerId]
+            );
+            console.log("OLD DONE");
+            res.json(result.rows[0]);
+        } else {
+            console.log("NEW");
+            // Insert new notification
+            const result = await pool.query(
+                'INSERT INTO notifications (notification_type, message, customer_id, timestamp) VALUES ($1, $2, $3, $4) RETURNING *',
+                [notification_type, message, customerId, timestamp]
+            );
+            res.json(result.rows[0]);
+        }
+
+        console.log("DONE SAJID NOTIFICATIONS");
+    } catch (error) {
+        console.error('Error storing notification:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/getNotifications', async (req, res) => {
+    const { customerId } = req.query;
+
+    try {
+        // Fetch notifications for a specific customerId
+        const result = await pool.query(
+            'SELECT * FROM notifications WHERE customer_id = $1 ORDER BY timestamp DESC',
+            [customerId]
+        );
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 
 

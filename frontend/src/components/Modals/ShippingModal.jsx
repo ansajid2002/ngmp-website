@@ -3,7 +3,7 @@ import { Modal, Table, Button, Space, Image } from 'antd';
 import { useDispatch } from 'react-redux';
 import { updateProductsListCart } from '@/redux/slices/cartSlice';
 import FetchCartPrice from '../FetchCartPrice';
-import { AdminUrl } from '@/app/layout';
+import { AdminUrl, ProductImageUrl } from '@/app/layout';
 
 export const ShippingModal = ({ visible, onCancel, cartItems }) => {
     const dispatch = useDispatch();
@@ -23,7 +23,8 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
         setSelectedOptions(existingSelectedOptions);
 
         const updatedCartItems = cartItems.map((item) => {
-            if (item.id === itemId) {
+            console.log(item.uniquepid, itemId);
+            if (item.uniquepid === itemId) {
                 return {
                     ...item,
                     selectedOption,
@@ -32,6 +33,7 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
             return item;
         });
 
+        console.log(selectedOption, 'selectedOption');
         // Use the updatedCartItems as needed (e.g., dispatch to update the global state)
         dispatch(updateProductsListCart(updatedCartItems));
     };
@@ -45,7 +47,7 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
             key: 'images',
             width: 100,
             render: (images) => (
-                <Image width={80} height={80} className='rounded-md object-contain' src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`} />
+                <Image width={80} height={80} className='rounded-md object-contain' src={`${ProductImageUrl}/${images?.[0]}`} />
             )
         },
         {
@@ -64,7 +66,6 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
                     <Button
                         type={''}
                         className={`${selectedOptions[record.uniquepid] === 'shipping' ? 'bg-blue-500 text-white' : 'bg-transparent border border-gray-500 rounded-lg'}`}
-
                         onClick={() => handleSelect(record.uniquepid, 'shipping')}
                     >
                         Ship

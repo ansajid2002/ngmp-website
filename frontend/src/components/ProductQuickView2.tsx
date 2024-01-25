@@ -10,7 +10,7 @@ import NotifyAddTocart from "./NotifyAddTocart";
 // import Image from "next/image";
 import { Image, Rate } from "antd";
 import Link from "next/link";
-import { AdminUrl } from "@/app/layout";
+import { AdminUrl, ProductImageUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { addItem } from "@/redux/slices/cartSlice";
@@ -353,7 +353,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     toast.custom(
       (t) => (
         <NotifyAddTocart
-          productImage={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+          productImage={`${ProductImageUrl}/${images?.[0]}`}
           qualitySelected={qualitySelected}
           show={t.visible}
           sizeSelected={sizeSelected}
@@ -681,7 +681,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                 <div className="aspect-w-1 aspect-h-1">
                   <img
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                    src={`${ProductImageUrl}/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
                     alt={`Product Detail ${index + 1}`}
@@ -697,7 +697,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
             <Image
               // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 
-              src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage || images?.[0]
+              src={`${ProductImageUrl}/${selectedImage || images?.[0]
                 }`}
               className="w-full h-full object-cover"
               alt="Main Product Image"

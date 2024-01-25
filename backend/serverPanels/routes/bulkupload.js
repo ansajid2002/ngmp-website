@@ -7,6 +7,7 @@ const slug = require("slug");
 const path = require("path");
 const fs = require("fs");
 const sendEmail = require('./nodemailer');
+const b2 = require("./b2");
 
 app.use(express.json())
 app.use(cors())
@@ -14,6 +15,9 @@ app.use((req, res, next) => {
     req.pool = pool;
     next();
 });
+
+const bucketName = "NGMP-PRODUCTS";
+const folderName = "products";
 
 const storageExcel = multer.diskStorage({
     destination: (req, file, callback) => {
@@ -25,7 +29,6 @@ const storageExcel = multer.diskStorage({
 });
 
 const uploadExcel = multer({ storage: storageExcel });
-let fileUploaded = false; // Flag to track whether the file has been uploaded
 
 // Bulk Product Uploads
 app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, res) => {
@@ -60,12 +63,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
             return modifiedObj;
         });
 
-
-
-        console.log(newSpecification);
-
         filenameExcel = req?.file?.filename
-
 
         await Promise.all(
             jsonDataArray.map(async (data, index) => {
@@ -73,7 +71,9 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                 const key24Array = JSON.parse(key24String);
                 const createdAt = new Date().toISOString();
                 const imageUrl = data.key8?.text || data.key8;
+                // let databaseName = "";
                 let imageFileName = "";
+                let imageFileNameData = "";
 
                 if (excludeImage === 'false') {
                     try {
@@ -89,8 +89,6 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                                 ".jpg"
                             )}.jpg`;
 
-                            // console.log(imageFileName);
-                            // return
                             const imageBuffer = await response.arrayBuffer();
                             const imagePath = path.join(
                                 __dirname,
@@ -99,40 +97,47 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                                 imageFileName
                             );
                             fs.writeFileSync(imagePath, Buffer.from(imageBuffer));
+
+                            const localFilePath = `./uploads/UploadedProductsFromVendors/${imageFileName}`;
+
+                            // Read the file content
+                            const fileContent = fs.readFileSync(localFilePath);
+
+                            // Extract the file name from the path
+                            const fileName = path.basename(localFilePath);
+
+                            try {
+                                // Call the uploadFile function
+                                const result = await b2.uploadFile(bucketName, folderName, {
+                                    originalname: fileName,
+                                    buffer: fileContent,
+                                });
+
+                                // Delete the uploaded file
+                                fs.unlinkSync(`./uploads/UploadedProductsFromVendors/${imageFileName}`);
+
+                                // Store the result key in imageFileNameData variable
+                                const imageFileNameData_infunction = result.key;
+
+                                imageFileNameData = imageFileNameData_infunction
+                            } catch (error) {
+                                console.error("Error uploading image:", error);
+                            }
                         }
                     } catch (error) {
                         console.error("Error downloading image:", error);
                     }
                 }
 
+
+
                 const existingProduct = await pool.query(
                     'SELECT * FROM products WHERE skuid = $1 AND vendorid = $2',
                     [data.key17, data.vendorid]
                 );
 
-                // Unlink existing images
-                if (existingProduct.rows.length > 0 && excludeImage === 'false') {
-                    const existingImages = existingProduct.rows[0].images;
-
-                    existingImages && existingImages.forEach((imageName) => {
-                        const existingImagePath = path.join(
-                            __dirname,
-                            "..",
-                            "uploads/UploadedProductsFromVendors",
-                            imageName
-                        );
-
-                        try {
-                            console.log('unlinked');
-                            // Unlink the existing image file
-                            fs.unlinkSync(existingImagePath);
-                        } catch (error) {
-                            console.error("Error unlinking existing image:", error);
-                        }
-                    });
-                }
-
                 if (existingProduct.rows.length > 0) {
+                    console.log(imageFileNameData, 'imageFileNameData');
                     // Update the existing row
                     const query = `
                         UPDATE products SET 
@@ -190,7 +195,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.country || "",
                         data.vendorid || 0,
                         createdAt || "",
-                        `{${imageFileName || ""}}`,
+                        `{${imageFileNameData || ""}}`,
                         0,
                         existingProduct.rows[0]?.uniquepid || "",
                         data.key10 || 0,
@@ -284,7 +289,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.country || "",
                         data.vendorid || 0,
                         createdAt || "",
-                        `{${imageFileName || ""}}`,
+                        `{${imageFileNameData || ""}}`,
                         0,
                         data.uniquepid || null,
                         data.key10 || 0,

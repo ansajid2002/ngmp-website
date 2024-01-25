@@ -12,17 +12,29 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
 
   const calculateSubtotalAndShippingCost = () => {
     let subtotal = 0;
-    let totalShippingCost = 0;
+    let vendorShippingCosts = {};
 
     if (true) {
-      cartItems.forEach((item: any) => {
-        subtotal += parseFloat(item.sellingprice) * item.added_quantity;
+      cartItems.forEach((item) => {
+        const vendorId = item.vendorid;
+        const itemSubtotal = parseFloat(item.sellingprice) * item.added_quantity;
 
         // Check if the selected option is 'pickup' before calculating shippingCost
         if (item.selectedOption !== 'pickup') {
-          totalShippingCost += parseFloat(item.shippingCost) || 0;
+          const itemShippingCost = parseFloat(item.shippingCost) || 0;
+          vendorShippingCosts[vendorId] = itemShippingCost;
         }
+
+        subtotal += itemSubtotal;
       });
+    }
+
+    let totalShippingCost = 0;
+    console.log(vendorShippingCosts);
+
+    // Sum up all the vendor shipping costs
+    for (const vendorId in vendorShippingCosts) {
+      totalShippingCost += vendorShippingCosts[vendorId];
     }
 
     return {
@@ -30,7 +42,6 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
       shippingCost: totalShippingCost.toFixed(2),
     };
   };
-
 
   // Example usage
   const { subtotal, shippingCost } = calculateSubtotalAndShippingCost();

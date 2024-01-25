@@ -8,7 +8,7 @@ import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import Image from "next/image";
 import Link from "next/link";
-import { AdminUrl } from "@/app/layout";
+import { AdminUrl, ProductImageUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { removeItem } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
@@ -85,7 +85,7 @@ export default function CartDropdown() {
         <div className="relative h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
           <Image
             fill
-            src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+            src={`${ProductImageUrl}/${images?.[0]}`}
             alt={ad_title}
             className="h-full w-full object-contain object-center"
           />

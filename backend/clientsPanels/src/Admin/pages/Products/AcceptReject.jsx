@@ -5,7 +5,7 @@ import {
   AiOutlineCloseCircle,
   AiOutlineSearch,
 } from "react-icons/ai";
-import { AdminUrl, fetchVariantProducts } from "../../constant";
+import { AdminUrl, ProductImageUrl, fetchVariantProducts } from "../../constant";
 import VendorProfileDetails from "../../components/VendorProfileDetails ";
 import Swal from "sweetalert2";
 import { FiAlertCircle, FiCheckCircle, FiClock } from "react-icons/fi";
@@ -337,7 +337,7 @@ const AcceptReject = () => {
               {imageSrcArray?.slice(0, 2).map((image, index) => (
                 <Image
                   key={index}
-                  src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                  src={`${ProductImageUrl}/${image}`}
                   alt="Product Image"
                   width={50}
                   height={50}
@@ -613,7 +613,7 @@ const AcceptReject = () => {
             <div className="w-[350px] p-2 border">
               <Image
                 key={image}
-                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                src={`${ProductImageUrl}/${image}`}
                 alt="Product Image"
                 className="w-full h-full object-contain"
               />

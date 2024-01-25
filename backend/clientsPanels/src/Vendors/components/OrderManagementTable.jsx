@@ -33,7 +33,7 @@ import {
   FaTruckPickup,
   FaUndo,
 } from "react-icons/fa";
-import { AdminUrl } from "../../Admin/constant";
+import { AdminUrl, ProductImageUrl } from "../../Admin/constant";
 import jsPDF from "jspdf";
 import {
   CalendarOutlined,
@@ -219,7 +219,7 @@ const OrderManagementTable = ({
       },
       // Add filter properties
     },
-   
+
 
     {
       title: "Order ID",
@@ -996,7 +996,7 @@ const OrderManagementTable = ({
             <div className="md:pr-4 grid place-items-center md:mb-24 max-sm:p-2 md:sticky top-0">
               {selectedProduct.product_image ? (
                 <Image
-                  src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedProduct.product_image}`}
+                  src={`${ProductImageUrl}/${selectedProduct.product_image}`}
                   alt={selectedProduct.product_name}
                   className="max-w-full h-full cursor-pointer object-contain"
                 />

@@ -16,7 +16,7 @@ import { FreeMode, Navigation } from "swiper/modules";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useAppSelector } from "@/redux/store";
-import { AdminUrl } from "@/app/layout";
+import { AdminUrl, ProductImageUrl } from "@/app/layout";
 import Prices from "../Prices";
 import ProductCard from "../ProductCard";
 
@@ -86,8 +86,8 @@ const ItemsInCart = ({ label1, label2 }) => {
                     <img
                       className="h-full w-full object-contain transition-all ease-in-out hover:scale-105"
                       src={
-                        item && item.images[0]
-                          ? `${AdminUrl}/uploads/UploadedProductsFromVendors/${item?.images?.[0]}`
+                        item && item.images?.[0]
+                          ? `${ProductImageUrl}/${item?.images?.[0]}`
                           : "/placeholder.png"
                       }
                       alt=""

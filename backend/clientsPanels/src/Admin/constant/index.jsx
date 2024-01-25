@@ -17,6 +17,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { IoLanguage } from "react-icons/io5";
 
 export const AdminUrl = "http://localhost:3001";
+export const ProductImageUrl = "https://ngmp-products.s3.us-east-005.backblazeb2.com";
 
 export const links = [
   {

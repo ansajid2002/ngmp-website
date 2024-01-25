@@ -638,7 +638,6 @@ const generateRandomNumber = () => {
 app.post("/customerLoginEmail", async (req, res) => {
   const { email, password } = req.body;
   const loggedid = generateRandomNumber();
-  console.log(password,"pass");
   try {
     if (!password) {
       // If the password is empty, send a response
@@ -656,7 +655,6 @@ app.post("/customerLoginEmail", async (req, res) => {
     }
 
     const hashedPassword = rows[0].password;
-    console.log(hashedPassword, "hashed----------------");
     if (!hashedPassword) {
       return res.status(401).json({
         status: 401,

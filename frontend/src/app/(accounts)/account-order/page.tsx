@@ -1,6 +1,6 @@
 "use client";
 
-import { AdminUrl } from "@/app/layout";
+import { AdminUrl, ProductImageUrl } from "@/app/layout";
 import Prices from "@/components/Prices";
 import StarRating from "@/components/StarRating";
 import { PRODUCTS } from "@/data/data";
@@ -121,7 +121,7 @@ const AccountOrder = () => {
             fill
             sizes="100px"
             src={
-              `${AdminUrl}/uploads/UploadedProductsFromVendors/${product_image}` ||
+              `${ProductImageUrl}/${product_image}` ||
               "/placeholder.png"
             }
             alt={product_name}

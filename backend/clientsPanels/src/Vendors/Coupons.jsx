@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AdminUrl } from '../Admin/constant';
+import { AdminUrl, ProductImageUrl } from '../Admin/constant';
 import { Table, Form, Input, DatePicker, Popconfirm, Button, message, Modal, InputNumber, Select } from 'antd';
 import moment from 'moment';
 
@@ -518,7 +518,7 @@ const Coupons = ({ vendorDatastate }) => {
                                 {VendorProducts && VendorProducts.map((product) => (
                                     <Select.Option key={product.uniquepid} value={product.ad_title} label={product.ad_title}>
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <img src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${product.images?.[0]}`} alt={product.ad_title} style={{ width: '30px', height: '30px', marginRight: '8px' }} />
+                                            <img src={`${ProductImageUrl}/${product.images?.[0]}`} alt={product.ad_title} style={{ width: '30px', height: '30px', marginRight: '8px' }} />
                                             {product.ad_title}
                                         </div>
                                     </Select.Option>

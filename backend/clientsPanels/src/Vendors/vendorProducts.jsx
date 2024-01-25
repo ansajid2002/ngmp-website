@@ -27,7 +27,7 @@ import {
 const { Step } = Steps;
 
 import { NavLink } from "react-router-dom";
-import { AdminUrl, fetchVariantProducts } from "../Admin/constant";
+import { AdminUrl, ProductImageUrl, fetchVariantProducts } from "../Admin/constant";
 import {
   FiAlertCircle,
   FiCheckCircle,
@@ -554,7 +554,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             {images?.slice(0, 2).map((image, index) => (
               <Image
                 key={index}
-                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                src={`${ProductImageUrl}/${image}`}
                 alt="Product Image"
                 width={50}
                 height={50}
@@ -970,7 +970,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             <div key={image} className="w-[350px] p-2 border">
               <Image
                 key={image}
-                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                src={`${ProductImageUrl}/${image}`}
                 alt="Product Image"
                 className="w-full h-full object-contain"
               />
@@ -1545,7 +1545,8 @@ const VendorProducts = ({ vendorDatastate }) => {
         body: JSON.stringify({
           subcategory: subcatNameBackend, // Send subcategory information
           productId: key, // Send the ID of the product
-          imageIndex: index, // Send the index of the image to remove
+          image, // Send the index of the image to remove
+          imageIndex: index
         }),
       });
 
@@ -1888,7 +1889,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                   >
                     <div className="aspect-w-1 aspect-h-1">
                       <img
-                        src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                        src={`${ProductImageUrl}/${image}`}
                         alt="Product Image"
                         className="object-cover"
                       />
