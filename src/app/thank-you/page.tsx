@@ -2,7 +2,7 @@
 import { useAppSelector } from "@/redux/store";
 import { Check } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { AdminUrl } from "../layout";
+import { AdminUrl, ProductImageUrl } from "../layout";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import { emptyCart } from "@/redux/slices/cartSlice";
@@ -214,7 +214,7 @@ const ThankYou = () => {
                 <img
                   src={
                     item && item.images[0]
-                      ? `${AdminUrl}/uploads/UploadedProductsFromVendors/${item?.images?.[0]}`
+                      ? `${ProductImageUrl}/${item?.images?.[0]}`
                       : "/placeholder.png"
                   }
                   className="h-14 w-14 p-1 object-contain md:p-3 md:h-24 md:w-24"

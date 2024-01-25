@@ -5,7 +5,7 @@ import NcImage from "@/shared/NcImage/NcImage";
 import Prices from "./Prices";
 import Link from "next/link";
 import { StaticImageData } from "next/image";
-import { AdminUrl } from "@/app/layout";
+import { AdminUrl, ProductImageUrl } from "@/app/layout";
 
 export interface CollectionCard2Props {
   className?: string;
@@ -28,7 +28,7 @@ const CollectionCard2: FC<CollectionCard2Props> = ({
         <NcImage
           containerClassName="aspect-w-8 aspect-h-5 bg-neutral-100 rounded-2xl overflow-hidden"
           className="object-contain w-full h-full rounded-2xl"
-          src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${imgs?.[0]}`}
+          src={`${ProductImageUrl}/${imgs?.[0]}`}
           alt=""
           sizes="400px"
         />
@@ -36,7 +36,7 @@ const CollectionCard2: FC<CollectionCard2Props> = ({
           <NcImage
             containerClassName="w-full h-24 sm:h-28"
             className="object-cover w-full h-full rounded-2xl"
-            src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${imgs?.[0]}`}
+            src={`${ProductImageUrl}/${imgs?.[0]}`}
             alt=""
             sizes="150px"
           />

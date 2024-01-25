@@ -115,6 +115,7 @@ const Footer: React.FC = () => {
                   />
                 </a>
               </div>
+
               {/* <div className="grid grid-cols-1 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
           <h2 className="font-semibold text-center text-neutral-700 dark:text-neutral-200">
             Our Social Media
@@ -124,7 +125,10 @@ const Footer: React.FC = () => {
           </div>
         </div> */}
             </div>
-
+            <div className=" flex justify-around text-center mt-4">
+              <p>Copyright © NGMP {new Date().getFullYear()}. All Rights Reserved.</p>
+              <p>Crafted By : <a href="https://gsmash.com/"> GSMASH TECHNOLOGIES</a> </p>
+            </div>
 
             {
               footerPathname !== "/RaiseTicket" && <div className="fixed right-0 bottom-24 bg-white shadow-xl rounded-md border border-gray-300">

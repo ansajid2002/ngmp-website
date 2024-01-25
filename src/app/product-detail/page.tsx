@@ -29,7 +29,7 @@ import ModalViewAllReviews from "./ModalViewAllReviews";
 import NotifyAddTocart from "@/components/NotifyAddTocart";
 // import Image from "next/image";
 import AccordionInfo from "@/components/AccordionInfo";
-import { AdminUrl, HomeUrl } from "../layout";
+import { AdminUrl, HomeUrl, ProductImageUrl } from "../layout";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
 import { addItem } from "@/redux/slices/cartSlice";
@@ -1118,7 +1118,7 @@ const ProductDetailPage = ({ searchParams }) => {
     toast.custom(
       (t) => (
         <NotifyAddTocart
-          productImage={`${AdminUrl}/uploads/UploadedProductsFromVendors/${responseData?.images?.[0]}`}
+          productImage={`${ProductImageUrl}/${responseData?.images?.[0]}`}
           qualitySelected={qualitySelected}
           show={t.visible}
           sizeSelected={sizeSelected}
@@ -1163,7 +1163,7 @@ const ProductDetailPage = ({ searchParams }) => {
                 <div className="w-full h-full p-1 md:aspect-w-1 md:aspect-h-1">
                   <img
                     sizes=""
-                    src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${image}`}
+                    src={`${ProductImageUrl}/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
                     alt={`Product Detail ${index + 1}`}
@@ -1180,7 +1180,7 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              src={`${selectedImage ? `${AdminUrl}/uploads/UploadedProductsFromVendors/${selectedImage}` : (responseData?.images?.[0] ? `${AdminUrl}/uploads/UploadedProductsFromVendors/${responseData.images[0]}` : "/placeholder.png")}`}
+              src={`${selectedImage ? `${ProductImageUrl}/${selectedImage}` : (responseData?.images?.[0] ? `${ProductImageUrl}/${responseData.images[0]}` : "/placeholder.png")}`}
               className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
               alt="Main Product Image"
               loading="lazy"

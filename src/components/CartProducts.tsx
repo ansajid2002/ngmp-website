@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import Prices from "./Prices";
 import Link from "next/link";
 import Image from "next/image";
-import { AdminUrl } from "@/app/layout";
+import { AdminUrl, ProductImageUrl } from "@/app/layout";
 import {
   decrementItem,
   incrementItem,
@@ -225,7 +225,7 @@ const CartProducts = ({ removeData = true }) => {
         <div className="relative h-36 w-24 sm:w-32 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
           <Image
             fill
-            src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+            src={`${ProductImageUrl}/${images?.[0]}`}
             alt={ad_title}
             sizes="300px"
             className="h-full w-full object-contain object-center"

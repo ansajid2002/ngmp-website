@@ -13,7 +13,7 @@ import ProductStatus from "./ProductStatus";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NcImage from "@/shared/NcImage/NcImage";
-import { AdminUrl, HomeUrl } from "@/app/layout";
+import { AdminUrl, HomeUrl, ProductImageUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { Rate } from "antd";
 import { Loader2Icon } from "lucide-react";
@@ -103,7 +103,7 @@ const ProductCard: FC<ProductCardProps> = ({
   //         <Image
   //           width={80}
   //           height={96}
-  //           src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+  //           src={`${ProductImageUrl}/${images?.[0]}`}
   //           alt={ad_title}
   //           className="absolute object-cover object-center"
   //         />
@@ -279,7 +279,7 @@ const ProductCard: FC<ProductCardProps> = ({
             <div className="relative group-hover:scale-105 transition-transform duration-300">
               <NcImage
                 containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
-                src={`${AdminUrl}/uploads/UploadedProductsFromVendors/${images?.[0]}`}
+                src={`${ProductImageUrl}/${images?.[0]}`}
                 className="object-contain w-full h-full drop-shadow-xl"
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
