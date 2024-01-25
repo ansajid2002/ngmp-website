@@ -34,8 +34,11 @@ const CartProducts = ({ removeData = true }) => {
       uniquepid,
       mogadishudistrict_ship_from,
       shippingCost,
-      selectedOption
+      selectedOption,
+      vendorInfo
     } = item;
+
+    const { brand_name, vendorname } = vendorInfo
 
     const handleRemove = async (item: any) => {
       try {
@@ -172,7 +175,7 @@ const CartProducts = ({ removeData = true }) => {
     };
 
     const getvalueData = (i: number, type: string, data: any) => {
-      console.log(data);
+      // console.log(data);
 
       if (type === "inc") {
         handleIncrement(data);
@@ -187,20 +190,20 @@ const CartProducts = ({ removeData = true }) => {
       return (
         <div>
           {
-            selectedOption === 'pickup' ? <div className="flex justify-center">
+            selectedOption === 'pickup' ? <div className="flex">
               <h1 className="text-red-600 font-semibold text-sm md:text-xl">Only Pickup Available</h1>
             </div> :
-              mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
+              mogadishudistrict_ship_from && storedDistrict ? <div className="flex">
                 {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
                 <h1 className="text-green-600 font-semibold text-sm md:text-xl">Shipping Fee : ${shippingCost}, From {mogadishudistrict_ship_from} To {storedDistrict}</h1>
               </div> : (
                 !mogadishudistrict_ship_from ? (
-                  <div className="flex justify-center">
+                  <div className="flex">
                     <h1 className="text-red-600 font-semibold text-sm md:text-xl">Only Pickup Available</h1>
                   </div>
                 ) : (
                   !storedDistrict ? (
-                    <div className="flex justify-center">
+                    <div className="flex">
                       <a className="text-blue-600 font-semibold text-sm md:text-xl" href="/select-district" target="_blank">Choose District</a>
                     </div>
                   ) : (
@@ -230,7 +233,7 @@ const CartProducts = ({ removeData = true }) => {
           <Link
             href={{
               pathname: "/product-detail",
-              query: { ad_title },
+              query: { product: ad_title, uniqueid: uniquepid },
             }}
             className="absolute inset-0"
           ></Link>
@@ -260,7 +263,9 @@ const CartProducts = ({ removeData = true }) => {
                     sellingprice={sellingprice}
                   />
                 </div>
-
+                <div className="py-4">
+                  <h1 className="text-sm"><b className="text-gray-700">Sell By :</b> {brand_name}, {vendorname}</h1>
+                </div>
 
               </div>
 

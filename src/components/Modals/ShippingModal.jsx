@@ -23,7 +23,8 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
         setSelectedOptions(existingSelectedOptions);
 
         const updatedCartItems = cartItems.map((item) => {
-            if (item.id === itemId) {
+            console.log(item.uniquepid, itemId);
+            if (item.uniquepid === itemId) {
                 return {
                     ...item,
                     selectedOption,
@@ -32,6 +33,7 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
             return item;
         });
 
+        console.log(selectedOption, 'selectedOption');
         // Use the updatedCartItems as needed (e.g., dispatch to update the global state)
         dispatch(updateProductsListCart(updatedCartItems));
     };
@@ -64,7 +66,6 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
                     <Button
                         type={''}
                         className={`${selectedOptions[record.uniquepid] === 'shipping' ? 'bg-blue-500 text-white' : 'bg-transparent border border-gray-500 rounded-lg'}`}
-
                         onClick={() => handleSelect(record.uniquepid, 'shipping')}
                     >
                         Ship

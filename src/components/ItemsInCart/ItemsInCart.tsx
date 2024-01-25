@@ -86,7 +86,7 @@ const ItemsInCart = ({ label1, label2 }) => {
                     <img
                       className="h-full w-full object-contain transition-all ease-in-out hover:scale-105"
                       src={
-                        item && item.images[0]
+                        item && item.images?.[0]
                           ? `${AdminUrl}/uploads/UploadedProductsFromVendors/${item?.images?.[0]}`
                           : "/placeholder.png"
                       }

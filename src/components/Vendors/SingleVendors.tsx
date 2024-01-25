@@ -108,21 +108,14 @@ const SingleVendors = () => {
               <div className="flex items-center justify-center gap-2 md:gap-5">
                 <div className="text-center">
                   <h2 className="font-medium">
-                    {singleVendors?.followers || "NA"}
+                    {singleVendors?.followers || "0"}
                   </h2>
                   <h3 className="text-gray-600">Followers</h3>
                 </div>
                 <Minus className="rotate-90 text-gray-400" />
                 <div className="text-center">
                   <h2 className="font-medium">
-                    {singleVendors?.total_sales || "NA"}
-                  </h2>
-                  <h3 className="text-gray-600">Sold</h3>
-                </div>
-                <Minus className="rotate-90 text-gray-400" />
-                <div className="text-center">
-                  <h2 className="font-medium">
-                    {singleVendors?.total_products || "NA"}
+                    {singleVendors?.total_products || "0"}
                   </h2>
                   <h3 className="text-gray-600">Items</h3>
                 </div>
