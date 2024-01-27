@@ -1,10 +1,32 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Carousel } from "@material-tailwind/react";
 import Image from "next/image";
 import { AdminUrl } from "@/app/layout";
+import { useDispatch } from "react-redux";
+import { setLanguage } from "@/redux/features/languageslice";
 
 const NewHeroSection = ({ data }: any) => {
+
+const dispatch = useDispatch()
+  useEffect(() => {
+    // Fetch the language from localStorage on the client side
+    const selectedLanguage = localStorage.getItem('selectedLanguage');
+    console.log(selectedLanguage,"SELECTED LANG");
+    
+
+    if (selectedLanguage) {
+      // Dispatch the language to Redux
+      dispatch(
+
+        setLanguage({
+          newlanguageCode: selectedLanguage
+        })
+        )
+    }
+  }, []);
+
+
   return (
     <div className="h-[320px]">
       <Carousel

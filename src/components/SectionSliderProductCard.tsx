@@ -7,6 +7,7 @@ import Glide from "@glidejs/glide/dist/glide.esm";
 import ProductCard from "./ProductCard";
 import { Product, PRODUCTS } from "@/data/data";
 import { useAppSelector } from "@/redux/store";
+import { t } from "i18next";
 
 export interface SectionSliderProductCardProps {
   className?: string;
@@ -70,10 +71,29 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
       slider.destroy();
     };
   }, [sliderRef]);
-
+  console.log(`
+  ${heading || `New Arrivals`} ${" "}
+  ${ShowProduct && (
+    <span className="text-[#ed642b] font-bold">Products</span>
+  )}
+  `);
+  
   return (
     <div className={`nc-SectionSliderProductCard ${className}`}>
       <div ref={sliderRef} className={`flow-root ${isShow ? "" : "invisible"}`}>
+        {/* <Heading
+          className={headingClassName}
+          fontClass={headingFontClassName}
+          rightDescText={subHeading}
+          hasNextPrev
+        >{
+          t(`
+          ${heading || `New Arrivals`} ${" "}
+          ${ShowProduct && ` Products`}
+          `)
+        }
+          
+        </Heading> */}
         <Heading
           className={headingClassName}
           fontClass={headingFontClassName}
@@ -82,7 +102,7 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
         >
           {heading || `New Arrivals`}{" "}
           {ShowProduct && (
-            <span className="text-[#ed642b] font-bold">Products</span>
+            <span className="text-[#ed642b] font-bold">{t("Products")}</span>
           )}
         </Heading>
 
