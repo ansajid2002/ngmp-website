@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
         },
         {
           href: `${HomeUrl}/company/privacy-policy`,
-          label: "Privacy & policy",
+          label: "Privacy policy",
         },
         { href: `${HomeUrl}/company/shipping-info`, label: "Shipping info" },
       ],

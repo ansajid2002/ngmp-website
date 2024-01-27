@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ItemsInCart from "@/components/ItemsInCart/ItemsInCart";
 // import CategoriesSlider from "@/components/categoriesslider/Categoriesslider";
 import SectionSliderProductCard from "@/components/SectionSliderProductCard";
@@ -26,6 +26,8 @@ interface Category {
   category_name: string;
   subcategories: Subcategory[];
 }
+
+
 
 export async function getcustomerData(vendorId: any) {
   try {

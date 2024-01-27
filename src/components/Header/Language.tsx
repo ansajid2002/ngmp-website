@@ -13,21 +13,27 @@ import { useDispatch } from "react-redux";
 import { setLanguage } from "@/redux/features/languageslice";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { CheckIcon } from "lucide-react";
+import { changeLanguage } from "@/utils/i18nextfile";
 
 export default function AvatarDropdown() {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { availablelanguages, languageCode, languageName, languageImg } =
+  const { availablelanguages, languageCode, languageName } =
     useAppSelector((store) => store.languagesReducer);
 
   const ChangeLanguageIcon = (item: any) => {
-    const { label, img, lcode } = item;
+    const { label,  lcode } = item;
+    changeLanguage(lcode)
+    localStorage.setItem('selectedLanguage', lcode);
     dispatch(
       setLanguage({
         newlanguageCode: lcode,
         newlanguageName: label,
-        newlanguageImg: img,
+     
       })
+
+
+
     );
   };
 

@@ -73,6 +73,11 @@ const SelectDistrict = () => {
             } else {
                 // Handle the case where customerId is not available
                 localStorage.setItem('selectedDistrict', selectedDistrict);
+                Swal.fire({
+                    icon: 'success',
+                    title: `District Updated to ${selectedDistrict} Successfully`
+                })
+                // Save selectedDistrict in local storage
 
             }
         }
