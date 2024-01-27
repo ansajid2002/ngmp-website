@@ -18,13 +18,8 @@ import IconDiscount from "@/components/IconDiscount";
 import Prices from "@/components/Prices";
 import toast from "react-hot-toast";
 import SectionSliderProductCard from "@/components/SectionSliderProductCard";
-import detail1JPG from "@/images/products/detail1.jpg";
-import detail2JPG from "@/images/products/detail2.jpg";
-import detail3JPG from "@/images/products/detail3.jpg";
-import Policy from "./Policy";
 import ReviewItem from "@/components/ReviewItem";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
-import SectionPromo2 from "@/components/SectionPromo2";
 import ModalViewAllReviews from "./ModalViewAllReviews";
 import NotifyAddTocart from "@/components/NotifyAddTocart";
 // import Image from "next/image";
@@ -985,14 +980,14 @@ const ProductDetailPage = ({ searchParams }) => {
 
               <Minus className="rotate-90 text-gray-400" />
 
-              <div className="flex gap-1 items-center">
+              {/* <div className="flex gap-1 items-center">
                 <h2 className="font-medium">
                   {sellerProfile?.total_sales || "NA"}
                 </h2>
                 <h3 className="text-gray-600 text-xs">Sold</h3>
-              </div>
+              </div> */}
 
-              <Minus className="rotate-90 text-gray-400" />
+              {/* <Minus className="rotate-90 text-gray-400" /> */}
 
               <div className="flex items-center gap-1">
                 <h2 className="font-medium">
@@ -1023,14 +1018,14 @@ const ProductDetailPage = ({ searchParams }) => {
         </div>
         <div className="mt-2">
           <ul className="space-y-2">
-            {Object.entries(responseData?.attributes_specification).map(
+            {/* {Object.entries(responseData?.attributes_specification).map(
               ([key, value]) => (
                 <li key={key} className="">
                   <span className="font-medium capitalize mr-2">{key}:</span>
                   {value || "NA"}
                 </li>
               )
-            )}
+            )} */}
             <li
               className="flex gap-1 items-center cursor-pointer hover:underline"
               onClick={showDetailModal}
@@ -1238,14 +1233,14 @@ const ProductDetailPage = ({ searchParams }) => {
 
             <Reviewcomponent showmorebtn={true} product_id={responseData?.uniquepid} />
           }
-          <hr className="border-gray-200 dark:border-gray-700" />
+          {/* <hr className="border-gray-200 dark:border-gray-700" />
           {/* OTHER SECTION */}
-          <SectionSliderProductCard
+          {/* <SectionSliderProductCard
             heading="Customers also purchased"
             subHeading=""
             headingFontClassName="text-2xl font-semibold"
             headingClassName="mb-40 text-neutral-900 dark:text-neutral-50"
-          />
+          />  */}
           <div className="py-5">
             {/* <SectionPromo2 /> */}
             {/* {renderSellerProfile()} */}
