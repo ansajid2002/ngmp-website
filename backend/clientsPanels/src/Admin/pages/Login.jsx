@@ -183,9 +183,11 @@ const Login = () => {
                             <Input.Password placeholder="Password" className="w-full mb-4 px-3 py-2 border rounded" />
                         </Form.Item>
 
-                        <div className='flex flex-col justify-center'>
+                        <div className='flex flex-col justify-center w-full'>
                             <h1 className='text-center text-xl font-semibold'>Two Step Verification</h1>
-                            <Image src={qrcode} />
+                            <div className='flex flex-col justify-center w-full'>
+                                <Image src={qrcode} width={200} height={200} />
+                            </div>
                             <Form.Item
                                 name="auth_code"
                                 rules={[{ required: true, message: 'Please input code' }]}
