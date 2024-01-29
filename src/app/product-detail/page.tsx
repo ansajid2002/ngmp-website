@@ -54,6 +54,7 @@ import { Image, Modal, Rate } from "antd";
 import ProductSalebadge from "@/components/ProductSalebadge";
 import SellerProfileProductPage from "@/components/SellerProfileProductPage";
 import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
+import { t } from "i18next";
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -643,8 +644,8 @@ const ProductDetailPage = ({ searchParams }) => {
             dealimg={
               "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
             }
-            label1={"Free shipping on all orders"}
-            label2={"Time-Limited Offer"}
+            label1={t("Free shipping on all orders")}
+            label2={t("Time-Limited Offer")}
           />
         </div>
 
@@ -668,7 +669,7 @@ const ProductDetailPage = ({ searchParams }) => {
             <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
               <Link href={"/cart"}>
                 <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-                <span className="ml-3">View Cart</span>
+                <span className="ml-3">{t("View Cart")}</span>
               </Link>
             </ButtonPrimary>
           </div>
@@ -685,7 +686,7 @@ const ProductDetailPage = ({ searchParams }) => {
               onClick={notifyAddTocart}
             >
               <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-              <span className="ml-3">Add to Cart</span>
+              <span className="ml-3">{t("Add to Cart")}</span>
             </ButtonPrimary>
           </div>
         )}
@@ -706,17 +707,17 @@ const ProductDetailPage = ({ searchParams }) => {
             onClick={showModal}
           >
             <ShieldCheck size={20} className="mr-1" />
-            Shopping security
+            {t("Shopping security")}
             <ChevronRight size={20} className="mt-1" />
           </span>
           <div className="md:flex gap-5 mt-2 px-5 text-[0.9rem]">
             <span>
-              <li>Safe Payment Options</li>
-              <li>Secure privacy</li>
+              <li>{t("Safe Payment Options")}</li>
+              <li>{t("Secure privacy")}</li>
             </span>
             <span>
-              <li>Secure logistics</li>
-              <li>Purchase protections</li>
+              <li>{t("Secure logistics")}</li>
+              <li>{t("Purchase protections")}</li>
             </span>
           </div>
         </div>
@@ -726,7 +727,7 @@ const ProductDetailPage = ({ searchParams }) => {
         <hr />
 
         <div>
-          <h2 className="text-[1.3rem] font-medium">Description</h2>
+          <h2 className="text-[1.3rem] font-medium">{t("Description")}</h2>
           <p className="leading-normal mt-3 text-[1rem]">
             {responseData?.additionaldescription}
           </p>
@@ -752,21 +753,21 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="text-left flex flex-col gap-2">
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <ShieldCheck size={20} className="mr-1" />
-              Safe Payment Options
+             {t("Safe Payment Options")}
             </span>
             <div className="md:px-5 flex flex-col gap-2 md:gap-2">
               <li className="list-disc">
-                Nile is committed to protecting your payment information. We
+               {t(` Nile is committed to protecting your payment information. We
                 follow PCI DSS standards, use strong encryption, and perform
-                regular reviews of its system to protect your privacy.
+                regular reviews of its system to protect your privacy.`)}
               </li>
-              <h2>1. Payment methods</h2>
+              <h2>{t("1. Payment methods")}</h2>
               {/* <img src={payment} /> */}
               <img src={payment.src} alt="website main logo" />
               <span className="flex text-gray-700 font-medium items-center underline">
-                Learn more <ChevronRight size={15} className="mt-[2px]" />
+                {t("Learn more")} <ChevronRight size={15} className="mt-[2px]" />
               </span>
-              <h2>2. Security certification</h2>
+              <h2>{t("2. Security certification")}</h2>
               <img src={security.src} alt="website main logo" />
             </div>
 
@@ -774,13 +775,13 @@ const ProductDetailPage = ({ searchParams }) => {
 
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <Truck size={20} className="mr-1" />
-              Secure logistics
+              {t("Secure logistics")}
             </span>
             <div className="md:px-5 flex flex-col gap-1 md:gap-2">
-              <li className="list-disc">Delivery guaranteed</li>
-              <span className="">Accurate and precise order tracking</span>
+              <li className="list-disc">{t("Delivery guaranteed")}</li>
+              <span className="">{t("Accurate and precise order tracking")}</span>
               <span className="flex text-gray-700 font-medium items-center underline">
-                Check your order <ChevronRight size={15} className="mt-[2px]" />
+                {t("Check your order")} <ChevronRight size={15} className="mt-[2px]" />
               </span>
             </div>
 
@@ -788,18 +789,18 @@ const ProductDetailPage = ({ searchParams }) => {
 
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <LockKeyhole size={20} className="mr-1" />
-              Secure Privacy
+             {t("Secure Privacy")}
             </span>
             <div className="md:px-5 flex flex-col gap-1 md:gap-2">
               <li className="list-disc">
-                Protecting your privacy is important to us! Please be assured
+               {t(` Protecting your privacy is important to us! Please be assured
                 that your information will be kept secured and uncompromised. We
                 do not sell your personal information for money and will only
                 use your information in accordance with our privacy and cookie
-                policy to provide and improve our services to you.
+                policy to provide and improve our services to you.`)}
               </li>
               <span className="flex text-gray-700 font-medium items-center underline">
-                Learn more <ChevronRight size={15} className="mt-[2px]" />
+                {t("Learn more")} <ChevronRight size={15} className="mt-[2px]" />
               </span>
             </div>
 
@@ -807,15 +808,15 @@ const ProductDetailPage = ({ searchParams }) => {
 
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <ShieldCheck size={20} className="mr-1" />
-              Purchase Protection
+              {t("Purchase Protection")}
             </span>
             <div className="md:px-5 flex flex-col gap-1 md:gap-2">
               <li className="list-disc">
-                Shop confidently on Nile knowing that if something goes wrong,
-                we've always got your back.
+                {t(`Shop confidently on Nile knowing that if something goes wrong,
+                we've always got your back.`)}
               </li>
               <span className="flex text-gray-700 font-medium items-center underline">
-                Learn more <ChevronRight size={15} className="mt-[2px]" />
+                {t("Learn more")} <ChevronRight size={15} className="mt-[2px]" />
               </span>
             </div>
 
@@ -823,22 +824,22 @@ const ProductDetailPage = ({ searchParams }) => {
 
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <MessagesSquare size={20} className="mr-1" />
-              Customer Service
+              {t("Customer Service")}
             </span>
             <div className="md:px-5 flex flex-col gap-1 md:gap-2">
               <li className="list-disc">
-                Our customer service team is always here if you need help.
+                {t("Our customer service team is always here if you need help.")}
               </li>
               <div className="w-full bg-blue-gray-50 flex items-center justify-around py-3 rounded-xl">
                 <Link href={`${HomeUrl}/SupportCenter?querys=BuyingOnNile`}>
                   <span className="flex flex-col items-center justify-center">
                     <HelpCircle />
-                    FAQs
+                    {t("FAQs")}
                   </span>
                 </Link>
                 <span className="flex flex-col items-center justify-center">
                   <MessageCircle />
-                  Live chat
+                  {t("Live chat")}
                 </span>
               </div>
             </div>

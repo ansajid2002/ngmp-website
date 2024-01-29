@@ -10,6 +10,7 @@ import DropdownCategories from "./DropdownCategories";
 import CartDropdown from "./CartDropdown";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { t } from "i18next";
 
 export interface MainNav2Props {
   className?: string;
@@ -59,7 +60,7 @@ const MainNav2: FC<MainNav2Props> = ({ className = "" }) => {
           {renderMagnifyingGlassIcon()}
           <input
             type="text"
-            placeholder="Type and press enter"
+            placeholder={t("Type and press enter")}
             className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-base"
             autoFocus
           />

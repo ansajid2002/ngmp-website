@@ -4,6 +4,7 @@ import {
   AccordionHeader,
   AccordionBody,
 } from "@material-tailwind/react";
+import { t } from "i18next";
 
 function Icon({ id, open }) {
   return (
@@ -152,32 +153,30 @@ const OrderChanges = () => {
       title: "How to get help with an order",
       content: (
         <>
+         <h3>
+  {t('If you have already placed an order, the best way for you to get help is through the Nile Market Place app or Nile Market Place.com. From your accounts page, you will be able to do things like:')}
+</h3>
+<div>
+  <li>{t('View your orders')}</li>
+  <li>{t('Confirm your shipping address')}</li>
+  <li>{t('Track your latest order status')}</li>
+  <li>{t('Add/cancel items in your order')}</li>
+  <li>{t('Report wrong/missing/damaged items')}</li>
+  <li>{t('Request a return, refund, or exchange')}</li>
+  <li>{t('Review your items')}</li>
+  <li>{t('And a lot more!')}</li>
+</div>
           <h3>
-            If you have already placed an order, the best way for you to get
-            help is through the Nile Market Place app or Nile Market Place.com.
-            From your accounts page, you will be able to do things like:
-          </h3>
-          <div>
-            <li>View your orders</li>
-            <li>Confirm your shipping address</li>
-            <li>Track your latest order status</li>
-            <li>Add/cancel items in your order</li>
-            <li>Report wrong/missing/damaged items</li>
-            <li>Request a return, refund, or exchange</li>
-            <li>Review your items</li>
-            <li>And a lot more!</li>
-          </div>
-          <h3>
-            If you need help with a specific request, we recommend that you
+            {t(`If you need help with a specific request, we recommend that you
             explore our Support Center, which has the answers to our customers'
             most common questions. We try to keep this as updated as possible so
             you'll always have the answers you need available at your
-            fingertips.
+            fingertips.`)}
           </h3>
           <h3>
-            If you need some extra support, our Customer Service team is always
+            {t(`If you need some extra support, our Customer Service team is always
             happy to help. Please make sure that you have your order number,
-            starting with 'PO,' ready so that they can best assist you.
+            starting with 'PO,' ready so that they can best assist you.`)}
           </h3>
         </>
       ),

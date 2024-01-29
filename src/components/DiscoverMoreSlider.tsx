@@ -10,6 +10,7 @@ import { CATS_DISCOVER } from "./CardCategories/data";
 import SingleVendorsCard from "./Vendors/SingleVendorsCard";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { t } from "i18next";
 
 const DiscoverMoreSlider = ({ data }) => {
   const sliderRef = useRef(null);
@@ -63,11 +64,11 @@ const DiscoverMoreSlider = ({ data }) => {
     >
       <div className="md:flex  items-center justify-between pb-5">
         <h2 className="text-[2rem] md:text-[2.3rem] text-left tracking-tight leading-none uppercase font-bold mb-2">
-          <span className="text-[#ED642B]">Recommended</span> Shops
+        <span className="text-[#ED642B]">{t('Recommended')}</span> {t('Shops')}
         </h2>
         <Link href={"/Channel/Shops"}>
           <span className="flex items-end justify-end gap-1 font-medium text-base">
-            View All Shops <ChevronRight size={20} color="#ED642B" />
+            {t(`View All Shops`)} <ChevronRight size={20} color="#ED642B" />
           </span>
         </Link>
       </div>

@@ -12,6 +12,7 @@ import { AdminUrl, ProductImageUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { removeItem } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
+import { t } from "i18next";
 
 export default function CartDropdown() {
   const { cartItems } = useAppSelector((store) => store.cart);
@@ -131,7 +132,7 @@ export default function CartDropdown() {
                 onClick={() => handleRemove(item)}
                 className="font-medium text-primary-6000 dark:text-primary-500 "
               >
-                Remove
+                {t(`Remove`)}
               </button>
             </div>
           </div>
@@ -224,12 +225,12 @@ export default function CartDropdown() {
                     {cartItems.length === 0 ? (
                       <div className="py-10 text-center">
                         <h2 className="text-2xl text-gray-700 font-bold capitalize">
-                          No item in your cart!
+                          {t(`No item in your cart!`)}
                         </h2>
                       </div>
                     ) : (
                       <>
-                        <h3 className="text-xl font-semibold">Shopping cart</h3>
+                        <h3 className="text-xl font-semibold">{t(`Shopping cart`)}</h3>
                         <div className="divide-y divide-gray-100 dark:divide-gray-700">
                           {cartItems &&
                             cartItems.map((item: any, index: number) =>
@@ -245,9 +246,9 @@ export default function CartDropdown() {
                     <div className="bg-neutral-50 dark:bg-gray-900 p-5">
                       <p className="flex justify-between font-semibold text-gray-900 dark:text-gray-100">
                         <span>
-                          <span>Subtotal</span>
+                          <span>{t(`Subtotal`)}</span>
                           <span className="block text-sm text-gray-500 dark:text-gray-400 font-normal">
-                            Shipping and taxes calculated at checkout.
+                            {t(`Shipping and taxes calculated at checkout.`)}
                           </span>
                         </span>
                         <span className="">${calculateSubtotal()}</span>
@@ -258,14 +259,14 @@ export default function CartDropdown() {
                           className="flex-1 border border-gray-200 dark:border-gray-700"
                           onClick={close}
                         >
-                          View cart
+                          {t(`View cart`)}
                         </ButtonSecondary>
                         <ButtonPrimary
                           href="/checkout"
                           onClick={close}
                           className="flex-1"
                         >
-                          Check out
+                          {t(`Check out`)}
                         </ButtonPrimary>
                       </div>
                     </div>

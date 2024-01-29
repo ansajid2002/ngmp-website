@@ -17,25 +17,35 @@ const Prices: FC<PricesProps> = ({
   mrpClasses = "",
   sellingClasses = "",
 }) => {
+
+  
+
+const discountPercentage = ((price - sellingprice) / price) * 100;
+
   return (
     <div className={`${className}`}>
-      <div className={`flex items-center gap-1 ${contentClass}`}>
-        {price && price > 0 && (
-          <del
-            className={`md:mx-2 text-sm md:text-base  text-gray-600 flex ${sellingClasses}`}
-          >
-            <p>$</p>
-            {String(price)}
-          </del>
-        )}
-        {sellingprice && sellingprice > 0 && (
+      <div className={` ${contentClass}`}>
+      {sellingprice && sellingprice > 0 && (
           <span
-            className={`flex text-base text-black/90 relative dark:text-white/90 md:text-lg font-semibold !leading-none ${mrpClasses}`}
+            className={`flex text-sm text-black/90 relative dark:text-white/90 md:text-[14px] font-semibold !leading-none ${mrpClasses}`}
           >
-            <p className="absolute top-[-2.5px]">$</p>
-            <p className="ml-[10px]">{String(sellingprice)}</p>
+            <p className="tracking-wide ">Price :</p>
+            {
+              discountPercentage !== 0 &&
+            <p className="text-green-600 mx-1"> -{discountPercentage.toFixed(2)}%</p>
+            }
+            <p className="ml-1 ">{` $${String(sellingprice)}`}</p>
           </span>
         )}
+        {price &&   discountPercentage !== 0  && (
+          <del
+            className={` text-sm md:text-[14px] mt-1  text-gray-500 flex ${sellingClasses}`}
+          >
+            <p className="mr-1">List Price:</p>
+           {` $${String(price)}`} 
+          </del>
+        )}
+        
       </div>
     </div>
   );
