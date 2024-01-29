@@ -83,49 +83,49 @@ export const commonFormFields = [
       },
     ],
   },
-  {
-    label: "Shipping Information",
-    name: "productInformation",
-    children: [
-      // {
-      //   label: "Shipping District (if the shipping city is MOGADISHU)",
-      //   name: "mogadishudistrict_ship_from",
-      //   rules: [
-      //     {  message: "Please input the Product Ship From location" },
-      //   ],
-      //   component:  <Select placeholder="Select Ship From Location" showSearch>
-      //  {cities.map(city => (
-      //       <Select.Option key={city} value={city}>
-      //         {city}
-      //       </Select.Option>
-      //     ))}
-      // </Select>,
-      //   notes: "Example: Warehouse A",
-      // },
-      {
-        label: "Product Ship From",
-        name: "product_ship_from",
-        rules: [
-          { required: true, message: "Please input the Product Ship From location" },
-        ],
-        component: <Input placeholder="Enter Ship From Location" />,
-        notes: "Example: Warehouse A",
-      },
-      // {
-      //   label: "Estimate Delivery By",
-      //   name: "estimate_delivery_by",
-      //   rules: [
-      //     { required: true, message: "Please input the Estimate Delivery By" },
-      //   ],
-      //   component: (
-      //     <>
-      //       <Input placeholder="Enter the estimate" />
-      //     </>
-      //   ),
-      //   notes: "Example: within 1 Day, 1 - 2 weeks",
-      // },
-    ],
-  },
+  // {
+  //   label: "Shipping Information",
+  //   name: "productInformation",
+  //   children: [
+  //     // {
+  //     //   label: "Shipping District (if the shipping city is MOGADISHU)",
+  //     //   name: "mogadishudistrict_ship_from",
+  //     //   rules: [
+  //     //     {  message: "Please input the Product Ship From location" },
+  //     //   ],
+  //     //   component:  <Select placeholder="Select Ship From Location" showSearch>
+  //     //  {cities.map(city => (
+  //     //       <Select.Option key={city} value={city}>
+  //     //         {city}
+  //     //       </Select.Option>
+  //     //     ))}
+  //     // </Select>,
+  //     //   notes: "Example: Warehouse A",
+  //     // },
+  //     {
+  //       label: "Product Ship From",
+  //       name: "product_ship_from",
+  //       rules: [
+  //         { required: true, message: "Please input the Product Ship From location" },
+  //       ],
+  //       component: <Input placeholder="Enter Ship From Location" />,
+  //       notes: "Example: Warehouse A",
+  //     },
+  //     // {
+  //     //   label: "Estimate Delivery By",
+  //     //   name: "estimate_delivery_by",
+  //     //   rules: [
+  //     //     { required: true, message: "Please input the Estimate Delivery By" },
+  //     //   ],
+  //     //   component: (
+  //     //     <>
+  //     //       <Input placeholder="Enter the estimate" />
+  //     //     </>
+  //     //   ),
+  //     //   notes: "Example: within 1 Day, 1 - 2 weeks",
+  //     // },
+  //   ],
+  // },
   {
     label: "Manufacturer Details",
     name: "manufacturerDetails",

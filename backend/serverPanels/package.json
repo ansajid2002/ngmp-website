@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@aws-sdk/client-s3": "^3.495.0",
-    "uuid": "^9.0.1",
     "axios": "^1.5.0",
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
@@ -33,9 +32,12 @@
     "passport-instagram": "^1.0.0",
     "pdf-lib": "^1.17.1",
     "pg": "^8.11.0",
+    "qrcode": "^1.5.3",
     "slug": "^8.2.3",
+    "speakeasy": "^2.0.0",
     "stripe": "^13.10.0",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "swagger-autogen": "^2.23.7"

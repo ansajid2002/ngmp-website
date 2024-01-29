@@ -56,6 +56,7 @@ import { RiInformationFill } from "react-icons/ri";
 import { FaFileExcel } from "react-icons/fa";
 import AccountApprovalPending from "./components/AccountApprovalPending";
 import Search from "antd/es/input/Search";
+import { IoTime } from "react-icons/io5";
 
 const { TabPane } = Tabs;
 
@@ -395,7 +396,7 @@ const VendorProducts = ({ vendorDatastate }) => {
     0: "Pending",
     1: "Approved",
     2: "Rejected",
-    3: "Sold",
+    3: "Draft",
   };
 
   const allBrandValues = Array.from(
@@ -831,7 +832,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       width: 200,
       render: (status, record) => {
         let icon, color;
-        switch (status) {
+        switch (record.status) {
           case 0:
             icon = <FiClock className="text-orange-500" />;
             color = "text-orange-500";
@@ -845,12 +846,8 @@ const VendorProducts = ({ vendorDatastate }) => {
             color = "text-red-500";
             break;
           case 3:
-            icon = <FiCheckCircle className="text-green-500" />;
-            color = "text-green-500";
-            break;
-          case 4:
-            icon = <FiAlertCircle className="text-red-500" />;
-            color = "text-red-500";
+            icon = <IoTime className="text-oorange-500" />;
+            color = "text-orange-500";
             break;
           default:
             icon = <FiClock className="text-gray-500" />;
@@ -859,7 +856,8 @@ const VendorProducts = ({ vendorDatastate }) => {
         let content = (
           <span className={`flex items-center ${color}`}>
             {icon}
-            <span className="ml-1">{statusMap[status]}</span>
+
+            <span className="ml-1">{statusMap[record?.status]}</span>
           </span>
         );
 
@@ -1145,7 +1143,7 @@ const VendorProducts = ({ vendorDatastate }) => {
     try {
       const vendorId = vendorDatastate[0].id;
       // Update the status value to 0
-      // Check if an object with the same name already exists
+      // Check if an object with the same name already exists 
       values.status = 0;
       const existingIndex = formValues.findIndex(
         (item) => item.name === values.name
@@ -1583,7 +1581,7 @@ const VendorProducts = ({ vendorDatastate }) => {
 
   const fields = getFieldsByCategory(selectedSubcategory);
 
-  console.log(filteredSubcategories);
+  console.log(filteredSubcategories,"All");
 
   const steps = [
     {
@@ -1978,6 +1976,7 @@ const VendorProducts = ({ vendorDatastate }) => {
       const datatoSendSelected = {
         productIds: selectedRowKeys,
         subcatNameBackend,
+        id
       }
 
 

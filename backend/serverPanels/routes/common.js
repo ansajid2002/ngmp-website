@@ -50,6 +50,7 @@ app.post('/updateLabel', async (req, res) => {
     try {
         const newData = req.body;
 
+
         // Read the existing data from the JSON file
         const existingData = await fs.readFile('./JSON/specifications.json', 'utf-8');
 
@@ -91,6 +92,8 @@ app.post('/updateOptions', async (req, res) => {
     try {
         const { fieldName, newOptions } = req.body;
 
+        // console.log(req.body);
+        // return
         // Read the existing data from the JSON file
         const existingData = await fs.readFile('./JSON/specifications.json', 'utf-8');
 
@@ -112,6 +115,7 @@ app.post('/updateOptions', async (req, res) => {
 
                 // Save the updated data back to the JSON file
                 await fs.writeFile('./JSON/specifications.json', JSON.stringify(parsedData, null, 2), 'utf-8');
+                console.log(parsedData[categoryIndex]);
 
                 res.status(200).json({ success: true, message: 'Options updated successfully' });
                 return;

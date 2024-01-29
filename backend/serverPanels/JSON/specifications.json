@@ -3,13 +3,16 @@
     "category": "MobileElectronics",
     "fields": [
       {
-        "name": "brand",
-        "label": "Brand",
+        "name": "branded",
+        "label": "Branded",
         "type": "select",
         "options": [
           "Apple",
           "Samsung",
-          "Others"
+          "Others",
+          "hell",
+          "s",
+          "h"
         ]
       },
       {
@@ -5027,11 +5030,17 @@
         "Material": "Material",
         "type": "select",
         "options": [
-          "Cotton",
-          "Leather",
-          "Wool",
-          "Polyester",
-          "Others"
+          "Apple",
+          "Samsung",
+          "Others",
+          "shadab ka",
+          "sas",
+          "sa",
+          "asa",
+          "asa",
+          "sa",
+          "s",
+          "as"
         ]
       },
       {

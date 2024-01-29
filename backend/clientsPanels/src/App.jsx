@@ -64,6 +64,7 @@ import CustomerClaimsAdimin from "./Admin/pages/Vendors/CustomerClaimsAdimin";
 import Delivery from "./Admin/pages/Delivey";
 import Languages from "./Admin/pages/Languages"
 import VerifyReceiver from "./Vendors/components/VerifyReceiver";
+import TwoFactorAuth from "./Admin/pages/TwoFactorAuth";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
 
@@ -463,6 +464,7 @@ function AdminRoutes() {
           {/* For Vendor Login Route  */}
           <Route path="/Vendors/Login" element={<VendorLogin />} />
           <Route path="/Vendors/api" element={<Apitest />} />
+          <Route path="/Admin/TwoFactorAuth" element={<TwoFactorAuth />} />
 
         </Routes>
 

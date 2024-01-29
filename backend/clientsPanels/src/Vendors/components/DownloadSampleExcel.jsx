@@ -6,12 +6,11 @@ import ExcelJS from 'exceljs';
 import { speicificationFields } from '../constants/ProductsForm/Specifications';
 import { Button } from 'antd';
 
-const DownloadSampleExcel = ({ category, subcategory }) => {
+const DownloadSampleExcel = ({ category, subcategory, nestedSelected }) => {
     const Specifications = (speicificationFields.filter(item => item.category == subcategory.subcategory_name.replace(/[^\w\s]/g, "").replace(/\s/g, "")))
     // console.log();
     const specificationData = Specifications?.[0]?.fields || []
 
-    console.log(specificationData);
     const handleDownload = async (type) => {
         // Generate the download link based on the selected subcategory
         const downloadLink = `/SampleExcelSheet/Sample__Listing.xlsx`;
@@ -31,7 +30,8 @@ const DownloadSampleExcel = ({ category, subcategory }) => {
             const labels = specificationData.map(field => field.label);
             newSheetSpecific.addRow(labels);
 
-            newSheetSpecific.columns.forEach((col, columnIndex) => {
+
+            newSheetSpecific.columns && newSheetSpecific.columns.forEach((col, columnIndex) => {
                 col.width = labels[columnIndex].length + 5; // You can adjust the padding as needed
 
                 // Check if the field has options (for dropdown)
@@ -74,7 +74,7 @@ const DownloadSampleExcel = ({ category, subcategory }) => {
             // Modify cell values (for example, change G1 and H1)
             startSheet.getCell('A5').value = type;
             startSheet.getCell('G3').value = category?.category_name;
-            startSheet.getCell('H3').value = subcategory?.subcategory_name;
+            startSheet.getCell('H3').value = `${subcategory?.subcategory_name} -> ${nestedSelected.nested_subcategory_name || ''}`;
 
             // Auto-fit all columns in the second sheet
             // sheet.columns.forEach((col) => {

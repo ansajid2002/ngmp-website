@@ -26,6 +26,7 @@ import { useDispatch } from "react-redux";
 import SignIn from "@/app/auth/signIn/page";
 import ProductSalebadge from "./ProductSalebadge";
 import ProductOfferBadge from "./ProductOfferBadge";
+import { t } from "i18next";
 
 export interface ProductCardProps {
   className?: string;
@@ -159,10 +160,10 @@ const ProductCard: FC<ProductCardProps> = ({
   };
 
   const handleToggleWishlist = useCallback(async () => {
-    console.log(customerId);
+    console.log(customerId,"cliecked");
 
     if (!customerId) {
-      return;
+      router.push("/auth/signIn")
     } else {
       console.log("true");
 
@@ -277,25 +278,23 @@ const ProductCard: FC<ProductCardProps> = ({
             className="block overflow-hidden group"
           >
             <div className="relative group-hover:scale-105 transition-transform duration-300">
-              <NcImage
-                containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
-                src={`${ProductImageUrl}/${images?.[0]}`}
-                className="object-contain w-full h-full drop-shadow-xl"
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
-                alt="product"
-              />
-              <div className="w-full bg-white z-1 absolute left-0 bottom-0">
-                <ProductOfferBadge />
-              </div>
+            <NcImage
+  containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
+  src={`${ProductImageUrl}/${images?.[0]}`}
+  className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
+  fill
+  sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
+  alt="product"
+/>
+              
             </div>
           </Link>
-          {discountPercentage > 50 && (
+          {/* {discountPercentage  && (
             <ProductStatus
               status={"Discount"}
               value={`${discountPercentage.toFixed(2)} Off`}
             />
-          )}
+          )} */}
           <div>
             {wishlistLoading ? (
               <div className="mt-2 w-9 h-9 absolute top-3 end-3 z-10 transition-all ease-in-out hover:scale-110 flex items-center justify-center">
@@ -336,7 +335,7 @@ const ProductCard: FC<ProductCardProps> = ({
           {/* {renderVariants()} */}
           {/* <div> */}
           {showTitle && (
-            <h2 className="nc-ProductCard__title text-[0.9rem] font-medium transition-colors line-clamp-1">
+            <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-2">
               {ad_title}
             </h2>
           )}
@@ -351,10 +350,10 @@ const ProductCard: FC<ProductCardProps> = ({
               <Rate
                 allowHalf
                 disabled
-                value={4.7}
-                className="text-xs text-[#ED642B]"
+                value={3.7}
+                className="text-sm text-green-800"
               />
-              <span className="text-sm font-medium text-[#ED642B]">(352)</span>
+              <span className="text-sm ml-2 font-medium text-green-800">(352)</span>
             </div>
           </div>
         </div>
@@ -372,7 +371,7 @@ const ProductCard: FC<ProductCardProps> = ({
         onCancel={handleCancel}
         footer={[
           <Button className="hidden" key="cancel" onClick={handleCancel}>
-            Cancel
+            {t("Cancel")}
           </Button>,
           <Button
             key="submit"
@@ -380,7 +379,7 @@ const ProductCard: FC<ProductCardProps> = ({
             className=" hidden"
             onClick={handleOk}
           >
-            Submit
+            {t("Submit")}
           </Button>,
         ]}
       >

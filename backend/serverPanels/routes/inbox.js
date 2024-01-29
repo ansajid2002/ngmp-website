@@ -82,11 +82,11 @@ app.post('/conversations', async (req, res) => {
         // Fetch vendor details based on vendor IDs
         const vendorDetailsQuery = 'SELECT id, brand_name, brand_logo FROM vendors WHERE id = $1';
         const lastMessagesQuery = `
-    SELECT DISTINCT ON (conversation_id) *
-    FROM messages
-    WHERE conversation_id = $1
-    ORDER BY conversation_id, timestamp DESC;
-`;
+                SELECT DISTINCT ON (conversation_id) *
+                FROM messages
+                WHERE conversation_id = $1
+                ORDER BY conversation_id, timestamp DESC;
+            `;
 
         const data = [];
 
@@ -199,6 +199,7 @@ app.post('/sendInboxMessages', async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
+
 
 
 

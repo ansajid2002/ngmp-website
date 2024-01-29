@@ -51,7 +51,7 @@ const ChatScreen = ({ customerData, vendorDatastate, onSend }) => {
                 body: JSON.stringify({
                     customerId: customer_id,
                     vendorId,
-                    type: 'vendor',
+                    type: 'customer',
 
                 }),
             });

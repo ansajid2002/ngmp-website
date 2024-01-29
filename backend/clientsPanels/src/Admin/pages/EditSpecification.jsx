@@ -133,6 +133,68 @@ const EditSpecification = () => {
         setAddFieldModalVisible(true);
     };
 
+
+    const handleAddOption = async (fieldIndex, fieldName, optionValue) => {
+        try {
+            const updatedFields = [...selectedCategoryFields];
+            updatedFields[fieldIndex].options.push(optionValue);
+            setSelectedCategoryFields(updatedFields);
+            const response = await axios.post(`${AdminUrl}/api/updateOptions`, {
+                fieldName,
+                newOptions: updatedFields[fieldIndex].options,
+            });
+            message.success(response.data.message);
+        } catch (error) {
+            console.error('Error adding option:', error);
+            message.error('Failed to add option.');
+        }
+    };
+
+    const handleEditLabel = async (fieldIndex, event) => {
+        const updatedFields = [...selectedCategoryFields];
+        updatedFields[fieldIndex].label = event.target.innerText;
+
+        console.log(editCategoryData, 'editCategoryData');
+        // Prepare data to send to the endpoint
+        const newData = {
+            category: editCategoryData?.category, // Assuming you have the selected category stored somewhere
+            fieldIndex: fieldIndex,
+            label: event.target.innerText
+        };
+
+        try {
+            // Make an HTTP POST request to the endpoint
+            const response = await fetch(`${AdminUrl}/api/updateLabel`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newData)
+            });
+
+            // Check if the request was successful
+            if (response.ok) {
+                console.log('Label updated successfully');
+            } else {
+                // Handle error response from the server
+                const errorData = await response.json();
+                console.error('Error updating label:', errorData.error);
+            }
+        } catch (error) {
+            console.error('Error updating label:', error);
+        }
+
+        // Update the state with the modified fields
+        setSelectedCategoryFields(updatedFields);
+    };
+
+
+    const handleEditOption = (fieldIndex, optionIndex, event) => {
+        const updatedFields = [...selectedCategoryFields];
+        updatedFields[fieldIndex].options[optionIndex] = event.target.innerText;
+        setSelectedCategoryFields(updatedFields);
+    };
+
     return (
         <div>
             <Typography className='text-2xl mb-4 font-semibold'>Manage Specifications</Typography>
@@ -171,7 +233,7 @@ const EditSpecification = () => {
                                             placeholder="Add new option"
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter') {
-                                                    handleAddOption(fieldIndex, e.target.value);
+                                                    handleAddOption(fieldIndex, field.name, e.target.value);
                                                     e.target.value = ''; // Clear the input after adding the option
                                                 }
                                             }}

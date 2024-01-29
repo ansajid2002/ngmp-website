@@ -4,6 +4,7 @@ import {
   AccordionHeader,
   AccordionBody,
 } from "@material-tailwind/react";
+import { t } from "i18next";
 
 function Icon({ id, open }) {
   return (
@@ -39,20 +40,20 @@ const AccountPreferences = () => {
       content: (
         <>
           <h3>
-            If you don't want to receive email, push, or SMS-related
+            {t(`If you don't want to receive email, push, or SMS-related
             notifications, you can open the Nile Market Place app, go to 'You'{" "}
             {">"}
             'Settings' {">"} 'Notifications' and choose 'Edit' to set your
-            preferences.
+            preferences.`)}
           </h3>
           <h3>
-            You can also go to Nile Market Place.com and click your username in
+            {t(`You can also go to Nile Market Place.com and click your username in
             the top right comer of your screen. Click 'Notifications' on the
-            left sidebar and then choose 'Edit' to set your preferences.
+            left sidebar and then choose 'Edit' to set your preferences.`)}
           </h3>
           <h3>
-            You can click the link below to select your notification
-            preferences:
+            {t(`You can click the link below to select your notification
+            preferences:`)}
           </h3>
         </>
       ),
@@ -63,22 +64,22 @@ const AccountPreferences = () => {
       title: "How to change my password",
       content: (
         <>
-          <h3>Please follow these steps to change your password:</h3>
+          <h3>{t("Please follow these steps to change your password:")}</h3>
           <h3>
-            1. Sign in to Nile Market Place app or Nile Market Place.com and go
-            to your account page.
+            {t(`1. Sign in to Nile Market Place app or Nile Market Place.com and go
+            to your account page.`)}
           </h3>
-          <h3>2. Go to 'Settings' {">"} 'Account security'.</h3>
-          <h3>3. Find 'Password' and click 'Edit' to change your password.</h3>
+          <h3>{t("2. Go to 'Settings'")} {">"} {t("Account security")}.</h3>
+          <h3>{t("3. Find 'Password' and click 'Edit' to change your password.")}</h3>
           <h3>
-            4. Enter your 'Old password' and 'New password' (Minimum 6
-            characters required).
+            {t(`4. Enter your 'Old password' and 'New password' (Minimum 6
+            characters required).`)}
           </h3>
-          <h3>5. Click 'Submit' and you're done.</h3>
+          <h3>{t("5. Click 'Submit' and you're done.")}</h3>
           <h3>
-            If you used your Google, Facebook, Apple, or Twitter account details
+            {t(`If you used your Google, Facebook, Apple, or Twitter account details
             to log in to Nile Market Place, then you will need to change your
-            password details there.
+            password details there.`)}
           </h3>
         </>
       ),
@@ -89,20 +90,20 @@ const AccountPreferences = () => {
       title: "How to change my address",
       content: (
         <>
-          <h3>Please follow these steps to change your address:</h3>
+          <h3>{t("Please follow these steps to change your address:")}</h3>
           <h3>
-            1. Sign in to Nile Market Place app or Nile Market Place.com and go
-            to your account page
+            {t(`1. Sign in to Nile Market Place app or Nile Market Place.com and go
+            to your account page`)}
           </h3>
-          <h3>2. Go to 'Addresses'</h3>
+          <h3>{t(`2. Go to 'Addresses'`)}</h3>
           <h3>
-            3. From here, you can change your address by clicking "Edit" next to
-            the address you want to change.
+            {t(`3. From here, you can change your address by clicking "Edit" next to
+            the address you want to change.`)}
           </h3>
-          <h3>4. Update your address details and then click "Save".</h3>
+          <h3>{t(`4. Update your address details and then click "Save".`)}</h3>
           <h3>
-            If desired, you can also change your default address, delete
-            addresses, or add a new address from this screen as well.
+            {t(`If desired, you can also change your default address, delete
+            addresses, or add a new address from this screen as well.`)}
           </h3>
         </>
       ),
@@ -113,21 +114,21 @@ const AccountPreferences = () => {
       title: "How to change my email address",
       content: (
         <>
-          <h3>Please follow these steps to change your email address:</h3>
+          <h3>{t(`Please follow these steps to change your email address:`)}</h3>
           <h3>
-            1. Sign in to Nile Market Place app or Nile Market Place.com and go
-            to your account page.
+            {t(`1. Sign in to Nile Market Place app or Nile Market Place.com and go
+            to your account page.`)}
           </h3>
-          <h3>2. Go to 'Settings' {">"} 'Account security'.</h3>
+          <h3>{t(`2. Go to 'Settings'`)} {">"} {t(`'Account security'`)}.</h3>
           <h3>
-            3. Click 'Edit' next to the 'Email' line to make changes to your
+            {t(`3. Click 'Edit' next to the 'Email' line to make changes to your
             information. For security purposes, you may be prompted to enter
             your password or verify your original email address before you can
-            edit. Enter your password or verification code to proceed.
+            edit. Enter your password or verification code to proceed.`)}
           </h3>
           <h3>
-            4. Enter your new email address and click 'Continue' to update your
-            email address.
+            {t(`4. Enter your new email address and click 'Continue' to update your
+            email address.`)}
           </h3>
         </>
       ),
@@ -138,22 +139,22 @@ const AccountPreferences = () => {
       title: "How to change my mobile phone number",
       content: (
         <>
-          <h3>Please follow these steps to change your phone number:</h3>
+          <h3>{t(`Please follow these steps to change your phone number:`)}</h3>
           <h3>
-            1. Sign in to Nile Market Place app or Nile Market Place.com and go
-            to your account page
+            {t(`1. Sign in to Nile Market Place app or Nile Market Place.com and go
+            to your account page`)}
           </h3>
-          <h3>2. Go to 'Settings' {">"} 'Account security'.</h3>
+          <h3>{t(`2. Go to 'Settings'`)} {">"} {t(`'Account security'`)}.</h3>
           <h3>
-            3. Click 'Edit' next to the 'Mobile phone number' line to make
+            {t(`3. Click 'Edit' next to the 'Mobile phone number' line to make
             changes to your information. For security purposes, you may be
             prompted to enter your password or verify your original phone number
             before you can edit. Enter your password or verification code to
-            proceed.
+            proceed.`)}
           </h3>
           <h3>
-            4. Enter your new mobile phone number and click 'Continue' to update
-            your number.
+            {t(`4. Enter your new mobile phone number and click 'Continue' to update
+            your number.`)}
           </h3>
         </>
       ),
@@ -165,14 +166,14 @@ const AccountPreferences = () => {
       content: (
         <>
           <h3>
-            On the Nile Market Place app, go to the user avatar at the bottom of
+{t(`            On the Nile Market Place app, go to the user avatar at the bottom of
             your screen. Click your username {">"} select 'Name' {">"} delete
             your old name and enter your new name. Click save and you're done!
-          </h3>
+`)}          </h3>
           <h3>
-            On Nile Market Place.com, click your username in the top right
+            {t(`On Nile Market Place.com, click your username in the top right
             corner of your screen. Click 'Your profile' {">"} delete your old
-            name and enter your new name. Click save and you're done!
+            name and enter your new name. Click save and you're done!`)}
           </h3>
         </>
       ),
@@ -184,14 +185,14 @@ const AccountPreferences = () => {
       content: (
         <>
           <h3>
-            1. Go to your accounts tab by clicking your user avatar in the top
-            right corner
+            {t(`1. Go to your accounts tab by clicking your user avatar in the top
+            right corner`)}
           </h3>
-          <h3>2. Choose 'Your payment methods' in the lefthand menu</h3>
+          <h3>{t(`2. Choose 'Your payment methods' in the lefthand menu`)}</h3>
           <h3>
-            3. Click '+ Add a new card' to add a new payment method, or click
+            {t(`3. Click '+ Add a new card' to add a new payment method, or click
             'Edit' or 'Remove' to update any existing payment methods attached
-            to your account.
+            to your account.`)}
           </h3>
         </>
       ),
@@ -207,7 +208,7 @@ const AccountPreferences = () => {
           icon={<Icon id={item.id} open={open} />}
         >
           <AccordionHeader onClick={() => handleOpen(item.id)}>
-            <span className="text-[1rem] font-medium">{item.title}</span>
+            <span className="text-[1rem] font-medium">{t(`${item.title}`)}</span>
           </AccordionHeader>
           <AccordionBody>
             <div className="space-y-4 p-2">{item.content}</div>

@@ -1,5 +1,5 @@
-{
-  "name": "ciseco-nextjs",
+ {
+  "name": "nilegmp",
   "version": "1.1.1",
   "private": true,
   "scripts": {
@@ -36,6 +36,7 @@
     "formidable": "^3.5.1",
     "formik": "^2.4.5",
     "framer-motion": "^10.15.1",
+    "i18next": "^23.7.20",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.1",
     "lru-cache": "^10.0.2",
@@ -52,6 +53,7 @@
     "react-filepond": "^7.1.2",
     "react-hooks-global-state": "^2.1.0",
     "react-hot-toast": "^2.4.1",
+    "react-i18next": "^14.0.1",
     "react-id-swiper": "^4.0.0",
     "react-loading-skeleton": "^3.3.1",
     "react-redux": "^8.1.3",

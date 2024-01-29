@@ -408,7 +408,6 @@ app.post("/allVendorProducts", async (req, res) => {
     const { id, page = 1, pageSize = 10 } = req.body;
     const subcatNameBackend = req.body.subcatNameBackend.replace(/[^\w\s]/g, "").replace(/\s/g, "");
 
-    console.log(subcatNameBackend);
     let query;
     let values;
 
@@ -556,7 +555,7 @@ app.post("/addVendorProduct", async (req, res) => {
       INSERT INTO products (ad_title, city, state, country, currency_symbol, category, subcategory, vendorid,
       uniquepid, skuid, mrp, sellingprice, countryoforigin, manufacturername, packerdetails,
       additionaldescription, searchkeywords, keyfeatures, videourl, status, images, category_type,
-      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug, width, height, weight, length, product_ship_from, mogadishudistrict_ship_from, nested_subcat, nested_subcat_slug , additonal_condition)
+      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug, width, height, weight, length, product_ship_from, mogadishudistrict_ship_from, nested_subcat, nested_subcat_slug, additonal_condition)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, NOW(), $31, $32, $33, $34, $35, $36, $37, $38, $39, $40)
       RETURNING *;
     `;
@@ -698,7 +697,7 @@ app.post("/updateVendorProduct", async (req, res) => {
                               brand = $12,
                               condition = $13,
                               updated_at_product = NOW(),
-                              status = 0,
+                              status = $25,
                               prod_slug = $15,
                               height = $16,
                               width = $17,
@@ -738,7 +737,8 @@ app.post("/updateVendorProduct", async (req, res) => {
       productData.estimate_delivery_by,
       nested_subcat,
       slug(nested_subcat || '') || '',
-      additonal_condition
+      additonal_condition,
+      listing_type === 'Draft' ? 3 : 0
       // productData.mogadishudistrict_ship_from
     ];
 
@@ -977,12 +977,12 @@ app.post("/DeleteVendorProduct", async (req, res) => {
 });
 
 
-async function fetchProductDataFromDB(productIds, id) {
+async function fetchProductDataFromDB(productIds, id, subcatNameBackend) {
   try {
     let sql = '';
     let queryParams = [];
 
-    if (productIds) {
+    if (productIds && productIds.length > 0) {
 
       // Fetch data using productIds
       sql = 'SELECT * FROM products WHERE id = ANY($1)';
@@ -1014,10 +1014,10 @@ async function fetchProductDataFromDB(productIds, id) {
 
 
 app.post("/downloadcsv", async (req, res) => {
-  const { productIds, id } = req.body
+  const { productIds, id, subcatNameBackend } = req.body
 
   try {
-    const productsData = await fetchProductDataFromDB(productIds, id);
+    const productsData = await fetchProductDataFromDB(productIds, id, subcatNameBackend);
 
     // Transform the nested objects or arrays into a readable string representation
     const transformedProductsData = productsData.map((product) => {
@@ -1622,22 +1622,62 @@ app.post("/vendorProfile", async (req, res) => {
     const { vendorid } = req.body;
 
     // Define a PostgreSQL query to select specific vendor information
-    const query = "SELECT * FROM vendors WHERE id = $1";
+    const queryVendor = "SELECT * FROM vendors WHERE id = $1";
 
-    // Set the values to be used in the PostgreSQL query
-    const values = [vendorid];
+    // Define a PostgreSQL query to count total products associated with the vendor
+    const queryProductCount = "SELECT COUNT(*) AS total_products FROM products WHERE vendorid = $1";
 
-    // Execute the query using the PostgreSQL connection pool
-    const result = await pool.query(query, values);
-    const vendorData = result.rows[0]
-    delete vendorData.password
+    // Set the values to be used in the PostgreSQL queries
+    const valuesVendor = [vendorid];
+    const valuesProductCount = [vendorid];
 
-    // Send the retrieved vendor information in the response
+    // Execute the queries using the PostgreSQL connection pool
+    const resultVendor = await pool.query(queryVendor, valuesVendor);
+    const resultProductCount = await pool.query(queryProductCount, valuesProductCount);
+
+    // Extract vendor data and total product count
+    const vendorData = resultVendor.rows[0];
+    const totalProducts = resultProductCount.rows[0].total_products;
+
+    // Delete sensitive information from vendor data
+    delete vendorData.password;
+
+    // Append total product count to vendor data
+    vendorData.total_products = totalProducts;
+
+    // Send the retrieved vendor information along with total products in the response
     res.status(200).json(vendorData);
   } catch (error) {
     // Log any errors that occur during the process
     console.log(error);
     // Send an error response to the client
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post('/searchVendorForCHATS', async (req, res) => {
+  try {
+    const { searchValue } = req.body;
+
+    // Check if the search value has at least 3 characters
+    if (searchValue.length >= 3) {
+      // Assuming you're using a SQL database
+      const query = `
+                SELECT id, brand_name, brand_logo, vendorname
+                FROM vendors
+                WHERE brand_name ILIKE $1 OR vendorname  ILIKE $2  AND status = 3
+                LIMIT 50
+            `;
+      const searchPattern = `%${searchValue}%`; // Add wildcard '%' for partial matching
+
+      const results = await pool.query(query, [searchPattern, searchPattern]);
+
+      res.json(results.rows); // Send the search results back to the client
+    } else {
+      res.status(400).json({ error: "Search value must have at least 3 characters" });
+    }
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

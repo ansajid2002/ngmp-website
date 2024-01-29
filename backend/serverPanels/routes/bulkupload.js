@@ -175,7 +175,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                             width = $32,
                             length = $33,
                             weight = $34,
-                            attributes_specification = $35
+                            attributes_specification = $35,
                         WHERE skuid = $24 AND vendorid = $12
                         RETURNING id;
                     `;
@@ -261,7 +261,9 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         "width",
                         "length",
                         "weight",
-                        "attributes_specification"
+                        "attributes_specification",
+                        "nested_subcat",
+                        "nested_subcat_slug"
                     ];
 
                     // Insert a new row
@@ -270,7 +272,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         VALUES (
                             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
                             $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-                            $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35
+                            $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37
                         )
                         RETURNING id;
                     `;
@@ -310,7 +312,9 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         data.key21 || 0,
                         data.key22 || 0,
                         data.key23 || 0,
-                        newSpecification?.[index] || []
+                        newSpecification?.[index] || [],
+                        data.nestedSubcategory || '',
+                        data.nestedSubcategory?.replace(/[^\w\s]/g, "").replace(/\s/g, "")
                     ];
 
                     const { rows } = await pool.query(query, flattenedValues);

@@ -2,7 +2,7 @@
 
 import { Popover, Transition } from "@/app/headlessui";
 import { avatarImgs } from "@/contains/fakeData";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Avatar from "@/shared/Avatar/Avatar";
 import SwitchDarkMode2 from "@/shared/SwitchDarkMode/SwitchDarkMode2";
 import Link from "next/link";
@@ -13,23 +13,29 @@ import { useDispatch } from "react-redux";
 import { setLanguage } from "@/redux/features/languageslice";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { CheckIcon } from "lucide-react";
+import { changeLanguage } from "@/utils/i18nextfile";
 
 export default function AvatarDropdown() {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { availablelanguages, languageCode, languageName, languageImg } =
+  const { availablelanguages, languageCode, languageName } =
     useAppSelector((store) => store.languagesReducer);
-
+  
   const ChangeLanguageIcon = (item: any) => {
-    const { label, img, lcode } = item;
+    const { label,  lcode } = item;
+    changeLanguage(lcode)
+    localStorage.setItem('selectedLanguage', lcode);
+    localStorage.setItem('selectedLanguagename', label);
+
     dispatch(
       setLanguage({
         newlanguageCode: lcode,
         newlanguageName: label,
-        newlanguageImg: img,
+     
       })
     );
   };
+ 
 
   return (
     <div className="AvatarDropdown  ">
@@ -39,13 +45,9 @@ export default function AvatarDropdown() {
             <Popover.Button
               className={`w-9 h-9 sm:w-14 sm:h-10 rounded-md  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex items-center justify-center`}
             >
-              {/* <img
-                className="md:w-6 md:h-6"
-                src={languageImg.src}
-                alt="language"
-              /> */}
+              
               <span className="ml-1 font-medium uppercase">{languageCode}</span>
-              {/* <span>{lcode}</span> */}
+             
             </Popover.Button>
             <Transition
               as={Fragment}
@@ -63,7 +65,12 @@ export default function AvatarDropdown() {
                       <Link
                         href={item.link}
                         className={`flex justify-between items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50 ${item.label === languageName && 'bg-green-100/50'}`}
-                        onClick={() => ChangeLanguageIcon(item)}
+                        onClick={() => {
+                          close()
+                          ChangeLanguageIcon(item)
+
+                        }
+                      }
                       >
                         <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
                           {/* <img

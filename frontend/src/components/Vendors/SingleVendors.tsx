@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { AdminUrl } from "@/app/layout";
 import SingleVendorsDetails from "./SingleVendorsDetails";
 import Skeleton from "react-loading-skeleton";
+import Link from "next/link";
 
 const SingleVendors = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -128,10 +129,12 @@ const SingleVendors = () => {
                     <p className="font-medium">Follow</p>
                   </h2>
                 </div>
-                <div className="flex flex-col  items-center transition-all ease-in-out hover:bg-gray-200 rounded-xl p-2">
-                  <MessageCircle size={20} />
-                  <h2 className="text-xs">Message</h2>
-                </div>
+                <Link href={'/ChatwithSeller'}>
+                  <div className="flex flex-col  items-center transition-all ease-in-out hover:bg-gray-200 rounded-xl p-2">
+                    <MessageCircle size={20} />
+                    <h2 className="text-xs">Message</h2>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>

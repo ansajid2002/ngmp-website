@@ -5,6 +5,7 @@ import { Tabs, Tab, TabScreen } from "react-tabs-scrollable";
 import "react-tabs-scrollable/dist/rts.css";
 import ProductCard from "../ProductCard";
 import { Skeleton } from "../ui/skeleton";
+import { t } from "i18next";
 
 const TabsCategory = ({ categoriesdata }) => {
   const allSubcategories = categoriesdata.flatMap(
@@ -61,7 +62,7 @@ const TabsCategory = ({ categoriesdata }) => {
         selectedAnimationDuration={300}
       >
         {allSubcategories.map((item: any) => (
-          <Tab key={item.subcategory_name}>{item.subcategory_name}</Tab>
+          <Tab key={item.subcategory_name}>{t(`${item.subcategory_name}`)}</Tab>
         ))}
       </Tabs>
 

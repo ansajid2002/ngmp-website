@@ -47,6 +47,8 @@ const inbox = require("./routes/inbox");
 const wallet = require("./routes/wallet");
 const common = require("./routes/common");
 const apploadingscreen = require("./routes/apploadingscreen");
+const Speakeasy = require('speakeasy')
+const qrcode = require('qrcode')
 
 const sendEmail = require("./routes/nodemailer");
 
@@ -173,41 +175,85 @@ const createTable = async () => {
   await pool.query(createTableQuery);
 };
 
+app.post('/api/totp-secret', async (req, res) => {
+  try {
+    var secret = Speakeasy.generateSecret({ length: 20 })
+    qrcode.toDataURL(secret.otpauth_url, function (err, data) {
+      // console.log(data)
+      res.send({ "Qrcode": data, secret: secret.ascii })
+    })
+    // console.log(secret.base32);
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+app.post("/api/toptp-genertae", async (req, res) => {
+  res.send({
+    "token": Speakeasy.totp({
+      secret: req.body.secret,
+      encoding: 'base32'
+    }),
+    "remaining": (30 - Math.floor((new Date().getTime() / 1000.0 % 30)))
+  })
+})
+
+app.post("/api/toptp-verify", async (req, res) => {
+  res.send(Speakeasy.totp.verify({
+    secret: req.body.secret,
+    encoding: 'ascii',
+    token: req.body.token
+  }))
+})
+
+function authVerify(secret, token) {
+  return Speakeasy.totp.verify({
+    secret: secret,
+    encoding: 'ascii',
+    token: token
+  })
+}
+
 app.post("/api/superadminLogin", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, auth_code, secret } = req.body;
+    const verify_auth = authVerify(secret, auth_code)
     // Use the connection pool to check if the email exists in the database
     const loggedId = generateRandomNumber(); // Generate a 28-character random string
-    const result = await req.pool.query(
-      "SELECT * FROM superadmin WHERE email = $1",
-      [email]
-    );
+    if (verify_auth) {
+      const result = await req.pool.query(
+        "SELECT * FROM superadmin WHERE email = $1",
+        [email]
+      );
 
-    if (result.rows.length > 0) {
-      const superAdminLogin = result.rows[0];
-      const hashedPassword = superAdminLogin.password; // Assuming the hashed password is stored in the 'password' field
+      if (result.rows.length > 0) {
+        const superAdminLogin = result.rows[0];
+        const hashedPassword = superAdminLogin.password; // Assuming the hashed password is stored in the 'password' field
 
-      // Compare the hashed password with the input password
-      const passwordMatch = await bcrypt.compare(password, hashedPassword);
+        // Compare the hashed password with the input password
+        const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
-      if (passwordMatch) {
-        // Passwords match, generate random string
-        // Update the 'loggedId' column with the generated random string
-        await req.pool.query(
-          'UPDATE superadmin SET "userId" = $1 WHERE email = $2',
-          [loggedId, email]
-        );
+        if (passwordMatch) {
+          // Passwords match, generate random string
+          // Update the 'loggedId' column with the generated random string
+          await req.pool.query(
+            'UPDATE superadmin SET "userId" = $1 WHERE email = $2',
+            [loggedId, email]
+          );
 
-        // Return the updated superadmin data
-        res
-          .status(200)
-          .send({ status: 200, data: { ...superAdminLogin, loggedId } });
+          // Return the updated superadmin data
+          res
+            .status(200)
+            .send({ status: 200, data: { ...superAdminLogin, loggedId } });
+        } else {
+          // Passwords do not match
+          res.status(400).send({ status: 400, message: "Invalid Password..." });
+        }
       } else {
-        // Passwords do not match
-        res.status(400).send({ status: 400, message: "Invalid Password..." });
+        res.status(400).send({ status: 400, message: "Email does not exist." });
       }
     } else {
-      res.status(400).send({ status: 400, message: "Email does not exist." });
+      res.status(400).send({ status: 400, message: "2FA is invalid" });
     }
   } catch (error) {
     console.log(error);
@@ -483,7 +529,76 @@ app.get("/api/allStaff", async (req, res) => {
 // Add Vendor Details
 app.post("/api/addVendorstoDb", async (req, res) => {
   try {
-    let { country_code, mobile_number, email, vendorname, vendor_username, password = '' } = req.body;
+    const {
+      country_code,
+      mobile_number,
+      email,
+      vendorname,
+      vendor_username,
+      password,
+      brand_name,
+      business_model,
+      company_name,
+      business_phone,
+      business_email,
+      business_website,
+      business_description,
+      company_country,
+      company_district,
+      company_state,
+      company_city,
+      company_zip_code,
+      shipping_address,
+      business_type,
+      tax_id_number,
+      support_contact_1,
+      support_contact_2,
+      bank_name,
+      bank_account_number,
+      confirm_bank_account_number,
+      bank_routing_number,
+      bank_account_name,
+      bank_branch,
+      bank_swift_code
+    } = req.body;
+
+    const fields = {
+      country_code,
+      mobile_number,
+      email,
+      vendorname,
+      vendor_username,
+      password,
+      brand_name,
+      business_model,
+      company_name,
+      business_phone,
+      business_email,
+      business_website,
+      business_description,
+      company_country,
+      company_state,
+      company_city,
+      company_zip_code,
+      shipping_address,
+      business_type,
+      tax_id_number,
+      support_contact_1,
+      support_contact_2,
+      bank_name,
+      bank_account_number,
+      confirm_bank_account_number,
+      bank_routing_number,
+      bank_account_name,
+      bank_branch,
+      bank_swift_code
+    };
+
+    for (const key in fields) {
+      if (!fields[key] || (typeof fields[key] === "string" && fields[key].trim() === "")) {
+        return res.status(400).json({ error: `Please fill in ${key}` });
+      }
+    }
 
     // Check if the table exists
     const tableExists = await checkTableExists();
@@ -494,27 +609,69 @@ app.post("/api/addVendorstoDb", async (req, res) => {
     }
 
     // Check if email or vendor_username already exists
-    const emailExistsQuery = "SELECT * FROM vendors WHERE email = $1 OR vendor_username = $2";
-    const emailExistsResult = await pool.query(emailExistsQuery, [email, vendor_username]);
+    const emailExistsQuery = "SELECT * FROM vendors WHERE email = $1";
+    const vendorUsernameExistsQuery = "SELECT * FROM vendors WHERE vendor_username = $1";
 
-    if (emailExistsResult.rows.length > 0) {
-      return res.status(400).json({ error: "Email or Vendor Username already exists" });
+    const emailExistsResult = await pool.query(emailExistsQuery, [email]);
+    const vendorUsernameExistsResult = await pool.query(vendorUsernameExistsQuery, [vendor_username]);
+
+    if (emailExistsResult.rows.length > 0 && vendorUsernameExistsResult.rows.length > 0) {
+      return res.status(400).json({ error: "Email and Vendor Username already exist" });
+    } else if (emailExistsResult.rows.length > 0) {
+      return res.status(400).json({ error: "Email already exists" });
+    } else if (vendorUsernameExistsResult.rows.length > 0) {
+      return res.status(400).json({ error: "Vendor Username already exists" });
     }
+
 
     // Generate a random password if not provided
-    if (password === '') {
-      password = generateRandomPassword(8);
-    }
+    const generatedPassword = password || generateRandomPassword(8);
 
     // Encrypt the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
     // Get the current date
     const currentDate = moment().format("MMMM Do YYYY, h:mm:ss a");
 
     // Store the data in PostgreSQL with status set to false and current date
     const insertQuery =
-      "INSERT INTO vendors (country_code, mobile_number, email, vendorname, vendor_username, password, registration_date, mobile_verification_status, email_verification_status, email_otp, mobile_otp) VALUES ($1, $2, $3, $4, $5, $6, $7, false, false, 2412, 3218) RETURNING id";
+      `INSERT INTO vendors (
+        country_code,
+        mobile_number,
+        email,
+        vendorname,
+        vendor_username,
+        password,
+        brand_name,
+        business_model,
+        company_name,
+        business_phone,
+        business_email,
+        business_website,
+        business_description,
+        company_country,
+        company_district,
+        company_state,
+        company_city,
+        company_zip_code,
+        shipping_address,
+        business_type,
+        tax_id_number,
+        support_contact_1,
+        support_contact_2,
+        bank_name,
+        bank_account_number,
+        
+        bank_routing_number,
+        bank_account_name,
+        bank_branch,
+        bank_swift_code,
+        registration_date,
+        mobile_verification_status,
+        email_verification_status,
+        email_otp,
+        mobile_otp
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, false, false, 2412, 3218) RETURNING id`;
 
     const result = await pool.query(insertQuery, [
       country_code,
@@ -523,7 +680,30 @@ app.post("/api/addVendorstoDb", async (req, res) => {
       vendorname,
       vendor_username,
       hashedPassword,
-      currentDate,
+      brand_name,
+      business_model,
+      company_name,
+      business_phone,
+      business_email,
+      business_website,
+      business_description,
+      company_country,
+      company_district,
+      company_state,
+      company_city,
+      company_zip_code,
+      shipping_address,
+      business_type,
+      tax_id_number,
+      support_contact_1,
+      support_contact_2,
+      bank_name,
+      bank_account_number,
+      bank_routing_number,
+      bank_account_name,
+      bank_branch,
+      bank_swift_code,
+      currentDate
     ]);
 
     const lastInsertedId = result.rows[0].id;
@@ -536,7 +716,7 @@ app.post("/api/addVendorstoDb", async (req, res) => {
         <ul>
           <li><strong>Email:</strong> ${email}</li>
           <li><strong>Username:</strong> ${vendor_username}</li>
-          <li><strong>Password:</strong> ${password}</li>
+          <li><strong>Password:</strong> ${generatedPassword}</li>
         </ul>
         <p>Please keep this information secure.</p>
         <p>Best regards,<br>Nile Market-place</p>

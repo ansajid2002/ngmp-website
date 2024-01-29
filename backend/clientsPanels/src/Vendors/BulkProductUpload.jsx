@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ExcelJS from "exceljs"; // Import the exceljs library
-import { Table, Button, Upload, Typography, message, Alert, Modal, Image, Checkbox } from "antd";
+import { Table, Button, Upload, Typography, message, Alert, Modal, Image, Checkbox, Input } from "antd";
 import { UploadOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { AdminUrl } from "../Admin/constant";
 import Swal from "sweetalert2";
@@ -25,6 +25,10 @@ const BulkProductUpload = ({ vendorDatastate }) => {
   const [selectedExcel, setSelectedExcel] = useState(null);
   const [loading, setLoading] = useState(false);
   const [checkImage, setCheckImage] = useState(false);
+
+  const [filtedCategory, setFilteredCategory] = useState(null);
+  const [nestedSubcategory, setNestedSubcategory] = useState(null);
+  const [selectedNested, setSelectedNested] = useState(null);
 
   const [locationData, setLocationData] = useState({
     city: "",
@@ -196,7 +200,6 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
   let columns = [];
 
-  console.log(specifications, 'update');
   if (jsonData) {
     if (
       jsonData[0]?.key7
@@ -364,6 +367,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
         dataToSend.append("jsonData", JSON.stringify(batchData));
         dataToSend.append("subcategory", subcategory);
+        dataToSend.append("nestedSubcategory", selectedNested?.nested_subcategory_name || '');
         // dataToSend.append("currentDateTime", currentDate.toISOString());
         dataToSend.append("vendorId", vendorid);
         dataToSend.append("excludeImage", checkImage);
@@ -452,6 +456,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
       const response = await fetch(`${AdminUrl}/api/getAllProductCatgeory`);
       const data = await response.json();
       setCategories(data);
+      setFilteredCategory(data)
     } catch (err) {
       console.log(err);
     }
@@ -498,11 +503,18 @@ const BulkProductUpload = ({ vendorDatastate }) => {
   const handleCategoryChange = (category) => {
     setSelectedCategoryId(category?.category_id);
     setSelectedCategory(category);
+    setNestedSubcategory(null)
     setJsonData(null);
   };
 
   const handleSubcategoryChange = (subcategory) => {
     setSelectedSubcategory(subcategory);
+    setNestedSubcategory(subcategory.nested_subcategories)
+    setJsonData(null);
+  };
+
+  const handleNestedSubcategoryChange = (nested_cat) => {
+    setSelectedNested(nested_cat);
     setJsonData(null);
   };
 
@@ -510,6 +522,16 @@ const BulkProductUpload = ({ vendorDatastate }) => {
     setCheckImage(e.target.checked);
   };
 
+  const handleCategorySearch = (e) => {
+    setFilteredSubcategories(null)
+    const filteredCategory = categories.filter((item) =>
+      item?.category_name?.toLowerCase()?.includes(e.target.value.toLowerCase())
+    );
+    setFilteredCategory(filteredCategory);
+  };
+
+
+  console.log(FilteredSubcategories);
   return vendorDatastate && vendorDatastate.length > 0 ? (
     <>
       {!vendorDatastate?.[0].email_verification_status ||
@@ -520,11 +542,16 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         <>
           <div className="bg-white rounded p-6">
             <div className="mb-8 mt-4">
-              <h1 className="font-bold text-2xl mb-5 text-gray-700">
-                Choose Category
-              </h1>
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="font-bold text-2xl mb-5 text-gray-700">
+                  Choose Category
+                </h1>
+                <div className="w-1/2">
+                  <Input.Search placeholder="Search by Category Name" onChange={handleCategorySearch} />
+                </div>
+              </div>
               <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                {categories.map((category) => (
+                {filtedCategory && filtedCategory.map((category) => (
                   <div
                     key={category.category_id}
                     onClick={() => handleCategoryChange(category)}
@@ -592,10 +619,49 @@ const BulkProductUpload = ({ vendorDatastate }) => {
               </div>
             </div>
 
+            <div className="mb-8">
+              {nestedSubcategory &&
+                <h1 className="font-bold text-2xl mb-5 text-gray-700">
+                  Select Nested Category
+                </h1>
+              }
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {nestedSubcategory &&
+                  nestedSubcategory.map((subcat, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleNestedSubcategoryChange(subcat)}
+                      className={`py-4 px-3 cursor-pointer rounded ${selectedNested === subcat
+                        ? "bg-slate-200 text-black transition-all"
+                        : "hover:bg-gray-100"
+                        } flex flex-col items-center`}
+                      title={`${subcat.nested_subcategory_name}`}
+                    >
+                      {/* Image */}
+                      <div className="h-24 mb-2">
+                        <img
+                          src={`${AdminUrl}/uploads/SubMaincategoryImage/${subcat.image_url}`}
+                          alt=""
+                          className="w-full h-24 border border-gray-300 rounded-lg object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null; // Reset the event handler to avoid infinite loops
+                            e.target.src = '/noimage.jpg'; // Provide the path to your alternative image
+                          }}
+                        />
+                      </div>
+
+
+                      {/* Text */}
+                      <p className="font-semibold text-center text-lg line-clamp-1 w-full">{subcat.nested_subcategory_name}</p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
             {
               SelectedSubcategory && <>
                 <div className={`${jsonData ? "hidden" : ""} mt-20`}>
-                  <DownloadSampleExcel category={selectedCategory} subcategory={SelectedSubcategory} />
+                  <DownloadSampleExcel category={selectedCategory} subcategory={SelectedSubcategory} nestedSubcategory={selectedNested} />
                 </div>
 
                 <div className="mt-16 ">

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { createRef, FC, useEffect, useRef, useState } from "react";
 import PopularSearches from "./PopularSearches";
 import SearchList from "./SearchList";
+import { t } from "i18next";
 
 const MobileSearch = () => {
   const [isH1Visible, setIsH1Visible] = useState(false);
@@ -89,7 +90,7 @@ const MobileSearch = () => {
             <input
               ref={inputRef}
               type="text"
-              placeholder="Type and press enter"
+              placeholder={t("Type and press enter")}
               value={searchText}
               className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-base"
               onChange={(e) => handleSearchInput(e.target.value)}

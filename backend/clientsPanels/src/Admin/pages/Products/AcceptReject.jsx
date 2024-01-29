@@ -155,6 +155,7 @@ const AcceptReject = () => {
     0: "Pending",
     1: "Approved",
     2: "Rejected",
+    3: "Draft",
   };
 
   const renderDescription = (record, openModal) => {
@@ -422,8 +423,8 @@ const AcceptReject = () => {
             color = "text-red-500";
             break;
           case 3:
-            icon = <FiAlertCircle className="text-red-500" />;
-            color = "text-red-500";
+            icon = <FiAlertCircle className="text-orange-500" />;
+            color = "text-orange-500";
             break;
           default:
             icon = <FiClock className="text-gray-500" />;

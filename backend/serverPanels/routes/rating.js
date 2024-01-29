@@ -15,7 +15,7 @@ app.post('/rateVendorProducts', async (req, res) => {
     const { vendor_id, customer_id, product_uniqueid, rating, label, order_id } = req.body;
 
     console.log(order_id
-        );
+    );
     try {
         // Check if the 'label' exists and is not null
         if (label !== undefined && label !== null) {
@@ -154,6 +154,8 @@ app.get('/fetchRatings', async (req, res) => {
 app.post('/addReview', async (req, res) => {
     const { id, reviewText, customer_id, vendor_id } = req.body;
 
+    console.log(req.body, 'req');
+
     try {
         // Check if a review with the provided 'id' exists
         const existingReview = await pool.query(
@@ -161,7 +163,6 @@ app.post('/addReview', async (req, res) => {
             [id]
         );
 
-        console.log(id);
         if (existingReview.rows.length === 0) {
             return res.status(404).json({ error: 'Review not found' });
         }

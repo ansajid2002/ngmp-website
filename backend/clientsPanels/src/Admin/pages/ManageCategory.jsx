@@ -14,6 +14,7 @@ const ManageCategory = ({ adminLoginData }) => {
   const [modalSubcategory, setModalSubcategories] = useState(false);
   const [UploadImageButtonModal, setUploadImageButtonModal] = useState(false);
   const [CategoryLoading, setCategoryLoading] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [fileList, setFileList] = useState([]);
   const [selectedKey, setSelectedKey] = useState(null);
   const [selectedSubKey, setSelectedSubKey] = useState(null);
@@ -37,28 +38,28 @@ const ManageCategory = ({ adminLoginData }) => {
   });
 
 
+  const fetchData = async (search) => {
+    try {
+      const url = `${AdminUrl}/api/getAllCatgeoryWithSubcategory?pageNumber=${pagination.current}&pageSize=${pagination.pageSize}&search=${search}`;
+      const categoryResponse = await fetch(url);
+      const result = await categoryResponse.json();
+
+      setData(result.data);
+      setPagination({
+        ...pagination,
+        total: result.total || 0,
+      });
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setLoading(false);
+    }
+  };
+
   // Fetch data using useEffect
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const url = `${AdminUrl}/api/getAllCatgeoryWithSubcategory?pageNumber=${pagination.current}&pageSize=${pagination.pageSize}`;
-        const categoryResponse = await fetch(url);
-        const result = await categoryResponse.json();
-
-        setData(result.data);
-        setPagination({
-          ...pagination,
-          total: result.total || 0,
-        });
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
-
     if (adminLoginData != null && adminLoginData.length > 0) {
-      fetchData();
+      fetchData('');
     }
   }, [adminLoginData, pagination.current, pagination.pageSize]);
 
@@ -258,7 +259,7 @@ const ManageCategory = ({ adminLoginData }) => {
             setSelectedSubKey(record.subcategory_id)
             setModalSubMaincategories(true)
           }} className='cursor-pointer'>
-            <p className='text-base text-blue-800'>View Subcategories ({record?.nested_subcategories?.length || 0})</p>
+            <p className='text-base text-blue-800'>View Nested Subcategories ({record?.nested_subcategories?.length || 0})</p>
           </div>
         </>
       ),
@@ -316,28 +317,28 @@ const ManageCategory = ({ adminLoginData }) => {
   ];
 
   const subcategory_main_columns = [
-    {
-      title: "Actions",
-      key: "actions",
-      width: 120,
-      fixed: 'left',
-      render: (record) => (
-        <Space size="middle" className="flex">
-          {/* Edit Icon */}
-          <FiEdit3
-            onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
-            className="text-green-600 w-6 h-6 cursor-pointer"
-          />
+    // {
+    //   title: "Actions",
+    //   key: "actions",
+    //   width: 120,
+    //   fixed: 'left',
+    //   render: (record) => (
+    //     <Space size="middle" className="flex">
+    //       {/* Edit Icon */}
+    //       {/* <FiEdit3
+    //         onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
+    //         className="text-green-600 w-6 h-6 cursor-pointer"
+    //       /> */}
 
-          {/* Delete Icon */}
-          <FiTrash2
-            onClick={() => handleSubcatModal(record.subcategory_id)} // Replace 'id' with 'category_id'
-            className="text-red-600 w-6 h-6 cursor-pointer"
-          />
-        </Space>
-      ),
-    },
-    { title: 'Sub Main category Name', dataIndex: 'nested_subcategory_name', key: 'nested_subcategory_name' },
+    //       {/* Delete Icon */}
+    //       <FiTrash2
+    //         onClick={() => handleSubcatModal(record.subcategory_id)} // Replace 'id' with 'category_id'
+    //         className="text-red-600 w-6 h-6 cursor-pointer"
+    //       />
+    //     </Space>
+    //   ),
+    // },
+    { title: 'Sub Main Category Name', dataIndex: 'nested_subcategory_name', key: 'nested_subcategory_name' },
 
     {
       title: 'Image',
@@ -673,6 +674,7 @@ const ManageCategory = ({ adminLoginData }) => {
 
   const handleSaveCategories = async () => {
     try {
+      setButtonLoading(true)
       // Validate the form fields
       form.validateFields().then(async values => {
         if (selectedKey === null) {
@@ -693,16 +695,19 @@ const ManageCategory = ({ adminLoginData }) => {
             const result = await response.json();
 
             // Fetch the new data (for example, from the server response)
-            const newData = result.data;
+            const newData = result.addedSubcategories?.[0];
 
+            console.log(newData);
+            setPagination({ current: 1, total: 0, pageSize: 10 })
             // Append the new data to the existing data
             setData([
-              ...categoryData,
               {
-                category_id: newData.category_id,
+                category_id: newData?.category_id,
                 ...values,
               },
+              ...categoryData,
             ]);
+
 
             // Show success notification with SweetAlert
             Swal.fire({
@@ -777,13 +782,13 @@ const ManageCategory = ({ adminLoginData }) => {
 
     } catch (error) {
       // Handle validation errors or other exceptions
-      console.error('Error:', error);
-      // Show an error message to the user
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Failed to add categories. Please check the form and try again.',
       });
+    } finally {
+      setButtonLoading(false)
     }
   };
 
@@ -858,7 +863,6 @@ const ManageCategory = ({ adminLoginData }) => {
     setSelectedSubKey(key);
     setDeleteSubcategoryModal(true);
   };
-
 
   const handleDeleteSubcategoryLogic = async (subcategory_id) => {
     try {
@@ -957,11 +961,20 @@ const ManageCategory = ({ adminLoginData }) => {
     fetchData();
   }, []);
 
+  const handleCategoryFind = (e) => {
+    const query = e.target.value
+    fetchData(query)
+  }
   return (
-    <div className="mt-10 sm:ml-72 sm:p-0 p-4 mb-44 ">
-      <h1 className="text-4xl text-gray-700 font-bold mb-10">
-        Manage Category
-      </h1>
+    <div className="sm:ml-72 sm:p-0 p-4 mb-44 ">
+      <div className='md:flex  justify-between items-center space-y-5 py-10'>
+        <h1 className="text-4xl text-gray-700 font-bold">
+          Manage Category
+        </h1>
+        <div className='w-full md:w-1/2'>
+          <Input.Search onChange={handleCategoryFind} placeholder='Search by Category name, Subcategory name, Nested Category name' />
+        </div>
+      </div>
 
       <button
         onClick={handleCreate}
@@ -1004,7 +1017,8 @@ const ManageCategory = ({ adminLoginData }) => {
         onCancel={() => setModalVisible(false)}
         okText={selectedKey === null ? "Create" : "Update"}
         width={1200}
-        okButtonProps={{ style: { backgroundColor: "green" } }}
+        okButtonProps={{ style: { backgroundColor: "green" }, disabled: loading }}
+
       >
         <Form {...formItemLayout} form={form}>
           {/* Category Type Input */}

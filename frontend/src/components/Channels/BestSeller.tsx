@@ -15,6 +15,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { fetchCategoriesAndSubcategories, getAllProducts } from "@/app/page";
 import ProductCard from "../ProductCard";
+import { t } from "i18next";
 
 const BestSeller = () => {
   const [activeTab, setActiveTab] = React.useState(0);
@@ -120,7 +121,7 @@ const BestSeller = () => {
       <div className="md:flex items-center md:justify-between">
         <div className="md:flex items-center">
           <h1 className="text-sm font-semibold mr-2  text-gray-600">
-            Best Sellers
+            {t("Best Sellers")}
           </h1>
           <Tabs
             activeTab={activeTab}
@@ -129,14 +130,14 @@ const BestSeller = () => {
           >
             {tabLabels.map((label, index) => (
               <Tab key={index} className="text-sm border-none focus:ring-0">
-                {label}
+                {t(`${label}`)}
               </Tab>
             ))}
           </Tabs>
         </div>
         <div className="md:flex py-2 justify-center items-center">
           <h1 className="text-sm mb-2 md:mb-0 font-semibold mr-2 text-gray-600">
-            Filter by category
+           {t("Filter by category")}
           </h1>
           <Menu
             dismiss={{

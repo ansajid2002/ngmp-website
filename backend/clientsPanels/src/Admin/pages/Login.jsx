@@ -12,9 +12,11 @@ const Login = () => {
     const [filteredLinks, setfilteredLinks] = useState([]);
     const [error, seterror] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [qrcode, setQrcode] = useState(null);
+    const [secret, setSecret] = useState(null);
 
     const onFinish = async (values) => {
-        const { email, password } = values;
+        const { email, password, auth_code } = values;
         setLoading(true);
 
         try {
@@ -26,6 +28,8 @@ const Login = () => {
                 body: JSON.stringify({
                     email,
                     password,
+                    auth_code,
+                    secret
                 }),
             });
 
@@ -58,7 +62,7 @@ const Login = () => {
             } else {
                 let timerInterval;
                 Swal.fire({
-                    title: 'Invalid Credentails',
+                    title: data.message,
                     icon: 'error',
                     timer: 2000,
                     timerProgressBar: true,
@@ -80,6 +84,28 @@ const Login = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchSecretQr = async () => {
+            try {
+                const response = await fetch(`${AdminUrl}/api/totp-secret`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json()
+                    setQrcode(data?.Qrcode)
+                    setSecret(data?.secret)
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchSecretQr()
+    }, [])
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
@@ -156,6 +182,17 @@ const Login = () => {
                         >
                             <Input.Password placeholder="Password" className="w-full mb-4 px-3 py-2 border rounded" />
                         </Form.Item>
+
+                        <div className='flex flex-col justify-center'>
+                            <h1 className='text-center text-xl font-semibold'>Two Step Verification</h1>
+                            <Image src={qrcode} />
+                            <Form.Item
+                                name="auth_code"
+                                rules={[{ required: true, message: 'Please input code' }]}
+                            >
+                                <Input type='number' placeholder="Enter Code receive on Authenticator App" className="w-full mb-4 px-3 py-2 border rounded" />
+                            </Form.Item>
+                        </div>
                         <Form.Item>
                             <Button type="primary" loading={loading} htmlType="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 flex justify-center items-center">
                                 Login

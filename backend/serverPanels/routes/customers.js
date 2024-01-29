@@ -1571,4 +1571,43 @@ app.get('/usersList', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+app.post('/checkCustomerNilePin', async (req, res) => {
+  try {
+    // Extract the customer_id and otp from the request body
+    const { customer_id, otp } = req.body;
+
+    // Query to fetch customer details from the customers table
+    const query = 'SELECT nile_pin FROM customers WHERE customer_id = $1';
+    const { rows } = await pool.query(query, [customer_id]);
+
+    console.log(req.body);
+    // Check if customer details are found
+    if (rows.length === 0) {
+      // Customer not found
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+
+    // Extract the nile_pin from the query result
+    const { nile_pin } = rows[0];
+
+    // Check if the provided OTP matches the nile_pin
+    if (nile_pin) {
+      if (parseInt(otp) === nile_pin) {
+        // OTP matches, send success response
+        res.status(200).json({ status: 200, success: true });
+      } else {
+        // OTP does not match, send error response
+        res.status(400).json({ status: 400, error: 'Invalid PIN' });
+      }
+    } else {
+      res.status(400).json({ status: 400, error: 'Kindly set Nile Pin...' });
+
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 module.exports = app;

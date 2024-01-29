@@ -72,8 +72,7 @@ const Policies = () => {
               href="/company/privacy-policy"
               target="blank"
               className="text-orange-900"
-            >
-              Privacy & Policy
+            > Privacy Policy
             </a>
           </h2>
         </>

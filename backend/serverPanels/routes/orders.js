@@ -441,30 +441,36 @@ app.get('/getAllCustomerOrder/:customer_id', async (req, res) => {
 
   try {
     const query = `
-        SELECT
-          vpo.*,
-          (
-            SELECT json_agg(cda.*)
-            FROM customer_delivery_address cda
-            WHERE vpo.order_id = cda.unique_order_id
-          ) AS shipping_address
-        FROM
-          vendorproductorder vpo
-        WHERE
-          vpo.customer_id = $1
-        ORDER BY
-          vpo.created_at DESC;
-      `;
+      SELECT
+        vpo.*,
+        (
+          SELECT json_agg(cda.*)
+          FROM customer_delivery_address cda
+          WHERE vpo.order_id = cda.unique_order_id
+        ) AS shipping_address
+      FROM
+        vendorproductorder vpo
+      WHERE
+        vpo.customer_id = $1
+      ORDER BY
+        vpo.created_at DESC;
+    `;
 
-    const getRatingofThatOrder = `SELECT * FROM ratings_and_reviews WHERE customer_id = $1`
-    const valueAppend = [customer_id]
+    const getRatingofThatOrder = `SELECT * FROM ratings_and_reviews WHERE customer_id = $1`;
+    const getVendorDetailsQuery = `SELECT email, vendor_username, vendorname, brand_name, shipping_address, company_country,  company_zip_code,company_state, business_phone, company_city, company_name FROM vendors WHERE id = $1`;
 
-    const getResultofRating = await pool.query(getRatingofThatOrder, valueAppend)
+    const valueAppend = [customer_id];
+
+    const getResultofRating = await pool.query(getRatingofThatOrder, valueAppend);
     const { rows } = await pool.query(query, [customer_id]);
 
-    rows.forEach(order => {
+    for (let order of rows) {
       order.ratings_and_reviews = getResultofRating.rows.filter(rating => parseInt(rating.rate_order_id) === parseInt(order.order_id) && rating.product_uniqueid != 'vendor');
-    });
+
+      // Fetch vendor details and append to order object
+      const vendorDetails = await pool.query(getVendorDetailsQuery, [order.vendor_id]);
+      order.vendor_details = vendorDetails.rows[0]; // Assuming there's only one vendor per order
+    }
 
     res.json(rows);
   } catch (error) {
@@ -472,6 +478,7 @@ app.get('/getAllCustomerOrder/:customer_id', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching data' });
   }
 });
+
 
 app.get("/customer-orders-by-month/:vendor_id", async (req, res) => {
   const { vendor_id } = req.params;
