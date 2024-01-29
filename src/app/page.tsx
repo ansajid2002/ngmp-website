@@ -14,6 +14,7 @@ import { Zap } from "lucide-react";
 import NewHeroSection from "@/components/SectionHero/NewHeroSection";
 import NewHeroSectionMobile from "@/components/SectionHero/NewHeroSectionMobile";
 import { NextSeo } from 'next-seo';
+import { t } from "i18next";
 
 interface Subcategory {
   subcategory_id: number;
@@ -258,7 +259,7 @@ async function PageHome() {
         <SectionSliderProductCard
           ShowProduct={false}
           heading="Best Sellers"
-          subHeading="Best selling of the month"
+          subHeading={t("Best selling of the month")}
           data={getAllProductsData}
         />
 

@@ -17,6 +17,7 @@ import Link from "next/link";
 import { fetchCategoriesAndSubcategories } from "@/app/page";
 import { MessagesSquare, Search } from "lucide-react";
 import SupportCenterDropdown from "@/components/Header/SupportCenterDropdown";
+import { t } from "i18next";
 
 export interface NavMobileProps {
   data?: NavItemType[];
@@ -178,7 +179,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
           {renderMagnifyingGlassIcon()}
           <input
             type="search"
-            placeholder="Type and press enter"
+            placeholder={t("Type and press enter")}
             className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-sm "
           />
         </div>
@@ -243,17 +244,17 @@ const NavMobile: React.FC<NavMobileProps> = ({
       <div className="relative h-auto p-5">
         <ul className=" flex flex-col gap-1 ">
           <Link href={"/Channel/best-sellers"} onClick={onClickClose}>
-            <li className="text-lg font-medium">Best Sellers</li>
+            <li className="text-lg font-medium">{t("Best Sellers")}</li>
           </Link>
           <Link href={"/Channel/new-arrivals"} onClick={onClickClose}>
-            <li className="text-lg font-medium">New Arrivals</li>
+            <li className="text-lg font-medium">{t("New Arrivals")}</li>
           </Link>
           {/* <Link href={"#"}> */}
           <li
             onClick={toggleDropdown}
             className="flex items-center justify-between"
           >
-            <span className="text-lg font-medium">Category</span>
+            <span className="text-lg font-medium">{t("Category")}</span>
             <ChevronDownIcon
               className={
                 isOpen
@@ -276,7 +277,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
                   .replace(
                     /\s/g,
                     ""
-                  )}/${option.subcategories[0].subcategory_name
+                  )}/${option.subcategories[0]?.subcategory_name
                   .replace(/[^\w\s]/g, "")
                   .replace(/\s/g, "")}`}
               >

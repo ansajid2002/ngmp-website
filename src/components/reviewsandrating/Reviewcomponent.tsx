@@ -17,7 +17,7 @@ const Reviewcomponent = ({ product_id, showmorebtn = false, vendorID }) => {
     const [isOpenModalViewAllReviews, setIsOpenModalViewAllReviews] = useState(false)
     // const [showMore, setShowMore] = useState(false)
     const { customerData } = useAppSelector((state) => state.customerData);
-    const customer_id = customerData.customer_id
+    const customer_id = customerData?.customer_id
     const openModal = (image: any) => {
         setSelectedImage(image);
         setModalVisible(true);

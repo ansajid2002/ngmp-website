@@ -23,6 +23,7 @@ import SupportCenterDropdown from "./SupportCenterDropdown";
 import PopularSearches from "./Search/PopularSearches";
 import SearchList from "./Search/SearchList";
 import MobileSearch from "./Search/MobileSearch";
+import { t } from "i18next";
 
 const MainNav2Logged = () => {
   const inputRef = createRef<HTMLInputElement>();
@@ -117,7 +118,7 @@ const MainNav2Logged = () => {
             <input
               ref={inputRef}
               type="text"
-              placeholder="Type and press enter"
+              placeholder={t("Type and press enter")}
               value={searchText}
               className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-base"
               onChange={(e) => handleSearchInput(e.target.value)}
@@ -137,7 +138,7 @@ const MainNav2Logged = () => {
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center -z-[99] transition-all duration-150 ease-in-out"></div>
             <div
               ref={searchNode}
-              className="w-full p-4 bg-white rounded-lg shadow-lg  h-96 overflow-hidden overflow-y-auto w-full z-[99999999]"
+              className=" p-4 bg-white rounded-lg shadow-lg  h-96 overflow-hidden overflow-y-auto w-full z-[99999999]"
             >
               {searchText.trim() === "" ? (
                 <PopularSearches />
@@ -215,9 +216,9 @@ const MainNav2Logged = () => {
           /> */}
           <Truck strokeWidth={1} className="text-[#ADFFA2]" size={35} />
           <h1 className="text-[15px] leading-tight md:text-[16px] text-[#ADFFA2] font-semibold">
-            Free Shipping on all Orders
+           {t("Free Shipping on all Orders")}
             <br />
-            Time-limited offer
+            {t("Time-limited offer")}
           </h1>
         </div>
         <GitCommitVertical
@@ -233,8 +234,8 @@ const MainNav2Logged = () => {
           /> */}
           <PackageCheck strokeWidth={1} className="text-[#FFF7A7]" size={35} />
           <h1 className="text-[12px] leading-tight md:text-[16px] text-[#FFF7A7] font-semibold">
-            Delivery Guarantee <br />
-            Refund for any issues
+            {t("Delivery Guarantee")} <br />
+            {t("Refund for any issues")}
           </h1>
         </div>
         <GitCommitVertical
@@ -250,7 +251,7 @@ const MainNav2Logged = () => {
           /> */}
           <Smartphone strokeWidth={1} className="text-[#FFF7A7]" size={35} />
           <h1 className="text-[12px] md:text-[16px] text-[#FFF7A7] font-semibold">
-            Get The Nile App
+            {t("Get The Nile App")}
           </h1>
         </div>
       </section>

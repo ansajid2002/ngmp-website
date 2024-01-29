@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Heading from "../Heading";
 import Link from "next/link";
+import { t } from "i18next";
 
 const CategoryPageSlick = ({ newcategoriesdata }) => {
   // console.log(newcategoriesdata)
@@ -76,17 +77,15 @@ const CategoryPageSlick = ({ newcategoriesdata }) => {
                   className="text-center"
                 >
                   <div className=" overflow-hidden mx-auto border h-[100px] w-[100px] lg:w-[140px] lg:h-[140px] rounded-full flex items-center justify-center">
-                    <Image
-                      width={130}
-                      height={130}
-                      className=" object-cover rounded-md"
+                    <img
+                      className=" h-full w-full object-cover rounded-full"
                       src={`${AdminUrl}/uploads/CatgeoryImages/${single.category_image_url}`}
                       alt={single.category_name}
                     />
                   </div>
                   <div className="">
                     <span className="text-[1rem] text-center leading-4 text-black font-medium mt-2">
-                      {single.category_name}
+                     {t(`${single.category_name}`)} 
                     </span>
                   </div>
                 </Link>

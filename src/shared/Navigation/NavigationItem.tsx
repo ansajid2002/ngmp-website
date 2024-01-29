@@ -14,6 +14,8 @@ import { useDispatch } from "react-redux";
 import { addCarts } from "@/redux/slices/cartSlice";
 import { updateproductsListwishlist } from "@/redux/slices/wishlistSlice";
 import { useParams, useSearchParams } from "next/navigation";
+import { t } from "i18next";
+import { changeLanguage } from "@/utils/i18nextfile";
 
 export interface NavItemType {
   id: string;
@@ -56,6 +58,27 @@ const NavigationItem: FC<NavigationItemProps> = ({
   };
 
   const storedDistrict = localStorage.getItem('selectedDistrict') || '';
+
+  console.log(storedDistrict,"storedDistrict");
+
+  useEffect(() => {
+    const ChangeLanguageIcon = () => {
+      const lcode = localStorage.getItem('selectedLanguage');
+      const lname = localStorage.getItem('selectedLanguagename');
+  
+      if (lcode) {
+        changeLanguage(lcode);
+        dispatch(
+          setLanguage({
+            newlanguageCode: lcode,
+            newlanguageName: lname, // Assuming you meant to use lname here
+          })
+        );
+      }
+    };
+  
+    ChangeLanguageIcon();
+  }, []);
 
   useEffect(() => {
     const fetchCart = async (customerId: any) => {
@@ -169,7 +192,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
                         className="rounded-full mr-3"
                         width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} /> */}
                     <p className="font-medium text-black/70 dark:text-neutral-200 text-base ">
-                      Featured
+                      {t("Featured")}
                     </p>
                     <ChevronRightIcon
                       className="ml-1 -mr-1 h-4 w-4 text-gray-400"
@@ -191,7 +214,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
                         className="rounded-full mr-3"
                         width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} /> */}
                       <p className="font-medium text-black/70 dark:text-neutral-200 text-base">
-                        {item.category_name}
+                        {t(`${item.category_name}`)}
                       </p>
                       <ChevronRightIcon
                         className="ml-1 -mr-1 h-4 w-4 text-gray-400"
@@ -207,7 +230,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
               <div className="mt-8 w-2/3 overflow-y-scroll">
                 {categoryTitle && (
                   <h1 className="text-2xl font-semibold text-center mb-12">
-                    {categoryTitle}
+                    {t(`${categoryTitle}`)}
                   </h1>
                 )}
                 <div className="flex   flex-wrap ">
@@ -229,16 +252,15 @@ const NavigationItem: FC<NavigationItemProps> = ({
                             target="_blank"
                           >
                             <div className="h-32 w-32">
-                              <Image
-                                className="mx-auto h-full w-full object-contain rounded-full border border-gray-300  transition hover:scale-105"
-                                width={150}
-                                height={150}
+                              <img
+                                className="mx-auto h-full w-full object-cover rounded-full border border-gray-300  transition hover:scale-105"
+                               
                                 src={imageUrl}
                                 alt={singlesubcat.subcategory_name}
                               />
                             </div>
                             <h1 className="font-semibold text-[14px] line-clamp-2 text-center mt-2">
-                              {singlesubcat.subcategory_name}
+                              {t(`${singlesubcat.subcategory_name}`)}
                             </h1>
                           </Link>
                         </div>
@@ -400,10 +422,9 @@ const NavigationItem: FC<NavigationItemProps> = ({
             <div className="w-1/4 h-[5px] rounded-full absolute bottom-0 bg-orange-500"></div>
           )}
           {subcatname && item.slug === "categories"
-            ? subcatname
-            : category && item.slug === "categories"
-              ? category
-              : item.name}
+  ? t(`${subcatname}`)   : category && item.slug === "categories"
+  ? t(`${category}`)
+  : t(`${item.name}`)}
 
           {item.type && (
             <ChevronDownIcon

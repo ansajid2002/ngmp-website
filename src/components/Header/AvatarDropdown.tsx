@@ -26,11 +26,13 @@ import {
 } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import { formatCurrency } from "../AvailableToken";
+import { t } from "i18next";
 
 export default function AvatarDropdown() {
   const customerData = useAppSelector((state) => state.customerData);
   const [profileImage, setImage] = useState('/avatarplaceholder.png');
-
+  console.log(customerData,"CUSTOMERDATA");
+  
   const navigation = useRouter();
   const {
     given_name = "",
@@ -40,6 +42,8 @@ export default function AvatarDropdown() {
     picture = "",
     google_id,
   } = customerData?.customerData || {};
+  console.log(given_name,"gname");
+  
 
   const { walletTotal } = useAppSelector((state) => state.wallet);
 
@@ -81,14 +85,14 @@ export default function AvatarDropdown() {
 
               <div className="right-2tCoT hidden lg:flex justify-start flex-col">
                 <div className="">
-                  <div className="hello-7Ci9B textColor-3r-He line-clamp-1">
-                    <p className="line-clamp-1">
-                      {given_name ? `${given_name}` : <Skeleton />}
+                  <div className="text-xs textColor-3r-He line-clamp-1">
+                    <p className="line-clamp-1 mb-0.5">
+                      {given_name ? `${given_name}` : "Sign In "}
                     </p>
                   </div>
                 </div>
-                <div className="title-1fzdZ textColor-3r-He titleCls-2B1Yu">
-                  <p className=" line-clamp-1">Orders &amp; Account</p>
+                <div className="text-xs font-bold">
+                  <p className=" line-clamp-1">Account</p>
                 </div>
               </div>
             </Popover.Button>
@@ -134,7 +138,7 @@ export default function AvatarDropdown() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium ">
-                          {"My Account"}
+                          {t("My Account")}
                         </p>
                       </div>
                     </Link>
@@ -149,7 +153,7 @@ export default function AvatarDropdown() {
                         <Wallet size={20} className="text-green-700" />
                       </div>
                       <div className="ml-4">
-                        <p className="text-sm font-bold text-green-700">{"Wallet"} {formatCurrency(walletTotal)}</p>
+                        <p className="text-sm font-bold text-green-700">{t("Wallet")} {formatCurrency(walletTotal)}</p>
                       </div>
                     </Link>
                     {/* ------------------ 2 --------------------- */}
@@ -162,7 +166,7 @@ export default function AvatarDropdown() {
                         <Container size={20} />
                       </div>
                       <div className="ml-4">
-                        <p className="text-sm font-medium ">{"My Order"}</p>
+                        <p className="text-sm font-medium ">{t("My Order")}</p>
                       </div>
                     </Link>
 
@@ -176,7 +180,7 @@ export default function AvatarDropdown() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium ">
-                          {"My Reviews"}
+                          {t("My Reviews")}
                         </p>
                       </div>
                     </Link>
@@ -192,7 +196,7 @@ export default function AvatarDropdown() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium ">
-                          {"Followed Shops"}
+                          {t("Followed Shops")}
                         </p>
                       </div>
                     </Link>
@@ -208,7 +212,7 @@ export default function AvatarDropdown() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium ">
-                          {"Select District"}
+                          {t("Select District")}
                         </p>
                       </div>
                     </Link>
@@ -223,7 +227,7 @@ export default function AvatarDropdown() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium ">
-                          {"Addresses"}
+                          {t("Addresses")}
                         </p>
                       </div>
                     </Link>
@@ -238,7 +242,7 @@ export default function AvatarDropdown() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium ">
-                          {"Notifications"}
+                          {t("Notifications")}
                         </p>
                       </div>
                     </Link>
@@ -253,7 +257,7 @@ export default function AvatarDropdown() {
                         <Heart size={20} />
                       </div>
                       <div className="ml-4">
-                        <p className="text-sm font-medium ">{"Wishlist"}</p>
+                        <p className="text-sm font-medium ">{t("Wishlist")}</p>
                       </div>
                     </Link>
 
@@ -267,7 +271,7 @@ export default function AvatarDropdown() {
                         <Info size={20} />
                       </div>
                       <div className="ml-4">
-                        <p className="text-sm font-medium ">{"Help"}</p>
+                        <p className="text-sm font-medium ">{t("Help")}</p>
                       </div>
                     </Link>
 
@@ -284,7 +288,7 @@ export default function AvatarDropdown() {
                         <div className="ml-4">
                           <p className="text-sm font-medium ">
                             <Link href={"/api/auth/signout"}>
-                              {"Log out"}
+                              {t("Log out")}
                             </Link>
                           </p>
                         </div>

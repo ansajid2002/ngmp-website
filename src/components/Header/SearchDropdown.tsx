@@ -1,5 +1,6 @@
 import { Popover, Transition } from "@/app/headlessui";
 import Input from "@/shared/Input/Input";
+import { t } from "i18next";
 import React, { FC, Fragment } from "react";
 
 interface Props {
@@ -64,7 +65,7 @@ const SearchDropdown: FC<Props> = ({ className = "" }) => {
                     <Input
                       ref={inputRef}
                       type="search"
-                      placeholder="Type and press enter"
+                      placeholder={t("Type and press enter")}
                     />
                     <input type="submit" hidden value="" />
                   </form>
