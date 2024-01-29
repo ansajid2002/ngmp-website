@@ -5,7 +5,7 @@ import {
   ArrowRight,
   ArrowRightLeft,
 } from "lucide-react";
-import { Button, Modal } from "antd";
+import { Button, Input, InputNumber, Modal } from "antd";
 import { AdminUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import Swal from "sweetalert2";
@@ -20,12 +20,19 @@ const TokenTransferChat = ({ singleUser, walletTotal }: any) => {
   const [amount, setAmount] = React.useState(null);
   const [error, setError] = React.useState('');
   const [buttonLoader, setButtonLoader] = React.useState(false);
+
+  const [pin, setPin] = useState('');
+
+  const [showPin, setShowPin] = useState(false);
+
+
   const router = useRouter()
 
   const dispatch = useDispatch()
   const showModal = () => {
     setIsModalOpen(true);
   };
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -52,24 +59,7 @@ const TokenTransferChat = ({ singleUser, walletTotal }: any) => {
     setAmount(sanitizedText);
   };
 
-  const handleSend = async () => {
-    if (amount && amount === 0) {
-      Swal.fire({
-        text: 'Send at least 1 token...',
-        icon: 'error'
-      })
-      return
-    }
-    if (error.trim() !== '') {
-
-      Swal.fire({
-        text: error,
-        icon: 'error'
-      })
-      return
-    }
-    // Handle sending logic here
-    setButtonLoader(true)
+  const tokentransaction = async () => {
     const currentDatetime = new Date().toISOString();
 
     try {
@@ -111,10 +101,75 @@ const TokenTransferChat = ({ singleUser, walletTotal }: any) => {
       setAmount(null)
       setError('')
     }
+  }
 
+  const handleSend = async () => {
+    if (!amount) {
+      Swal.fire({
+        text: 'Send at least 1 token...',
+        icon: 'error'
+      })
+      return
+    }
+    if (error.trim() !== '') {
+
+      Swal.fire({
+        text: error,
+        icon: 'error',
+      })
+      return
+    }
+
+    setShowPin(true)
   };
 
 
+
+  // Formatter function to limit input to 4 digits
+  const pinFormatter = value => (value ? String(value).slice(0, 4) : '');
+
+  // Parser function to parse input to number
+  const pinParser = value => Number(value);
+
+  const handlePinOk = async () => {
+    try {
+      // Construct the request payload
+      const payload = {
+        customer_id: customerData?.customer_id, // Assuming customer_id is available in the scope
+        otp: pin
+      };
+
+      // Make a POST request to your backend endpoint
+      const response = await fetch(`/api/Issue-Invoice/checkpin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Include any additional headers if needed
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // Check the response status
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 200) {
+          tokentransaction()
+        } else {
+          // alert(data.error)
+          Swal.fire({
+            text: data.error,
+            icon: 'error',
+          })
+        }
+
+      } else {
+        const errorMessage = await response.json(); // Extract error message from response
+        alert(errorMessage.error); // Display error message in an Alert
+      }
+    } catch (error) {
+      alert('Failed to verify OTP. Please try again.'); // Display a generic error message for other errors
+    }
+  }
   return (
     <>
       {singleUser ? (
@@ -249,6 +304,24 @@ const TokenTransferChat = ({ singleUser, walletTotal }: any) => {
                   </Button>
                 </div>
               </div>
+            </Modal>
+
+            <Modal
+              title="Enter 4-Digit PIN"
+              visible={showPin}
+              onOk={handlePinOk}
+              okButtonProps={{ style: { background: 'blue' } }}
+              onCancel={() => setShowPin(false)}
+              confirmLoading={buttonLoader}
+            >
+              <InputNumber
+                min={0}
+                max={9999}
+                formatter={pinFormatter}
+                parser={pinParser}
+                onChange={value => setPin(value)}
+                value={pin}
+              />
             </Modal>
           </div>
 
