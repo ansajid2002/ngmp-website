@@ -10,7 +10,7 @@ import {
   RiVoiceprintFill,
   RiWallet2Fill,
 } from "react-icons/ri";
-import { FiEdit3 } from "react-icons/fi";
+import { FiEdit2, FiEdit3 } from "react-icons/fi";
 import Cookies from "js-cookie";
 import { FaDesktop, FaHandPaper, FaHandRock, FaMobile, FaTruckLoading, FaUserCheck } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
@@ -21,6 +21,7 @@ export const ProductImageUrl = "https://ngmp-products.s3.us-east-005.backblazeb2
 
 export const links = [
   {
+    id: 1,
     title: "Main",
     links: [
       {
@@ -29,7 +30,6 @@ export const links = [
         icon: <AiOutlinePieChart />,
         to: "/Admin",
       },
-
       {
         id: 3,
         name: "Category",
@@ -42,8 +42,12 @@ export const links = [
         icon: <RiFlagFill />,
         to: "/Admin/attributes",
       },
-
-
+      {
+        id: 11,
+        name: "Specifications",
+        icon: <FiEdit2 />,
+        to: "/Admin/Settings?mode=Specification",
+      },
       {
         id: 10,
         name: "Roles & Permissons",
@@ -53,6 +57,7 @@ export const links = [
     ],
   },
   {
+    id: 2,
     title: 'Manage',
     links: [
       {
@@ -61,28 +66,21 @@ export const links = [
         icon: <AiOutlineUserAdd />,
         dropdown: true,
         dropList: [
-          { name: "View Vendors", to: "/Admin/Vendors" },
-          {
-            name: "Approve/Reject Applications",
-            to: "/Admin/Vendors/Approval&Reject",
-          },
-          {
-            name: "Enable/Disable Accounts",
-            to: "/Admin/Vendors/vendorEnable",
-          },
-          { name: "", to: "/Admin/Vendors/viewDetails" },
-          { name: "Product Approval", to: "/Admin/Products/AcceptReject" },
-          { name: "Bulk Product Approval", to: "/Admin/Products/BulkApprove" },
+          { id: 1, name: "View Vendors", to: "/Admin/Vendors" },
+          { id: 2, name: "Approve/Reject Applications", to: "/Admin/Vendors/Approval&Reject" },
+          { id: 3, name: "Enable/Disable Accounts", to: "/Admin/Vendors/vendorEnable" },
+          { id: 4, name: "", to: "/Admin/Vendors/viewDetails" },
+          { id: 5, name: "Product Approval", to: "/Admin/Products/AcceptReject" },
+          { id: 6, name: "Bulk Product Approval", to: "/Admin/Products/BulkApprove" },
         ],
       },
-
       {
         id: 6,
         name: "Orders",
         icon: <RiFileList3Line />,
         dropdown: true,
         dropList: [
-          { name: "View Orders", to: "/Admin/Orders/all" },
+          { id: 7, name: "View Orders", to: "/Admin/Orders/all" },
           // { name: "Track Orders", to: "/Admin/Orders/track" },
         ],
       },
@@ -91,22 +89,25 @@ export const links = [
         name: "Customer",
         icon: <FaUserCheck />,
         dropdown: true,
-        dropList: [{ name: "View Customers", to: "/Admin/customers" }, { name: "Customers Address", to: "/Admin/customersAddress" }],
-
+        dropList: [
+          { id: 8, name: "View Customers", to: "/Admin/customers" },
+          { id: 9, name: "Customers Address", to: "/Admin/customersAddress" },
+        ],
       },
     ]
   },
   {
+    id: 3,
     title: 'Claims',
     links: [
       {
-        id: 14,
+        id: 10,
         name: "Vendors Claims",
         icon: <RiVoiceprintFill />,
         to: "/Admin/VendorClaimsAdimin",
       },
       {
-        id: 16,
+        id: 11,
         name: "Customers Claims",
         icon: <RiVoiceprintFill />,
         to: "/Admin/CustomerClaimAdimin",
@@ -114,10 +115,11 @@ export const links = [
     ]
   },
   {
+    id: 4,
     title: 'Manage Wallet',
     links: [
       {
-        id: 14,
+        id: 12,
         name: "Customer Wallet",
         icon: <RiWallet2Fill />,
         to: "/Admin/Customers/Wallet",
@@ -125,28 +127,29 @@ export const links = [
     ]
   },
   {
+    id: 5,
     title: 'Manage Loading Screen',
     links: [
       {
-        id: 11,
+        id: 13,
         name: "App Loading Screen",
         icon: <AiOutlineLoading3Quarters />,
         to: "/Admin/AppLoading",
       },
-
     ]
   },
   {
+    id: 6,
     title: 'Manage Banner',
     links: [
       {
-        id: 11,
+        id: 14,
         name: "Desktop",
         icon: <FaDesktop />,
         to: "/Admin/HomeBanner",
       },
       {
-        id: 13,
+        id: 15,
         name: "Mobile",
         icon: <FaMobile />,
         to: "/Admin/MobileBanner",
@@ -154,43 +157,43 @@ export const links = [
     ]
   },
   {
+    id: 7,
     title: 'V-C Chats',
     links: [
       {
-        id: 15,
+        id: 16,
         name: "Chats",
         icon: <RiChatSmile2Fill />,
         to: "/Admin/AdminChatwithCustomers",
       },
-
     ]
   },
   {
+    id: 8,
     title: 'Manage Delivery',
     links: [
       {
-        id: 25,
+        id: 17,
         name: "Deliver Order",
         icon: <RiChatSmile2Fill />,
         to: "/Admin/OrderDelivery",
       },
-
     ]
   },
   {
+    id: 9,
     title: 'Upload Languages Files',
     links: [
       {
-        id: 26,
+        id: 18,
         name: "Languages Files",
         icon: <IoLanguage />,
         to: "/Admin/Languages",
       },
-
     ]
   },
-
 ];
+
 
 export const adminData = async () => {
   const loggedId = Cookies.get("adminData");

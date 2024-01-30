@@ -216,50 +216,83 @@ function authVerify(secret, token) {
 
 app.post("/api/superadminLogin", async (req, res) => {
   try {
-    const { email, password, auth_code, secret } = req.body;
-    const verify_auth = authVerify(secret, auth_code)
+    const { email, password } = req.body;
     // Use the connection pool to check if the email exists in the database
     const loggedId = generateRandomNumber(); // Generate a 28-character random string
-    if (verify_auth) {
-      const result = await req.pool.query(
-        "SELECT * FROM superadmin WHERE email = $1",
-        [email]
-      );
 
-      if (result.rows.length > 0) {
-        const superAdminLogin = result.rows[0];
-        const hashedPassword = superAdminLogin.password; // Assuming the hashed password is stored in the 'password' field
+    const result = await req.pool.query(
+      "SELECT * FROM superadmin WHERE email = $1",
+      [email]
+    );
 
-        // Compare the hashed password with the input password
-        const passwordMatch = await bcrypt.compare(password, hashedPassword);
+    if (result.rows.length > 0) {
+      const superAdminLogin = result.rows[0];
+      const hashedPassword = superAdminLogin.password; // Assuming the hashed password is stored in the 'password' field
 
-        if (passwordMatch) {
-          // Passwords match, generate random string
-          // Update the 'loggedId' column with the generated random string
-          await req.pool.query(
-            'UPDATE superadmin SET "userId" = $1 WHERE email = $2',
-            [loggedId, email]
-          );
+      // Compare the hashed password with the input password
+      const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
-          // Return the updated superadmin data
-          res
-            .status(200)
-            .send({ status: 200, data: { ...superAdminLogin, loggedId } });
-        } else {
-          // Passwords do not match
-          res.status(400).send({ status: 400, message: "Invalid Password..." });
-        }
+      if (passwordMatch) {
+        // Passwords match, generate random string
+        // Update the 'loggedId' column with the generated random string
+        await req.pool.query(
+          'UPDATE superadmin SET "userId" = $1 WHERE email = $2',
+          [loggedId, email]
+        );
+
+        // Return the updated superadmin data
+        res
+          .status(200)
+          .send({ status: 200, data: { ...superAdminLogin, loggedId } });
       } else {
-        res.status(400).send({ status: 400, message: "Email does not exist." });
+        // Passwords do not match
+        res.status(400).send({ status: 400, message: "Invalid Password..." });
       }
     } else {
-      res.status(400).send({ status: 400, message: "2FA is invalid" });
+      res.status(400).send({ status: 400, message: "Email does not exist." });
     }
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "Internal Server Error" });
   }
 });
+
+app.post('/api/checkAdmin2FA', async (req, res) => {
+  try {
+    const { admin_id, secret, auth_code } = req.body;
+
+    const query = "SELECT secret_key FROM superadmin WHERE id = $1";
+    const value = [admin_id];
+
+    const { rows } = await pool.query(query, value);
+
+    let verify = false;
+
+    if (rows.length > 0 && rows[0].secret_key) {
+      verify = authVerify(rows[0].secret_key, auth_code);
+    } else {
+      // Update the secret in the database
+      const updateQuery = "UPDATE superadmin SET secret_key = $1 WHERE id = $2";
+      const updateValues = [secret, admin_id];
+      await pool.query(updateQuery, updateValues);
+
+      // Assuming authVerify is an asynchronous function, you might want to wait for it to finish
+      verify = authVerify(secret, auth_code);
+    }
+
+    if (verify) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(400).json({ success: false });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 app.post("/api/getAdminData", async (req, res) => {
   try {

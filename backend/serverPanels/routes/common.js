@@ -4,6 +4,7 @@ const pool = require('../config')
 const bodyParser = require('body-parser');
 const fs = require('fs').promises;
 const cors = require('cors');
+const path = require('path');
 
 app.use(express.json())
 app.use(cors())
@@ -142,11 +143,12 @@ app.post('/deleteCategorySpecification', async (req, res) => {
 
         // Find the index of the category to delete
         const categoryIndex = parsedData.findIndex(item => item.category === categoryToDelete);
-        console.log(categoryToDelete);
+        console.log(categoryIndex, 'to del');
         if (categoryIndex !== -1) {
             // Remove the category from the array
             parsedData.splice(categoryIndex, 1);
 
+            console.log(parsedData);
             // Save the updated data back to the JSON file
             await fs.writeFile('./JSON/specifications.json', JSON.stringify(parsedData, null, 2), 'utf-8');
 
@@ -162,32 +164,130 @@ app.post('/deleteCategorySpecification', async (req, res) => {
 
 app.post('/addFieldSpecification', async (req, res) => {
     try {
-        const { category, newField } = req.body;
+        const { category, label, type, options } = req.body;
+        const specificationsFilePath = './JSON/specifications.json';
 
-        // Read the existing data from the JSON file
-        const existingData = await fs.readFile('./JSON/specifications.json', 'utf-8');
-
-        // Parse the JSON data
-        const parsedData = JSON.parse(existingData);
-
-        // Find the category
-        const categoryIndex = parsedData.findIndex((item) => item.category === category);
-
-        if (categoryIndex !== -1) {
-            // Add the new field to the category
-            parsedData[categoryIndex].fields.push(newField);
-
-            // Save the updated data back to the JSON file
-            await fs.writeFile('./JSON/specifications.json', JSON.stringify(parsedData, null, 2), 'utf-8');
-
-            res.status(200).json({ success: true, message: 'Field added successfully' });
-        } else {
-            res.status(404).json({ error: 'Category not found' });
+        let specificationsData = [];
+        try {
+            // Check if the file exists asynchronously
+            await fs.access(specificationsFilePath);
+            // If it exists, read the data
+            const fileContent = await fs.readFile(specificationsFilePath);
+            specificationsData = JSON.parse(fileContent);
+        } catch (error) {
+            // If the file doesn't exist, proceed with empty data
+            if (error.code !== 'ENOENT') {
+                throw error; // Re-throw error if it's not "file not found"
+            }
         }
+
+        // Check if category already exists
+        const existingCategory = specificationsData.find(spec => spec.category === category);
+        if (existingCategory) {
+            return res.status(200).json({ error: 'Category already exists.' });
+        }
+
+        // Prepare new field object
+        const newField = {
+            name: label.toLowerCase().replace(/\s/g, ''),
+            label,
+            type,
+            options: options && options.split(',').map(option => option.trim())
+        };
+
+        // Append new field to existing data or create new category
+        const newData = existingCategory
+            ? specificationsData.map(spec => spec.category === category ? { ...spec, fields: [...spec.fields, newField] } : spec)
+            : [...specificationsData, { category, fields: [newField] }];
+
+        // Write updated data to specifications file
+        await fs.writeFile(specificationsFilePath, JSON.stringify(newData, null, 2));
+
+        res.json({ success: true });
     } catch (error) {
         console.error('Error adding field:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
+
+app.post("/addFieldSpecificationinCATEGORY", async (req, res) => {
+    try {
+        const { category, label, type, options } = req.body;
+
+        const specificationsFilePath = './JSON/specifications.json';
+
+        // Read existing specifications data from JSON file
+        const specificationsData = await fs.readFile(specificationsFilePath, 'utf8');
+        const specifications = JSON.parse(specificationsData);
+
+        // Find the category object
+        const categoryIndex = specifications.findIndex(spec => spec.category === category);
+        if (categoryIndex === -1) {
+            return res.status(400).json({ error: 'Category not found' });
+        }
+
+
+        // Add the new field to the category object's fields array
+        specifications[categoryIndex].fields.push({ name: label?.toLowerCase().replace(/\s+/g, '-'), label, type, options });
+
+        // Write the updated specifications back to the JSON file
+        await fs.writeFile(specificationsFilePath, JSON.stringify(specifications, null, 2));
+
+        res.json({ success: true, message: 'Field added successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+app.post('/deleteFieldinCategory', async (req, res) => {
+    try {
+        const { field, fieldname, category } = req.body;
+
+        const specificationsFilePath = './JSON/specifications.json';
+
+        // Read the specifications.json file
+        let specificationsData = [];
+        try {
+            specificationsData = JSON.parse(await fs.readFile(specificationsFilePath));
+        } catch (error) {
+            console.error('Error reading specifications file:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        // Find the category in specificationsData
+        const categoryIndex = specificationsData.findIndex(spec => spec.category === category);
+        if (categoryIndex === -1) {
+            return res.status(404).json({ error: 'Category not found.' });
+        }
+
+        // Find the field in the category's fields array
+        const fieldIndex = specificationsData[categoryIndex].fields.findIndex(field => field.name === fieldname);
+        if (fieldIndex === -1) {
+            return res.status(404).json({ error: 'Field not found in the category.' });
+        }
+
+        // Remove the field from the category's fields array
+        specificationsData[categoryIndex].fields.splice(fieldIndex, 1);
+
+        // Update the specifications.json file
+        try {
+            await fs.writeFile(specificationsFilePath, JSON.stringify(specificationsData, null, 2));
+        } catch (error) {
+            console.error('Error writing specifications file:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        // Send success response
+        res.json({ success: true, message: 'Field deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting field in category:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 module.exports = app 

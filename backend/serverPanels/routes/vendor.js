@@ -2719,4 +2719,82 @@ app.post("/fetchCategoryProductsCount", async (req, res) => {
 });
 
 
+// Route handler to fetch product details by uniqueid
+app.get('/productDetailsByUniqueId/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Query to fetch product details based on uniqueid
+    const query = {
+      text: 'SELECT * FROM products WHERE uniquepid = $1',
+      values: [id],
+    };
+
+    // Execute the query
+    const result = await pool.query(query);
+
+    let AllProducts = []
+    // Check if any rows were returned
+    if (result.rows.length > 0) {
+      for (const product of result.rows) {
+        if (product.isvariant === "Variant") {
+          // Fetch variant data if product is a variant
+          const variantData = await fetchVariantData(pool, product.uniquepid);
+          if (variantData && variantData.length > 0) {
+            // Update product details with variant data
+            product.mrp = variantData[0].variant_mrp;
+            product.sellingprice = variantData[0].variant_sellingprice;
+            product.label = variantData[0].label; // Replace with the desired label
+
+            // Convert currency if not USD
+            if (product.currency_symbol !== 'USD') {
+              const mrpAsFloat = parseFloat(variantData[0].variant_mrp);
+              const sellingPriceAsFloat = parseFloat(variantData[0].variant_sellingprice);
+              if (!isNaN(mrpAsFloat) && !isNaN(sellingPriceAsFloat)) {
+                product.sellingprice = sellingPriceAsFloat.toFixed(2);
+                product.mrp = mrpAsFloat.toFixed(2);
+                product.currency_symbol = 'USD'; // Update the currency symbol
+              }
+            }
+          }
+        }
+
+        if (product.vendorid) {
+          // Fetch vendor info if vendor id is present
+          const vendorInfo = await fetchVendorInfo(pool, product.vendorid);
+          product.vendorInfo = vendorInfo;
+        }
+
+        // Convert currency to USD if not already
+        const sellingPriceAsFloat = parseFloat(product.sellingprice);
+        const mrpAsFloat = parseFloat(product.mrp);
+        if (!isNaN(sellingPriceAsFloat)) {
+          product.sellingprice = sellingPriceAsFloat.toFixed(2);
+          product.mrp = mrpAsFloat.toFixed(2);
+          product.currency_symbol = 'USD'; // Update the currency symbol
+        }
+
+        AllProducts.push(product);
+      }
+
+      // Fetch similar products based on category and subcategory
+      const similarProductsQuery = {
+        text: 'SELECT * FROM products WHERE category = $1 AND subcategory = $2 AND uniquepid != $3 LIMIT 5',
+        values: [AllProducts[0].category, AllProducts[0].subcategory, id],
+      };
+
+      const similarProductsResult = await pool.query(similarProductsQuery);
+      const similarProducts = similarProductsResult.rows;
+
+      // Send the product details along with similar products as response
+      res.status(200).json({ product: AllProducts[0], similarProducts });
+    } else {
+      res.status(404).json({ error: 'Product not found' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 module.exports = app;

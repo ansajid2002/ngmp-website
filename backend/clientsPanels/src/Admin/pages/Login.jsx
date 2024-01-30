@@ -3,20 +3,42 @@ import { useNavigate } from 'react-router-dom';
 import { AdminUrl, adminData, links } from '../constant';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
-import { Form, Input, Button, Checkbox, Image } from 'antd';
+import { Form, Input, Button, Checkbox, Image, Modal } from 'antd';
 
 const Login = () => {
-    const navigate = useNavigate();
 
     const [adminLoginData, setadminLoginData] = useState(null);
+    const [adminData_backend, setDAta] = useState(null);
     const [filteredLinks, setfilteredLinks] = useState([]);
     const [error, seterror] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
     const [qrcode, setQrcode] = useState(null);
     const [secret, setSecret] = useState(null);
+    const [auth_code, setauthcode] = useState(null);
+
+
+    const fetchSecretQr = async () => {
+        try {
+            const response = await fetch(`${AdminUrl}/api/totp-secret`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json()
+                setQrcode(data?.Qrcode)
+                setSecret(data?.secret)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const onFinish = async (values) => {
-        const { email, password, auth_code } = values;
+        const { email, password } = values;
         setLoading(true);
 
         try {
@@ -28,30 +50,18 @@ const Login = () => {
                 body: JSON.stringify({
                     email,
                     password,
-                    auth_code,
-                    secret
                 }),
             });
 
-            const data = await response.json();
-            if (data?.status === 200) {
-                Cookies.set('adminData', data.data.loggedId);
-                let timerInterval;
-                Swal.fire({
-                    title: 'Logged Successfully',
-                    icon: 'success',
-                    timer: 2000,
-                    timerProgressBar: true,
-                    didOpen: () => {
-                        Swal.showLoading();
-                        timerInterval = setInterval(() => {
-                            window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404';
-                        }, 1500);
-                    },
-                    willClose: () => {
-                        clearInterval(timerInterval);
-                    },
-                });
+            const data_response = await response.json();
+            if (data_response?.status === 200) {
+                setModalVisible(true)
+                const { data } = data_response
+                setDAta(data)
+                if (!data.secret_key) {
+                    fetchSecretQr()
+                }
+
             } else if (data?.error) {
                 Swal.fire({
                     title: 'Internal Server Error..',
@@ -84,28 +94,29 @@ const Login = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchSecretQr = async () => {
-            try {
-                const response = await fetch(`${AdminUrl}/api/totp-secret`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+    // useEffect(() => {
+    //     const fetchSecretQr = async () => {
+    //         try {
+    //             const response = await fetch(`${AdminUrl}/api/totp-secret`, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //             });
 
-                if (response.ok) {
-                    const data = await response.json()
-                    setQrcode(data?.Qrcode)
-                    setSecret(data?.secret)
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
+    //             if (response.ok) {
+    //                 const data = await response.json()
+    //                 setQrcode(data?.Qrcode)
+    //                 setSecret(data?.secret)
+    //             }
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     }
 
-        fetchSecretQr()
-    }, [])
+    //     fetchSecretQr()
+    // }, [])
+
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
@@ -156,6 +167,53 @@ const Login = () => {
         }
     }, [adminLoginData, error]);
 
+    const handleOkVerify = async () => {
+        try {
+            // 1. send secret and token auth_code, admin id to backend
+            const response = await fetch(`${AdminUrl}/api/checkAdmin2FA`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    admin_id: adminData_backend?.id,
+                    secret,
+                    auth_code
+                }),
+            });
+
+            if (response.ok) {
+                Cookies.set('adminData', adminData_backend?.loggedId);
+                let timerInterval;
+                Swal.fire({
+                    title: 'Logged Successfully',
+                    icon: 'success',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        timerInterval = setInterval(() => {
+                            window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404';
+                        }, 1500);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                    },
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Invalid Code...',
+                    icon: 'error',
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className=' w-full max-w-md'>
@@ -183,18 +241,7 @@ const Login = () => {
                             <Input.Password placeholder="Password" className="w-full mb-4 px-3 py-2 border rounded" />
                         </Form.Item>
 
-                        <div className='flex flex-col justify-center w-full'>
-                            <h1 className='text-center text-xl font-semibold'>Two Step Verification</h1>
-                            <div className='flex flex-col justify-center w-full'>
-                                <Image src={qrcode} width={200} height={200} />
-                            </div>
-                            <Form.Item
-                                name="auth_code"
-                                rules={[{ required: true, message: 'Please input code' }]}
-                            >
-                                <Input type='number' placeholder="Enter Code receive on Authenticator App" className="w-full mb-4 px-3 py-2 border rounded" />
-                            </Form.Item>
-                        </div>
+
                         <Form.Item>
                             <Button type="primary" loading={loading} htmlType="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2 flex justify-center items-center">
                                 Login
@@ -203,8 +250,41 @@ const Login = () => {
                     </Form>
                 </div>
             </div>
+
+            <Modal
+                visible={modalVisible}
+                onCancel={() => setModalVisible(false)}
+                title={'2FA Verification'}
+                okText='Verify'
+                onOk={handleOkVerify}
+                okButtonProps={{ style: { background: 'green' } }}
+            >
+                <div className='flex flex-col justify-center w-full p-2'>
+                    <h1 className='text-center text-xl font-semibold'>Two Step Verification</h1>
+                    {
+                        adminData_backend && !adminData_backend.secret_key && <div className='flex  justify-center w-full'>
+                            <Image src={qrcode} width={200} height={200} />
+                        </div>
+                    }
+
+                    <Input type='number' placeholder="Enter Code receive on Authenticator App" className="w-full mb-4 px-3 py-2 border rounded" onChange={(e) => setauthcode(e.target.value)} />
+                </div>
+            </Modal>
         </div>
     );
 };
 
 export default Login
+
+{/* <div className='flex flex-col justify-center w-full'>
+<h1 className='text-center text-xl font-semibold'>Two Step Verification</h1>
+<div className='flex flex-col justify-center w-full'>
+    <Image src={qrcode} width={200} height={200} />
+</div>
+<Form.Item
+    name="auth_code"
+    rules={[{ required: true, message: 'Please input code' }]}
+>
+    <Input type='number' placeholder="Enter Code receive on Authenticator App" className="w-full mb-4 px-3 py-2 border rounded" />
+</Form.Item>
+</div> */}

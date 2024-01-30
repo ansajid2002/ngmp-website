@@ -175,7 +175,7 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                             width = $32,
                             length = $33,
                             weight = $34,
-                            attributes_specification = $35,
+                            attributes_specification = $35
                         WHERE skuid = $24 AND vendorid = $12
                         RETURNING id;
                     `;

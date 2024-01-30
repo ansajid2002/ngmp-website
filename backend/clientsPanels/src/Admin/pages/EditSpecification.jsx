@@ -3,6 +3,8 @@ import axios from 'axios';
 import { AdminUrl } from '../constant';
 import { Form, Input, Button, Space, message, Typography, Table, Modal, Descriptions, Select } from 'antd';
 import AddFieldModal from './AddFieldModal';  // Import the AddFieldModal component
+import { FaPlusCircle } from 'react-icons/fa';
+import AddFieldModalinCategory from './AddFieldModalinCategory';
 
 const { Option } = Select;
 
@@ -12,8 +14,8 @@ const EditSpecification = () => {
     const [visibleModal, setVisibleModal] = useState(false);
     const [addFieldModalVisible, setAddFieldModalVisible] = useState(false);
     const [selectedCategoryFields, setSelectedCategoryFields] = useState([]);
-    const [isFormDirty, setFormDirty] = useState(false);
     const [editCategoryData, setEditCategoryData] = useState({});
+    const [addNewFieldCATEGORY, setAddNewFieldsinCATEGORY] = useState(false);
 
     useEffect(() => {
         fetchSpecification();
@@ -33,11 +35,19 @@ const EditSpecification = () => {
         try {
             console.log('Field data:', values); // Log the field data
             // Send the new field data to the backend
-            await axios.post(`${AdminUrl}/api/addField`, values);
-            message.success('Field added successfully!');
-            setAddFieldModalVisible(false);
-            fetchSpecification();  // Refresh the specifications data
+            const response = await axios.post(`${AdminUrl}/api/addFieldSpecification`, values);
+
+            if (response.data.success) {
+                // If the backend responds with success
+                message.success('Field added successfully!');
+                setAddFieldModalVisible(false);
+                fetchSpecification();  // Refresh the specifications data
+            } else {
+                // If the backend responds with an error message
+                message.error(response.data.error || 'Failed to add field.');
+            }
         } catch (error) {
+            // If an error occurs during the request
             console.error('Error adding field:', error);
             message.error('Failed to add field.');
         }
@@ -45,13 +55,17 @@ const EditSpecification = () => {
 
 
     const handleDeleteCategory = async (index, category) => {
-        const updatedData = [...specifications];
-
         try {
-            // Send the updated data to the backend for deletion
+            // Send the request to delete the category to the backend
             const response = await axios.post(`${AdminUrl}/api/deleteCategorySpecification`, { category });
-            updatedData.splice(index, 1);
+
+            // Filter out the category to be deleted from the specifications array
+            const updatedData = specifications.filter(item => item.category !== category);
+
+            // Update the state with the filtered data
             setSpecifications(updatedData);
+
+            // Display success message from the backend response
             message.success(response.data.message);
         } catch (error) {
             console.error('Error deleting category:', error);
@@ -59,23 +73,8 @@ const EditSpecification = () => {
         }
     };
 
-    const handleEditCategory = (category) => {
-        const categoryData = specifications.find((spec) => spec.category === category);
-        const fieldsToShow = categoryData?.fields.slice(0, 5);
-        setSelectedCategoryFields(fieldsToShow);
-        setEditCategoryData(categoryData);
 
-        // Convert the array of objects to an array of options arrays
-        const optionsArray = categoryData?.fields.map((field) => field.options);
 
-        // Set default values in the form for the selected category
-        form.setFieldsValue({
-            category: categoryData?.category,
-            options: JSON.stringify(optionsArray),
-        });
-
-        setVisibleModal(true);
-    };
 
     const columns = [
         {
@@ -118,10 +117,41 @@ const EditSpecification = () => {
     ];
 
     const handleShowMore = (category) => {
+
         const categoryData = specifications.find((spec) => spec.category === category);
+
         const fieldsToShow = categoryData?.fields;
+
+        console.log(fieldsToShow);
         setSelectedCategoryFields(fieldsToShow);
         setEditCategoryData(categoryData);
+
+        const optionsArray = categoryData && categoryData?.fields?.map((field) => field.type === 'select' && field?.options);
+
+        // Set default values in the form for the selected category
+        form.setFieldsValue({
+            category: categoryData?.category,
+            options: optionsArray && JSON.stringify(optionsArray) || [],
+        });
+
+        setVisibleModal(true);
+    };
+
+    const handleEditCategory = (category) => {
+        const categoryData = specifications.find((spec) => spec.category === category);
+        const fieldsToShow = categoryData?.fields.slice(0, 5);
+        setSelectedCategoryFields(fieldsToShow);
+        setEditCategoryData(categoryData);
+
+        // Convert the array of objects to an array of options arrays
+        const optionsArray = categoryData && categoryData?.fields.map((field) => field.options);
+
+        // Set default values in the form for the selected category
+        form.setFieldsValue({
+            category: categoryData?.category,
+            options: JSON.stringify(optionsArray),
+        });
+
         setVisibleModal(true);
     };
 
@@ -131,6 +161,10 @@ const EditSpecification = () => {
 
     const handleAddNewField = () => {
         setAddFieldModalVisible(true);
+    };
+
+    const handleAddNewFieldsinCATEGORY = () => {
+        setAddNewFieldsinCATEGORY(true);
     };
 
 
@@ -195,13 +229,111 @@ const EditSpecification = () => {
         setSelectedCategoryFields(updatedFields);
     };
 
+    const handleAddFieldinCATEGORY_BACKEND = async (values) => {
+        try {
+            console.log(values, 'ne cat field');
+
+            // Add the category to the values object
+            const dataToSend = { ...values, category: editCategoryData?.category };
+
+            // Send the field values along with the category to the backend
+            const response = await axios.post(`${AdminUrl}/api/addFieldSpecificationinCATEGORY`, dataToSend);
+
+            // Log the response from the backend
+            console.log('Response from backend:', response);
+
+            // Update the specifications array with the updated category object
+            const updatedSpecifications = specifications.map(spec => {
+                if (spec.category === editCategoryData?.category) {
+                    // If the category matches, update the fields array with the new field
+                    spec.fields.push({
+                        name: values.label.toLowerCase().replace(/\s/g, ''),
+                        label: values.label,
+                        type: values.type,
+                        options: values.options ? values.options.split(',').map(option => option.trim()) : []
+                    });
+                }
+                return spec;
+            });
+
+            // Update the state with the updated specifications array
+            setSpecifications(updatedSpecifications);
+
+            // Handle success (display success message, etc.)
+            if (selectedCategoryFields && selectedCategoryFields.category === editCategoryData?.category) {
+                setSelectedCategoryFields(prevFields => [
+                    ...prevFields,
+                    {
+                        name: values.label.toLowerCase().replace(/\s/g, ''),
+                        label: values.label,
+                        type: values.type,
+                        options: values.options ? values.options.split(',').map(option => option.trim()) : []
+                    }
+                ]);
+            }
+
+            setAddNewFieldsinCATEGORY(false)
+        } catch (error) {
+            console.error('Error adding field to category:', error);
+            // Handle errors (display error message, etc.)
+        }
+    };
+
+    const handleDeleteFieldinCategory = (field, fieldname) => {
+        try {
+            console.log(field, fieldname, editCategoryData.category);
+
+            // Prepare the data to send to the backend
+            const dataToSend = {
+                field,
+                fieldname,
+                category: editCategoryData.category
+            };
+
+            // Send the data to the backend
+            axios.post(`${AdminUrl}/api/deleteFieldinCategory`, dataToSend)
+                .then(response => {
+                    console.log('Response from backend:', response.data);
+
+                    // Filter out the deleted field from specifications
+                    const updatedSpecifications = specifications.map(spec => {
+                        if (spec.category === editCategoryData?.category) {
+                            spec.fields = spec.fields.filter(item => item.name !== fieldname);
+                        }
+                        return spec;
+                    });
+
+                    // Update the specifications state
+                    setSpecifications(updatedSpecifications);
+
+                    // Filter out the deleted field from selectedCategoryFields
+                    const updatedSelectedCategoryFields = selectedCategoryFields.filter(item => item.name !== fieldname);
+
+                    // Update the selectedCategoryFields state
+                    setSelectedCategoryFields(updatedSelectedCategoryFields);
+
+                    message.success("Fields Deleted Successfully....")
+                    // Handle response as needed
+                })
+                .catch(error => {
+                    console.error('Error deleting field in category:', error);
+                    // Handle errors (display error message, etc.)
+                });
+        } catch (error) {
+            console.error('Error in handleDeleteFieldinCategory:', error);
+            // Handle errors (display error message, etc.)
+        }
+    };
+
     return (
         <div>
-            <Typography className='text-2xl mb-4 font-semibold'>Manage Specifications</Typography>
 
-            {/* <Button type="primary" onClick={handleAddNewField}>
-                Add New Field
-            </Button> */}
+            <div className='py-4 flex justify-between'>
+                <Typography className='text-2xl mb-4 font-semibold'>Manage Specifications</Typography>
+                <Button type="default" className="flex justify-between items-center gap-3 border border-orange-500 text-orange-500" onClick={handleAddNewField}>
+                    <FaPlusCircle /> Add New Field
+                </Button>
+            </div>
 
             <Table dataSource={specifications} columns={columns} rowKey="category" />
 
@@ -213,12 +345,22 @@ const EditSpecification = () => {
                 width={1000}
             >
                 {/* Existing modal content */}
+                <div className='flex justify-end py-4'>
+                    <Button type="default" className="flex justify-between items-center gap-3 border border-orange-500 text-orange-500" onClick={handleAddNewFieldsinCATEGORY}>
+                        <FaPlusCircle /> Add New Field in {editCategoryData?.category}
+                    </Button>
+                </div>
                 <Descriptions column={1} bordered>
                     {selectedCategoryFields.map((field, fieldIndex) => (
-                        <Descriptions.Item key={field.name} label={<strong contentEditable onBlur={(e) => handleEditLabel(fieldIndex, e)}>{field.label}</strong>}>
-                            {field.options ? (
+                        <Descriptions.Item key={field.name} label={<div>
+                            <div>
+                                <strong contentEditable onBlur={(e) => handleEditLabel(fieldIndex, e)}>{field.label}</strong>
+                            </div>
+                            <button className='text-red-500 text-sm tracking-widest' onClick={() => handleDeleteFieldinCategory(fieldIndex, field.name)}>Delete</button>
+                        </div>}>
+                            {field && field.type === 'select' && Array.isArray(field?.options) && field?.options?.length > 0 ? (
                                 <>
-                                    {field.options.map((option, optionIndex) => (
+                                    {field && field.type === 'select' && field?.options?.map((option, optionIndex) => (
                                         <div
                                             key={optionIndex}
                                             style={{ width: '100%', maxHeight: '100px', overflow: 'auto' }}
@@ -246,6 +388,7 @@ const EditSpecification = () => {
                         </Descriptions.Item>
                     ))}
                 </Descriptions>
+
             </Modal>
 
             {/* AddFieldModal component for adding a new field */}
@@ -253,6 +396,13 @@ const EditSpecification = () => {
                 visible={addFieldModalVisible}
                 onCancel={() => setAddFieldModalVisible(false)}
                 onSubmit={handleAddField}
+            />
+
+            <AddFieldModalinCategory
+                visible={addNewFieldCATEGORY}
+                onCancel={() => setAddNewFieldsinCATEGORY(false)}
+                onSubmit={handleAddFieldinCATEGORY_BACKEND}
+                category={editCategoryData?.category}
             />
         </div>
     );

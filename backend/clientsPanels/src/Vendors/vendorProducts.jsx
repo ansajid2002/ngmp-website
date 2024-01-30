@@ -1581,7 +1581,7 @@ const VendorProducts = ({ vendorDatastate }) => {
 
   const fields = getFieldsByCategory(selectedSubcategory);
 
-  console.log(filteredSubcategories,"All");
+  console.log(filteredSubcategories, "All");
 
   const steps = [
     {
