@@ -10,7 +10,8 @@ import DropdownCategories from "./DropdownCategories";
 import CartDropdown from "./CartDropdown";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 export interface MainNav2Props {
   className?: string;
@@ -19,7 +20,7 @@ export interface MainNav2Props {
 const MainNav2: FC<MainNav2Props> = ({ className = "" }) => {
   const [showSearchForm, setShowSearchForm] = useState(false);
   const router = useRouter();
-
+const {t} = useTranslation()
   const renderMagnifyingGlassIcon = () => {
     return (
       <svg

@@ -10,14 +10,15 @@ import { CATS_DISCOVER } from "./CardCategories/data";
 import SingleVendorsCard from "./Vendors/SingleVendorsCard";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 const DiscoverMoreSlider = ({ data }) => {
   const sliderRef = useRef(null);
   // console.log(data, "PRODUCTTS");
 
   const [isShow, setIsShow] = useState(false);
-
+  const {t} = useTranslation()
   useEffect(() => {
     const OPTIONS: Partial<Glide.Options> = {
       // direction: document.querySelector("html")?.getAttribute("dir") || "ltr",

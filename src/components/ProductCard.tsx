@@ -26,7 +26,8 @@ import { useDispatch } from "react-redux";
 import SignIn from "@/app/auth/signIn/page";
 import ProductSalebadge from "./ProductSalebadge";
 import ProductOfferBadge from "./ProductOfferBadge";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 export interface ProductCardProps {
   className?: string;
@@ -49,7 +50,7 @@ const ProductCard: FC<ProductCardProps> = ({
   const customerId = customerData?.customer_id || null;
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
-
+const {t} = useTranslation()
   const dispatch = useDispatch();
 
   useEffect(() => {

@@ -18,7 +18,7 @@ const nextConfig = {
     PRODUCTIMAGEURL: process.env.PRODUCTIMAGEURL,
   },
   images: {
-    domains: ['localhost', 'https://ngmp-products.s3.us-east-005.backblazeb2.com', 'https://admin.nilegmp.com', '192.168.1.7'], // Add the IP address to the list of allowed domains
+    domains: ['localhost', 'https://ngmp-products.s3.us-east-005.backblazeb2.com', 'https://admin.nilegmp.com', '192.168.1.5'], // Add the IP address to the list of allowed domains
     remotePatterns: [
       {
         protocol: "https",
@@ -55,7 +55,7 @@ const nextConfig = {
       // Add a new pattern for the new IP address
       {
         protocol: "https",
-        hostname: "192.168.1.7", // Replace with the actual hostname or IP address
+        hostname: "192.168.1.5", // Replace with the actual hostname or IP address
         port: "", // If there is a specific port, add it here
         pathname: "/**",
       },

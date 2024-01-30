@@ -7,11 +7,12 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Heading from "../Heading";
 import Link from "next/link";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 const CategoryPageSlick = ({ newcategoriesdata }) => {
   // console.log(newcategoriesdata)
-
+  const {t} = useTranslation()
   const [settings] = useState({
     dots: false,
     infinite: true,

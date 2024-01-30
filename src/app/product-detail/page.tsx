@@ -54,13 +54,14 @@ import { Image, Modal, Rate } from "antd";
 import ProductSalebadge from "@/components/ProductSalebadge";
 import SellerProfileProductPage from "@/components/SellerProfileProductPage";
 import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sellerProfile, setSellerProfile] = useState(null);
-
+  const {t} = useTranslation()
   const showDetailModal = () => {
     setIsDetailModalOpen(true);
   };

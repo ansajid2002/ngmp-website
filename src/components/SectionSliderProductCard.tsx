@@ -7,7 +7,8 @@ import Glide from "@glidejs/glide/dist/glide.esm";
 import ProductCard from "./ProductCard";
 import { Product, PRODUCTS } from "@/data/data";
 import { useAppSelector } from "@/redux/store";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 export interface SectionSliderProductCardProps {
   className?: string;
@@ -33,7 +34,7 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
   const sliderRef = useRef(null);
 
   const [isShow, setIsShow] = useState(false);
-
+  const {t} = useTranslation()
   useEffect(() => {
     const OPTIONS: Partial<Glide.Options> = {
       // direction: document.querySelector("html")?.getAttribute("dir") || "ltr",
