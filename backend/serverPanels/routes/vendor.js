@@ -520,7 +520,7 @@ const checkSkuidExists = async (sku) => {
 
 app.post("/addVendorProduct", async (req, res) => {
   try {
-    const { subcategory, category, nested_subcat, additonal_condition, listing_type, locationData, length, ...productData } = req.body[0];
+    const { subcategory, category, nested_subcat, additonal_condition, listing_type, locationData, product_policy_id, length, ...productData } = req.body[0];
     const uniquepid = generateUniqueID();
     const replaceSubcategory = subcategory.trim();
     const replacecategory = category.trim();
@@ -555,8 +555,8 @@ app.post("/addVendorProduct", async (req, res) => {
       INSERT INTO products (ad_title, city, state, country, currency_symbol, category, subcategory, vendorid,
       uniquepid, skuid, mrp, sellingprice, countryoforigin, manufacturername, packerdetails,
       additionaldescription, searchkeywords, keyfeatures, videourl, status, images, category_type,
-      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug, width, height, weight, length, product_ship_from, mogadishudistrict_ship_from, nested_subcat, nested_subcat_slug, additonal_condition)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, NOW(), $31, $32, $33, $34, $35, $36, $37, $38, $39, $40)
+      isvariant, quantity, postalcode, salespackage, brand, condition, slug_cat, slug_subcat, updated_at_product, prod_slug, width, height, weight, length, product_ship_from, mogadishudistrict_ship_from, nested_subcat, nested_subcat_slug, additonal_condition, product_policy_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, NOW(), $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41)
       RETURNING *;
     `;
 
@@ -601,6 +601,7 @@ app.post("/addVendorProduct", async (req, res) => {
       nested_subcat,
       slug(nested_subcat || '') || '',
       additonal_condition,
+      product_policy_id
       // productData.mogadishudistrict_ship_from
     ];
 
@@ -672,7 +673,7 @@ app.post("/addVendorProduct", async (req, res) => {
 
 app.post("/updateVendorProduct", async (req, res) => {
   try {
-    const { subcategory, nested_subcat, additonal_condition, length, listing_type, ...productData } = req.body[0]; // Exclude category, isvariant, skuid, countryoforigin
+    const { subcategory, nested_subcat, additonal_condition, length, listing_type, product_policy_id, ...productData } = req.body[0]; // Exclude category, isvariant, skuid, countryoforigin
     const replaceSubcategory = subcategory && subcategory
       .replace(/[^\w\s]/g, "")
       .replace(/\s/g, "");
@@ -708,7 +709,8 @@ app.post("/updateVendorProduct", async (req, res) => {
                               mogadishudistrict_ship_from = $20,
                               nested_subcat = $22,
                               nested_subcat_slug = $23,
-                              additonal_condition = $24
+                              additonal_condition = $24,
+                              product_policy_id = $26
                             WHERE uniquepid = $14
                             RETURNING *;
                             `;
@@ -738,7 +740,8 @@ app.post("/updateVendorProduct", async (req, res) => {
       nested_subcat,
       slug(nested_subcat || '') || '',
       additonal_condition,
-      listing_type === 'Draft' ? 3 : 0
+      listing_type === 'Draft' ? 3 : 0,
+      product_policy_id
       // productData.mogadishudistrict_ship_from
     ];
 
@@ -1329,12 +1332,13 @@ app.get('/getVendorProductsAR', async (req, res) => {
 
     // Now, fetch the paginated products along with vendor information (excluding password)
     const productsQuery = `
-      SELECT p.*
+      SELECT p.*, p.status AS productstatus
       FROM products p
       WHERE p.vendorid = $1
       OFFSET $2
       LIMIT $3;
     `;
+
 
     const vendorQuery = `
       SELECT *
@@ -1421,7 +1425,6 @@ async function fetchVendorInfo(pool, vendorId) {
     "SELECT id, vendorname, brand_logo, brand_name, registration_date, country_code,company_district, mobile_number, vendor_profile_picture_url, followers, following  FROM vendors WHERE id = $1",
     [vendorId]
   );
-  console.log(vendorInfo.rows[0], "FETCHED");
   return vendorInfo.rows[0];
 }
 
@@ -1433,7 +1436,8 @@ async function fetchProductsFromTable(
   cid,
   status,
   pageNumber,
-  pageSize
+  pageSize,
+  category
 ) {
   let query = "SELECT * FROM products";
   let values = [];
@@ -1447,6 +1451,11 @@ async function fetchProductsFromTable(
   if (subcat) {
     conditions.push("slug_subcat = $" + (values.length + 1));
     values.push(subcat);
+  }
+
+  if (category) {
+    conditions.push("slug_cat = $" + (values.length + 1));
+    values.push(category);
   }
 
   if (status) {
@@ -1475,6 +1484,7 @@ async function fetchProductsFromTable(
       query.substring(0, lastAndIndex) + query.substring(lastAndIndex + 5);
   }
 
+  console.log(category, query, values);
   try {
     const result = await pool.query(query, values);
 
@@ -1524,9 +1534,11 @@ async function AllProductsVendors(
   customerId = null,
   status,
   pageNumber,
-  pageSize
+  pageSize,
+  category = null
 ) {
   try {
+    console.log(pageNumber, pageSize);
     // Fetch conversion rates
     const conversionRatesData = await getConversionRatesUSD();
     const conversionRates = {};
@@ -1545,7 +1557,8 @@ async function AllProductsVendors(
       customerId,
       status,
       pageNumber,
-      pageSize
+      pageSize,
+      category
     );
 
     for (const product of products) {
@@ -2121,13 +2134,36 @@ app.get("/getProductBySubcategories", async (req, res) => {
 
 //get product by Category
 app.get("/getProductByCategories", async (req, res) => {
-  const { subcat, currency } = req.query;
+  const { category, page = 1, pageSize = 10, type } = req.query;
   try {
-    // Check if vendorid is provided in the URL and use it in your query
-    // Use vendorid in your query or function
-    const products = await AllProductsVendors(pool, null, currency, subcat);
+    let query = "SELECT * FROM products WHERE slug_cat = $1";
+    const queryParams = [category];
+
+    if (type === "1") {
+      // Fetch Within last 30 days products
+      const last30DaysDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      query += " AND updated_at_product >= $2 ORDER BY id LIMIT $3 OFFSET $4";
+      queryParams.push(last30DaysDate);
+    } else if (type === "2") {
+      // Fetch Within last 7 days products
+      const last7DaysDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      query += " AND updated_at_product >= $2 ORDER BY id LIMIT $3 OFFSET $4";
+      queryParams.push(last7DaysDate);
+    } else {
+      query += " ORDER BY id LIMIT $2 OFFSET $3"
+    }
+
+    queryParams.push(pageSize, (page - 1) * pageSize);
+
+    const countQuery = await pool.query("SELECT COUNT(*) FROM products WHERE slug_cat = $1", [category]);
+    const totalCount = countQuery.rows[0].count;
+
+    const { rows } = await pool.query(query, queryParams);
     const AllProducts = [];
-    for (const product of products) {
+
+    for (const product of rows) {
+      // Additional processing for each product (if needed)
+      // For example, fetching variant data or vendor info
       if (product.isvariant === "Variant") {
         const variantData = await fetchVariantData(pool, product.uniquepid);
         if (variantData && variantData.length > 0) {
@@ -2142,16 +2178,138 @@ app.get("/getProductByCategories", async (req, res) => {
         const vendorInfo = await fetchVendorInfo(pool, product.vendorid);
         product.vendorInfo = vendorInfo;
       }
+
       AllProducts.push(product);
     }
 
-    res.status(200).json({ AllProducts });
+    res.status(200).json({ AllProducts, totalCount });
   } catch (error) {
     // Handle the error and send an error response to the client
     console.error("Error in /AllProductsVendors route:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.get("/getProductBySubCategories_Website", async (req, res) => {
+  const { category, subcat, page = 1, pageSize = 10, sortMethod, selected, price1, price2 } = req.query;
+  try {
+
+    console.log(req.query);
+    let products = [];
+
+    if (selected && selected !== 'undefined') {
+      selectedValues = selected.split(',');
+      let orderByClause = "id"; // Default order by id if no specific sorting method is provided
+
+      if (subcat !== "All") {
+        // Generate placeholders for the IN clause
+        const placeholders = selectedValues.map((value, index) => `$${index + 2}`).join(',');
+
+        const queryResult = await pool.query(
+          `SELECT * FROM products 
+           WHERE slug_subcat = $1 AND status = 1 AND nested_subcat_slug IN (${placeholders}) 
+           ORDER BY ${orderByClause} OFFSET $${selectedValues.length + 2} LIMIT $${selectedValues.length + 3}`,
+          [subcat, ...selectedValues, (page - 1) * 10, pageSize]
+        );
+
+        console.log(`SELECT * FROM products 
+        WHERE slug_subcat = $1 AND status = 1 AND nested_subcat_slug IN (${placeholders}) 
+        ORDER BY ${orderByClause} OFFSET $${selectedValues.length + 2} LIMIT $${selectedValues.length + 3}`,
+          [subcat, ...selectedValues, (page - 1) * 10, pageSize]);
+
+        products = Array.isArray(queryResult.rows) ? queryResult.rows : [];
+      } else {
+        // Generate placeholders for the IN clause
+        const placeholders = selectedValues.map((value, index) => `$${index + 2}`).join(',');
+
+        const queryResult = await pool.query(
+          `SELECT * FROM products 
+           WHERE slug_cat = $1 AND status = 1 AND nested_subcat_slug IN (${placeholders}) 
+           ORDER BY ${orderByClause} OFFSET $${selectedValues.length + 2} LIMIT $${selectedValues.length + 3}`,
+          [category, ...selectedValues, (page - 1) * 10, pageSize]
+        );
+
+        console.log(`SELECT * FROM products 
+        WHERE slug_cat = $1 AND status = 1 AND nested_subcat_slug IN (${placeholders}) 
+        ORDER BY ${orderByClause} OFFSET $${selectedValues.length + 2} LIMIT $${selectedValues.length + 3}`,
+          [category, ...selectedValues, (page - 1) * 10, pageSize]);
+
+        products = Array.isArray(queryResult.rows) ? queryResult.rows : [];
+      }
+    } else {
+      let query = "SELECT * FROM products WHERE slug_cat = $1";
+      const queryParams = [category];
+      let paramIndex = 2; // Start index for parameters in the query
+
+      // Add condition based on subcategory if available
+      if (subcat) {
+        query += ` AND slug_subcat = $${paramIndex}`;
+        queryParams.push(subcat);
+        paramIndex++; // Increment paramIndex for the next parameter
+      }
+
+      if (price1 && price2 && !isNaN(price1) && !isNaN(price2)) {
+        query += ` AND (mrp BETWEEN $${paramIndex} AND $${paramIndex + 1} OR sellingprice BETWEEN $${paramIndex} AND $${paramIndex + 1})`;
+        queryParams.push(price1, price2);
+        paramIndex += 2; // Increment paramIndex for the next two parameters
+      }
+
+      // Modify query based on sortMethod
+      if (sortMethod === "relevance") {
+        // Add relevance sorting logic
+      } else if (sortMethod === "priceHighToLow") {
+        query += " ORDER BY mrp, sellingprice DESC";
+      } else if (sortMethod === "priceLowToHigh") {
+        query += " ORDER BY mrp, sellingprice ASC";
+      }
+      // Add pagination
+
+      // Add pagination
+      query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+      queryParams.push(pageSize, (page - 1) * pageSize);
+      console.log(query);
+      const queryResult = await pool.query(query, queryParams);
+      products = Array.isArray(queryResult.rows) ? queryResult.rows : [];
+    }
+
+
+    // Query to get total count
+    const countQuery = await pool.query("SELECT COUNT(*) FROM products WHERE slug_cat = $1" + (subcat ? " AND slug_subcat = $2" : ""), subcat ? [category, subcat] : [category]);
+    const totalCount = countQuery.rows[0].count;
+
+    const AllProducts = [];
+
+    for (const product of products) {
+      // Additional processing for each product (if needed)
+      // For example, fetching variant data or vendor info
+      if (product.isvariant === "Variant") {
+        const variantData = await fetchVariantData(pool, product.uniquepid);
+        if (variantData && variantData.length > 0) {
+          // Update the product's mrp and sellingprice using the first entry in variantData
+          product.mrp = variantData[0].variant_mrp;
+          product.sellingprice = variantData[0].variant_sellingprice;
+          product.label = variantData[0].label; // Replace with the desired label
+        }
+      }
+
+      if (product.vendorid) {
+        const vendorInfo = await fetchVendorInfo(pool, product.vendorid);
+        product.vendorInfo = vendorInfo;
+      }
+
+      AllProducts.push(product);
+    }
+
+    res.status(200).json({ AllProducts, totalCount });
+  } catch (error) {
+    // Handle the error and send an error response to the client
+    console.error("Error in /getProductBySubCategories_Website route:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 
 // get All Products of Vendors
 app.get("/AllProductsVendors", async (req, res) => {
@@ -2328,15 +2486,21 @@ app.get("/getSearchedProducts_Panel", async (req, res) => {
     // Use parameterized query to prevent SQL injection
     const countQuery = {
       text: `
-        SELECT 
-          COUNT(*) as total_count
-        FROM 
-          products 
-        WHERE 
-          (ad_title ILIKE $1 OR 
-          additionaldescription ILIKE $1 OR 
-          searchkeywords ILIKE $1) AND 
-          status = 1
+      SELECT 
+      COUNT(*) AS total_count
+  FROM 
+      products 
+  WHERE 
+      (ad_title ILIKE $1 
+      OR additionaldescription ILIKE $1 
+      OR searchkeywords ILIKE $1 
+      OR uniquepid::text ILIKE $1
+      OR skuid::text ILIKE $1
+      OR mrp::text ILIKE $1
+      OR sellingprice::text ILIKE $1
+      OR countryoforigin ILIKE $1)
+      AND status = 1;
+  
       `,
       values: [`%${searchTerm}%`],
     };
@@ -2348,14 +2512,19 @@ app.get("/getSearchedProducts_Panel", async (req, res) => {
     const query = {
       text: `
         SELECT 
-          *
+          *, status as productstatus
         FROM 
           products 
         WHERE 
-          (ad_title ILIKE $1 OR 
-          additionaldescription ILIKE $1 OR 
-          searchkeywords ILIKE $1) AND 
-          status = 1
+        (ad_title ILIKE $1 
+          OR additionaldescription ILIKE $1 
+          OR searchkeywords ILIKE $1 
+          OR uniquepid::text ILIKE $1
+          OR skuid::text ILIKE $1
+          OR mrp::text ILIKE $1
+          OR sellingprice::text ILIKE $1
+          OR countryoforigin ILIKE $1) AND 
+          status = 1 GROUP BY status, id
         LIMIT $2 OFFSET $3
       `,
       values: [`%${searchTerm}%`, limit, (page - 1) * limit],
@@ -2733,7 +2902,7 @@ app.get('/productDetailsByUniqueId/:id', async (req, res) => {
     // Execute the query
     const result = await pool.query(query);
 
-    let AllProducts = []
+    let AllProducts = [];
     // Check if any rows were returned
     if (result.rows.length > 0) {
       for (const product of result.rows) {
@@ -2786,6 +2955,41 @@ app.get('/productDetailsByUniqueId/:id', async (req, res) => {
       const similarProductsResult = await pool.query(similarProductsQuery);
       const similarProducts = similarProductsResult.rows;
 
+      // Fetch vendor info and variant details for similar products
+      for (const product of similarProducts) {
+        if (product.vendorid) {
+          const vendorInfo = await fetchVendorInfo(pool, product.vendorid);
+          product.vendorInfo = vendorInfo;
+        }
+
+        if (product.isvariant === "Variant") {
+          const variantData = await fetchVariantData(pool, product.uniquepid);
+          if (variantData && variantData.length > 0) {
+            product.mrp = variantData[0].variant_mrp;
+            product.sellingprice = variantData[0].variant_sellingprice;
+            product.label = variantData[0].label;
+
+            if (product.currency_symbol !== 'USD') {
+              const mrpAsFloat = parseFloat(variantData[0].variant_mrp);
+              const sellingPriceAsFloat = parseFloat(variantData[0].variant_sellingprice);
+              if (!isNaN(mrpAsFloat) && !isNaN(sellingPriceAsFloat)) {
+                product.sellingprice = sellingPriceAsFloat.toFixed(2);
+                product.mrp = mrpAsFloat.toFixed(2);
+                product.currency_symbol = 'USD';
+              }
+            }
+          }
+        }
+
+        const sellingPriceAsFloat = parseFloat(product.sellingprice);
+        const mrpAsFloat = parseFloat(product.mrp);
+        if (!isNaN(sellingPriceAsFloat)) {
+          product.sellingprice = sellingPriceAsFloat.toFixed(2);
+          product.mrp = mrpAsFloat.toFixed(2);
+          product.currency_symbol = 'USD';
+        }
+      }
+
       // Send the product details along with similar products as response
       res.status(200).json({ product: AllProducts[0], similarProducts });
     } else {
@@ -2796,5 +3000,6 @@ app.get('/productDetailsByUniqueId/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 module.exports = app;

@@ -11,3 +11,4 @@ export { default as Logout } from "./Logout";
 export { default as Notifications } from "./Notifications";
 export { default as SalesReturn } from "./SalesReturn";
 export { default as Reports } from "./Reports";
+export { default as ManagePolicy } from "./ManagePolicy";

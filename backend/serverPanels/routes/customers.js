@@ -494,9 +494,6 @@ async function updateUserDataInDB(userData) {
   }
 }
 
-
-
-
 app.post('/getWebGoogleLogin', async (req, res) => {
   const { email, id } = req.body;
   try {
@@ -519,6 +516,7 @@ app.post('/getWebGoogleLogin', async (req, res) => {
   }
 }
 );
+
 app.post('/getFacebookData', async (req, res) => {
   const { accessToken } = req.body;
 
@@ -619,9 +617,6 @@ app.post('/getFacebookData', async (req, res) => {
 
   res.status(200).send("verifiying")
 })
-
-
-
 const generateRandomNumber = () => {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
@@ -734,7 +729,6 @@ app.post("/customerLoginEmail", async (req, res) => {
     res.status(500).json({ status: 500, message: "Internal server error" });
   }
 });
-
 
 app.post("/verifyVerificationCodeCustomer", async (req, res) => {
   try {
@@ -1447,14 +1441,7 @@ app.post("/getGoogleuserByid", async (req, res) => {
       const value = [email]
       const userdata = await pool.query(query, value)
       if (userdata?.rows?.length > 0) {
-        const gid = await userdata.rows[0].google_id
-        console.log(gid, 'gid');
-        if (gid) {
-          // if not null then send the userdata 
-          return res.status(200).json({ status: 200, customerData: userdata?.rows[0] });
-        } else {
-          return res.status(401).json({ status: 401, message: "Account Already registered with Email, Kindly Login with Email and Password" });
-        }
+        return res.status(200).json({ status: 200, customerData: userdata?.rows[0] });
       }
 
       const newCustomer = {

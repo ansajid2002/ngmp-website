@@ -1,30 +1,6 @@
 import React from "react";
 import { DatePicker, Input, InputNumber, Select } from "antd";
 
-const cities = [
-  "WARTA NABADA",
-  "KAARAN",
-  "WADAJIR",
-  "YAAQSHID",
-  "ABDIAZIZ",
-  "KAXDA",
-  "HELIWAA",
-  "DAYNILE",
-  "SHIBIS",
-  "HOLWADAG",
-  "BOONDHERE",
-  "XAMAR WEYNE",
-  "XAMAR JAJAB",
-  "WAABERI",
-  "DHARKENLEY",
-  "SHANGANI",
-  "AFGOOYE",
-  "DARUSALAM",
-  "GUBUDLEY",
-  "HODAN",
-];
-
-
 export const commonFormFields = [
   {
     label: "Product Name",
@@ -202,4 +178,5 @@ export const commonFormFields = [
     notes:
       "Example: Separate multiple video URLs with a comma. Ensure no comma within a single URL.",
   },
+  
 ];

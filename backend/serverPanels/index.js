@@ -47,6 +47,7 @@ const inbox = require("./routes/inbox");
 const wallet = require("./routes/wallet");
 const common = require("./routes/common");
 const apploadingscreen = require("./routes/apploadingscreen");
+const policy = require("./routes/policy");
 const Speakeasy = require('speakeasy')
 const qrcode = require('qrcode')
 
@@ -94,6 +95,7 @@ app.use('/api', wallet);
 app.use('/api', bulkupload);
 app.use('/api', common);
 app.use('/api', apploadingscreen);
+app.use('/api', policy);
 
 app.use((req, res, next) => {
   req.pool = pool;

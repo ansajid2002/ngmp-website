@@ -6,9 +6,11 @@ import { Rate } from "antd";
 import { AdminUrl } from "@/app/layout";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { useTranslation } from "react-i18next";
 
 const SingleVendorsCard = ({ item, index }) => {
   const [isLoading, setIsLoading] = useState();
+  const {t} = useTranslation()
   return (
     <a href={`/Channel/Shops?vendorid=${item.id}`} target="blank">
       <div className=" rounded-xl overflow-hidden border-[1px] shadow-md">
@@ -80,7 +82,7 @@ const SingleVendorsCard = ({ item, index }) => {
               <span className="text-sm font-medium">(4,230)</span>
             </div>
             <div className="flex items-center text-[0.9rem] font-medium hover:text-[#ed642b]">
-              Visit Shop
+              {t("Visit Shop")}
               <ChevronRight size={15} className="mt-1" />
             </div>
           </div>

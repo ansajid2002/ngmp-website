@@ -7,6 +7,8 @@ import { updateCustomerData } from '@/redux/slices/customerData';
 import { useDispatch } from 'react-redux';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 
+import { useTranslation } from 'react-i18next';
+
 const AccountPass = () => {
   const { customerData } = useAppSelector((state) => state.customerData);
   const [form] = Form.useForm();
@@ -16,12 +18,12 @@ const AccountPass = () => {
   const [loader, setLoader] = useState(false);
   // Check if google_id or facebook_id exists
   const isSocialMediaLogin = customerData?.google_id || customerData?.facebook_id;
-
+  const {t} = useTranslation()
   if (isSocialMediaLogin) {
     return (
       <div className="space-y-6">
         <p className="text-lg text-gray-600">
-          You have logged in using social media. Password update is not required.
+          {t("You have logged in using social media. Password update is not required.")}
         </p>
       </div>
     );
@@ -126,7 +128,7 @@ const AccountPass = () => {
   return (
     <div className="space-y-10 sm:space-y-12">
       {/* HEADING */}
-      <h2 className="text-2xl sm:text-3xl font-semibold">Update your password</h2>
+      <h2 className="text-2xl sm:text-3xl font-semibold">{t("Update your password")}</h2>
       <div className="max-w-xl space-y-6">
         <Form
           form={form}
@@ -136,7 +138,7 @@ const AccountPass = () => {
         >
           {/* Remove the "Current Password" field */}
           <Form.Item
-            label="New password"
+            label={t("New password")}
             name="newPassword"
             rules={[
               {
@@ -153,7 +155,7 @@ const AccountPass = () => {
             <Input.Password disabled={loader} />
           </Form.Item>
           <Form.Item
-            label="Confirm password"
+            label={t("Confirm password")}
             name="confirmPassword"
             dependencies={['newPassword']}
             rules={[
@@ -177,21 +179,21 @@ const AccountPass = () => {
           </Form.Item>
           <Form.Item>
             <ButtonPrimary htmlType="submit" className="mt-4" loading={!isModalVisible && loader}>
-              Update Password
+              {t("Update Password")}
             </ButtonPrimary>
           </Form.Item>
         </Form>
 
         {/* OTP Modal */}
         <Modal
-          title="Enter OTP"
+          title={t("Enter OTP")}
           visible={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
           okButtonProps={{ loading: loader, style: { background: 'blue' } }}
         >
           {/* Add your OTP input field and validation logic here */}
-          <Input placeholder="Enter OTP" onChange={handleOtpChange}
+          <Input placeholder={t("Enter OTP")} onChange={handleOtpChange}
           />
         </Modal>
       </div>

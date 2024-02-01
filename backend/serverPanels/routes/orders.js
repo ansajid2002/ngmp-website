@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
 const pool = require("../config");
-const bcrypt = require("bcrypt");
 const cors = require("cors");
 const cheerio = require("cheerio");
 const sendEmail = require("./nodemailer");
+const multer = require("multer");
+const fs = require('fs');
 
 app.use(express.json());
 app.use(cors());
@@ -22,20 +23,49 @@ app.post("/VendorProductOrder", async (req, res) => {
       FROM vendorproductorder vpo
     `;
 
+    const queryParams = [];
 
     if (type !== "admin") {
       query += " WHERE vpo.vendor_id = $1";
+      queryParams.push(vendorId);
     }
 
-    if (value && value.trim() != '') {
-      console.log(value);
+    if (value && value.trim() !== '') {
+      // Add condition based on the value
+      if (type !== "admin") {
+        query += " AND (";
+      } else {
+        query += " WHERE (";
+      }
+
+      // Adding conditions for each searchable field
+      query += ` vpo.product_name ILIKE $${queryParams.length + 1}::text OR`;
+      queryParams.push(`%${value.trim()}%`);
+
+      query += ` vpo.orderid ILIKE $${queryParams.length + 1}::text OR`;
+      queryParams.push(`%${value.trim()}%`);
+
+      query += ` vpo.order_status ILIKE $${queryParams.length + 1}::text OR`;
+      queryParams.push(`%${value.trim()}%`);
+
+      query += ` vpo.skuid_order ILIKE $${queryParams.length + 1}::text`;
+      queryParams.push(`%${value.trim()}%`);
+
+      query += ")";
     }
+
+
     // Implement pagination in your SQL query
-    query += ` ORDER BY vpo.created_at DESC LIMIT $2 OFFSET $3;`;
+    query += ` ORDER BY vpo.created_at DESC LIMIT $${queryParams.length + 1}::int OFFSET $${queryParams.length + 2}::int;`;
 
     const offset = (page - 1) * pageSize;
 
-    const { rows } = await pool.query(query, type !== "admin" ? [vendorId, pageSize, offset] : [pageSize, offset]);
+    queryParams.push(pageSize, offset);
+
+    console.log(query);
+    console.log(queryParams);
+
+    const { rows } = await pool.query(query, queryParams);
 
     // Fetch customer delivery address details
     const deliveryAddressDetails = await Promise.all(
@@ -70,21 +100,19 @@ app.post("/VendorProductOrder", async (req, res) => {
         );
 
         const customerInfo = customerDetails.rows[0] || {};
-        delete customerInfo.password
+        delete customerInfo.password;
         return { ...row, customerInfo };
       })
     );
 
-
     const totalCountQuery = `
       SELECT COUNT(*) as total_count
       FROM vendorproductorder
-      WHERE vendor_id = $1;
+      ${type !== "admin" ? 'WHERE vendor_id = $1' : ''};
     `;
 
-    const totalCountResult = await pool.query(totalCountQuery, [vendorId]);
+    const totalCountResult = await pool.query(totalCountQuery, type !== "admin" ? [vendorId] : []);
     const totalCount = parseInt(totalCountResult.rows[0].total_count, 10);
-
 
     // Fetch additional details from the vendors table for each vendor_id
     const rowsWithVendorProfiles = await Promise.all(
@@ -470,6 +498,18 @@ app.get('/getAllCustomerOrder/:customer_id', async (req, res) => {
       // Fetch vendor details and append to order object
       const vendorDetails = await pool.query(getVendorDetailsQuery, [order.vendor_id]);
       order.vendor_details = vendorDetails.rows[0]; // Assuming there's only one vendor per order
+
+      // Fetch return order data and append to order object
+      const returnOrderQuery = `SELECT * FROM return_order WHERE order_id = $1`;
+      const returnOrderResult = await pool.query(returnOrderQuery, [order.order_id]);
+      const returnOrderData = returnOrderResult.rows[0] || null;
+
+      // Update order_status based on return_status
+      if (returnOrderData && returnOrderData.return_status) {
+        order.order_status = `${returnOrderData.return_status}`;
+      }
+
+      order.return_order = returnOrderData;
     }
 
     res.json(rows);
@@ -478,6 +518,7 @@ app.get('/getAllCustomerOrder/:customer_id', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching data' });
   }
 });
+
 
 
 app.get("/customer-orders-by-month/:vendor_id", async (req, res) => {
@@ -1295,6 +1336,133 @@ app.post("/shipSelectedProducts", async (req, res) => {
   }
 });
 
+
+const imgReturns = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "./uploads/Returns");
+  },
+  filename: (req, file, callback) => {
+    callback(null, `Returns-${Date.now()}-${file.originalname}`);
+  },
+});
+
+// img filter
+const isReturns = (req, file, callback) => {
+  if (file.mimetype.startsWith("image")) {
+    callback(null, true);
+  } else {
+    callback(new Error("Only images are allowed"));
+  }
+};
+
+const uploadReturn = multer({
+  storage: imgReturns,
+  fileFilter: isReturns,
+});
+
+// POST endpoint to handle return updates
+app.post("/updateReturn", uploadReturn.array('images'), async (req, res) => {
+  try {
+    // Log uploaded files
+    const uploadedImages = req.files.map((file) => file.filename);
+    console.log("Uploaded images:", uploadedImages);
+
+    // Combine uploaded images with other form data
+    const formData = {
+      reason: req.body.reason,
+      order_id: req.body.order_id,
+      details: req.body.details,
+      images: uploadedImages, // Add uploaded images to the form data
+    };
+    console.log("Form data:", formData);
+
+    // Begin a transaction
+    await pool.query('BEGIN');
+
+    try {
+      // Delete old images associated with the order_id
+      const oldImagesResult = await pool.query('SELECT medias_return FROM return_order WHERE order_id = $1', [formData.order_id]);
+      if (oldImagesResult.rows.length > 0) {
+        const oldImages = oldImagesResult.rows[0].medias_return;
+        oldImages.forEach((oldImage) => {
+          try {
+            fs.unlinkSync(`./uploads/Returns/${oldImage}`);
+            console.log(`Deleted old image: ${oldImage}`);
+          } catch (error) {
+            // console.error(`Error deleting old image ${oldImage}:`, error.message);
+            return
+          }
+        });
+      }
+
+
+      // SQL query to insert or update return_order table
+      const query = `
+        INSERT INTO return_order (return_id, reason_return, order_id, medias_return, detail_text, return_status)
+        VALUES (DEFAULT, $1, $2, $3, $4, 'Return Pending')
+        ON CONFLICT (order_id)
+        DO UPDATE SET
+        reason_return = EXCLUDED.reason_return,
+        medias_return = EXCLUDED.medias_return,
+        detail_text = EXCLUDED.detail_text,
+        return_status = 'Return Pending';
+      `;
+
+      // Execute the SQL query with the form data
+      const result = await pool.query(query, [
+        formData.reason,
+        formData.order_id,
+        formData.images,
+        formData.details,
+      ]);
+
+      const updateOrderStatusQuery = `
+      UPDATE vendorproductorder
+      SET order_status = "Returned"
+      WHERE order_id = $1;
+    `;
+      await pool.query(updateOrderStatusQuery, [formData.order_id]);
+
+      // Commit the transaction
+      await pool.query('COMMIT');
+
+      // Check if the query was successful
+      if (result.rowCount > 0) {
+        console.log("Return updated successfully");
+        res.status(200).json({ message: 'Return updated successfully' });
+      } else {
+        console.log("No records updated");
+        res.status(400).json({ error: 'No records updated' });
+      }
+    } catch (error) {
+      // Rollback the transaction if an error occurs
+      await pool.query('ROLLBACK');
+      throw error;
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.get("/getReturnByOrder_id/:order_id", async (req, res) => {
+  try {
+    const { order_id } = req.params;
+    const query = 'SELECT * FROM return_order WHERE order_id = $1';
+    const result = await pool.query(query, [order_id]);
+    const returnData = result.rows;
+
+    if (returnData.length > 0) {
+      res.status(200).json(returnData);
+    } else {
+      res.status(404).json({ message: 'No return found' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 module.exports = app;

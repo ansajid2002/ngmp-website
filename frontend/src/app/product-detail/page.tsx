@@ -54,13 +54,14 @@ import { Image, Modal, Rate } from "antd";
 import ProductSalebadge from "@/components/ProductSalebadge";
 import SellerProfileProductPage from "@/components/SellerProfileProductPage";
 import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sellerProfile, setSellerProfile] = useState(null);
-
+  const {t} = useTranslation()
   const showDetailModal = () => {
     setIsDetailModalOpen(true);
   };
@@ -486,7 +487,7 @@ const ProductDetailPage = ({ searchParams }) => {
       );
     }
 
-    return variantsWithArray.map((variant: any, index: any) => (
+    return variantsWithArray?.map((variant: any, index: any) => (
       <>
         <label htmlFor="">
           <span className="text-sm font-medium">
@@ -530,19 +531,19 @@ const ProductDetailPage = ({ searchParams }) => {
         {
           responseData?.mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
             {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-            <h1 className="text-green-600 font-semibold">Shipping Fee : ${shippingRate}, From {responseData?.mogadishudistrict_ship_from} To {storedDistrict}</h1>
+            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {responseData?.mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
           </div> : (
             !responseData?.mogadishudistrict_ship_from ? (
               <div className="flex justify-center">
-                <h1 className="text-red-600 font-semibold">Only Pickup Available</h1>
+                <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
               </div>
             ) : (
               !storedDistrict ? (
                 <div className="flex justify-center">
-                  <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">Choose District</a>
+                  <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">{t("Choose District")}</a>
                 </div>
               ) : (
-                <p>Both mogadishudistrict_ship_from and storedDistrict are not present</p>
+                <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
               )
             )
           )
@@ -976,7 +977,7 @@ const ProductDetailPage = ({ searchParams }) => {
                 <h2 className="font-medium">
                   {sellerProfile?.followers || "NA"}
                 </h2>
-                <h3 className="text-gray-600 text-xs">Followers</h3>
+                <h3 className="text-gray-600 text-xs">{t("Followers")}</h3>
               </div>
 
               <Minus className="rotate-90 text-gray-400" />
@@ -994,26 +995,26 @@ const ProductDetailPage = ({ searchParams }) => {
                 <h2 className="font-medium">
                   {sellerProfile?.total_products || "NA"}
                 </h2>
-                <h3 className="text-gray-600 text-xs">Items</h3>
+                <h3 className="text-gray-600 text-xs">{t("Items")}</h3>
               </div>
             </div>
 
             <div className="flex gap-2 items-center ">
               <h2 className="w-[50%] flex gap-1 md:gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
                 <Heart className="" size={16} />
-                <p className="text-sm font-medium">Follow</p>
+                <p className="text-sm font-medium">{t("Follow")}</p>
               </h2>
               <h2 className="w-[50%] flex gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
-                <p className="text-sm font-medium">Shop all items</p>
+                <p className="text-sm font-medium">{t("Shop all items")}</p>
               </h2>
             </div>
           </div>
         </div>
 
         <div className="pt-5 font-medium text-lg flex items-center justify-between">
-          <h2 className="text-xl">Details</h2>
+          <h2 className="text-xl">{t("Details")}</h2>
           <h2 className="flex text-sm items-center gap-1">
-            Report this item
+            {t("Report this item")}
             <ChevronRight size={15} />
           </h2>
         </div>
@@ -1031,10 +1032,10 @@ const ProductDetailPage = ({ searchParams }) => {
               className="flex gap-1 items-center cursor-pointer hover:underline"
               onClick={showDetailModal}
             >
-              Seller information <ChevronRight size={20} />
+              {t("Seller information")} <ChevronRight size={20} />
             </li>
             <Modal
-              title="Seller Information"
+              title={t("Seller Information")}
               open={isDetailModalOpen}
               onOk={detailhandleOk}
               onCancel={detailhandleCancel}
@@ -1043,7 +1044,7 @@ const ProductDetailPage = ({ searchParams }) => {
                   onClick={detailhandleCancel}
                   className="cursor-pointer bg-orange-600 text-center mx-5 md:mx-10 rounded-full p-2 text-xl text-white font-medium"
                 >
-                  OK
+                  {t("OK")}
                 </h1>,
               ]}
             >

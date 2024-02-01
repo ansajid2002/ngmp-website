@@ -26,7 +26,8 @@ import { useDispatch } from "react-redux";
 import SignIn from "@/app/auth/signIn/page";
 import ProductSalebadge from "./ProductSalebadge";
 import ProductOfferBadge from "./ProductOfferBadge";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 export interface ProductCardProps {
   className?: string;
@@ -49,7 +50,7 @@ const ProductCard: FC<ProductCardProps> = ({
   const customerId = customerData?.customer_id || null;
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
-
+const {t} = useTranslation()
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -160,7 +161,7 @@ const ProductCard: FC<ProductCardProps> = ({
   };
 
   const handleToggleWishlist = useCallback(async () => {
-    console.log(customerId,"cliecked");
+    console.log(customerId, "cliecked");
 
     if (!customerId) {
       router.push("/auth/signIn")
@@ -269,7 +270,7 @@ const ProductCard: FC<ProductCardProps> = ({
       <div
         className={`nc-ProductCard relative flex flex-col overflow-hidden hover:shadow-md p-1 py-2 bg-transparent ${className}`}
       >
-        <Link href={"/product-detail"} className="absolute inset-0"></Link>
+        <Link href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`} className="absolute inset-0"></Link>
 
         <div className="relative flex-shrink-0 bg-gray-50 dark:bg-gray-300  overflow-hidden z-1 group">
           <Link
@@ -278,15 +279,15 @@ const ProductCard: FC<ProductCardProps> = ({
             className="block overflow-hidden group"
           >
             <div className="relative group-hover:scale-105 transition-transform duration-300">
-            <NcImage
-  containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
-  src={`${ProductImageUrl}/${images?.[0]}`}
-  className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
-  fill
-  sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
-  alt="product"
-/>
-              
+              <NcImage
+                containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
+                src={`${ProductImageUrl}/${images?.[0]}`}
+                className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
+                alt="product"
+              />
+
             </div>
           </Link>
           {/* {discountPercentage  && (

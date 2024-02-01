@@ -882,7 +882,7 @@ const OrderManagementTable = ({
         <div className="">
           <Input
             type="text"
-            placeholder="Search by OrderID, Buyer name, Product Name, Product ID, SKU number, Transaction ID"
+            placeholder="Search by OrderID, Product Name, SKU number"
             value={searchValue}
             onChange={handleInputChange}
           />
