@@ -6,6 +6,7 @@ import StarRating from "@/components/StarRating";
 import { PRODUCTS } from "@/data/data";
 import { useAppSelector } from "@/redux/store";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
+import NcImage from "@/shared/NcImage/NcImage";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -111,21 +112,23 @@ const AccountOrder = () => {
       ispickup
     } = product;
 
-    console.log(product);
+    console.log(`${ProductImageUrl}/${product_image}`);
 
 
     return (
       <div key={product_uniqueid + order_id + index} className="md:flex p-2">
         <div className="relative h-24 w-16 sm:w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
-          <Image
+          <NcImage
             fill
-            sizes="100px"
             src={
               `${ProductImageUrl}/${product_image}` ||
               "/placeholder.png"
             }
             alt={product_name}
-            className="h-full w-full object-contain"
+            containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
+            className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
+            sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
+
           />
         </div>
 
@@ -151,7 +154,7 @@ const AccountOrder = () => {
               </div>
               <Prices
                 price={""}
-                sellingprice={total_amount || ""}
+                sellingprice={total_amount || 0}
                 className="mt-0.5 ml-2"
               />
             </div>

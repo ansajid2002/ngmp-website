@@ -218,9 +218,9 @@ async function PageHome() {
         <NewHeroSectionMobile data={bannersDataMobile} />
       </div>
 
-      <div className="mt-5 px-1 md:px-10 py-0 md:py-2">
+      {/* <div className="mt-5 px-1 md:px-10 py-0 md:py-2">
         <Safety />
-      </div>
+      </div> */}
 
       {/* <div className="mt-1 px-1 md:px-10 py-0 md:py-2">
         <DealBar

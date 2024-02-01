@@ -16,105 +16,74 @@ import { Skeleton } from "../ui/skeleton";
 import { fetchCategoriesAndSubcategories, getAllProducts } from "@/app/page";
 import ProductCard from "../ProductCard";
 import { t } from "i18next";
+import { AdminUrl } from "@/app/layout";
+import { Pagination } from "antd";
 
 const BestSeller = () => {
   const [activeTab, setActiveTab] = React.useState(0);
   const [openMenu, setOpenMenu] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [products, setProducts] = React.useState(null);
-  const [selectedCatgory, setSelectedCatgeory] = React.useState("Recommended");
-  const [categories, setCategories] = React.useState([]); // Include the initial "Recommended" value
-  const [filteredCategories, setFilteredCategories] =
-    React.useState(categories); // For filtered categories
+  const [categories, setCategories] = React.useState(null); // Include the initial "Recommended" value
+  const [filteredCategories, setFilteredCategories] = React.useState(null); // For filtered categories
+  const [selectedCatgory, setSelectedCatgeory] = React.useState("");
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(50);
+  const [totalCount, setTotalCount] = React.useState(0);
   // Define an onClick function to bind the value on tab click
-  useEffect(() => {
-    const fetchSubcategoryProducts = async () => {
-      try {
-        setLoading(true);
 
-        // Fetch all products
-        const response = await getAllProducts();
+  const fetchSubcategoryProducts = async (selectedCategory: string, pageNumber: number, pageSize: number, type: number) => {
+    try {
 
-        // Filter products based on activeTab value
-        let filteredProducts = response;
-
-        if (activeTab === 1) {
-          // Filter for the last 30 days
-          const last30Days = new Date();
-          last30Days.setDate(last30Days.getDate() - 30);
-
-          filteredProducts = response.filter(
-            (product: any) => new Date(product.updated_at_product) > last30Days
-          );
-        } else if (activeTab === 2) {
-          // Filter for the last 7 days
-          const last7Days = new Date();
-          last7Days.setDate(last7Days.getDate() - 7);
-
-          filteredProducts = response.filter(
-            (product: any) => new Date(product.updated_at_product) > last7Days
-          );
-        }
-
-        if (selectedCatgory) {
-          let formattedCategory;
-
-          if (selectedCatgory.toLowerCase() === "recommended") {
-            // If selectedCatgory is "Recommended," apply a random filter
-            const randomIndex = Math.floor(Math.random() * response.length);
-            formattedCategory = response[randomIndex].slug_cat;
-          } else {
-            // Otherwise, format the category
-            formattedCategory = selectedCatgory
-              .replace(/[^\w\s]/g, "")
-              .replace(/\s/g, "");
-          }
-
-          console.log(formattedCategory);
-
-          filteredProducts = filteredProducts.filter(
-            (product: any) => product.slug_cat === formattedCategory
-          );
-        }
-
-        setProducts(filteredProducts);
-
-        setTimeout(() => {
-          setLoading(false);
-        }, 600);
-      } catch (error) {
-        setLoading(false);
-        console.error("Error fetching data:", error);
+      const response = await fetch(`${AdminUrl}/api/getProductByCategories?category=${selectedCategory?.replace(/[^\w\s]/g, "").replace(/\s/g, "")}&page=${pageNumber}&pageSize=${pageSize}&type=${type}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
       }
-    };
+      const data = await response.json();
 
-    fetchSubcategoryProducts();
-  }, [activeTab, selectedCatgory]);
+      setTotalCount(data?.totalCount || 0)
+      setProducts(data?.AllProducts);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (error) {
+      console.log(error);
+      // Handle error here
+      throw error; // Rethrow the error to be handled by the caller if needed
+    }
+  }
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetchCategoriesAndSubcategories();
-        const categoriesWithRecommended = [
-          { category_name: "Recommended" },
-          ...response,
-        ];
-        setCategories(categoriesWithRecommended);
-        setFilteredCategories(categoriesWithRecommended);
+        setCategories(response);
+        setFilteredCategories(response);
+        setSelectedCatgeory(response?.[0]?.category_name)
+        fetchSubcategoryProducts(response?.[0]?.category_name, 1, 10, activeTab)
+
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
     };
 
-    fetchCategories();
-  }, []);
+    !categories && fetchCategories();
+  }, [categories]);
 
-  const onTabClick = (e: any, index: number) => {
+
+  useEffect(() => {
+    selectedCatgory && selectedCatgory.trim() !== '' && fetchSubcategoryProducts(selectedCatgory, 1, 10, activeTab);
+  }, [activeTab])
+
+  const onTabClick = (e: any, index: number, selectedCatgory: string) => {
+    console.log(selectedCatgory, categories, 'cat name data');
+
     setActiveTab(index);
   };
 
+
   // Labels for your tabs
   const tabLabels = ["Overall", "Within last 30 days", "Within last 7 days"];
+
 
   return (
     <div className="px-3 md:px-10 mt-4">
@@ -125,7 +94,7 @@ const BestSeller = () => {
           </h1>
           <Tabs
             activeTab={activeTab}
-            onTabClick={onTabClick}
+            onTabClick={(e: any, index: number) => onTabClick(e, index, selectedCatgory)}
             mode="scrollSelectedToCenterFromView"
           >
             {tabLabels.map((label, index) => (
@@ -137,7 +106,7 @@ const BestSeller = () => {
         </div>
         <div className="md:flex py-2 justify-center items-center">
           <h1 className="text-sm mb-2 md:mb-0 font-semibold mr-2 text-gray-600">
-           {t("Filter by category")}
+            {t("Filter by category")}
           </h1>
           <Menu
             dismiss={{
@@ -154,9 +123,8 @@ const BestSeller = () => {
                 {selectedCatgory}
                 <ChevronDownIcon
                   strokeWidth={2.5}
-                  className={`h-3.5 w-3.5 flex justify-end transition-transform ${
-                    openMenu ? "rotate-180" : ""
-                  }`}
+                  className={`h-3.5 w-3.5 flex justify-end transition-transform ${openMenu ? "rotate-180" : ""
+                    }`}
                 />
               </Button>
             </MenuHandler>
@@ -168,20 +136,22 @@ const BestSeller = () => {
                 }}
                 onChange={(e) => {
                   const searchTerm = e.target.value.toLowerCase();
-                  const filtered = categories.filter((item) =>
+                  const filtered = searchTerm && searchTerm.trim() !== '' && categories.filter((item) =>
                     item.category_name.toLowerCase().includes(searchTerm)
                   );
                   setFilteredCategories(filtered);
                 }}
               />
-              {filteredCategories.map((item: any, i: number) => (
+              {filteredCategories && filteredCategories.map((item: any, i: number) => (
                 <MenuItem
                   key={i}
-                  className={`${
-                    selectedCatgory === item.category_name &&
+                  className={`${selectedCatgory === item.category_name &&
                     "bg-gray-300 text-black"
-                  }`}
-                  onClick={() => setSelectedCatgeory(item.category_name)}
+                    }`}
+                  onClick={() => {
+                    setSelectedCatgeory(item.category_name)
+                    fetchSubcategoryProducts(item.category_name, 1, 10, activeTab)
+                  }}
                 >
                   {item.category_name}
                 </MenuItem>
@@ -196,26 +166,52 @@ const BestSeller = () => {
           key={index}
           activeTab={activeTab}
           index={index}
-          // You can add animation by adding a custom class
+        // You can add animation by adding a custom class
         >
-          <div className="grid grid-cols-2 gap-6 md:gap-8 sm:grid-cols-3 lg:grid-cols-5 mt-5">
-            {loading
-              ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
-                  (item: any, index: number) => (
-                    <div>
-                      <Skeleton className="w-full h-[250px] bg-gray-200" />
-                      <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
-                      <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
-                    </div>
-                  )
-                )
-              : products &&
-                products?.map((subcat: any, index: number) => (
+          {loading ? (
+            <div className="grid grid-cols-2 gap-6 md:gap-8 sm:grid-cols-3 lg:grid-cols-5 mt-5">
+              {
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item: any, index: number) => (
+                  <div key={index}>
+                    <Skeleton className="w-full h-[250px] bg-gray-200" />
+                    <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
+                    <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
+                  </div>
+                ))
+              }
+            </div>
+          ) : products && products.length > 0 ? (
+            <>
+              <div className="grid grid-cols-2 gap-6 md:gap-8 sm:grid-cols-3 lg:grid-cols-5 mt-5">
+                {products.map((subcat: any, index: number) => (
                   <ProductCard key={index} data={subcat} showTitle={true} />
                 ))}
-          </div>
+              </div>
+              <div className="flex justify-center mt-10">
+                <Pagination
+                  hideOnSinglePage
+                  current={page}
+                  responsive
+                  showQuickJumper
+                  showTitle
+                  showSizeChanger
+                  pageSize={pageSize}
+                  onChange={(page: number, pageSize: number) => {
+                    setPage(page)
+                    setPageSize(pageSize)
+                    fetchSubcategoryProducts(selectedCatgory, page, pageSize, activeTab)
+                  }} total={totalCount} />
+              </div>
+            </>
+          ) : (
+            <p>No Products found</p>
+          )}
+
+
         </TabScreen>
       ))}
+
+
     </div>
   );
 };
