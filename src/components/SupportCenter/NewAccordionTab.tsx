@@ -36,7 +36,8 @@ import Policies from "./Policies";
 import SecurityAndPrivacy from "./SecurityAndPrivacy";
 import FeedbacksAndCollabInquiries from "./FeedbacksAndCollabInquiries";
 import Link from "next/link";
-
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 function Icon({ id, open }) {
   return (
     <svg
@@ -61,7 +62,7 @@ function Icon({ id, open }) {
 const NewAccordionTab = () => {
   const [querys, setquerys] = useState<any | null>();
   const [activeItem, setActiveItem] = useState<string | null>("");
-
+  // const {t} = useTranslation()
   const params = useSearchParams();
 
   const search = params.get("querys");
@@ -277,7 +278,7 @@ const NewAccordionTab = () => {
     }
 
     // Return a default component or handle the case when no match is found
-    return <div>No matching component found</div>;
+    return <div>{t("No matching component found")}</div>;
   };
 
   const component = findComponentByquerysAndSlug(querys);
@@ -291,7 +292,7 @@ const NewAccordionTab = () => {
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-bold mb-5">All help topics</h2>
+      <h2 className="text-2xl font-bold mb-5">{t("All help topics")}</h2>
       <div className="w-full flex flex-col md:flex-row">
         <div className="w-full lg:w-[25%] lg:pr-10">
           {AccordionData?.map((item, index) => (
@@ -306,7 +307,7 @@ const NewAccordionTab = () => {
               >
                 <span className="flex gap-2 items-center">
                   {item.icon}
-                  <h3 className="text-[0.9rem] mt-1">{item.title}</h3>
+                  <h3 className="text-[0.9rem] mt-1">{t(`${item.title}`)}</h3>
                 </span>
               </AccordionHeader>
               <AccordionBody>
@@ -322,7 +323,8 @@ const NewAccordionTab = () => {
                         onClick={() => handleClick(citem)}
                         key={cindex}
                       >
-                        {citem.list}
+                        {t(`${citem.list}`)}
+                        
                       </li>
                     </Link>
                   ))}

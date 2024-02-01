@@ -23,7 +23,7 @@ import SupportCenterDropdown from "./SupportCenterDropdown";
 import PopularSearches from "./Search/PopularSearches";
 import SearchList from "./Search/SearchList";
 import MobileSearch from "./Search/MobileSearch";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 const MainNav2Logged = () => {
   const inputRef = createRef<HTMLInputElement>();
@@ -35,7 +35,7 @@ const MainNav2Logged = () => {
   const [searchText, setSearchText] = useState(decryptedText || "");
   const [MatchingKeyword, setMatchingKeyword] = useState(null);
   const [focusInput, setFocusInput] = useState(false);
-
+const {t} = useTranslation()
   useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (searchNode.current && !searchNode.current?.contains(event.target)) {

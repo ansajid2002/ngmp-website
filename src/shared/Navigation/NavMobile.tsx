@@ -17,7 +17,7 @@ import Link from "next/link";
 import { fetchCategoriesAndSubcategories } from "@/app/page";
 import { MessagesSquare, Search } from "lucide-react";
 import SupportCenterDropdown from "@/components/Header/SupportCenterDropdown";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export interface NavMobileProps {
   data?: NavItemType[];
@@ -29,7 +29,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
   onClickClose,
 }) => {
   const [categoryDaata, setCategoryDaata] = useState<any[] | null>(null);
-
+const {t} = useTranslation()
   const catm = async () => {
     const cat = await fetchCategoriesAndSubcategories();
     // console.log(cat)

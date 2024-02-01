@@ -4,6 +4,7 @@ import {
   AccordionHeader,
   AccordionBody,
 } from "@material-tailwind/react";
+import { t } from "i18next";
 
 function Icon({ id, open }) {
   return (
@@ -96,7 +97,7 @@ const FeedbacksAndCollabInquiries = () => {
           icon={<Icon id={item.id} open={open} />}
         >
           <AccordionHeader onClick={() => handleOpen(item.id)}>
-            <span className="text-[1rem] font-medium">{item.title}</span>
+            <span className="text-[1rem] font-medium">{t(`${item.title}`)}</span>
           </AccordionHeader>
           <AccordionBody>{item.content}</AccordionBody>
         </Accordion>

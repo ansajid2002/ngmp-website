@@ -12,14 +12,15 @@ import { AdminUrl, ProductImageUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
 import { removeItem } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 export default function CartDropdown() {
   const { cartItems } = useAppSelector((store) => store.cart);
   const dispatch = useDispatch();
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
-
+const {t} = useTranslation()
   const renderProduct = (item: Product, index: number, close: () => void) => {
     const {
       ad_title,

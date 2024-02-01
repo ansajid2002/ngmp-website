@@ -14,8 +14,11 @@ import { InputNumber, Modal } from "antd";
 import Swal from "sweetalert2";
 import { updateCustomerData } from "@/redux/slices/customerData";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
+
 
 const AccountPage = () => {
+  const {t} = useTranslation()
   const customerData = useAppSelector((state) => state.customerData);
   const {
     given_name = "",
@@ -263,7 +266,7 @@ const AccountPage = () => {
       <div className="space-y-10 sm:space-y-12">
         {/* HEADING */}
         <h2 className="text-2xl sm:text-3xl font-semibold">
-          Account information
+          {t("Account information")}
         </h2>
         <div className="flex flex-col md:flex-row">
           <div className="flex-shrink-0 flex items-start">
@@ -295,7 +298,7 @@ const AccountPage = () => {
                   />
                 </svg>
 
-                <span className="mt-1 text-xs">Change Image</span>
+                <span className="mt-1 text-xs">{t("Change Image")}</span>
               </div>
               <input
                 type="file"
@@ -309,7 +312,7 @@ const AccountPage = () => {
           <div className="flex-grow mt-10 md:mt-0 md:pl-16 max-w-3xl space-y-6">
             <div className="grid grid-cols-2 w-full gap-2">
               <div className="flex-1">
-                <Label>First name</Label>
+                <Label>{t("First name")}</Label>
                 <Input
                   className="mt-1.5"
                   value={`${userData?.given_name}`}
@@ -318,7 +321,7 @@ const AccountPage = () => {
                 />
               </div>
               <div className="flex-1">
-                <Label>Last name</Label>
+                <Label>{t("Last name")}</Label>
                 <Input
                   className="mt-1.5"
                   value={`${userData?.family_name}`}
@@ -328,7 +331,7 @@ const AccountPage = () => {
               </div>
 
               <div>
-                <Label>Email</Label>
+                <Label>{t("Email")}</Label>
                 <div className="mt-1.5 flex">
                   <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                     <i className="text-2xl las la-envelope"></i>
@@ -344,7 +347,7 @@ const AccountPage = () => {
 
               {/* ---- */}
               <div>
-                <Label>Phone number</Label>
+                <Label>{t("Phone number")}</Label>
                 <div className="mt-1.5 flex">
                   <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                     <i className="text-2xl las la-phone-volume"></i>
@@ -364,7 +367,7 @@ const AccountPage = () => {
 
 
             <div>
-              <Label>Address Line 1</Label>
+              <Label>{t("Address Line 1")}</Label>
               <div className="mt-1.5 flex">
                 <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                   <i className="text-2xl las la-address-book"></i>
@@ -380,7 +383,7 @@ const AccountPage = () => {
               </div>
             </div>
             <div>
-              <Label>Address Line 2</Label>
+              <Label>{t("Address Line 2")}</Label>
               <div className="mt-1.5 flex">
                 <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                   <i className="text-2xl las la-address-book"></i>
@@ -396,7 +399,7 @@ const AccountPage = () => {
               </div>
             </div>
             <div>
-              <Label>City</Label>
+              <Label>{t("City")}</Label>
               <div className="mt-1.5 flex">
                 <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                   <i className="text-2xl las la-city"></i>
@@ -411,7 +414,7 @@ const AccountPage = () => {
               </div>
             </div>
             <div>
-              <Label>State</Label>
+              <Label>{t("State")}</Label>
               <div className="mt-1.5 flex">
                 <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                   <i className="text-2xl las la-city"></i>
@@ -426,7 +429,7 @@ const AccountPage = () => {
               </div>
             </div>
             <div>
-              <Label>Country</Label>
+              <Label>{t("Country")}</Label>
               <div className="mt-1.5 flex">
                 <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                   <i className="text-2xl las la-city"></i>
@@ -441,7 +444,7 @@ const AccountPage = () => {
             </div>
             {/* ---- */}
             <div>
-              <Label>About you</Label>
+              <Label>{t("About you")}</Label>
               <Textarea className="mt-1.5"
                 placeholder="Tell something about your self..."
                 onChange={(e) => handleInputChange("bio", e.target.value)}
@@ -465,7 +468,7 @@ const AccountPage = () => {
       >
         <div className="col-span-2 md:col-span-4 text-center">
           <p className="text-lg font-semibold mb-4">
-            To complete the account update, please enter the OTP sent to your registered email address.
+            {t("To complete the account update, please enter the OTP sent to your registered email address.")}
           </p>
         </div>
         <div className="flex justify-center w-full">
@@ -478,7 +481,7 @@ const AccountPage = () => {
         </div>
         <div className="col-span-2 md:col-span-4 text-center mt-4">
           <p className="text-sm text-neutral-500">
-            Can't find the OTP? Make sure to check your spam folder or request a new one.
+            {t("Can't find the OTP? Make sure to check your spam folder or request a new one.")}
           </p>
         </div>
       </Modal>

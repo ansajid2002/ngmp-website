@@ -15,11 +15,13 @@ import { ChevronDownIcon } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { fetchCategoriesAndSubcategories, getAllProducts } from "@/app/page";
 import ProductCard from "../ProductCard";
-import { t } from "i18next";
 import { AdminUrl } from "@/app/layout";
 import { Pagination } from "antd";
+import { useTranslation } from "react-i18next";
+
 
 const BestSeller = () => {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = React.useState(0);
   const [openMenu, setOpenMenu] = React.useState(false);
   const [loading, setLoading] = React.useState(false);

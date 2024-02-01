@@ -20,6 +20,7 @@ import {
   addItemToWishlist,
   removeItemFromWishlist,
 } from "@/redux/slices/wishlistSlice";
+import { useTranslation } from "react-i18next";
 
 export interface ProductQuickView2Props {
   className?: string;
@@ -68,7 +69,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   const [qualitySelected, setQualitySelected] = useState(1);
   const [variantsWithArray, setVariantsWithArray] = useState(null);
   const [variantsData, setVariantsData] = useState(null);
-
+  const {t} = useTranslation()
   const [selectedAttributes, setSelectedAttributes] = useState<null>(null); // Replace 'YourAttributeType' with the actual type
   const [selectLabel, setSelectLabel] = useState<string | null>(item?.label);
   const [mrpData, setMrp] = useState<number | null>(mrp);
@@ -422,19 +423,19 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         {
           mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
             {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-            <h1 className="text-green-600 font-semibold">Shipping Fee : ${shippingRate}, From {mogadishudistrict_ship_from} To {storedDistrict}</h1>
+            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
           </div> : (
             !mogadishudistrict_ship_from ? (
               <div className="flex justify-center">
-                <h1 className="text-red-600 font-semibold">Only Pickup Available</h1>
+                <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
               </div>
             ) : (
               !storedDistrict ? (
                 <div className="flex justify-center">
-                  <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">Choose District</a>
+                  <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">{t("Choose District")}</a>
                 </div>
               ) : (
-                <p>Both mogadishudistrict_ship_from and storedDistrict are not present</p>
+                <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
               )
             )
           )
@@ -540,7 +541,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
             <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
               <Link href={"/cart"}>
                 <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-                <span className="ml-3">View Cart</span>
+                <span className="ml-3">{t("View Cart")}</span>
               </Link>
             </ButtonPrimary>
           </div>
@@ -557,7 +558,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
               onClick={notifyAddTocart}
             >
               <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-              <span className="ml-3">Add to Cart</span>
+              <span className="ml-3">{t("Add to Cart")}</span>
             </ButtonPrimary>
           </div>
         )}
@@ -567,7 +568,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         {/*  */}
 
         <div>
-          <h2 className="text-[1rem] font-medium">Description</h2>
+          <h2 className="text-[1rem] font-medium">{t("Description")}</h2>
           <p className=" text-[0.9rem] line-clamp-2">
             {additionaldescription || "NA"}
           </p>
@@ -581,7 +582,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
               query: { product: prod_slug, uniqueid: uniquepid },
             }}
           >
-            View full details
+            {t("View full details")}
             <ChevronRight size={20} />
           </Link>
         </div>

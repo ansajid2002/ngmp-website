@@ -4,6 +4,8 @@ import { Select, Button } from 'antd';
 import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import { useAppSelector } from '@/redux/store';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
+
 
 const { Option } = Select;
 
@@ -13,7 +15,7 @@ const SelectDistrict = () => {
     const { customerData } = useAppSelector((store) => store.customerData)
     const [loading, setLoading] = useState(false)
     const customerId = customerData?.customer_id || null
-
+const {t} = useTranslation()
 
     const handleDistrictChange = (value: any) => {
         setSelectedDistrict(value);
@@ -108,10 +110,10 @@ const SelectDistrict = () => {
 
     return (
         <div className="container mx-auto my-8 p-6 bg-white rounded shadow-md">
-            <h1 className="text-3xl font-semibold mb-4">Select Mogadishu District</h1>
-            <p className="text-gray-600 mb-4">Choose a district from the list below:</p>
+            <h1 className="text-3xl font-semibold mb-4">{t("Select Mogadishu District")}</h1>
+            <p className="text-gray-600 mb-4">{t("Choose a district from the list below:")}</p>
             <label htmlFor="districtSelect" className="block text-sm font-medium text-gray-700">
-                District:
+                {t("District:")}
             </label>
             <Select
                 id="districtSelect"
@@ -120,7 +122,7 @@ const SelectDistrict = () => {
                 className="w-full mt-1"
                 showSearch
             >
-                <Option value="">Select a Mogadishu district</Option>
+                <Option value="">{t("Select a Mogadishu district")}</Option>
                 {cities.map((city, index) => (
                     <Option key={index} value={city}>
                         {city}
@@ -133,7 +135,7 @@ const SelectDistrict = () => {
                 className="mt-4"
                 loading={loading}
             >
-                Continue
+                {t("Continue")}
             </ButtonPrimary>
         </div>
     );

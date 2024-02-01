@@ -14,8 +14,9 @@ import { useDispatch } from "react-redux";
 import { addCarts } from "@/redux/slices/cartSlice";
 import { updateproductsListwishlist } from "@/redux/slices/wishlistSlice";
 import { useParams, useSearchParams } from "next/navigation";
-import { t } from "i18next";
+
 import { changeLanguage } from "@/utils/i18nextfile";
+import { useTranslation } from "react-i18next";
 
 export interface NavItemType {
   id: string;
@@ -42,7 +43,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
   const { languageCode } = useAppSelector((store) => store.languagesReducer);
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
-
+const {t} = useTranslation()
   const dispatch = useDispatch<AppDispatch>();
 
   const onMouseEnterMenu = (id: string) => {
