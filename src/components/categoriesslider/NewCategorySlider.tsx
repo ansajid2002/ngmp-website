@@ -58,7 +58,7 @@ const CategoryPageSlick = ({ newcategoriesdata }) => {
     <div className="lg:p-0">
       {/* <Heading title="CATEGORIES" /> */}
       <h2 className="text-[2rem] md:text-[2.3rem] text-center tracking-tight uppercase font-bold mb-5 md:mb-10">
-        <span className="text-[#ED642B]">Our</span> Categories
+        <span className="text-[#ED642B]">{t("Our")}</span> {t("Categories")}
       </h2>
       <Slider {...settings} className="pb-5">
         {newcategoriesdata?.slice(0, 24).map((single: any, index: any) => {

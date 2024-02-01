@@ -8,8 +8,10 @@ import { AdminUrl } from "@/app/layout";
 import Image from "next/image";
 import Link from "next/link";
 import { Skeleton } from "./ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 const CategoryPageSlick = ({ data }) => {
+  const {t} = useTranslation()
   const [catDataa, setCatDataa] = useState<any[] | any>(null);
 
   const CategoryPageFetch = async () => {
@@ -116,8 +118,8 @@ const CategoryPageSlick = ({ data }) => {
                             .replace(/\s/g, "") === data.subcatname &&
                           "font-semibold"
                         }`}
-                      >
-                        {item3.subcategory_name}s
+                      >{t(`${item3.subcategory_name}`)}
+                        
                       </h1>
                     </Link>
                   );

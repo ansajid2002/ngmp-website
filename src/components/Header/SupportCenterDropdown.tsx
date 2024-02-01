@@ -2,6 +2,7 @@ import React from "react";
 import { Popover, Transition } from "@/app/headlessui";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
+import { t } from "i18next";
 
 const SupportCenterDropdown = () => {
   return (
@@ -29,7 +30,7 @@ const SupportCenterDropdown = () => {
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
                     >
-                      <p className="text-sm font-medium ">{"Support Center"}</p>
+                      <p className="text-sm font-medium ">{t("Support Center")}</p>
                     </Link>
 
                     <Link
@@ -37,7 +38,7 @@ const SupportCenterDropdown = () => {
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
                     >
-                      <p className="text-sm font-medium ">{"About Us"}</p>
+                      <p className="text-sm font-medium ">{t("About Us")}</p>
                     </Link>
 
                     <Link
@@ -46,7 +47,7 @@ const SupportCenterDropdown = () => {
                       onClick={() => close()}
                     >
                       <p className="text-sm font-medium">
-                        {"Privacy Policy"}
+                        {t("Privacy Policy")}
                       </p>
                     </Link>
                     <Link
@@ -55,7 +56,7 @@ const SupportCenterDropdown = () => {
                       onClick={() => close()}
                     >
                       <p className="text-sm font-medium">
-                        {"Terms & Conditions"}
+                        {t("Terms & Conditions")}
                       </p>
                     </Link>
                     <Link
@@ -64,16 +65,16 @@ const SupportCenterDropdown = () => {
                       onClick={() => close()}
                     >
                       <p className="text-sm font-medium">
-                        {"Refund Policy"}
+                        {t("Refund Policy")}
                       </p>
                     </Link>
 
                     <Link
-                      href={"/company/raise-ticket"}
+                      href={"/RaiseTicket"}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
                     >
-                      <p className="text-sm font-medium ">{"Raise Ticket"}</p>
+                      <p className="text-sm font-medium ">{t("Raise Ticket")}</p>
                     </Link>
                   </div>
                 </div>

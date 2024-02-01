@@ -15,13 +15,14 @@ import {
 import { Product } from "@/data/data";
 import NcInputNumber from "./NcInputNumber";
 import Divider from "./divider/Divider";
+import { useTranslation } from "react-i18next";
 
 const CartProducts = ({ removeData = true }) => {
   const { cartItems } = useAppSelector((store) => store.cart);
   const dispatch = useDispatch();
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
-
+const {t} =  useTranslation()
   const renderProduct = (item: Product, index: number) => {
     const {
       ad_title,
@@ -38,7 +39,7 @@ const CartProducts = ({ removeData = true }) => {
       vendorInfo
     } = item;
 
-    const { brand_name, vendorname } = vendorInfo
+    const { brand_name = "", vendorname="" } = vendorInfo || []
 
     const handleRemove = async (item: any) => {
       try {
@@ -191,23 +192,23 @@ const CartProducts = ({ removeData = true }) => {
         <div>
           {
             selectedOption === 'pickup' ? <div className="flex">
-              <h1 className="text-red-600 font-semibold text-sm md:text-xl">Only Pickup Available</h1>
+              <h1 className="text-red-600 font-semibold text-sm md:text-xl">{t("Only Pickup Available")}</h1>
             </div> :
               mogadishudistrict_ship_from && storedDistrict ? <div className="flex">
                 {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-                <h1 className="text-green-600 font-semibold text-sm md:text-xl">Shipping Fee : ${shippingCost}, From {mogadishudistrict_ship_from} To {storedDistrict}</h1>
+                <h1 className="text-green-600 font-semibold text-sm md:text-xl">{t("Shipping Fee")} : ${shippingCost}, {t("From")} {mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
               </div> : (
                 !mogadishudistrict_ship_from ? (
                   <div className="flex">
-                    <h1 className="text-red-600 font-semibold text-sm md:text-xl">Only Pickup Available</h1>
+                    <h1 className="text-red-600 font-semibold text-sm md:text-xl">{t("Only Pickup Available")}</h1>
                   </div>
                 ) : (
                   !storedDistrict ? (
                     <div className="flex">
-                      <a className="text-blue-600 font-semibold text-sm md:text-xl" href="/select-district" target="_blank">Choose District</a>
+                      <a className="text-blue-600 font-semibold text-sm md:text-xl" href="/select-district" target="_blank">{t("Choose District")}</a>
                     </div>
                   ) : (
-                    <p>Both mogadishudistrict_ship_from and storedDistrict are not present</p>
+                    <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
                   )
                 )
               )
@@ -293,7 +294,7 @@ const CartProducts = ({ removeData = true }) => {
                   onClick={() => handleRemove(item)}
                   className="font-medium text-primary-6000 dark:text-primary-500 "
                 >
-                  Remove
+                  {t("Remove")}
                 </button>
               </div>
             </div>

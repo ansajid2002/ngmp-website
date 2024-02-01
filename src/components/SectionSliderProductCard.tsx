@@ -101,7 +101,7 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
           rightDescText={subHeading}
           hasNextPrev
         >
-          {heading || `New Arrivals`}{" "}
+          {t(`${heading}`) ||  " "}{" "}
           {ShowProduct && (
             <span className="text-[#ed642b] font-bold">{t("Products")}</span>
           )}

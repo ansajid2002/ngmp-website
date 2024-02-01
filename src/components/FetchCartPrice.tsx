@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { formatCurrency } from "./AvailableToken";
 import { useRouter } from "next/navigation";
 import { ShippingModal } from '../components/Modals/ShippingModal'
+import { useTranslation } from "react-i18next";
 const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true }) => {
   const { cartItems } = useAppSelector((store) => store.cart);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -61,21 +62,21 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
+  const {t} = useTranslation()
   return (
     <div className="flex-1">
       <div className="sticky top-28">
-        {showTitle && <h3 className="text-lg font-semibold ">Order Summary</h3>}
+        {showTitle && <h3 className="text-lg font-semibold ">{t("Order Summary")}</h3>}
         <div className="mt-7 text-sm text-gray-500 dark:text-gray-400 divide-y divide-gray-200/70 dark:divide-gray-700/80">
           <div className="flex justify-between pb-4">
-            <span>Subtotal</span>
+            <span>{t("Subtotal")}</span>
             <span className="font-semibold text-gray-900 dark:text-gray-200">
               {/* ${calculateSubtotal()} */}
               {formatCurrency(subtotal)}
             </span>
           </div>
           <div className="flex justify-between py-4">
-            <span>Shpping estimate</span>
+            <span>{t("Shpping estimate")}</span>
             <span className="font-semibold text-gray-900 dark:text-gray-200">
               {formatCurrency(shippingCost)}
             </span>
@@ -97,7 +98,7 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
             <ButtonPrimary onClick={() => {
               checkoutLink ? navigation.push('/checkout') : setIsModalVisible(true)
             }} className="mt-8 w-full">
-              Continue to Pay {formatCurrency(totalCost)}
+              {t("Continue to Pay")} {formatCurrency(totalCost)}
             </ButtonPrimary>
             <div className="mt-5 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center">
               <p className="block relative pl-5">
@@ -128,17 +129,17 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
                     strokeLinejoin="round"
                   />
                 </svg>
-                Learn more{` `}
+                {t("Learn more")}{` `}
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
                   href="##"
                   className="text-gray-900 dark:text-gray-200 underline font-medium"
                 >
-                  Taxes
+                  {t("Taxes")}
                 </a>
                 <span>
-                  {` `}and{` `}
+                  {` `}{t("and")}{` `}
                 </span>
                 <a
                   target="_blank"
@@ -146,9 +147,9 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
                   href="##"
                   className="text-gray-900 dark:text-gray-200 underline font-medium"
                 >
-                  Shipping
+                  {t("Shipping")}
                 </a>
-                {` `} infomation
+                {` `} {t("infomation")}
               </p>
             </div>
           </>
