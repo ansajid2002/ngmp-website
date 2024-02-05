@@ -10,7 +10,7 @@ import Link from "next/link";
 
 const SingleVendors = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [singleVendors, setSingleVendors] = useState();
+  const [singleVendors, setSingleVendors] = useState(null);
 
   const params = useSearchParams();
   const vendorid = params.get("vendorid");
@@ -43,6 +43,8 @@ const SingleVendors = () => {
     fetchData();
     // If you want to perform some action when singleVendors changes, do it here
   }, []);
+
+  console.log(singleVendors, 'siongle');
 
   return (
     <>
@@ -99,14 +101,15 @@ const SingleVendors = () => {
                 />
               </div>
               <div>
-                <h2 className="text-xl md:text-2xl tracking-wide pr-2 font-medium">
+                <h2 className="text-xl md:text-xl tracking-wide pr-2 font-medium">
                   {singleVendors?.brand_name || "NA"}
                 </h2>
+                {singleVendors?.status === 1 && <p className="text-red-500 text-2xl font-semibold tracking-wide animate-pulse">Oops! This shop's on pause by the admin. No orders for now. Check out another spot instead!</p>}
               </div>
             </div>
 
             <div className="mt-3">
-              <div className="flex items-center justify-center gap-2 md:gap-5">
+              {/* <div className="flex items-center justify-center gap-2 md:gap-5">
                 <div className="text-center">
                   <h2 className="font-medium">
                     {singleVendors?.followers || "0"}
@@ -120,19 +123,19 @@ const SingleVendors = () => {
                   </h2>
                   <h3 className="text-gray-600">Items</h3>
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex items-center mt-2 md:mt-0 gap-2 p-2">
-                <div className="w-[80%] md:w-[90%]">
+                {/* <div className="w-[80%] md:w-[90%]">
                   <h2 className="flex gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
                     <Heart />
                     <p className="font-medium">Follow</p>
                   </h2>
-                </div>
+                </div> */}
                 <Link href={'/ChatwithSeller'}>
                   <div className="flex flex-col  items-center transition-all ease-in-out hover:bg-gray-200 rounded-xl p-2">
-                    <MessageCircle size={20} />
-                    <h2 className="text-xs">Message</h2>
+                    <MessageCircle size={32} className="text-gray-700" />
+                    <h2 className="text-sm tracking-wide text-gray-700 font-semibold">Connect with Vendor</h2>
                   </div>
                 </Link>
               </div>

@@ -7,7 +7,7 @@ import {
   AiOutlineBell,
   AiOutlineTag,
 } from "react-icons/ai";
-import { FaFileInvoice, FaHandRock, FaListOl } from "react-icons/fa";
+import { FaFileInvoice, FaHackerNews, FaHandRock, FaListOl } from "react-icons/fa";
 import { FcApproval } from "react-icons/fc";
 import { IoIosStats, IoIosDocument, IoIosChatbubbles } from "react-icons/io";
 
@@ -22,6 +22,12 @@ export const vendorLinks = [
         to: "/",
       },
       {
+        id: 345,
+        name: "Manage Policy",
+        icon: <FaHackerNews />,
+        to: "/Vendors/products/managepolicy",
+      },
+      {
         id: 2,
         name: "Products",
         icon: <AiOutlineUnorderedList />,
@@ -32,6 +38,7 @@ export const vendorLinks = [
             name: "All Products",
             to: "/Vendors/products/all",
           },
+
           {
             id: 32,
             name: "Bulk Upload",

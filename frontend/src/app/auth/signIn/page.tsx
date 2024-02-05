@@ -17,7 +17,8 @@ import { ArrowRight } from "lucide-react";
 import logo from "@/images/mainlogo.svg";
 import Image from "next/image";
 import { NextSeo } from "next-seo";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 interface LoginFormInterface {
   email: string;
@@ -30,7 +31,7 @@ function SignIn({ showImage = true }) {
   const [error, setError] = useState(false);
   const customerData = useAppSelector((state) => state.customerData);
   const cartItems = useAppSelector((state) => state.cart.cartItems);
-
+const {t} = useTranslation()
   const updateCartData = async (customerId: number) => {
     try {
       for (const cartItem of cartItems) {

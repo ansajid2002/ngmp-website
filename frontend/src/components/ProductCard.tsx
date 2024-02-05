@@ -26,7 +26,8 @@ import { useDispatch } from "react-redux";
 import SignIn from "@/app/auth/signIn/page";
 import ProductSalebadge from "./ProductSalebadge";
 import ProductOfferBadge from "./ProductOfferBadge";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 export interface ProductCardProps {
   className?: string;
@@ -39,6 +40,7 @@ const ProductCard: FC<ProductCardProps> = ({
   data = PRODUCTS[0],
   showTitle = true,
 }) => {
+
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
   const { ad_title, mrp, sellingprice, images, uniquepid, prod_slug } = data;
@@ -49,7 +51,9 @@ const ProductCard: FC<ProductCardProps> = ({
   const customerId = customerData?.customer_id || null;
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
+  const { t } = useTranslation()
 
+  const [ratingData, setRating] = useState(null)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -160,7 +164,7 @@ const ProductCard: FC<ProductCardProps> = ({
   };
 
   const handleToggleWishlist = useCallback(async () => {
-    console.log(customerId,"cliecked");
+    console.log(customerId, "cliecked");
 
     if (!customerId) {
       router.push("/auth/signIn")
@@ -251,25 +255,42 @@ const ProductCard: FC<ProductCardProps> = ({
     }
   }, [customerId, dispatch, inFavorite, data, setinFavorite]);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
   const handleOk = () => {
     setIsModalOpen(false);
   };
 
   const handleCancel = () => {
-    console.log("CANCEL PRESSED");
     setIsModalOpen(false);
   };
+
+  const fetchRating = async () => {
+    try {
+      const response = await fetch(`${AdminUrl}/api/fetchRatings?product_id=${uniquepid}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const ratingdata = await response.json()
+
+      setRating(ratingdata?.ratingsData || [])
+      // const data = await response.json();
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  useEffect(() => {
+    uniquepid && fetchRating()
+  }, [uniquepid])
 
   return (
     <>
       <div
         className={`nc-ProductCard relative flex flex-col overflow-hidden hover:shadow-md p-1 py-2 bg-transparent ${className}`}
       >
-        <Link href={"/product-detail"} className="absolute inset-0"></Link>
+        <Link href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`} className="absolute inset-0"></Link>
 
         <div className="relative flex-shrink-0 bg-gray-50 dark:bg-gray-300  overflow-hidden z-1 group">
           <Link
@@ -278,15 +299,15 @@ const ProductCard: FC<ProductCardProps> = ({
             className="block overflow-hidden group"
           >
             <div className="relative group-hover:scale-105 transition-transform duration-300">
-            <NcImage
-  containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
-  src={`${ProductImageUrl}/${images?.[0]}`}
-  className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
-  fill
-  sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
-  alt="product"
-/>
-              
+              <NcImage
+                containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
+                src={`${ProductImageUrl}/${images?.[0]}`}
+                className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
+                alt="product"
+              />
+
             </div>
           </Link>
           {/* {discountPercentage  && (
@@ -331,11 +352,11 @@ const ProductCard: FC<ProductCardProps> = ({
           {renderGroupButtons()}
         </div>
 
-        <div className="space-y-0 px-1 pt-2 pb-1">
+        <div className="space-y-0 px-1 pt-2">
           {/* {renderVariants()} */}
           {/* <div> */}
           {showTitle && (
-            <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-2">
+            <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-1">
               {ad_title}
             </h2>
           )}
@@ -346,15 +367,17 @@ const ProductCard: FC<ProductCardProps> = ({
 
           <div className="">
             <Prices price={mrp} sellingprice={sellingprice} />
-            <div className="flex items-center gap-1 mb-0.5">
-              <Rate
-                allowHalf
-                disabled
-                value={3.7}
-                className="text-sm text-green-800"
-              />
-              <span className="text-sm ml-2 font-medium text-green-800">(352)</span>
-            </div>
+            {
+              <div className="flex items-center gap-1 ">
+                <Rate
+                  allowHalf
+                  disabled
+                  value={(ratingData?.[0]?.averageRating)?.toFixed(2) || 2}
+                  className="text-sm text-green-800"
+                />
+                <span className="text-sm ml-2 font-medium text-green-800">({(ratingData?.[0]?.averageRating)?.toFixed(2) || 2})</span>
+              </div>
+            }
           </div>
         </div>
       </div>

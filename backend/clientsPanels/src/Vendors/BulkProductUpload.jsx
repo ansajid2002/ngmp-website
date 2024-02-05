@@ -531,7 +531,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
   };
 
 
-  console.log(FilteredSubcategories);
+  console.log(selectedNested);
   return vendorDatastate && vendorDatastate.length > 0 ? (
     <>
       {!vendorDatastate?.[0].email_verification_status ||

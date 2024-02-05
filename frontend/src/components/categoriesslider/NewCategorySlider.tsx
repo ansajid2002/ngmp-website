@@ -7,11 +7,12 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Heading from "../Heading";
 import Link from "next/link";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 const CategoryPageSlick = ({ newcategoriesdata }) => {
   // console.log(newcategoriesdata)
-
+  const {t} = useTranslation()
   const [settings] = useState({
     dots: false,
     infinite: true,
@@ -57,7 +58,7 @@ const CategoryPageSlick = ({ newcategoriesdata }) => {
     <div className="lg:p-0">
       {/* <Heading title="CATEGORIES" /> */}
       <h2 className="text-[2rem] md:text-[2.3rem] text-center tracking-tight uppercase font-bold mb-5 md:mb-10">
-        <span className="text-[#ED642B]">Our</span> Categories
+        <span className="text-[#ED642B]">{t("Our")}</span> {t("Categories")}
       </h2>
       <Slider {...settings} className="pb-5">
         {newcategoriesdata?.slice(0, 24).map((single: any, index: any) => {

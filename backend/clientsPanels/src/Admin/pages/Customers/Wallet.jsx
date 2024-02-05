@@ -174,7 +174,7 @@ const Wallet = () => {
                     <Metric>{walletData?.debitCount}</Metric>
                 </Card>
                 <Card className="max-w-xs mx-auto" decoration="top" decorationColor="purple">
-                    <Text>Total Debit Count</Text>
+                    <Text>Total Credit Count</Text>
                     <Metric>{walletData?.creditCount}</Metric>
                 </Card>
                 <Card className="max-w-xs mx-auto" decoration="top" decorationColor="green">

@@ -6,8 +6,9 @@ import ExcelJS from 'exceljs';
 import { speicificationFields } from '../constants/ProductsForm/Specifications';
 import { Button } from 'antd';
 
-const DownloadSampleExcel = ({ category, subcategory, nestedSelected }) => {
-    const Specifications = (speicificationFields.filter(item => item.category == subcategory.subcategory_name.replace(/[^\w\s]/g, "").replace(/\s/g, "")))
+const DownloadSampleExcel = ({ category, subcategory, nestedSubcategory }) => {
+    console.log(nestedSubcategory, 's');
+    const Specifications = (speicificationFields.filter(item => item?.category == subcategory?.subcategory_name.replace(/[^\w\s]/g, "").replace(/\s/g, "")))
     // console.log();
     const specificationData = Specifications?.[0]?.fields || []
 
@@ -62,11 +63,7 @@ const DownloadSampleExcel = ({ category, subcategory, nestedSelected }) => {
             if (type === "Variant") {
                 const newSheetName = 'List Variants';
                 const newSheet = workbook.addWorksheet(newSheetName);
-
             }
-
-
-
 
             // Get the FIRST sheet
             const startSheet = workbook.getWorksheet(1); // Assuming the first sheet is at index 1
@@ -74,12 +71,7 @@ const DownloadSampleExcel = ({ category, subcategory, nestedSelected }) => {
             // Modify cell values (for example, change G1 and H1)
             startSheet.getCell('A5').value = type;
             startSheet.getCell('G3').value = category?.category_name;
-            startSheet.getCell('H3').value = `${subcategory?.subcategory_name} -> ${nestedSelected.nested_subcategory_name || ''}`;
-
-            // Auto-fit all columns in the second sheet
-            // sheet.columns.forEach((col) => {
-            //     col.width = col.max - col.min + 2; // Adding padding
-            // });
+            startSheet.getCell('H3').value = `${subcategory?.subcategory_name} -> ${nestedSubcategory?.nested_subcategory_name || ''}`;
 
             // Convert the modified workbook back to array buffer
             const modifiedData = await workbook.xlsx.writeBuffer();

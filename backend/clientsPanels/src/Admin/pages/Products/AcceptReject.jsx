@@ -405,11 +405,11 @@ const AcceptReject = () => {
     },
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status, record) => {
+      dataIndex: "productstatus",
+      key: "productstatus",
+      render: (productstatus, record) => {
         let icon, color;
-        switch (status) {
+        switch (productstatus) {
           case 0:
             icon = <FiClock className="text-orange-600" />;
             color = "text-orange-600";
@@ -433,7 +433,7 @@ const AcceptReject = () => {
         return (
           <span className={`flex items-center ${color}`}>
             {icon}
-            <span className="ml-1">{statusMap[status]}</span>
+            <span className="ml-1">{statusMap[productstatus]}</span>
           </span>
         );
       },
@@ -442,8 +442,8 @@ const AcceptReject = () => {
         { text: "Approved", value: 1 },
         { text: "Rejected", value: 2 },
       ],
-      onFilter: (value, record) => record.status === value,
-      sorter: (a, b) => a.status - b.status,
+      onFilter: (value, record) => record.productstatus === value,
+      sorter: (a, b) => a.productstatus - b.productstatus,
     },
     {
       title: "Uploaded at",
@@ -526,16 +526,26 @@ const AcceptReject = () => {
 
       const data = await response.json();
 
-      const updatedRejectedProducts = rejectedProducts.map((item) => ({
-        ...item,
-        products: item.products.map((inner_i) =>
-          inner_i.uniquepid === selectedProductId.uniquepid
-            ? { ...inner_i, rejection_reason: rejectReason, productstatus: 2 }
-            : inner_i
-        ),
-      }));
+      const products = vendorProducts[Object.keys(vendorProducts).map(item => item)]
 
-      setRejectedProducts(updatedRejectedProducts);
+      const updatedRejectedProducts = products.map((item) => {
+        // Check if the uniquepid of the current item is included in selectedRowKeys
+        const isSelected = selectedRowKeys.includes(item.uniquepid);
+
+        // If the item is selected, update its rejection_reason and status
+        if (isSelected) {
+          return { ...item, rejection_reason: rejectReason, productstatus: 2 };
+        } else {
+          // Otherwise, return the item unchanged
+          return item;
+        }
+      });
+
+
+      console.log(updatedRejectedProducts);
+
+      setVendorProducts({ [Object.keys(vendorProducts).map(item => item)]: updatedRejectedProducts || [] });
+      // setRejectedProducts(updatedRejectedProducts);
 
       // Show success popup using Swal
       Swal.fire({
@@ -545,6 +555,7 @@ const AcceptReject = () => {
         confirmButtonText: "OK",
       });
 
+      setSelectedRowKeys([])
       closeModal();
     } catch (error) {
       console.error("Error rejecting product:", error);
@@ -567,20 +578,16 @@ const AcceptReject = () => {
         // Handle the successful response from the backend
         console.log("Response from backend:", response);
 
-        // Assuming the backend response includes updated data
-        const updatedRejectedProducts = rejectedProducts.map((item) => ({
-          ...item,
-          products: item.products.map((inner_i) => {
-            // Check if selectedRowKeys includes the uniquepid of inner_i
-            const isSelected = selectedRowKeys.includes(inner_i.uniquepid);
+        const products = vendorProducts[Object.keys(vendorProducts).map(item => item)]
 
-            return isSelected ? { ...inner_i, productstatus: 1 } : inner_i;
-          }),
+        const updatedApprovedProducts = products.map((item) => ({
+          ...item,
+          productstatus: selectedRowKeys.includes(item.uniquepid) ? 1 : item.productstatus
         }));
 
         // Now, 'updatedRejectedProducts' contains the updated structure
         // You can set the state with the modified data
-        setRejectedProducts(updatedRejectedProducts);
+        setVendorProducts({ [Object.keys(vendorProducts).map(item => item)]: updatedApprovedProducts || [] });
       });
 
       // Show success popup using Swal
@@ -590,6 +597,8 @@ const AcceptReject = () => {
         text: "", // Use the success message received from the API
         confirmButtonText: "OK",
       });
+
+      setSelectedRowKeys([])
 
       closeModal();
     } catch (error) {
@@ -676,6 +685,7 @@ const AcceptReject = () => {
       setvendorPage(1);
       setvendorPageSize(10);
       fetchRejectedProducts()
+      setExpandedRowKeys([])
       return;
     }
 
@@ -810,6 +820,7 @@ const AcceptReject = () => {
                   total={vendorTotalProducts[record.vendorid] || 0}
                   showSizeChanger
                   showQuickJumper
+                  current={page}
                   showTotal={(total) => `Total ${total} items`}
                   responsive={true}
                   onChange={async (page, pageSize) => {
@@ -841,7 +852,8 @@ const AcceptReject = () => {
           showTotal={(total) => `Total ${total} items`}
           responsive={true}
           onChange={(page, pageSize) => {
-            console.log(page, pageSize);
+            setvendorPage(page)
+            setvendorPageSize(pageSize)
           }}
         />
       </div>

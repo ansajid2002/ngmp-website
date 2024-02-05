@@ -26,13 +26,14 @@ import {
 } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import { formatCurrency } from "../AvailableToken";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 export default function AvatarDropdown() {
   const customerData = useAppSelector((state) => state.customerData);
   const [profileImage, setImage] = useState('/avatarplaceholder.png');
   console.log(customerData,"CUSTOMERDATA");
-  
+  const {t} = useTranslation()
   const navigation = useRouter();
   const {
     given_name = "",

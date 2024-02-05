@@ -232,7 +232,7 @@ const ThankYou = () => {
               </div>
               <div>
                 <h2 className="text-gray-700 font-medium md:text-lg">
-                  ${item.sellingprice} x {item.added_quantity} = ${item.sellingprice * item.added_quantity}
+                  ${item.sellingprice} x {item.added_quantity} = ${(item.sellingprice * item.added_quantity)?.toFixed(2)}
                 </h2>
               </div>
             </div>

@@ -8,7 +8,8 @@ import Image from "next/image";
 import { AdminUrl, HomeUrl } from "@/app/layout";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 // import { HandRaisedIcon } from "@heroicons/react/24/solid";
 
 
@@ -21,7 +22,7 @@ export interface WidgetFooterMenu {
 
 const Footer: React.FC = () => {
   const footerPathname = usePathname();
-
+  const {t} = useTranslation()
   const widgetMenus: WidgetFooterMenu[] = [
     {
       id: "5",

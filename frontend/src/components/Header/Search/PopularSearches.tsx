@@ -1,4 +1,5 @@
 import { FireIcon } from "@heroicons/react/24/solid";
+import { t } from "i18next";
 import React from "react";
 
 const PopularSearches = () => {
@@ -17,7 +18,7 @@ const PopularSearches = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Popular Searches</h2>
+      <h2 className="text-xl font-bold mb-4">{t("Popular Searches")}</h2>
 
       <div className="flex flex-wrap gap-2">
         {popularSearches.map((search, index) => (

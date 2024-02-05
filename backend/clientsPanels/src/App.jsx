@@ -36,6 +36,7 @@ import {
   Notifications,
   SalesReturn,
   Reports,
+  ManagePolicy,
 } from "./Vendors";
 import VendorSidebar from "./Vendors/components/VendorSidebar";
 import { AllOrders } from "./Admin/pages/Orders";
@@ -200,6 +201,7 @@ function AdminRoutes() {
       "/Vendors/ClaimForm",
       "/Vendors/ChatwithCustomers",
       "/Vendors/verifyReceiver",
+      "/Vendors/products/managepolicy"
     ];
     const checkVendorPanel = VendorPanel.includes(path);
     setvendorExists(checkVendorPanel);
@@ -449,6 +451,10 @@ function AdminRoutes() {
               <Route
                 path="/Vendors/verifyReceiver"
                 element={<VerifyReceiver vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/products/managepolicy"
+                element={<ManagePolicy vendorDatastate={vendorDatastate} />}
               />
               {/* ... other routes */}
             </Routes>

@@ -8,8 +8,10 @@ import { AdminUrl } from "@/app/layout";
 import Image from "next/image";
 import Link from "next/link";
 import { Skeleton } from "./ui/skeleton";
+import { useTranslation } from "react-i18next";
 
-const CategoryPageSlick = ({ data }) => {
+const CategoryPageSlick = ({ data, onFetchData }) => {
+  const { t } = useTranslation()
   const [catDataa, setCatDataa] = useState<any[] | any>(null);
 
   const CategoryPageFetch = async () => {
@@ -23,10 +25,11 @@ const CategoryPageSlick = ({ data }) => {
           data.category
       );
     setCatDataa(filteredCat);
+    onFetchData(filteredCat)
   };
 
   useEffect(() => {
-    CategoryPageFetch();
+    data && CategoryPageFetch();
   }, [data]);
 
   const [settings] = useState({
@@ -92,13 +95,12 @@ const CategoryPageSlick = ({ data }) => {
                     >
                       <div className="flex items-center justify-center">
                         <div
-                          className={`w-20 h-20 lg:h-32 lg:w-32 rounded-full overflow-hidden  transition-all ease-in-out hover:scale-105 ${
-                            item3.subcategory_name
-                              .replace(/[^\w\s]/g, "")
-                              .replace(/\s/g, "") === data.subcatname
-                              ? "border-4 border-gray-700"
-                              : "border-gray-200  border-2 "
-                          }`}
+                          className={`w-20 h-20 lg:h-32 lg:w-32 rounded-full overflow-hidden  transition-all ease-in-out hover:scale-105 ${item3.subcategory_name
+                            .replace(/[^\w\s]/g, "")
+                            .replace(/\s/g, "") === data.subcatname
+                            ? "border-4 border-gray-700"
+                            : "border-gray-200  border-2 "
+                            }`}
                         >
                           <Image
                             width={100}
@@ -110,14 +112,13 @@ const CategoryPageSlick = ({ data }) => {
                         </div>
                       </div>
                       <h1
-                        className={`text-sm md:text-base text-center px-5 mt-2 line-clamp-2 ${
-                          item3.subcategory_name
-                            .replace(/[^\w\s]/g, "")
-                            .replace(/\s/g, "") === data.subcatname &&
+                        className={`text-sm md:text-base text-center px-5 mt-2 line-clamp-2 ${item3.subcategory_name
+                          .replace(/[^\w\s]/g, "")
+                          .replace(/\s/g, "") === data.subcatname &&
                           "font-semibold"
-                        }`}
-                      >
-                        {item3.subcategory_name}s
+                          }`}
+                      >{t(`${item3.subcategory_name}`)}
+
                       </h1>
                     </Link>
                   );

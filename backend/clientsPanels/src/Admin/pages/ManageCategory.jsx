@@ -78,7 +78,6 @@ const ManageCategory = ({ adminLoginData }) => {
       title: "Actions",
       key: "actions",
       width: 120,
-      fixed: 'left',
       render: (record) => (
         <Space size="middle" className="flex">
           {/* Edit Icon */}
@@ -100,7 +99,6 @@ const ManageCategory = ({ adminLoginData }) => {
       dataIndex: "category_type",
       key: "category_type",
       width: 120,
-      fixed: 'left',
       sorter: (a, b) => a.category_type.localeCompare(b.category_type), // Add sorter function for string comparison
     },
     {

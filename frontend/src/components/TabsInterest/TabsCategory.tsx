@@ -5,7 +5,8 @@ import { Tabs, Tab, TabScreen } from "react-tabs-scrollable";
 import "react-tabs-scrollable/dist/rts.css";
 import ProductCard from "../ProductCard";
 import { Skeleton } from "../ui/skeleton";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 
 const TabsCategory = ({ categoriesdata }) => {
   const allSubcategories = categoriesdata.flatMap(
@@ -17,7 +18,7 @@ const TabsCategory = ({ categoriesdata }) => {
   );
   const [loading, setLoading] = React.useState(true);
   const [products, setProducts] = React.useState(null);
-
+    const {t} = useTranslation()
   const onTabClick = (e: any, index: number, subcategoryName: string) => {
     setActiveTab(index);
     // Now you can use the subcategoryName as needed

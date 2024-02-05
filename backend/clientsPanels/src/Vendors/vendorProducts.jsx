@@ -117,6 +117,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [SelectedRowProduct, setSelectedRowProduct] = useState(null); // State to store selected bulk edit option
   const [condition, setCondition] = useState('New');
   const [listing_type, setType] = useState('');
+  const [policies, setPolicies] = useState([]);
 
   const handleConditionChange = (value) => {
     setConditionToggle(value);
@@ -212,6 +213,39 @@ const VendorProducts = ({ vendorDatastate }) => {
     fetchSubcategorywithCount()
   }, [id])
   // Use useMemo to create a memoized version of products for improved performance
+
+  useEffect(() => {
+    // Fetch policies  based on vendor ID from backend
+    id && fetchPolicies();
+  }, [id]);
+
+  const fetchPolicies = async () => {
+    try {
+      const response = await fetch(`${AdminUrl}/api/vendorPolicies/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any required authentication headers
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch policies : ${response.status} ${response.statusText}`);
+      }
+
+      if (response.status === 204) {
+        setPolicies([]);
+      } else {
+        const data = await response.json();
+        console.log(data);
+        setPolicies(data?.data);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching policies :', error);
+      // Handle error fetching policies 
+    }
+  };
 
   useEffect(() => {
     fetchVariantProducts()
@@ -1383,6 +1417,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             </Form.Item>
           ))}
 
+
           <Form.Item
             label="Condition"
             name="condition"
@@ -1399,6 +1434,26 @@ const VendorProducts = ({ vendorDatastate }) => {
               <Select.Option value="Used">Used</Select.Option>
             </Select>
           </Form.Item>
+
+          <Form.Item
+            label="Product Policy"
+            name="product_policy_id"
+            rules={[
+              {
+                required: true,
+                message: 'Please select a Product Policy',
+              },
+            ]}
+          >
+            <Select onChange={handleConditionChange}>
+              {
+                policies.map((item, index) => (
+                  <Select.Option value={item.policy_id}>{item?.policy_name} - {item.policy_id}</Select.Option>
+                ))
+              }
+            </Select>
+          </Form.Item>
+
 
           {/* <Form.Item
             label="Additional Information">
@@ -2128,6 +2183,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   const onChange = (value) => {
     selectedKey && setCurrentStep(value);
   };
+
   const handleDeleteVariants = async (record) => {
     try {
       const responseData = await fetch(`${AdminUrl}/api/deleteVariant`, {

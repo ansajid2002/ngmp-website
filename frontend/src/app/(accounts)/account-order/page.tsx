@@ -6,10 +6,12 @@ import StarRating from "@/components/StarRating";
 import { PRODUCTS } from "@/data/data";
 import { useAppSelector } from "@/redux/store";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
+import NcImage from "@/shared/NcImage/NcImage";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Skeleton from "react-loading-skeleton";
 
 const AccountOrder = () => {
@@ -19,7 +21,7 @@ const AccountOrder = () => {
   const [reviewItems, setReviewData] = useState(null);
   const [loading, setLoading] = useState(true);
   const customerId = customerData?.customerData?.customer_id || null;
-
+  const {t} = useTranslation()
   const getAllCustomerOrder = async () => {
     if (customerId === null || customerId === undefined) {
       // Handle the case when customerId is null or undefined, such as displaying an error message or taking appropriate action.
@@ -111,21 +113,23 @@ const AccountOrder = () => {
       ispickup
     } = product;
 
-    console.log(product);
+    console.log(`${ProductImageUrl}/${product_image}`);
 
 
     return (
       <div key={product_uniqueid + order_id + index} className="md:flex p-2">
         <div className="relative h-24 w-16 sm:w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
-          <Image
+          <NcImage
             fill
-            sizes="100px"
             src={
               `${ProductImageUrl}/${product_image}` ||
               "/placeholder.png"
             }
             alt={product_name}
-            className="h-full w-full object-contain"
+            containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
+            className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
+            sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
+
           />
         </div>
 
@@ -151,7 +155,7 @@ const AccountOrder = () => {
               </div>
               <Prices
                 price={""}
-                sellingprice={total_amount || ""}
+                sellingprice={total_amount || 0}
                 className="mt-0.5 ml-2"
               />
             </div>
@@ -169,7 +173,7 @@ const AccountOrder = () => {
                   sizeClass="py-2.5 px-4 sm:px-6"
                   fontSize="text-sm font-medium"
                 >
-                  View Order
+                  {t("View Order")}
                 </ButtonSecondary>
               </Link>
             </div>
@@ -181,11 +185,11 @@ const AccountOrder = () => {
 
   const renderOrder = () => {
     if (loading) {
-      return <p>Loading...</p>; // Add a loading state or handle it as you prefer
+      return <p>{t("Loading...")}</p>; // Add a loading state or handle it as you prefer
     }
 
     if (!Customerorder || !reviewItems) {
-      return <p>No order or review data available.</p>; // Handle the case when there is no order or review data
+      return <p>{t("No order or review data available.")}</p>; // Handle the case when there is no order or review data
     }
 
     return (
@@ -236,7 +240,7 @@ const AccountOrder = () => {
           {/* HEADING */}
           {Customerorder && Object.keys(Customerorder).length !== 0 ? (
             <h2 className="text-2xl sm:text-3xl font-semibold">
-              Order History
+              {t("Order History")}
             </h2>
           ) : (
             <></>
@@ -247,12 +251,12 @@ const AccountOrder = () => {
           ) : (
             <div>
               <h2 className=" text-2xl text-gray-600 lg:flex gap-2 items-center font-bold capitalize">
-                You haven't placed any orders yet!{" "}
+                {t("You haven't placed any orders yet!")}{" "}
                 <Link
                   href={"/Channel/new-arrivals"}
                   className="text-[#ed642b] font-bold flex gap-1 items-center"
                 >
-                  Shop Now
+                  {t("Shop Now")}
                   <ChevronRight size={20} className="mt-1.5" strokeWidth={3} />
                 </Link>
               </h2>

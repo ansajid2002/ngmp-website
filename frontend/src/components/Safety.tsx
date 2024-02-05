@@ -1,6 +1,6 @@
 "use client"
 import { HomeUrl } from "@/app/layout";
-import { t } from "i18next";
+
 import {
   ChevronRight,
   LockKeyhole,
@@ -9,8 +9,10 @@ import {
   Truck,
 } from "lucide-react";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const Safety = () => {
+  const {t} = useTranslation()
   return (
     <>
       <a href={`${HomeUrl}/commitments`} target="_blank">
