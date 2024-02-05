@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronRight, MoveRight } from "lucide-react";
 import Link from "next/link";
 import { Rate } from "antd";
@@ -8,9 +8,34 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useTranslation } from "react-i18next";
 
-const SingleVendorsCard = ({ item, index }) => {
-  const [isLoading, setIsLoading] = useState();
-  const {t} = useTranslation()
+const SingleVendorsCard = ({ item, index }: any) => {
+  const [rating, setRating] = useState(null)
+  const [count, setCount] = useState(0)
+
+  const fetchRating = async () => {
+    try {
+      const response = await fetch(`${AdminUrl}/api/fetchRatings?vendorid=${item?.id}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const ratingdata = await response.json()
+
+      setRating(ratingdata?.ratingsData || [])
+      setCount(ratingdata?.totalReviewTextCount || 0)
+      // const data = await response.json();
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  useEffect(() => {
+    item.id && fetchRating()
+  }, [item.id])
+
+  const { t } = useTranslation()
   return (
     <a href={`/Channel/Shops?vendorid=${item.id}`} target="blank">
       <div className=" rounded-xl overflow-hidden border-[1px] shadow-md">
@@ -63,7 +88,7 @@ const SingleVendorsCard = ({ item, index }) => {
                 alt={item?.brand_name}
               />
               <h2 className="text-[1.1rem] line-clamp-1 tracking-wide ">
-                {item.brand_name || "NA"}
+                {item.brand_name || item.vendorname}
               </h2>
             </div>
             <span className="text-[0.8rem] text-gray-700 ">
@@ -76,10 +101,10 @@ const SingleVendorsCard = ({ item, index }) => {
               <Rate
                 disabled
                 allowHalf
-                defaultValue={4.5}
+                value={rating?.[0]?.averageRating || 2}
                 style={{ fontSize: 13, margin: 0 }}
               />
-              <span className="text-sm font-medium">(4,230)</span>
+              <span className="text-sm font-medium">({count})</span>
             </div>
             <div className="flex items-center text-[0.9rem] font-medium hover:text-[#ed642b]">
               {t("Visit Shop")}

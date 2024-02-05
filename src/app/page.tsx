@@ -129,7 +129,27 @@ export const fetchCategoriesAndSubcategories = async (): Promise<
 export const getAllProducts = async () => {
   try {
     const response = await fetch(
-      `${AdminUrl}/api/AllProductsVendors?currency=USD&pageNumber=1&pageSize=10}`,
+      `${AdminUrl}/api/recommendedProducts/null`,
+      { next: { revalidate: 30 } }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+    // Log the data
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
+export const getnewArrivals = async () => {
+  try {
+    const response = await fetch(
+      `${AdminUrl}/api/newArrivals/null`,
       { next: { revalidate: 30 } }
     );
 
@@ -163,10 +183,9 @@ export const getFeaturedData = async () => {
   }
 };
 
-
 export const getAllVendors = async () => {
   try {
-    const response = await fetch(`${AdminUrl}/api/allVendors`, {
+    const response = await fetch(`${AdminUrl}/api/allVendors?pageNumber=1&pageSize=10`, {
       next: { revalidate: 30 },
     });
 
@@ -200,7 +219,8 @@ export const getReviewData = async (product_id: any, vendorId: any) => {
 };
 // getReviewData(644106)
 async function PageHome() {
-  const getAllProductsData = await getAllProducts();
+  const getAllProductsData_Recommended = await getAllProducts();
+  const getAllProductsData_newArrivals = await getnewArrivals();
   const bannersData = await getBannerdata();
   const bannersDataMobile = await getBannerdataMobile();
   const vendors = await getAllVendors();
@@ -235,7 +255,7 @@ async function PageHome() {
       <div className=" px-5 md:px-10 relative space-y-24 my-8 md:my-16">
         <SectionSliderProductCard
           heading="Recommended"
-          data={getAllProductsData}
+          data={getAllProductsData_Recommended}
         />
 
         <div className="mt-24 lg:mt-32">
@@ -258,9 +278,9 @@ async function PageHome() {
 
         <SectionSliderProductCard
           ShowProduct={false}
-          heading="Best Sellers"
-          subHeading={t("Best selling of the month")}
-          data={getAllProductsData}
+          heading="New Arrivals"
+          subHeading={t("Introducing Our Newest Selections")}
+          data={getAllProductsData_newArrivals}
         />
 
         <div className=" my-5 lg:my-32">

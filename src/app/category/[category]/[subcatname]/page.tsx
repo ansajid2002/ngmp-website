@@ -89,8 +89,7 @@ const Caregory = () => {
   const sendPriceSlider = async (a, b) => {
     setPrice1(a)
     setPrice2(b)
-    fetchSubcategoryProducts(category, subcatname, page, pageSize, 'priceHighToLow', selected, price1, price2);
-
+    fetchSubcategoryProducts(category, subcatname, page, pageSize, 'priceHighToLow', selected, a, b);
   }
 
   return (

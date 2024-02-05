@@ -40,6 +40,7 @@ const ProductCard: FC<ProductCardProps> = ({
   data = PRODUCTS[0],
   showTitle = true,
 }) => {
+
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
   const { ad_title, mrp, sellingprice, images, uniquepid, prod_slug } = data;
@@ -50,7 +51,9 @@ const ProductCard: FC<ProductCardProps> = ({
   const customerId = customerData?.customer_id || null;
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
-const {t} = useTranslation()
+  const { t } = useTranslation()
+
+  const [ratingData, setRating] = useState(null)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -252,18 +255,35 @@ const {t} = useTranslation()
     }
   }, [customerId, dispatch, inFavorite, data, setinFavorite]);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
   const handleOk = () => {
     setIsModalOpen(false);
   };
 
   const handleCancel = () => {
-    console.log("CANCEL PRESSED");
     setIsModalOpen(false);
   };
+
+  const fetchRating = async () => {
+    try {
+      const response = await fetch(`${AdminUrl}/api/fetchRatings?product_id=${uniquepid}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const ratingdata = await response.json()
+
+      setRating(ratingdata?.ratingsData || [])
+      // const data = await response.json();
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  useEffect(() => {
+    uniquepid && fetchRating()
+  }, [uniquepid])
 
   return (
     <>
@@ -332,11 +352,11 @@ const {t} = useTranslation()
           {renderGroupButtons()}
         </div>
 
-        <div className="space-y-0 px-1 pt-2 pb-1">
+        <div className="space-y-0 px-1 pt-2">
           {/* {renderVariants()} */}
           {/* <div> */}
           {showTitle && (
-            <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-2">
+            <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-1">
               {ad_title}
             </h2>
           )}
@@ -347,15 +367,17 @@ const {t} = useTranslation()
 
           <div className="">
             <Prices price={mrp} sellingprice={sellingprice} />
-            <div className="flex items-center gap-1 mb-0.5">
-              <Rate
-                allowHalf
-                disabled
-                value={3.7}
-                className="text-sm text-green-800"
-              />
-              <span className="text-sm ml-2 font-medium text-green-800">(352)</span>
-            </div>
+            {
+              <div className="flex items-center gap-1 ">
+                <Rate
+                  allowHalf
+                  disabled
+                  value={(ratingData?.[0]?.averageRating)?.toFixed(2) || 2}
+                  className="text-sm text-green-800"
+                />
+                <span className="text-sm ml-2 font-medium text-green-800">({(ratingData?.[0]?.averageRating)?.toFixed(2) || 2})</span>
+              </div>
+            }
           </div>
         </div>
       </div>

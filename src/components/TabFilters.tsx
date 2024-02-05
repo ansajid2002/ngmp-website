@@ -922,7 +922,7 @@ const TabFilters = ({ showOnlySort = true, catData, params, sendNestedCategories
             />
           </svg>
 
-          <span className="ml-2">Products filters (3)</span>
+          <span className="ml-2">Products filter</span>
           {renderXClear()}
         </div>
 
@@ -982,31 +982,22 @@ const TabFilters = ({ showOnlySort = true, catData, params, sendNestedCategories
                         <div className="py-7">
                           <h3 className="text-xl font-medium">Categories</h3>
                           <div className="mt-6 relative ">
-                            {renderMoreFilterItem(DATA_categories)}
+                            <div className="flex-row flex-wrap gap-4 my-2" />
+                            {categoriesState && categoriesState?.map((item) => (
+                              <div key={item?.nested_subcategory_name} className="py-2">
+                                <Checkbox
+                                  name={item?.nested_subcategory_name}
+                                  label={item?.nested_subcategory_name}
+                                  defaultChecked={categoriesState?.includes(item?.nested_subcategory_name)}
+                                  onChange={(checked) =>
+                                    handleChangeCategories(checked, item?.nested_subcategory_name)
+                                  }
+                                />
+                              </div>
+                            ))}
                           </div>
                         </div>
                       )}
-                      {/* --------- */}
-                      {/* ---- */}
-                      {showOnlySort && (
-                        <div className="py-7">
-                          <h3 className="text-xl font-medium">Colors</h3>
-                          <div className="mt-6 relative ">
-                            {renderMoreFilterItem(DATA_colors)}
-                          </div>
-                        </div>
-                      )}
-                      {/* --------- */}
-                      {/* ---- */}
-                      {showOnlySort && (
-                        <div className="py-7">
-                          <h3 className="text-xl font-medium">Size</h3>
-                          <div className="mt-6 relative ">
-                            {renderMoreFilterItem(DATA_sizes)}
-                          </div>
-                        </div>
-                      )}
-
                       {/* --------- */}
                       {/* ---- */}
                       {showOnlySort && (
@@ -1101,21 +1092,6 @@ const TabFilters = ({ showOnlySort = true, catData, params, sendNestedCategories
                         </div>
                       </div>
 
-                      {/* --------- */}
-                      {/* ---- */}
-                      {showOnlySort && (
-                        <div className="py-7">
-                          <h3 className="text-xl font-medium">On sale!</h3>
-                          <div className="mt-6 relative ">
-                            <MySwitch
-                              label="On sale!"
-                              desc="Products currently on sale"
-                              enabled={isOnSale}
-                              onChange={setIsIsOnSale}
-                            />
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
 
@@ -1133,7 +1109,11 @@ const TabFilters = ({ showOnlySort = true, catData, params, sendNestedCategories
                       Clear
                     </ButtonThird>
                     <ButtonPrimary
-                      onClick={closeModalMoreFilter}
+                      onClick={() => {
+                        closeModalMoreFilter()
+                        sendNestedCategories(updatedCategories)
+                        sendPriceSLider(rangePrices[0], rangePrices[1])
+                      }}
                       sizeClass="px-4 py-2 sm:px-5"
                     >
                       Apply
@@ -1157,7 +1137,7 @@ const TabFilters = ({ showOnlySort = true, catData, params, sendNestedCategories
         {/* {showOnlySort && renderTabsColor()} */}
         {/* {showOnlySort && renderTabsSize()} */}
         {/* {showOnlySort && renderTabIsOnsale()} */}
-        <div className="!ml-auto">{renderTabsSortOrder()}</div>
+        {/* <div className="!ml-auto">{renderTabsSortOrder()}</div> */}
       </div>
 
       {/* FOR RESPONSIVE MOBILE */}
