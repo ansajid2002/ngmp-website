@@ -40,6 +40,11 @@ export const vendorLinks = [
           },
 
           {
+            id: 345,
+            name: "Manage Policy",
+            to: "/Vendors/products/managepolicy",
+          },
+          {
             id: 32,
             name: "Bulk Upload",
             to: "/Vendors/products/bulkUpload",
