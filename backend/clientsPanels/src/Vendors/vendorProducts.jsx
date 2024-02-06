@@ -240,7 +240,6 @@ const VendorProducts = ({ vendorDatastate }) => {
         console.log(data);
         setPolicies(data?.data);
       }
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching policies :', error);
       // Handle error fetching policies 
@@ -861,12 +860,12 @@ const VendorProducts = ({ vendorDatastate }) => {
     },
     {
       title: "STATUS",
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "produ_status",
+      key: "produ_status",
       width: 200,
-      render: (status, record) => {
+      render: (produ_status, record) => {
         let icon, color;
-        switch (record.status) {
+        switch (record.produ_status) {
           case 0:
             icon = <FiClock className="text-orange-500" />;
             color = "text-orange-500";
@@ -891,7 +890,7 @@ const VendorProducts = ({ vendorDatastate }) => {
           <span className={`flex items-center ${color}`}>
             {icon}
 
-            <span className="ml-1">{statusMap[record?.status]}</span>
+            <span className="ml-1">{statusMap[record?.produ_status]}</span>
           </span>
         );
 
@@ -1435,24 +1434,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             </Select>
           </Form.Item>
 
-          <Form.Item
-            label="Product Policy"
-            name="product_policy_id"
-            rules={[
-              {
-                required: true,
-                message: 'Please select a Product Policy',
-              },
-            ]}
-          >
-            <Select onChange={handleConditionChange}>
-              {
-                policies.map((item, index) => (
-                  <Select.Option value={item.policy_id}>{item?.policy_name} - {item.policy_id}</Select.Option>
-                ))
-              }
-            </Select>
-          </Form.Item>
+
 
 
           {/* <Form.Item
@@ -1467,6 +1449,19 @@ const VendorProducts = ({ vendorDatastate }) => {
                   {option}
                 </Select.Option>
               ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Product Policy"
+            name="product_policy_id"
+          >
+            <Select onChange={handleConditionChange}>
+              {
+                policies.map((item, index) => (
+                  <Select.Option value={item.policy_id}>{item?.policy_name} - {item.policy_id}</Select.Option>
+                ))
+              }
             </Select>
           </Form.Item>
 

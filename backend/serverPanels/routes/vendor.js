@@ -415,11 +415,11 @@ app.post("/allVendorProducts", async (req, res) => {
 
     if (subcatNameBackend === "all") {
       // Query to fetch products for the given vendor without subcategory filter
-      query = "SELECT *, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 ORDER BY updated_at_product DESC LIMIT $2 OFFSET $3";
+      query = "SELECT *, status as produ_status, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 ORDER BY updated_at_product DESC LIMIT $2 OFFSET $3";
       values = [id, pageSize, offset];
     } else {
       // Query to fetch products for the given vendor and specific subcategory
-      query = "SELECT *, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 AND slug_subcat = $2 ORDER BY updated_at_product DESC LIMIT $3 OFFSET $4";
+      query = "SELECT *,status as produ_status, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 AND slug_subcat = $2 ORDER BY updated_at_product DESC LIMIT $3 OFFSET $4";
       values = [id, subcatNameBackend, pageSize, offset];
     }
 
@@ -2718,6 +2718,7 @@ app.get("/getAllVendorAttributes", async (req, res) => {
     // Query the database to get all attributes for the specified attribute_cat_id
     const getAttributesQuery = "SELECT * FROM attributes WHERE attribute_id = ANY($1)";
     const attributesResult = await pool.query(getAttributesQuery, [attribute_cat_id]);
+    console.log(getAttributesQuery, attribute_cat_id);
 
     // Send the attributes as a JSON response
     res.json(attributesResult.rows);

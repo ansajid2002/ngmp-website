@@ -447,13 +447,14 @@ const AcceptReject = () => {
     },
     {
       title: "Uploaded at",
-      dataIndex: "created_at",
-      key: "created_at",
+      dataIndex: "updated_at_product",
+      key: "updated_at_product",
       sorter: (a, b) =>
-        moment(a.created_at).unix() - moment(b.created_at).unix(), // Custom sorting function
+        moment(a.updated_at_product).unix() - moment(b.updated_at_product).unix(), // Custom sorting function
       render: (_, record) => (
         <p className="text-md font-semibold">
-          {moment(record.created_at).format("MMMM D, YYYY hh:mm:ss A")}
+          {/* {record?.updated_at_product}? */}
+          {moment(record.updated_at_product).format("MMMM D, YYYY hh:mm:ss A")}
         </p>
       ),
       sortDirections: ["descend", "ascend"],

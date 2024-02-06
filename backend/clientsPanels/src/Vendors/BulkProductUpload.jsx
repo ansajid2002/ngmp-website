@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ExcelJS from "exceljs"; // Import the exceljs library
 import { Table, Button, Upload, Typography, message, Alert, Modal, Image, Checkbox, Input } from "antd";
 import { UploadOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import { AdminUrl } from "../Admin/constant";
+import { AdminUrl, getAllVendorProductvariants } from "../Admin/constant";
 import Swal from "sweetalert2";
 import DownloadSampleExcel from "./components/DownloadSampleExcel";
 import AuthCheck from "./components/AuthCheck";
@@ -25,11 +25,13 @@ const BulkProductUpload = ({ vendorDatastate }) => {
   const [selectedExcel, setSelectedExcel] = useState(null);
   const [loading, setLoading] = useState(false);
   const [checkImage, setCheckImage] = useState(false);
+  const [variantsData, setVariantsData] = useState(null);
 
   const [filtedCategory, setFilteredCategory] = useState(null);
   const [nestedSubcategory, setNestedSubcategory] = useState(null);
   const [selectedNested, setSelectedNested] = useState(null);
 
+  const [variantExcel, setVariantExcel] = useState(null);
   const [locationData, setLocationData] = useState({
     city: "",
     state: "",
@@ -95,6 +97,9 @@ const BulkProductUpload = ({ vendorDatastate }) => {
 
       const secondSheet = workbook?.worksheets[1];
       const secondSheetRows = secondSheet?.getSheetValues();
+
+      const thirdSheet = workbook?.worksheets[2];
+      const thirdRows = thirdSheet?.getSheetValues();
       // Starting from the 5th row (index 4) for JSON data
       const jsonRows = rows.slice(5);
       // Convert rows into JSON format as needed
@@ -187,10 +192,24 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         return rowData;
       }) : [];
 
+      const keys_variant = thirdRows && thirdRows[1]?.filter((key) => key !== null);
+
+      // Transform subsequent arrays into objects
+      const thirdDataSheet = (thirdRows && thirdRows.length >= 3) ? thirdRows.slice(2).map((values) => {
+        const rowData = {};
+        keys_variant.forEach((key, index) => {
+          if (key !== undefined && values[index + 1] !== null) {
+            rowData[key] = values[index + 1];
+          }
+        });
+        return rowData;
+      }) : [];
+
 
       setLoading(false)
       setJsonData(sheetData);
       setSpecificaiton(sheetDataSecond || [])
+      setVariantExcel(thirdDataSheet || [])
     } catch (error) {
       console.log("Error reading the uploaded file:", error);
       message.error("Error reading the uploaded file.");
@@ -372,6 +391,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
         dataToSend.append("vendorId", vendorid);
         dataToSend.append("excludeImage", checkImage);
         dataToSend.append("specifications", JSON.stringify(specifications));
+        dataToSend.append("variantExcel", JSON.stringify(variantExcel));
         dataToSend.append("startIdx", startIdx);
 
         // Send the selectedExcel file only when startIdx is "0"
@@ -500,9 +520,11 @@ const BulkProductUpload = ({ vendorDatastate }) => {
     }
   }, [categories, subcategories]);
 
-  const handleCategoryChange = (category) => {
+  const handleCategoryChange = async (category) => {
     setSelectedCategoryId(category?.category_id);
     setSelectedCategory(category);
+    const variants = await getAllVendorProductvariants(category?.category_name)
+    setVariantsData(variants)
     setNestedSubcategory(null)
     setJsonData(null);
   };
@@ -512,6 +534,8 @@ const BulkProductUpload = ({ vendorDatastate }) => {
     setNestedSubcategory(subcategory.nested_subcategories)
     setJsonData(null);
   };
+
+
 
   const handleNestedSubcategoryChange = (nested_cat) => {
     setSelectedNested(nested_cat);
@@ -530,8 +554,6 @@ const BulkProductUpload = ({ vendorDatastate }) => {
     setFilteredCategory(filteredCategory);
   };
 
-
-  console.log(selectedNested);
   return vendorDatastate && vendorDatastate.length > 0 ? (
     <>
       {!vendorDatastate?.[0].email_verification_status ||
@@ -661,7 +683,7 @@ const BulkProductUpload = ({ vendorDatastate }) => {
             {
               SelectedSubcategory && <>
                 <div className={`${jsonData ? "hidden" : ""} mt-20`}>
-                  <DownloadSampleExcel category={selectedCategory} subcategory={SelectedSubcategory} nestedSubcategory={selectedNested} />
+                  <DownloadSampleExcel category={selectedCategory} subcategory={SelectedSubcategory} nestedSubcategory={selectedNested} variantsData={variantsData} />
                 </div>
 
                 <div className="mt-16 ">
