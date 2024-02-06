@@ -1341,10 +1341,6 @@ app.get('/getVendorProductsAR', async (req, res) => {
     `;
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> aec41337ae55455a704bfdc0918ce34a1cc52aa7
     const vendorQuery = `
       SELECT *
       FROM vendors v
