@@ -5,6 +5,7 @@ import { FiEdit3, FiTrash2 } from 'react-icons/fi';
 import { FaEdit } from 'react-icons/fa';
 import { UploadOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
+
 const ManageCategory = ({ adminLoginData }) => {
   // Ensure to define your Hooks at the beginning of the component
   const [categoryData, setData] = useState([]);

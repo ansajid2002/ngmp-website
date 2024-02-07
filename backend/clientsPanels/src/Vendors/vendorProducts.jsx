@@ -118,6 +118,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [condition, setCondition] = useState('New');
   const [listing_type, setType] = useState('');
   const [policies, setPolicies] = useState([]);
+  const [nested_subcate_data, setNestedSubcat] = useState(null);
 
   const handleConditionChange = (value) => {
     setConditionToggle(value);
@@ -309,6 +310,7 @@ const VendorProducts = ({ vendorDatastate }) => {
 
     setSelectedCategoryId(categoryId);
     setSelectedSubcategory(null);
+    setNestedSubcat(null)
 
     setFilteredSubcategories([]);
     document.getElementById("subcategory").value = "";
@@ -319,6 +321,9 @@ const VendorProducts = ({ vendorDatastate }) => {
     const selectedSubcategorys = filteredSubcategories.find(
       (subcategory) => subcategory.subcategory_name === subcategoryId
     );
+
+    // console.log(selectedSubcategorys, 'sele');
+    setNestedSubcat(selectedSubcategorys)
     // Set the subcategory name in state
     setSelectedSubcategory(
       selectedSubcategorys
@@ -1771,7 +1776,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             </div>
 
             {
-              filteredSubcategories?.[0] && filteredSubcategories?.[0].nested_subcategories && <div className="flex justify-between items-center">
+              nested_subcate_data && nested_subcate_data?.nested_subcategories && <div className="flex justify-between items-center">
                 <label htmlFor="subcategory" className="mr-4 mb-5">
                   Nested Subcategory:
                 </label>
@@ -1797,7 +1802,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                     disabled={catSubcatDisable}
                     allowClear // Add this prop to enable clearing the selected value
                   >
-                    {filteredSubcategories && filteredSubcategories?.[0].nested_subcategories?.map((subcategory) => (
+                    {nested_subcate_data && nested_subcate_data?.nested_subcategories?.map((subcategory) => (
                       <Select.Option
                         key={subcategory.nested_subcategory_name}
                         value={subcategory.nested_subcategory_name}

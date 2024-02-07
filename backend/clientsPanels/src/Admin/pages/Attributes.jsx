@@ -15,53 +15,53 @@ const AdminAttributes = () => {
     const [modalValues, setModalValues] = useState([]);
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubcategories] = useState([]);
-    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [filteredSubcategories, setFilteredSubcategories] = useState([]);
     const [selectedSubcategory, setSelectedSubcategory] = useState(null);
     const [selectedCategoryType, setSelectedCategoryType] = useState("Products");
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [backendCategory, setBackendCategory] = useState(null);
+    const [backendSubCategory, setBackendSubCategory] = useState(null);
 
-    console.log(selectedSubcategory, "selectedSubcategory");
     const showModal = () => {
         setVisible(true);
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`${AdminUrl}/api/GetAttributesByVendor`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`${AdminUrl}/api/GetAttributesByVendor`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                // Assuming the backend responds with JSON data containing attributes
-                const responseData = await response.json();
-                const transformedData = responseData.attributes.map((attribute) => ({
-                    attribute_id: attribute.attribute_id, // Add this line
-                    name: attribute.attribute_name,
-                    values: attribute.attribute_values,
-                    category: attribute.category,
-                    subcategory: attribute.subcategory
-                }));
-
-                // Assuming responseData is the JSON response from your backend
-                // Transform the data and set it in your component's state
-                setAttributes(transformedData);
-            } catch (error) {
-                console.error("Error:", error);
-                // Handle the error as needed, e.g., show an error message to the user
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-        };
 
+            // Assuming the backend responds with JSON data containing attributes
+            const responseData = await response.json();
+            const transformedData = responseData.attributes.map((attribute) => ({
+                attribute_id: attribute.attribute_id, // Add this line
+                name: attribute.attribute_name,
+                values: attribute.attribute_values,
+                category: attribute.category,
+                subcategory: attribute.subcategory
+            }));
+
+            // Assuming responseData is the JSON response from your backend
+            // Transform the data and set it in your component's state
+            setAttributes(transformedData);
+        } catch (error) {
+            console.error("Error:", error);
+            // Handle the error as needed, e.g., show an error message to the user
+        }
+    };
+
+    useEffect(() => {
         // Fetch data when the component mounts
         fetchData();
-    }, [selectedCategory, selectedSubcategory]);
+    }, []);
 
     const handleOk = async () => {
         if (!selectedCategory) return alert('Kindly select category')
@@ -69,22 +69,15 @@ const AdminAttributes = () => {
         if (attributeName && attributeValues.length > 0) {
             if (selectedAttributeIndex !== null) {
                 // Update the existing attribute at the selected index
-                const updatedAttributes = [...attributes];
-                updatedAttributes[selectedAttributeIndex] = {
-                    name: attributeName,
-                    values: attributeValues,
-                    category: selectedCategory,
-                    subcategory: selectedSubcategory
-                };
-                setAttributes(updatedAttributes);
-
                 try {
                     const dataToSend = {
                         attributeName: attributeName,
                         attributeValues: attributeValues,
                         type: "update",
                         category: selectedCategory,
-                        subcategory: selectedSubcategory
+                        subcategory: selectedSubcategory,
+                        backendCategory,
+                        backendSubCategory
                     };
 
                     const response = await fetch(`${AdminUrl}/api/SetAttributesValues`, {
@@ -121,7 +114,6 @@ const AdminAttributes = () => {
                 }
             } else {
                 // Add a new attribute
-                const newAttribute = { name: attributeName, values: attributeValues, category: selectedCategory, subcategory: selectedSubcategory };
 
                 try {
                     const dataToSend = {
@@ -129,7 +121,9 @@ const AdminAttributes = () => {
                         attributeValues: attributeValues,
                         type: "add",
                         category: selectedCategory,
-                        subcategory: selectedSubcategory
+                        subcategory: selectedSubcategory,
+                        backendCategory,
+                        backendSubCategory
                     };
 
                     const response = await fetch(`${AdminUrl}/api/SetAttributesValues`, {
@@ -147,7 +141,6 @@ const AdminAttributes = () => {
 
                     // Assuming the backend responds with JSON data
                     const responseData = await response.json();
-                    setAttributes([...attributes, newAttribute]);
 
                     // Show a success alert using sweetalert2
                     Swal.fire({
@@ -173,6 +166,7 @@ const AdminAttributes = () => {
             setSelectedAttributeIndex(null);
             setVisible(false);
             setEditModalVisible(false);
+            fetchData()
         } else {
             Swal.fire({
                 icon: "info",
@@ -181,7 +175,7 @@ const AdminAttributes = () => {
             })
         }
     };
-    console.log(attributeValue, "attributeValue");
+
     const handleCancel = () => {
         setVisible(false);
         setEditModalVisible(false);
@@ -214,18 +208,37 @@ const AdminAttributes = () => {
     const handleEditAttribute = (index) => {
         setSelectedAttributeIndex(index);
         setEditModalVisible(true);
-        setSelectedCategory(null)
-        setSelectedSubcategory(null)
+        setSelectedCategory(null);
+        setSelectedSubcategory(null);
+        setBackendCategory(null)
+        setBackendSubCategory(null)
 
         // Pre-fill edit modal fields with selected attribute's data
         const selectedAttribute = attributes[index];
 
-        console.log(selectedAttribute, "selectedAttribute");
         setAttributeName(selectedAttribute.name);
-        setSelectedCategory(selectedAttribute.category);
-        setSelectedSubcategory(selectedAttribute.subcategory);
+        setSelectedCategory(selectedAttribute.category && JSON.parse(selectedAttribute.category));
+        setSelectedSubcategory(selectedAttribute.subcategory && JSON.parse(selectedAttribute.subcategory));
         setAttributeValues(selectedAttribute.values);
+
+        // Find matching categories
+        const matchingCategories = categories.filter(category =>
+            selectedAttribute.category && JSON.parse(selectedAttribute.category).includes(category.category_name)
+        );
+
+        // Set backendCategory based on matching categories
+        setBackendCategory(matchingCategories);
+
+        const matchingSubcategories = subcategories.filter(subcategory =>
+            selectedAttribute.subcategory && JSON.parse(selectedAttribute.subcategory).includes(subcategory.subcategory_name)
+        );
+
+        console.log(matchingSubcategories, 'matching matchingSubcategories');
+
+        // Set backendSubCategory based on matching subcategories
+        setBackendSubCategory(matchingSubcategories);
     };
+
 
     const handleReadMore = (values) => {
         setModalValues(values);
@@ -369,37 +382,42 @@ const AdminAttributes = () => {
         }
     };
 
-    const handleCategoryChange = (categoryId) => {
-        const selectedCategory = categories.find(
-            (category) => category.category_name === categoryId
+    const handleCategoryChange = (selectedCategories) => {
+        if (Array.isArray(selectedCategories)) {
+
+            // Filter matching categories based on the selected category names
+            const matchingCategories = categories.filter(cat => selectedCategories.includes(cat.category_name));
+
+            // Get matching subcategories for the selected categories
+            const matchingSubcategories = matchingCategories.flatMap(cat =>
+                subcategories.filter(subcat => subcat.parent_category_id === cat.category_id)
+            );
+
+            // Update state with selected and filtered subcategories
+            setSelectedCategory(selectedCategories);
+            setBackendCategory(matchingCategories);
+
+            setFilteredSubcategories(matchingSubcategories);
+        } else {
+            // Handle case when no category is selected
+            setSelectedCategory([]);
+            setFilteredSubcategories([]);
+        }
+    }
+
+    console.log(selectedCategory, 'selecaetgry');
+
+    const handleSubcategoryChange = (selectedSubcategories) => {
+        console.log("Selected Subcategories:", selectedSubcategories);
+        const matchedSubcategories = subcategories.filter(subcategory =>
+            selectedSubcategories.includes(subcategory.subcategory_name)
         );
 
-        setSelectedCategoryId(categoryId);
-        setSelectedSubcategory(null);
-        setSelectedCategory(
-            selectedCategory
-                ? selectedCategory.category_name.replace(/[^\w\s]/g, "")
-                    .replace(/\s/g, "")
-                : ""
-        );
-        setFilteredSubcategories([]);
-        document.getElementById("subcategory").value = "";
+        setSelectedSubcategory(selectedSubcategories)
+        setBackendSubCategory(matchedSubcategories)
+
     };
 
-    const handleSubcategoryChange = (subcategoryId) => {
-        // Find the selected subcategory object from the filteredSubcategories array
-        const selectedSubcategorys = filteredSubcategories.find(
-            (subcategory) => subcategory.subcategory_name === subcategoryId
-        );
-        // Set the subcategory name in state
-        setSelectedSubcategory(
-            selectedSubcategorys
-                ? selectedSubcategorys.subcategory_name
-                    .replace(/[^\w\s]/g, "")
-                    .replace(/\s/g, "")
-                : ""
-        );
-    };
 
     useEffect(() => {
         // Check if 'categories' and 'subcategories' are empty
@@ -413,22 +431,22 @@ const AdminAttributes = () => {
         }
     }, [categories, subcategories]);
 
-    // useEffect to filter subcategories based on the selected category ID
-    useEffect(() => {
-        // Find the corresponding category ID from the categories array
-        const selectedCategory = categories.find(
-            (category) => category.category_name === selectedCategoryId
-        );
+    // // useEffect to filter subcategories based on the selected category ID
+    // useEffect(() => {
+    //     // Find the corresponding category ID from the categories array
+    //     const selectedCategory = categories.find(
+    //         (category) => category.category_name === selectedCategoryId
+    //     );
 
-        if (selectedCategory) {
-            // Filter subcategories based on the selected category ID
-            const filteredSubcategories = subcategories.filter(
-                (subcategory) =>
-                    subcategory.parent_category_id === selectedCategory.category_id
-            );
-            setFilteredSubcategories(filteredSubcategories);
-        }
-    }, [selectedCategoryId, categories, subcategories]);
+    //     if (selectedCategory) {
+    //         // Filter subcategories based on the selected category ID
+    //         const filteredSubcategories = subcategories.filter(
+    //             (subcategory) =>
+    //                 subcategory.parent_category_id === selectedCategory.category_id
+    //         );
+    //         setFilteredSubcategories(filteredSubcategories);
+    //     }
+    // }, [selectedCategoryId, categories, subcategories]);
 
     return (
         <div className="sm:ml-72">
@@ -476,13 +494,14 @@ const AdminAttributes = () => {
                     <div className="flex justify-between items-center">
                         <Select
                             showSearch
+                            mode="multiple"
                             id="category"
                             placeholder="Select category"
                             className="w-full"
                             onChange={(category) => handleCategoryChange(category)}
-                            allowClear
                             value={selectedCategory || undefined}
                         >
+
                             {categories
                                 .filter(
                                     (category) =>
@@ -505,12 +524,15 @@ const AdminAttributes = () => {
 
                         <Select
                             id="subcategory"
+                            mode="multiple"
                             placeholder="Select subcategory"
                             className="w-full"
                             onChange={(subcategory) =>
                                 handleSubcategoryChange(subcategory)
                             }
+                            // value={JSON.parse(selectedSubcategory) || undefined}
                             value={selectedSubcategory || undefined}
+
                             allowClear // Add this prop to enable clearing the selected value
                             showSearch
                         >

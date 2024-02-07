@@ -7466,13 +7466,10 @@
         "type": "number"
       },
       {
-        "name": "availability",
-        "label": "Availability",
+        "name": "greate",
+        "label": "Greate",
         "type": "select",
-        "options": [
-          "In Stock",
-          "Out of Stock"
-        ]
+        "options": "asa"
       }
     ]
   },
@@ -14770,111 +14767,22 @@
     ]
   },
   {
-    "category": "HumanFeces",
+    "category": "LaptopBags&Sleeves",
     "fields": [
       {
-        "name": "disposalmethod",
-        "label": "Disposal Method",
-        "type": "select",
-        "options": [
-          "Toilet",
-          "Composting",
-          "Sewer",
-          "Other"
-        ]
-      },
+        "name": "asd",
+        "label": "asd",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "category": "MassageTools&Equipments",
+    "fields": [
       {
-        "name": "collectionfrequency",
-        "label": "Collection Frequency",
-        "type": "select",
-        "options": [
-          "Daily",
-          "Weekly",
-          "Monthly",
-          "Other"
-        ]
-      },
-      {
-        "name": "odorcontrol",
-        "label": "Odor Control",
-        "type": "select",
-        "options": [
-          "Yes",
-          "No",
-          "Other"
-        ]
-      },
-      {
-        "name": "treatmentmethod",
-        "label": "Treatment Method",
-        "type": "select",
-        "options": [
-          "Chemical Treatment",
-          "Biological Treatment",
-          "Other"
-        ]
-      },
-      {
-        "name": "containertype",
-        "label": "Container Type",
-        "type": "select",
-        "options": [
-          "Bin",
-          "Bag",
-          "Other"
-        ]
-      },
-      {
-        "name": "collectionpoint",
-        "label": "Collection Point",
-        "type": "select",
-        "options": [
-          "Indoor",
-          "Outdoor",
-          "Designated Area",
-          "Other"
-        ]
-      },
-      {
-        "name": "recyclingoptions",
-        "label": "Recycling Options",
-        "type": "select",
-        "options": [
-          "Yes",
-          "No",
-          "Other"
-        ]
-      },
-      {
-        "name": "hygieneproducts",
-        "label": "Hygiene Products",
-        "type": "select",
-        "options": [
-          "Toilet Paper",
-          "Wet Wipes",
-          "Other"
-        ]
-      },
-      {
-        "name": "accessibility",
-        "label": "Accessibility",
-        "type": "select",
-        "options": [
-          "Public",
-          "Private",
-          "Other"
-        ]
-      },
-      {
-        "name": "regulationscompliance",
-        "label": "Regulations Compliance",
-        "type": "select",
-        "options": [
-          "Yes",
-          "No",
-          "Partial",
-          "Other"
-        ]
+        "name": "asd",
+        "label": "asd",
+        "type": "text"
       }
     ]
   },
@@ -14882,14 +14790,13 @@
     "category": "TV&ApplianceRepairs",
     "fields": [
       {
-        "name": "asd",
-        "label": "ASD",
+        "name": "asas",
+        "label": "ASAS",
         "type": "select",
         "options": [
-          "ASDAS",
-          "AS",
-          "D A",
-          "DAS"
+          "ASA",
+          "ASAS",
+          "AASAS"
         ]
       }
     ]

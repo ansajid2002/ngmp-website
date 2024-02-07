@@ -30,7 +30,6 @@ const AddFieldModal = ({ visible, onCancel, onSubmit }) => {
         !subcategories && subcategoryFunction()
     }, [subcategories])
 
-    console.log(subcategories);
     return (
         <Modal
             title="Add New Field"
@@ -43,7 +42,7 @@ const AddFieldModal = ({ visible, onCancel, onSubmit }) => {
                     label="Category"
                     name="category"
                 >
-                    <Select showSearch>
+                    <Select showSearch mode='multiple'>
                         {
                             subcategories && subcategories.map((item, index) => (
                                 <Option key={index} value={item.subcategory_name?.replace(/\s+/g, '')}>{item.subcategory_name}</Option>
