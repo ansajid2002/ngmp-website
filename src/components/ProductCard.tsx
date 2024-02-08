@@ -43,7 +43,7 @@ const ProductCard: FC<ProductCardProps> = ({
 
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
-  const { ad_title, mrp, sellingprice, images, uniquepid, prod_slug } = data;
+  const { ad_title, mrp, sellingprice, images, uniquepid, prod_slug ,somali_ad_title} = data;
   const [inFavorite, setinFavorite] = useState(false);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
@@ -52,6 +52,7 @@ const ProductCard: FC<ProductCardProps> = ({
 
   const discountPercentage = ((mrp - sellingprice) / mrp) * 100;
   const { t } = useTranslation()
+  const {languageCode} = useAppSelector((store=> store.languagesReducer))
 
   const [ratingData, setRating] = useState(null)
   const dispatch = useDispatch();
@@ -357,7 +358,7 @@ const ProductCard: FC<ProductCardProps> = ({
           {/* <div> */}
           {showTitle && (
             <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-1">
-              {ad_title}
+             {languageCode === "so" ? somali_ad_title === "" ? ad_title : somali_ad_title : ad_title}
             </h2>
           )}
           {/* <p className={`text-sm text-gray-500 dark:text-gray-400 mt-1 `}>
