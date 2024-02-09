@@ -4,12 +4,13 @@ import {
   AiOutlineShoppingCart,
   AiOutlineDollar,
   AiOutlineLineChart,
-  AiOutlineBell,
   AiOutlineTag,
 } from "react-icons/ai";
-import { FaFileInvoice, FaHackerNews, FaHandRock, FaListOl } from "react-icons/fa";
-import { FcApproval } from "react-icons/fc";
-import { IoIosStats, IoIosDocument, IoIosChatbubbles } from "react-icons/io";
+import { FaCheck, FaHackerNews, FaRegFilePowerpoint } from "react-icons/fa";
+import { FiBook } from "react-icons/fi";
+import { RiMessage2Line, RiTruckLine } from "react-icons/ri";
+import { SiAcclaim } from "react-icons/si";
+
 
 export const vendorLinks = [
   {
@@ -24,7 +25,7 @@ export const vendorLinks = [
       {
         id: 345,
         name: "Manage Policy",
-        icon: <FaHackerNews />,
+        icon: <FiBook />,
         to: "/Vendors/products/managepolicy",
       },
       {
@@ -61,56 +62,28 @@ export const vendorLinks = [
           },
         ],
       },
-
       {
         id: 3,
         name: "Orders",
         icon: <AiOutlineShoppingCart />,
         to: "/Vendors/Orders",
       },
+
       {
         id: 13,
-        name: "Verify Receiver",
-        icon: <FcApproval />,
+        name: "Ship Order",
+        icon: <FaCheck />,
         to: "/Vendors/verifyReceiver",
       },
 
-      {
-        id: 4,
-        name: "Reports",
-        icon: <IoIosDocument />,
-        to: "/Vendors/reports",
-      },
-      {
-        id: 5,
-        name: "Payments",
-        icon: <AiOutlineDollar />,
-        to: "/Vendors/Payments",
-      },
-      {
-        id: 6,
-        name: "Sales & Return Report",
-        icon: <AiOutlineLineChart />,
-        to: "/Vendors/SalesReturns",
-      },
+
       // {
       //   id: 7,
       //   name: "Commission Invoices",
       //   icon: <FaFileInvoice />,
       //   to: "/Vendors/commission-invoices",
       // },
-      {
-        id: 9,
-        name: "Notifications",
-        icon: <AiOutlineBell />,
-        to: "/Vendors/Notifications",
-      },
-      {
-        id: 12,
-        name: "Raise Claim",
-        icon: <FaHandRock />,
-        to: "/Vendors/ClaimForm",
-      },
+
       {
         id: 11,
         name: "Coupons",
@@ -133,9 +106,51 @@ export const vendorLinks = [
       {
         id: 15,
         name: "Chat",
-        icon: <IoIosChatbubbles />,
+        icon: <RiMessage2Line />,
         to: "/Vendors/ChatwithCustomers",
       }
     ]
-  }
+  },
+
+  {
+    title: 'Support',
+    links: [
+      {
+        id: 37,
+        name: "Not Received",
+        icon: <RiTruckLine />,
+        to: "/Vendors/Orders/NotReceived",
+      },
+      {
+        id: 12,
+        name: "Raise Claim",
+        icon: <SiAcclaim />,
+        to: "/Vendors/ClaimForm",
+      },
+    ]
+  },
+  {
+    title: 'Custom Reports',
+    links: [
+      {
+        id: 4,
+        name: "Sales",
+        icon: <FaRegFilePowerpoint />,
+        to: "/Vendors/reports",
+      },
+
+      {
+        id: 6,
+        name: "Return",
+        icon: <AiOutlineLineChart />,
+        to: "/Vendors/SalesReturns",
+      },
+      {
+        id: 5,
+        name: "Payments",
+        icon: <AiOutlineDollar />,
+        to: "/Vendors/Payments",
+      },
+    ]
+  },
 ];

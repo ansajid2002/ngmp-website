@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 // Create a function to send emails
 const sendEmail = async (toEmail, subject, htmlContent, attachment) => {
   try {
+
     let transporter = nodemailer.createTransport({
       name: 'nilegmp.com',
       host: "smtp-relay.gmail.com",

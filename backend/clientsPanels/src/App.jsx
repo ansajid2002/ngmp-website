@@ -66,6 +66,9 @@ import Delivery from "./Admin/pages/Delivey";
 import Languages from "./Admin/pages/Languages"
 import VerifyReceiver from "./Vendors/components/VerifyReceiver";
 import TwoFactorAuth from "./Admin/pages/TwoFactorAuth";
+import NotReceived from "./Vendors/NotReceived";
+import OrderDetail from "./Vendors/OrderDetail";
+import Ordercancel from "./Vendors/Ordercancel";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
 
@@ -201,7 +204,10 @@ function AdminRoutes() {
       "/Vendors/ClaimForm",
       "/Vendors/ChatwithCustomers",
       "/Vendors/verifyReceiver",
-      "/Vendors/products/managepolicy"
+      "/Vendors/products/managepolicy",
+      "/Vendors/Orders/NotReceived",
+      "/Vendors/Orders/OrderDetails",
+      "/Vendors/Orders/Cancel"
     ];
     const checkVendorPanel = VendorPanel.includes(path);
     setvendorExists(checkVendorPanel);
@@ -455,6 +461,18 @@ function AdminRoutes() {
               <Route
                 path="/Vendors/products/managepolicy"
                 element={<ManagePolicy vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/Orders/NotReceived"
+                element={<NotReceived vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/Orders/OrderDetails"
+                element={<OrderDetail vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/Orders/Cancel"
+                element={<Ordercancel vendorDatastate={vendorDatastate} />}
               />
               {/* ... other routes */}
             </Routes>

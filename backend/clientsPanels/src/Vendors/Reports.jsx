@@ -18,6 +18,16 @@ const Reports = ({ vendorDatastate }) => {
     const [startDate, endDate] = dateRange;
     const vendorId = vendorDatastate?.[0]?.id;
 
+    // Calculate the difference in days between startDate and endDate
+    const diffInDays = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000));
+
+    // Check if the difference exceeds one month (30 days)
+    if (diffInDays > 30) {
+      // Display an alert
+      alert("Please select a date range of one month or less.");
+      return;
+    }
+
     fetch(
       `${AdminUrl}/api/generateReport?startDate=${startDate}&endDate=${endDate}&vendorId=${vendorId}`
     )
@@ -29,6 +39,7 @@ const Reports = ({ vendorDatastate }) => {
         console.error("Error:", error);
       });
   };
+
 
   function generatePDF(reportData, dateRange, vendorDatastate) {
     // Create a new jsPDF instance
@@ -183,6 +194,7 @@ const Reports = ({ vendorDatastate }) => {
   return (
     <div className="md:p-4">
       <Title level={2}>Reports</Title>
+
       <div className="mb-4">
         <div className="flex items-center">
           <Text className="mr-2 font-semibold">Date Range:</Text>
@@ -196,18 +208,19 @@ const Reports = ({ vendorDatastate }) => {
             Generate Report
           </Button>
         </div>
-        <div className="mt-4"></div>
+        <span className="text-sm text-gray-500"> (Please choose a date range of only one month.)</span>
+
       </div>
 
       {reportData !== null &&
         dateRange !== null &&
         dateRange[0] !== null &&
         dateRange[1] !== null && (
-          <div className="mt-4 bg-gray-100 shadow-lg p-4">
+          <div className="mt-4 bg-white shadow-lg p-4">
             <div className="lg:flex lg:items-center">
               <div className="lg:w-1/2">
                 <img
-                  src="/logo.png"
+                  src="/mainlogovertical.png"
                   alt="Company Logo"
                   className="w-24 h-24 rounded-full mb-4 mx-auto lg:mx-0"
                 />

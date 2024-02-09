@@ -38,7 +38,7 @@ const AcceptReject = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [vendorInfo, setVendorInfo] = useState([]);
-
+console.log(selectedProductId,"selectedProductId");
   useEffect(() => {
     fetchVariantProducts()
       .then((variantProducts) => {
@@ -59,7 +59,7 @@ const AcceptReject = () => {
         const variantsValueArray = formattedData.map(
           (item) => item.variantsValue
         );
-        console.log(variantsValueArray);
+        // console.log(variantsValueArray);
         setVariantsValueArray(variantsValueArray);
         // Now, set the formatted data in the state variable setFilteredVariantData
         setFilteredVariantData(formattedData);
@@ -733,7 +733,7 @@ const AcceptReject = () => {
     }
   };
 
-
+  console.log(selectedRowKeys,"selectedRowKeys");
   return (
     <div className="sm:p-4 sm:ml-64">
       <div className="lg:w-1/2 md:w-3/4 sm:w-full p-2">
