@@ -354,7 +354,7 @@ app.post('/addProductcart', async (req, res) => {
             mrp,
             sellingprice,
             c_symbol
-                } = req.body;
+        } = req.body;
         // Check if the product is already in the cart for the specified customer
         let checkCartQuery;
         let queryParams = [customer_id, product_uniqueid];
@@ -375,6 +375,8 @@ app.post('/addProductcart', async (req, res) => {
                 AND product_uniqueid = $2
             `;
         }
+
+        console.log(checkCartQuery, queryParams);
 
         const existingCartItem = await pool.query(checkCartQuery, queryParams);
 
@@ -418,7 +420,7 @@ app.post('/addProductcart', async (req, res) => {
                         quantity,
                         mrp,
                         sellingprice,
-                        variantlabel,
+                        variantlabel
                     )
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 `;
@@ -466,7 +468,7 @@ app.post('/addProductcartlogin', async (req, res) => {
             mrp,
             sellingprice,
             c_symbol
-                } = req.body;
+        } = req.body;
         // Check if the product is already in the cart for the specified customer
         let checkCartQuery;
         let queryParams = [customer_id, product_uniqueid];
@@ -495,7 +497,7 @@ app.post('/addProductcartlogin', async (req, res) => {
             // Product already exists in the cart; update the quantity
             const existingQuantity = existingCartItem.rows[0].quantity;
             // const updatedQuantity = existingQuantity + added_quantity; // Change 'quantity' to 'added_quantity'
-            const updatedQuantity =  added_quantity; // Change 'quantity' to 'added_quantity'
+            const updatedQuantity = added_quantity; // Change 'quantity' to 'added_quantity'
 
             // Create an UPDATE query to update the quantity
             let updateQuery = `
@@ -511,7 +513,7 @@ app.post('/addProductcartlogin', async (req, res) => {
                 values.push(variantlabel);
             }
 
-            console.log(values,"values");
+            console.log(values, "values");
             await pool.query(updateQuery, values);
 
 

@@ -17,6 +17,7 @@ import axios from 'axios'
 import { Edit2Icon } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { updateSelectedAddress } from "@/redux/slices/address";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   isActive: boolean;
@@ -46,6 +47,7 @@ const ShippingAddress: FC<Props> = ({
   const [selectedKey, setSelectedKey] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const {t} = useTranslation()
 
   const customerData = useAppSelector((state) => state.customerData)
   const id = customerData?.customerData?.customer_id || null
@@ -339,22 +341,22 @@ const ShippingAddress: FC<Props> = ({
                     onClick={() => handleEdit(address)}
                     className="bg-blue-500 text-white px-3 py-1 rounded-md"
                   >
-                    Edit
+                    {t("Edit")}
                   </button>
                   <button
                     onClick={() => handleDelete(address.address_id)}
                     className="bg-red-500 text-white px-3 py-1 rounded-md"
                   >
-                    Delete
+                    {t("Delete")}
                   </button>
                 </div>
               </div>
               <p className="text-gray-600">
-                {address.apt_address}, {address.city_address}, {address.region_address},{' '}
-                {address.country_address}, {address.zip_address}
+                {address?.apt_address}, {address?.city_address}, {address?.region_address},{' '}
+                {address?.country_address}, {address?.zip_address}
               </p>
-              <p className="text-gray-600">{address.email_address}</p>
-              <p className="text-gray-600">{address.phone_address}</p>
+              <p className="text-gray-600">{address?.email_address}</p>
+              <p className="text-gray-600">{address?.phone_address}</p>
             </div>
           ))}
       </div>

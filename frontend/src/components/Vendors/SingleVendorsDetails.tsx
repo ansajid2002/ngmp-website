@@ -1,5 +1,5 @@
 "use client";
-import { Rate } from "antd";
+import { Pagination, Rate } from "antd";
 import { ChevronRight, Minus } from "lucide-react";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
@@ -10,38 +10,41 @@ import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import ModalViewAllReviews from "@/app/product-detail/ModalViewAllReviews";
 import { AdminUrl } from "@/app/layout";
 
-const SingleVendorsDetails = ({ data }) => {
+const SingleVendorsDetails = ({ data }: any) => {
   const [loading, setLoading] = React.useState(false);
   const [products, setProducts] = React.useState(null);
   const [totalReviews, setTotalReviews] = React.useState(null);
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(50);
   const [average_rating, setaverageRating] = React.useState(null);
   const [isOpenModalViewAllReviews, setIsOpenModalViewAllReviews] = useState(false);
 
-  useEffect(() => {
-    const fetchSubcategoryProducts = async () => {
-      try {
-        setLoading(true);
+  const fetchSubcategoryProducts = async (page: any, pageSize: any) => {
+    try {
+      setLoading(true);
 
-        // Fetch all products
-        const response = await fetch(`${AdminUrl}/api/getVendorProducts?vendorid=${data?.id}&currency=USD&pageNumber=1&pageSize=10`);
+      // Fetch all products
+      const response = await fetch(`${AdminUrl}/api/getVendorProductsAR?vendorid=${data?.id}&page=${page}&pageSize=${pageSize}`);
 
 
-        if (response.ok) {
-          const data = await response.json()
-          setProducts(data?.AllProducts);
-
-        }
-
-        setTimeout(() => {
-          setLoading(false);
-        }, 600);
-      } catch (error) {
-        setLoading(false);
-        console.error("Error fetching data:", error);
+      if (response.ok) {
+        const data = await response.json()
+        setProducts(data);
       }
-    };
 
-    fetchSubcategoryProducts();
+      setTimeout(() => {
+        setLoading(false);
+      }, 600);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+
+
+    fetchSubcategoryProducts(page, pageSize);
   }, []);
 
 
@@ -70,7 +73,7 @@ const SingleVendorsDetails = ({ data }) => {
           className="flex items-center gap-1 md:gap-2 cursor-pointer"
           onClick={() => setIsOpenModalViewAllReviews(true)}
         >
-          <h2>{average_rating}</h2>
+          <h2>({average_rating})</h2>
           <Rate
             allowHalf
             disabled
@@ -95,15 +98,32 @@ const SingleVendorsDetails = ({ data }) => {
       <div className="py-5">
         <div className="sticky top-0 bg-white z-10">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-medium">{products && products?.length || "0"} Items</h2>
+            <h2 className="text-xl font-medium">{products && products?.totalProducts || "0"} Items</h2>
             {/* <TabFilters showOnlySort={false} /> */}
           </div>
           {/* <ProductCard /> */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-            {products && products.map((item: any) => <ProductCard data={item} />)}
+            {products && products?.products.map((item: any) => <ProductCard data={item} />)}
+          </div>
+
+          <div className="flex justify-center mt-10">
+            <Pagination
+              // hideOnSinglePage
+              current={page}
+              responsive
+              pageSize={pageSize}
+              onChange={(page, pageSize) => {
+                setPage(page)
+                setPageSize(pageSize)
+                fetchSubcategoryProducts(page, pageSize);
+                window.scrollTo({ top: 150, behavior: 'smooth' });
+
+              }}
+              total={products?.totalProducts || 1} />
           </div>
         </div>
         {/* Additional content goes here */}
+
       </div>
     </div>
   );

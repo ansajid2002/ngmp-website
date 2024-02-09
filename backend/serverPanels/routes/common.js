@@ -167,6 +167,7 @@ app.post('/addFieldSpecification', async (req, res) => {
         const { category, label, type, options } = req.body;
         const specificationsFilePath = './JSON/specifications.json';
 
+        console.log(req.body);
         let specificationsData = [];
         try {
             // Check if the file exists asynchronously
@@ -181,10 +182,18 @@ app.post('/addFieldSpecification', async (req, res) => {
             }
         }
 
-        // Check if category already exists
-        const existingCategory = specificationsData.find(spec => spec.category === category);
-        if (existingCategory) {
-            return res.status(200).json({ error: 'Category already exists.' });
+        // Check if categories already exist
+        const existingCategories = [];
+        category.forEach(cat => {
+            const existingCategory = specificationsData.find(spec => spec.category === cat);
+            if (existingCategory) {
+                existingCategories.push(cat);
+            }
+        });
+
+        // If any existing categories found, return error response
+        if (existingCategories.length > 0) {
+            return res.status(200).json({ error: `Categories ${existingCategories.join(', ')} already exist.` });
         }
 
         // Prepare new field object
@@ -195,13 +204,17 @@ app.post('/addFieldSpecification', async (req, res) => {
             options: options && options.split(',').map(option => option.trim())
         };
 
-        // Append new field to existing data or create new category
-        const newData = existingCategory
-            ? specificationsData.map(spec => spec.category === category ? { ...spec, fields: [...spec.fields, newField] } : spec)
-            : [...specificationsData, { category, fields: [newField] }];
+        // Create new objects for each category and append new field
+        const newData = category.map(cat => ({
+            category: cat,
+            fields: [newField]
+        }));
+
+        // Append new data to existing specifications data
+        specificationsData.push(...newData);
 
         // Write updated data to specifications file
-        await fs.writeFile(specificationsFilePath, JSON.stringify(newData, null, 2));
+        await fs.writeFile(specificationsFilePath, JSON.stringify(specificationsData, null, 2));
 
         res.json({ success: true });
     } catch (error) {

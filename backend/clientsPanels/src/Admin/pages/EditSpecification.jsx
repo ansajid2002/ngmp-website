@@ -73,9 +73,6 @@ const EditSpecification = () => {
         }
     };
 
-
-
-
     const columns = [
         {
             title: 'Category',

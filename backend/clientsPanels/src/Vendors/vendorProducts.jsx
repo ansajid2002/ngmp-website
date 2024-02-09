@@ -118,6 +118,7 @@ const VendorProducts = ({ vendorDatastate }) => {
   const [condition, setCondition] = useState('New');
   const [listing_type, setType] = useState('');
   const [policies, setPolicies] = useState([]);
+  const [nested_subcate_data, setNestedSubcat] = useState(null);
 
   const handleConditionChange = (value) => {
     setConditionToggle(value);
@@ -240,7 +241,6 @@ const VendorProducts = ({ vendorDatastate }) => {
         console.log(data);
         setPolicies(data?.data);
       }
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching policies :', error);
       // Handle error fetching policies 
@@ -310,6 +310,7 @@ const VendorProducts = ({ vendorDatastate }) => {
 
     setSelectedCategoryId(categoryId);
     setSelectedSubcategory(null);
+    setNestedSubcat(null)
 
     setFilteredSubcategories([]);
     document.getElementById("subcategory").value = "";
@@ -320,6 +321,9 @@ const VendorProducts = ({ vendorDatastate }) => {
     const selectedSubcategorys = filteredSubcategories.find(
       (subcategory) => subcategory.subcategory_name === subcategoryId
     );
+
+    // console.log(selectedSubcategorys, 'sele');
+    setNestedSubcat(selectedSubcategorys)
     // Set the subcategory name in state
     setSelectedSubcategory(
       selectedSubcategorys
@@ -861,12 +865,12 @@ const VendorProducts = ({ vendorDatastate }) => {
     },
     {
       title: "STATUS",
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "produ_status",
+      key: "produ_status",
       width: 200,
-      render: (status, record) => {
+      render: (produ_status, record) => {
         let icon, color;
-        switch (record.status) {
+        switch (record.produ_status) {
           case 0:
             icon = <FiClock className="text-orange-500" />;
             color = "text-orange-500";
@@ -891,7 +895,7 @@ const VendorProducts = ({ vendorDatastate }) => {
           <span className={`flex items-center ${color}`}>
             {icon}
 
-            <span className="ml-1">{statusMap[record?.status]}</span>
+            <span className="ml-1">{statusMap[record?.produ_status]}</span>
           </span>
         );
 
@@ -1435,24 +1439,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             </Select>
           </Form.Item>
 
-          <Form.Item
-            label="Product Policy"
-            name="product_policy_id"
-            rules={[
-              {
-                required: true,
-                message: 'Please select a Product Policy',
-              },
-            ]}
-          >
-            <Select onChange={handleConditionChange}>
-              {
-                policies.map((item, index) => (
-                  <Select.Option value={item.policy_id}>{item?.policy_name} - {item.policy_id}</Select.Option>
-                ))
-              }
-            </Select>
-          </Form.Item>
+
 
 
           {/* <Form.Item
@@ -1467,6 +1454,19 @@ const VendorProducts = ({ vendorDatastate }) => {
                   {option}
                 </Select.Option>
               ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Product Policy"
+            name="product_policy_id"
+          >
+            <Select onChange={handleConditionChange}>
+              {
+                policies.map((item, index) => (
+                  <Select.Option value={item.policy_id}>{item?.policy_name} - {item.policy_id}</Select.Option>
+                ))
+              }
             </Select>
           </Form.Item>
 
@@ -1776,7 +1776,7 @@ const VendorProducts = ({ vendorDatastate }) => {
             </div>
 
             {
-              filteredSubcategories?.[0] && filteredSubcategories?.[0].nested_subcategories && <div className="flex justify-between items-center">
+              nested_subcate_data && nested_subcate_data?.nested_subcategories && <div className="flex justify-between items-center">
                 <label htmlFor="subcategory" className="mr-4 mb-5">
                   Nested Subcategory:
                 </label>
@@ -1802,7 +1802,7 @@ const VendorProducts = ({ vendorDatastate }) => {
                     disabled={catSubcatDisable}
                     allowClear // Add this prop to enable clearing the selected value
                   >
-                    {filteredSubcategories && filteredSubcategories?.[0].nested_subcategories?.map((subcategory) => (
+                    {nested_subcate_data && nested_subcate_data?.nested_subcategories?.map((subcategory) => (
                       <Select.Option
                         key={subcategory.nested_subcategory_name}
                         value={subcategory.nested_subcategory_name}

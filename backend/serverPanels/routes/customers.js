@@ -963,6 +963,26 @@ app.post("/removeCustomerProfileImage", async (req, res) => {
   }
 });
 
+app.get('/getinterestsbyCustomerId/:cid', async (req,res) =>{
+  console.log('called');
+  try {
+    const cid = req.params.cid
+    const queryText = 
+    "SELECT customer_interest FROM customers WHERE customer_id=$1"
+    const interestIds = await pool.query(queryText,[cid])
+    console.log(interestIds.rows);
+    
+    // Map over the array of strings and convert each element to a number
+    const interests = interestIds.rows[0].customer_interest.map(Number);
+    
+    res.json(interests);
+  } catch (error) {
+    console.log("Error while getting Customer Interests");
+    return res.status(500).json({message: "Failed to Fetch Interests"})
+  }
+})
+
+
 app.post('/storeCustomerInterest', async (req, res) => {
   try {
     const { customerId, categoryIds } = req.body;

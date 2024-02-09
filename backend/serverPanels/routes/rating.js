@@ -93,7 +93,6 @@ app.get('/fetchRatings', async (req, res) => {
 
     try {
         let ratingsData;
-        console.log(req.query);
 
         if (customer_id && !vendorId) {
             console.log('customer_id');
@@ -101,7 +100,7 @@ app.get('/fetchRatings', async (req, res) => {
             ratingsData = await pool.query('SELECT * FROM ratings_and_reviews WHERE customer_id = $1 AND product_uniqueid != $2', [customer_id, 'vendor']);
         } else if (rate_id) {
             console.log('rate_id');
-            // Fetch ratings by product_id
+            // Fetch ratings by rate_id
             ratingsData = await pool.query('SELECT * FROM ratings_and_reviews WHERE id = $1', [rate_id]);
         } else if (product_id && product_id !== 'null') {
             console.log('product_id');
@@ -109,15 +108,19 @@ app.get('/fetchRatings', async (req, res) => {
             ratingsData = await pool.query('SELECT * FROM ratings_and_reviews WHERE product_uniqueid = $1', [product_id]);
         } else if (vendorId && customer_id) {
             console.log('vendorId');
-            // Fetch ratings by vendor_id
+            // Fetch ratings by vendor_id and customer_id
             ratingsData = await pool.query('SELECT * FROM ratings_and_reviews WHERE vendor_id = $1 AND customer_id = $2 AND product_uniqueid = $3', [parseInt(vendorId), customer_id, 'vendor']);
+        }
+        else if (vendorId) {
+            // Fetch ratings by vendor_id of all customers
+            ratingsData = await pool.query('SELECT * FROM ratings_and_reviews WHERE vendor_id = $1 AND product_uniqueid = $2', [parseInt(vendorId), 'vendor']);
         } else {
             // Invalid request, no customer_id, product_id, or vendor_id specified
             return res.status(400).json({ error: 'Invalid request. Please specify either customer_id, product_id, or vendor_id.' });
         }
 
         // Create a response object to store the ratings data and associated customer data
-        const responseData = { ratingsData: [] };
+        const responseData = { ratingsData: [], totalReviewTextCount: 0 };
 
         if (ratingsData.rows.length > 0) {
             // Extract customer_ids from the ratings data
@@ -135,10 +138,30 @@ app.get('/fetchRatings', async (req, res) => {
             // Append customer data to each rating row
             ratingsData.rows.forEach((row, index) => {
                 row.customerData = customerData[index];
+                delete row.customerData?.password
             });
 
-            // Set the modified ratings data in the response object
+            // Calculate average rating
+            const totalRatings = ratingsData.rows.length;
+            const totalRatingSum = ratingsData.rows.reduce((acc, row) => acc + row.rating, 0);
+            const averageRating = totalRatingSum / totalRatings;
+
+            // Append average rating to each rating row
+            ratingsData.rows.forEach((row) => {
+                row.averageRating = averageRating;
+            });
+
+            // Calculate total count of review texts
+            const totalReviewTextCount = ratingsData.rows.reduce((acc, row) => {
+                if (row.review_text) {
+                    return acc + 1;
+                }
+                return acc;
+            }, 0);
+
+            // Set the modified ratings data and total review text count in the response object
             responseData.ratingsData = ratingsData.rows;
+            responseData.totalReviewTextCount = totalReviewTextCount;
         }
 
         console.log(responseData);
@@ -149,6 +172,8 @@ app.get('/fetchRatings', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
 
 
 app.post('/addReview', async (req, res) => {

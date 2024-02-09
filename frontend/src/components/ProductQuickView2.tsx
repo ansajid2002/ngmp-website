@@ -50,6 +50,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
   const {
     ad_title,
+    somali_ad_title,
     sellingprice,
     images,
     mrp,
@@ -59,6 +60,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     slug_subcat,
     slug_cat,
     additionaldescription,
+    somali_additionaldescription,
     mogadishudistrict_ship_from
   } = item;
 
@@ -87,7 +89,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     null
   );
   const cartItems = useAppSelector((state) => state.cart.cartItems);
-
+  const {languageCode} = useAppSelector((store=> store.languagesReducer))
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
 
@@ -479,7 +481,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
             <Link
               href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
             >
-              {ad_title}
+             {languageCode === "so" ? somali_additionaldescription === "" ? additionaldescription : somali_additionaldescription : additionaldescription}
             </Link>
           </h2>
 
@@ -570,7 +572,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         <div>
           <h2 className="text-[1rem] font-medium">{t("Description")}</h2>
           <p className=" text-[0.9rem] line-clamp-2">
-            {additionaldescription || "NA"}
+            
+            {languageCode === "so" ? somali_additionaldescription === "" ? additionaldescription : somali_additionaldescription : additionaldescription}
           </p>
         </div>
 

@@ -38,7 +38,7 @@ const AcceptReject = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [vendorInfo, setVendorInfo] = useState([]);
-
+console.log(selectedProductId,"selectedProductId");
   useEffect(() => {
     fetchVariantProducts()
       .then((variantProducts) => {
@@ -59,7 +59,7 @@ const AcceptReject = () => {
         const variantsValueArray = formattedData.map(
           (item) => item.variantsValue
         );
-        console.log(variantsValueArray);
+        // console.log(variantsValueArray);
         setVariantsValueArray(variantsValueArray);
         // Now, set the formatted data in the state variable setFilteredVariantData
         setFilteredVariantData(formattedData);
@@ -447,13 +447,14 @@ const AcceptReject = () => {
     },
     {
       title: "Uploaded at",
-      dataIndex: "created_at",
-      key: "created_at",
+      dataIndex: "updated_at_product",
+      key: "updated_at_product",
       sorter: (a, b) =>
-        moment(a.created_at).unix() - moment(b.created_at).unix(), // Custom sorting function
+        moment(a.updated_at_product).unix() - moment(b.updated_at_product).unix(), // Custom sorting function
       render: (_, record) => (
         <p className="text-md font-semibold">
-          {moment(record.created_at).format("MMMM D, YYYY hh:mm:ss A")}
+          {/* {record?.updated_at_product}? */}
+          {moment(record.updated_at_product).format("MMMM D, YYYY hh:mm:ss A")}
         </p>
       ),
       sortDirections: ["descend", "ascend"],
@@ -732,7 +733,7 @@ const AcceptReject = () => {
     }
   };
 
-
+  console.log(selectedRowKeys,"selectedRowKeys");
   return (
     <div className="sm:p-4 sm:ml-64">
       <div className="lg:w-1/2 md:w-3/4 sm:w-full p-2">

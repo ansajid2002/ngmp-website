@@ -9,9 +9,36 @@ const multer = require("multer");
 const path = require("path");
 const slug = require("slug");
 const b2 = require("./b2");
-
-// const fs = require("fs/promises");
 const fs = require("fs");
+
+
+const { Translate } = require('@google-cloud/translate').v2;
+require('dotenv').config()
+const CREDENTIALS = JSON.parse(process.env.CREDENTIALS)
+  const translate = new Translate({
+    credentials:CREDENTIALS,
+    projectId:CREDENTIALS.projectId
+  });
+  
+
+async function quickStart() {
+  
+  // The text to translate
+  const text = 'After verifying and adjusting the JSON string in ';
+
+  // The target language
+  const target = 'hi';
+
+  // Translates some text into Russian
+  const [translati] = await translate.translate(text, target);
+  console.log(translati,"ttt");
+
+}
+
+// Call the translateText function
+  quickStart()
+  // translateText();
+
 
 const sendEmail = require("./nodemailer");
 // const fs = require("fs/promises"); // For reading the HTML template
@@ -21,6 +48,7 @@ app.use(cors());
 
 // Assuming you have a connection pool to your database
 app.use((req, res, next) => {
+
   req.pool = pool;
   next();
 });
@@ -415,11 +443,11 @@ app.post("/allVendorProducts", async (req, res) => {
 
     if (subcatNameBackend === "all") {
       // Query to fetch products for the given vendor without subcategory filter
-      query = "SELECT *, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 ORDER BY updated_at_product DESC LIMIT $2 OFFSET $3";
+      query = "SELECT *, status as produ_status, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 ORDER BY updated_at_product DESC LIMIT $2 OFFSET $3";
       values = [id, pageSize, offset];
     } else {
       // Query to fetch products for the given vendor and specific subcategory
-      query = "SELECT *, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 AND slug_subcat = $2 ORDER BY updated_at_product DESC LIMIT $3 OFFSET $4";
+      query = "SELECT *,status as produ_status, to_char(updated_at_product, 'YYYY-MM-DD HH24:MI:SS') AS formatted_updated_at FROM products WHERE vendorid = $1 AND slug_subcat = $2 ORDER BY updated_at_product DESC LIMIT $3 OFFSET $4";
       values = [id, subcatNameBackend, pageSize, offset];
     }
 
@@ -1330,6 +1358,7 @@ app.get('/getVendorProductsAR', async (req, res) => {
     const countResult = await pool.query(countQuery, countValues);
     const totalProducts = countResult.rows[0].count;
 
+
     // Now, fetch the paginated products along with vendor information (excluding password)
     const productsQuery = `
       SELECT p.*, p.status AS productstatus
@@ -1395,6 +1424,7 @@ app.post("/reject-product-reason", async (req, res) => {
 app.post("/approve-product", async (req, res) => {
   try {
     const { productId } = req.body;
+    console.log(productId,"Productid from Admin panel");
     let updateQuery = "";
     let updateValues = [];
     let idName = "";
@@ -1806,7 +1836,7 @@ app.get("/recommendedProducts/:cid", async (req, res) => {
   const { pageNumber = 1, pageSize = 10 } = req.query
   const offset = (pageNumber - 1) * parseInt(pageSize);
   const { cid } = req.params;
-  console.log(cid);
+
   try {
     let recommendedProducts;
 
@@ -1934,7 +1964,6 @@ app.get("/newArrivals/:cid", async (req, res) => {
           const productsResult = await pool.query(productsQuery, productsValues);
 
           if (productsResult.rows.length > 9) {
-
             newArrivals = productsResult.rows;
           } else {
             const randomProductsQuery =
@@ -2718,6 +2747,7 @@ app.get("/getAllVendorAttributes", async (req, res) => {
     // Query the database to get all attributes for the specified attribute_cat_id
     const getAttributesQuery = "SELECT * FROM attributes WHERE attribute_id = ANY($1)";
     const attributesResult = await pool.query(getAttributesQuery, [attribute_cat_id]);
+    console.log(getAttributesQuery, attribute_cat_id);
 
     // Send the attributes as a JSON response
     res.json(attributesResult.rows);
@@ -2767,11 +2797,30 @@ app.get("/getvariantsofcatsubcat", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+async function updateProductLanguage(uniquepid, somali_ad_title, somali_additionaldescription) {
+  try {
+    // Construct the SQL query to update the product language 
+    const updateLanguageQuery = `
+      UPDATE products
+      SET somali_ad_title = $1, somali_additionaldescription = $2
+      WHERE uniquepid = $3
+      RETURNING *; -- This returns the updated row
+    `;
+
+    // Execute the SQL query to update the product language
+    const updatedLanguageResult = await pool.query(updateLanguageQuery, [somali_ad_title, somali_additionaldescription, uniquepid]);
+
+    console.log("Product language updated successfully");
+    return updatedLanguageResult.rows[0];
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to update product language");
+  }
+}
 
 app.post("/bulkProductApprove", async (req, res) => {
   try {
     const selectedRowKeys = req.body.selectedRowKeys;
-
     // Construct the SQL query to update records
     const updateQuery = `
       UPDATE products
@@ -2786,10 +2835,27 @@ app.post("/bulkProductApprove", async (req, res) => {
     const updatedData = [];
 
     for (const uniquepid of selectedRowKeys) {
+      // Update product status
       const result = await pool.query(updateQuery, [uniquepid]);
+      
+      // Fetch ad_title and additionaldescription for the updated row
+      const fetchQuery = `
+        SELECT ad_title, additionaldescription
+        FROM products
+        WHERE uniquepid = $1;
+      `;
+      const fetchResult = await pool.query(fetchQuery, [uniquepid]);
+      const { ad_title, additionaldescription } = fetchResult.rows[0];
+      // Append the updated row with additional data to the array
+      updatedData.push({ ...result.rows[0], ad_title, additionaldescription });
 
-      // Append the updated row to the array
-      updatedData.push(result.rows[0]);
+      const [somali_ad_title] = await translate.translate(ad_title, "so");
+      const [somali_additionaldescription] = await translate.translate(additionaldescription, "so");
+
+      const updatedLanguageData = await updateProductLanguage(uniquepid, somali_ad_title, somali_additionaldescription);
+
+      // Append the updated row with additional data to the array
+      updatedData.push({ ...result.rows[0], ad_title: somali_ad_title, additionaldescription: somali_additionaldescription });
     }
 
     await pool.query("COMMIT");
@@ -2802,6 +2868,7 @@ app.post("/bulkProductApprove", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 
 app.post("/bulkEditProduct", async (req, res) => {

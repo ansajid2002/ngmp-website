@@ -43,11 +43,12 @@ export default function AvatarDropdown() {
     picture = "",
     google_id,
   } = customerData?.customerData || {};
-  console.log(given_name,"gname");
+  console.log(given_name,"name");
   
 
-  const { walletTotal } = useAppSelector((state) => state.wallet);
-
+  const { walletTotal } = useAppSelector((store) => store.wallet);
+  console.log(walletTotal,'walletTotal');
+  
 
   useEffect(() => {
 

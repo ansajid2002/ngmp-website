@@ -30,15 +30,126 @@ const storageExcel = multer.diskStorage({
 
 const uploadExcel = multer({ storage: storageExcel });
 
+
+const transformData = (data) => {
+    return data.map((item) => {
+        const variantValues = {};
+        const variantMame = item['Variant Name'];
+        const variantGroup = item['Variant Group'];
+        const p_skuid = item['Parent Skuid'];
+        const labels = variantGroup.split('/');
+
+        // Populate variantValues object based on labels
+        labels.forEach((label, index) => {
+            const key = label.trim();
+            const value = variantMame.split('/')[index].trim();
+            variantValues[value] = key;
+        });
+
+        return {
+            variant_mrp: item.Mrp,
+            variant_sellingprice: item['Selling Price'],
+            variant_skuid: item['Child Skuid'],
+            variant_quantity: item.Quantity,
+            variantsvalues: variantValues,
+            label: variantGroup,
+            parent_skuid: p_skuid
+        };
+    });
+};
+
+
+const handleProductUpload = async (transformedData, vendor_id, category, subcategory, uniquepid) => {
+    try {
+        // Iterate over each transformed product data
+        for (const productData of transformedData) {
+            const { variant_skuid, product_uniqueid, parent_skuid, ...rest } = productData;
+
+            console.log(uniquepid, 'productData');
+            // Check if the parent SKU already exists in the database
+            const existingParentProduct = await pool.query(
+                'SELECT * FROM products WHERE skuid = $1',
+                [parent_skuid]
+            );
+
+            // If the parent product exists, update the variant product or insert it if it's new
+            if (existingParentProduct.rows.length > 0) {
+                const existingVariantProduct = await pool.query(
+                    'SELECT * FROM variantproducts WHERE variant_skuid = $1',
+                    [variant_skuid]
+                );
+
+                // If the variant product already exists, update it
+                if (existingVariantProduct.rows.length > 0) {
+                    const query = `
+                        UPDATE variantproducts SET 
+                            variant_mrp = $1,
+                            variant_sellingprice = $2,
+                            variant_quantity = $3,
+                            variantsvalues = $4,
+                            label = $5,
+                            vendori_id = $7,
+                            variant_category = $8,
+                            variant_subcategory = $9
+                        WHERE variant_skuid = $6
+                    `;
+                    const values = [
+                        rest.variant_mrp,
+                        rest.variant_sellingprice,
+                        rest.variant_quantity,
+                        JSON.stringify(rest.variantsvalues),
+                        rest.label,
+                        variant_skuid,
+                        vendor_id,
+                        category,
+                        subcategory,
+                    ];
+                    await pool.query(query, values);
+                } else {
+                    // If the variant product does not exist, insert it
+                    const query = `
+                        INSERT INTO variantproducts (variant_mrp, variant_sellingprice, variant_quantity, variantsvalues, label, product_uniqueid, variant_skuid, vendori_id, variant_category, variant_subcategory)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    `;
+                    const values = [
+                        rest.variant_mrp,
+                        rest.variant_sellingprice,
+                        rest.variant_quantity,
+                        JSON.stringify(rest.variantsvalues),
+                        rest.label,
+                        uniquepid,
+                        variant_skuid,
+                        vendor_id,
+                        category,
+                        subcategory
+                    ];
+                    await pool.query(query, values);
+                }
+            } else {
+                console.log(`Parent product with SKU ${parent_skuid} does not exist.`);
+                // Handle the case where the parent product does not exist
+            }
+        }
+
+        console.log('Product upload completed successfully.');
+    } catch (error) {
+        console.error('Error uploading products:', error);
+        throw error; // You can handle this error in your route handler
+    }
+};
+
 // Bulk Product Uploads
 app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, res) => {
-    const { jsonData, specifications, excludeImage } = req.body;
-
+    const { jsonData, specifications, excludeImage, variantExcel } = req.body;
+    const filteredData = variantExcel && JSON.parse(variantExcel)?.filter(obj => Object.keys(obj)?.length !== 0);
+    // console.log(filteredData);
+    // return
     const updatedProductIds = [];
     let filenameExcel = ''
     try {
         const jsonDataArray = JSON.parse(jsonData);
         let specificationsArray;
+        let filteredDataArray;
 
         if (specifications !== undefined) {
             try {
@@ -50,6 +161,19 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
         } else {
             specificationsArray = [];
         }
+
+        if (filteredData !== undefined) {
+            try {
+                filteredDataArray = filteredData
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                filteredDataArray = []; // Set filteredDataArray to an empty array in case of parsing error
+            }
+        } else {
+            filteredDataArray = [];
+        }
+
+
 
         const newSpecification = specificationsArray?.length > 0 && specificationsArray.map(obj => {
             const modifiedObj = {};
@@ -71,6 +195,10 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                 const key24Array = JSON.parse(key24String);
                 const createdAt = new Date().toISOString();
                 const imageUrl = data.key8?.text || data.key8;
+
+                const transformedData = transformData(filteredDataArray)
+
+
                 // let databaseName = "";
                 let imageFileName = "";
                 let imageFileNameData = "";
@@ -128,8 +256,6 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                         console.error("Error downloading image:", error);
                     }
                 }
-
-
 
                 const existingProduct = await pool.query(
                     'SELECT * FROM products WHERE skuid = $1 AND vendorid = $2',
@@ -323,72 +449,8 @@ app.post("/BulkProductUpload", uploadExcel.single("selectedExcel"), async (req, 
                     }
                 }
 
-                if (key24Array && key24Array.length > 0) {
-                    await Promise.all(
-                        key24Array.map(async (variantData) => {
-                            const existingVariant = await pool.query(
-                                'SELECT * FROM variantproducts WHERE variant_skuid = $1 AND vendori_id = $2 AND product_uniqueid = $3',
-                                [variantData.sku, data.vendorid, existingProduct.rows[0]?.uniquepid]
-                            );
+                handleProductUpload(transformedData, data.vendorid, data?.category?.replace(/[^\w\s]/g, "").replace(/\s/g, ""), data?.subcatgeory?.replace(/[^\w\s]/g, "").replace(/\s/g, ""), data?.uniquepid)
 
-                            const label = Object.entries(variantData.attributes)
-                                .map(([key, value]) => `${value}`)
-                                .join('/');
-
-
-                            if (existingVariant.rows.length > 0) {
-                                console.log(variantData.sku, data.vendorid, existingProduct.rows[0]?.uniquepid);
-
-                                // Update Variant
-                                const updateQuery = `
-                                    UPDATE variantproducts SET 
-                                        variant_mrp = $1,
-                                        variant_sellingprice = $2,
-                                        variant_skuid = $3,
-                                        variant_quantity = $4,
-                                        variantsvalues = $5,
-                                        label = $6,
-                                        product_uniqueid = $8
-                                    WHERE variant_skuid = $3 AND vendori_id = $7
-                                `;
-
-                                const updateValues = [
-                                    parseFloat(variantData.Mrp) || 0,
-                                    parseFloat(variantData['Selling Price']) || 0,
-                                    variantData.sku || '',
-                                    parseInt(variantData.Quantity) || 0,
-                                    variantData.attributes || '',
-                                    label || '',
-                                    data.vendorid,
-                                    existingProduct.rows[0]?.uniquepid
-                                ];
-
-                                await pool.query(updateQuery, updateValues);
-                            } else {
-                                // Insert Variant 
-                                const insertQuery = `
-                            INSERT INTO variantproducts(variant_mrp, variant_sellingprice, variant_skuid, variant_quantity, variantsvalues, label, product_uniqueid, vendori_id, variant_category, variant_subcategory)
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-                        `;
-
-                                const insertValues = [
-                                    parseFloat(variantData.Mrp) || 0,
-                                    parseFloat(variantData['Selling Price']) || 0,
-                                    variantData.sku || '',
-                                    parseInt(variantData.Quantity) || 0,
-                                    variantData.attributes || '',
-                                    label || '',
-                                    data.uniquepid,
-                                    data.vendorid,
-                                    data.category.replace(/[^\w\s]/g, "").replace(/\s/g, ""),
-                                    data.subcatgeory.replace(/[^\w\s]/g, "").replace(/\s/g, "")
-                                ];
-
-                                await pool.query(insertQuery, insertValues);
-                            }
-                        })
-                    );
-                }
             })
         );
 

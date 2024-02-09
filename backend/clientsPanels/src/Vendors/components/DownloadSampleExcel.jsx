@@ -6,8 +6,8 @@ import ExcelJS from 'exceljs';
 import { speicificationFields } from '../constants/ProductsForm/Specifications';
 import { Button } from 'antd';
 
-const DownloadSampleExcel = ({ category, subcategory, nestedSelected }) => {
-    const Specifications = (speicificationFields.filter(item => item.category == subcategory.subcategory_name.replace(/[^\w\s]/g, "").replace(/\s/g, "")))
+const DownloadSampleExcel = ({ category, subcategory, nestedSubcategory, variantsData }) => {
+    const Specifications = (speicificationFields.filter(item => item?.category == subcategory?.subcategory_name.replace(/[^\w\s]/g, "").replace(/\s/g, "")))
     // console.log();
     const specificationData = Specifications?.[0]?.fields || []
 
@@ -30,43 +30,18 @@ const DownloadSampleExcel = ({ category, subcategory, nestedSelected }) => {
             const labels = specificationData.map(field => field.label);
             newSheetSpecific.addRow(labels);
 
-
-            newSheetSpecific.columns && newSheetSpecific.columns.forEach((col, columnIndex) => {
-                col.width = labels[columnIndex].length + 5; // You can adjust the padding as needed
-
-                // Check if the field has options (for dropdown)
-                if (specificationData[columnIndex].type === 'select') {
-                    const dropdownOptions = specificationData[columnIndex].options;
-
-                    console.log(dropdownOptions.join(','));
-                    // Add data validation for dropdown in the entire column (excluding the first row)
-                    newSheetSpecific.eachRow({ startingRow: 2 }, (row, rowNumber) => {
-                        row.getCell(columnIndex + 1).dataValidation = {
-                            type: 'list',
-                            formula1: [`"${dropdownOptions.join(',')}"`],
-                            showErrorMessage: true,
-                            errorTitle: 'Invalid Value',
-                            error: 'Please select a value from the dropdown list.',
-                        };
-                    });
-                }
-            });
-
-            // Optional: AutoFit columns (if needed)
-            // newSheetSpecific.columns.forEach((col) => {
-            //     col.width = col.max - col.min + 2; // Adding padding
-            // });
-
-
             // Check if type is "Variant" and create a new sheet
             if (type === "Variant") {
                 const newSheetName = 'List Variants';
                 const newSheet = workbook.addWorksheet(newSheetName);
 
+                const headerRow = ['Variant Name', 'Variant Group', 'Parent Skuid', 'Child Skuid', 'Mrp', 'Selling Price', 'Quantity'];
+                const headerRowCell = newSheet.addRow(headerRow);
+                headerRowCell.eachCell((cell) => {
+                    cell.font = { bold: true, color: 'red' }; // Set font to bold
+                });
+
             }
-
-
-
 
             // Get the FIRST sheet
             const startSheet = workbook.getWorksheet(1); // Assuming the first sheet is at index 1
@@ -74,12 +49,7 @@ const DownloadSampleExcel = ({ category, subcategory, nestedSelected }) => {
             // Modify cell values (for example, change G1 and H1)
             startSheet.getCell('A5').value = type;
             startSheet.getCell('G3').value = category?.category_name;
-            startSheet.getCell('H3').value = `${subcategory?.subcategory_name} -> ${nestedSelected.nested_subcategory_name || ''}`;
-
-            // Auto-fit all columns in the second sheet
-            // sheet.columns.forEach((col) => {
-            //     col.width = col.max - col.min + 2; // Adding padding
-            // });
+            startSheet.getCell('H3').value = `${subcategory?.subcategory_name} -> ${nestedSubcategory?.nested_subcategory_name || ''}`;
 
             // Convert the modified workbook back to array buffer
             const modifiedData = await workbook.xlsx.writeBuffer();
@@ -101,6 +71,26 @@ const DownloadSampleExcel = ({ category, subcategory, nestedSelected }) => {
             console.error('Error fetching the file:', error);
         }
     };
+
+    // Function to generate all combinations of variant attributes
+    function generateVariantCombinations(variantsData) {
+        const combinations = [];
+        const generate = (index, combination) => {
+            if (index === variantsData.length) {
+                combinations.push([...combination]);
+                return;
+            }
+            const variant = variantsData[index];
+            variant.attribute_values.forEach(value => {
+                combination.push({ attribute_name: variant.attribute_name, attribute_values: value });
+                generate(index + 1, combination);
+                combination.pop();
+            });
+        };
+        generate(0, []);
+        return combinations;
+    }
+
 
     return (
         <div className='md:flex  justify-center md:gap-4'>

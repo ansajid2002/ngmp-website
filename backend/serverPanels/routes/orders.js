@@ -54,16 +54,12 @@ app.post("/VendorProductOrder", async (req, res) => {
       query += ")";
     }
 
-
     // Implement pagination in your SQL query
     query += ` ORDER BY vpo.created_at DESC LIMIT $${queryParams.length + 1}::int OFFSET $${queryParams.length + 2}::int;`;
 
     const offset = (page - 1) * pageSize;
 
     queryParams.push(pageSize, offset);
-
-    console.log(query);
-    console.log(queryParams);
 
     const { rows } = await pool.query(query, queryParams);
 
@@ -154,8 +150,6 @@ function generateRandomOrderID(length) {
   return randomOrderID;
 }
 
-
-
 const generateRandomWalletId = () => {
   const min = 10 ** 11; // 10^11 (minimum 12-digit number)
   const max = 10 ** 12 - 1; // 10^12 - 1 (maximum 12-digit number)
@@ -202,7 +196,7 @@ app.post("/Insertorders", async (req, res) => {
     const customerEmail = req.body[0]?.customerData?.email
     const orders = req.body[0]?.orders
     const { id } = req.body[0]?.paymentIntent
-    const { selectedPaymentMode, checkoutItems = [], order_date } = req.body[0] || 'Stripe'
+    const { selectedPaymentMode, checkoutItems = [], order_date, shippingRate } = req.body[0] || 'Stripe'
     // const { street, city, country, region, postalCode, name, given_name, family_name, phone_number, email } = req.body[0]?.shipping_address
     const { given_name_address = '', family_name_address = '', apt_address = '', subregion_address = '', city_address = '', country_address = '', region_address = '', zip_address = '', phone_address = '', email_address = '' } = req.body[0]?.shipping_address || []
 
@@ -249,10 +243,12 @@ app.post("/Insertorders", async (req, res) => {
         order_date,
         order_status,
         total_amount: order.sellingprice,
+        sellingprice: order.sellingprice,
         skuid_order: order.skuid,
         ispickup: pickup,
         sellerOtp: otp,
-        customerotp
+        customerotp,
+        shippingRate
       };
     });
 
@@ -271,8 +267,8 @@ app.post("/Insertorders", async (req, res) => {
       futureDate.setDate(currentDate.getDate() + randomDays);
 
       const result = await pool.query(
-        `INSERT INTO vendorproductorder (orderid, vendor_id, product_uniqueid, customer_id, order_date, total_amount, order_status, product_name,  product_image, currency_symbol, payment_method, payment_status, category, subcategory, product_type, transaction_id, commission_fee, withdrawal_amount, refund_amount, fees_paid, tax_collected, quantity, city, state, country, label, tentative_delivery_date, skuid_order, ispickup, seller_otp, customer_otp, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32)
+        `INSERT INTO vendorproductorder (orderid, vendor_id, product_uniqueid, customer_id, order_date, total_amount, order_status, product_name,  product_image, currency_symbol, payment_method, payment_status, category, subcategory, product_type, transaction_id, commission_fee, withdrawal_amount, refund_amount, fees_paid, tax_collected, quantity, city, state, country, label, tentative_delivery_date, skuid_order, ispickup, seller_otp, customer_otp, created_at, shipping_fee, sell_price)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34)
          RETURNING *`, // Use RETURNING * to return all columns
         [
           order.order_id,
@@ -307,7 +303,8 @@ app.post("/Insertorders", async (req, res) => {
           order.sellerOtp,
           order.customerotp,
           order.order_date,
-
+          order.shippingRate,
+          order.sellingprice
         ]
       );
 
@@ -349,8 +346,6 @@ app.post("/Insertorders", async (req, res) => {
       const queryParams = [customer_id];
 
       await pool.query(deleteQuery, queryParams);
-
-
     }
 
     if (selectedPaymentMode === 'Wallet') {
@@ -416,6 +411,7 @@ app.post("/Insertorders", async (req, res) => {
 
     const insertedPayment = paymentResult.rows[0];
 
+    console.log(insertedOrders, 'insertedOrders');
     const orderDetailsHTML = insertedOrders.map((order) => `
         <tr>
           <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.product_name}</td>
@@ -425,6 +421,8 @@ app.post("/Insertorders", async (req, res) => {
           <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.payment_method || ''}</td>
         </tr>
       `).join('');
+
+    console.log(orderDetailsHTML, 'orderDetailsHTML');
 
     const emailBody = `
       <html>
@@ -1094,13 +1092,13 @@ app.post("/sales-and-returns", async (req, res) => {
         CAST("fees_paid" AS NUMERIC) AS "fees",
         CAST("tax_collected" AS NUMERIC) AS "taxes",
         currency_symbol,
-        COUNT(CASE WHEN "order_status" = 'Refunded' THEN 1 ELSE NULL END) AS "returns"
+        COUNT(CASE WHEN "order_status" = 'Returned' THEN 1 ELSE NULL END) AS "returns"
     FROM
         vendorproductorder
     WHERE
         vendor_id = $1
-        AND "order_status" IN ('Delivered', 'Refunded')
-        AND "payment_status" = 'Paid'
+        AND order_status IN ('Delivered', 'Returned')
+        AND payment_status = 'Paid'
     GROUP BY
         "key", "productName", "saleDate", "product_uniqueid", "amountSold", "fees", "taxes", currency_symbol;
     `;
@@ -1233,14 +1231,14 @@ app.post('/updateOrderStatus', async (req, res) => {
   try {
     const { orderId, newStatus, otp } = req.body;
 
-    // Verify OTP only for "Delivered" or "Shipped" status
-    if (!otp) {
+    // Don't ask for OTP if newStatus is "Out for Delivery" or "Confirmed"
+    if (newStatus !== 'Out for Delivery' && newStatus !== 'Confirmed' && !otp) {
       res.status(400).json({ error: 'OTP is required for "Delivered" or "Shipped" status' });
       return;
     }
 
     // Verify OTP logic only when the new status is "Delivered" or "Shipped"
-    if (otp) {
+    if (otp && (newStatus === 'Delivered' || newStatus === 'Shipped')) {
       const orderQuery = 'SELECT seller_otp, customer_otp FROM vendorproductorder WHERE order_id = $1';
       const orderResult = await pool.query(orderQuery, [orderId]);
 
@@ -1277,6 +1275,7 @@ app.post('/updateOrderStatus', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 app.post("/fetchOrderProducts", async (req, res) => {
@@ -1365,8 +1364,8 @@ app.post("/updateReturn", uploadReturn.array('images'), async (req, res) => {
   try {
     // Log uploaded files
     const uploadedImages = req.files.map((file) => file.filename);
-    console.log("Uploaded images:", uploadedImages);
 
+    const returnOtp = generateRandomOtp()
     // Combine uploaded images with other form data
     const formData = {
       reason: req.body.reason,
@@ -1417,11 +1416,11 @@ app.post("/updateReturn", uploadReturn.array('images'), async (req, res) => {
       ]);
 
       const updateOrderStatusQuery = `
-      UPDATE vendorproductorder
-      SET order_status = "Returned"
-      WHERE order_id = $1;
-    `;
-      await pool.query(updateOrderStatusQuery, [formData.order_id]);
+        UPDATE vendorproductorder
+        SET order_status = 'Returned', return_otp = $2
+        WHERE order_id = $1;
+      `;
+      await pool.query(updateOrderStatusQuery, [formData.order_id, returnOtp]);
 
       // Commit the transaction
       await pool.query('COMMIT');
@@ -1445,7 +1444,6 @@ app.post("/updateReturn", uploadReturn.array('images'), async (req, res) => {
   }
 });
 
-
 app.get("/getReturnByOrder_id/:order_id", async (req, res) => {
   try {
     const { order_id } = req.params;
@@ -1460,6 +1458,262 @@ app.get("/getReturnByOrder_id/:order_id", async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get("/getOrderByOrder_Id/:order_id/:id", async (req, res) => {
+  try {
+    const { order_id, id } = req.params;
+    console.log(id, 'id');
+    // Query to fetch order details
+    const orderQuery = 'SELECT * FROM vendorproductorder WHERE order_id = $1 AND vendor_id = $2';
+    const orderResult = await pool.query(orderQuery, [order_id, id]);
+    const orderRows = orderResult.rows;
+
+    // Check if order details exist
+    if (!orderRows || orderRows.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Fetch customer details based on the customer_id from the orderRows
+    const customerQuery = 'SELECT given_name, family_name, email, phone_number FROM customers WHERE customer_id = $1';
+    const customerResult = await pool.query(customerQuery, [orderRows[0].customer_id]);
+    const customerRows = customerResult.rows;
+
+    // Fetch vendor details based on the vendor_id from the orderRows
+    const vendorQuery = 'SELECT * FROM vendors WHERE id = $1';
+    const vendorResult = await pool.query(vendorQuery, [orderRows[0].vendor_id]);
+    const vendorRows = vendorResult.rows;
+
+    // Query to fetch delivery address details
+    const addressQuery = 'SELECT * FROM customer_delivery_address WHERE unique_order_id = $1';
+    const addressResult = await pool.query(addressQuery, [orderRows[0].order_id]);
+    const addressRows = addressResult.rows;
+
+    delete vendorRows?.[0]?.password
+    // Append customer, vendor, and delivery address details to the order details
+    const orderDetails = {
+      ...orderRows[0],
+      customer: customerRows?.[0] || null,
+      vendor: vendorRows?.[0] || null,
+      delivery_address: addressRows?.[0] || null
+    };
+
+    // Send the combined response
+    res.status(200).json(orderDetails);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
+
+app.post('/handleRequestforArrived', async (req, res) => {
+  try {
+    const { vendor_id, customer_id, product_uniqueid, selected_option, request_text, created_at_request, order_id } = req.body;
+
+    // Convert request_text to a stringified JSON array
+    const requestTextArray = JSON.stringify([{ text: request_text, created_at: created_at_request }]);
+
+    // Check if a record with the same customer_id, product_uniqueid, and order_id exists
+    const existingRecord = await pool.query('SELECT * FROM items_not_arrived WHERE customer_id = $1 AND product_uniqueid = $2 AND order_id = $3', [customer_id, product_uniqueid, order_id]);
+
+    if (existingRecord.rows.length > 0) {
+      // If a record exists, fetch the existing request_text array and append the new text along with its creation time
+      const existingRequestTextArray = JSON.parse(existingRecord.rows[0].request_text);
+      existingRequestTextArray.push({ text: request_text, created_at: created_at_request }); // Append the new text along with its creation time
+      const updatedRequestText = JSON.stringify(existingRequestTextArray); // Convert the updated array to a string
+
+      // Update the existing record with the updated request_text
+      await pool.query('UPDATE items_not_arrived SET selected_option = $1, request_text = $2, created_at_request = $3 WHERE customer_id = $4 AND product_uniqueid = $5 AND order_id = $6', [selected_option, updatedRequestText, created_at_request, customer_id, product_uniqueid, order_id]);
+    } else {
+      // If no record exists, insert a new record with the request_text as an array containing only the new text along with its creation time
+      await pool.query('INSERT INTO items_not_arrived (vendor_id, customer_id, product_uniqueid, selected_option, request_text, created_at_request, order_id) VALUES ($1, $2, $3, $4, $5, $6, $7)', [vendor_id, customer_id, product_uniqueid, selected_option, requestTextArray, created_at_request, order_id]);
+    }
+
+    // Log a success message
+    console.log('Data inserted/updated successfully.');
+
+    // Send a response indicating success
+    res.status(200).json({ message: 'Data inserted/updated successfully.' });
+  } catch (error) {
+    // Log any errors that occur during the process
+    console.error('Error inserting/updating data:', error);
+    // Send a 500 status response with an error message
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get("/itemsNotReceived/:id", async (req, res) => {
+  const vendorId = req.params.id;
+
+  try {
+    // Fetch data from items_not_arrived table based on vendor_id
+    const itemsQuery = `
+      SELECT *
+      FROM items_not_arrived
+      WHERE vendor_id = $1;
+    `;
+    const itemsResult = await pool.query(itemsQuery, [vendorId]);
+    const itemsRows = itemsResult.rows;
+
+    // Fetch customer details from the customers table
+    const customersQuery = `
+      SELECT customer_id, given_name, family_name, email, phone_number
+      FROM customers
+      WHERE customer_id = $1; -- Assuming there's a vendor_id column in the customers table
+    `;
+    const customersResult = await pool.query(customersQuery, [itemsRows?.[0]?.customer_id]);
+    const customersRows = customersResult.rows;
+
+    const productsQuery = `
+      SELECT uniquepid, ad_title, prod_slug
+      FROM products 
+      WHERE uniquepid = $1; -- Assuming there's a vendor_id column in the products table
+    `;
+    const productsResult = await pool.query(productsQuery, [itemsRows?.[0]?.product_uniqueid]);
+    const productsRows = productsResult.rows;
+
+    // Combine customer details with each item
+    const data = itemsRows.map(item => {
+      const customerId = item.customer_id;
+      const customer = customersRows.find(customer => customer.customer_id === customerId);
+      return {
+        ...item,
+        customer: {
+          given_name: customer ? customer.given_name : null,
+          family_name: customer ? customer.family_name : null,
+          email: customer ? customer.email : null,
+          phone_number: customer ? customer.phone_number : null,
+        },
+        product: productsRows?.[0]
+      };
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json([]); // Send an empty array in case of an error
+  }
+});
+
+
+app.get("/itemsNotReceivedByOrderId/:orderId", async (req, res) => {
+  const orderId = req.params.orderId;
+
+  try {
+    // Fetch data from items_not_arrived table based on order_id
+    const query = `
+      SELECT *
+      FROM items_not_arrived
+      WHERE order_id = $1;
+    `;
+    const { rows } = await pool.query(query, [orderId]);
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json([]); // Send an empty array in case of an error
+  }
+});
+
+app.delete('/itemsNotReceived_Delete/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    // Execute the SQL DELETE query to remove the record from the database
+    const deleteQuery = `
+      DELETE FROM items_not_arrived
+      WHERE id = $1;
+    `;
+    await pool.query(deleteQuery, [id]);
+
+    // Send a success response back to the client
+    res.status(200).json({ message: 'Data deleted successfully.' });
+  } catch (error) {
+    // Log any errors that occur during the process
+    console.error('Error deleting data:', error);
+    // Send a 500 status response with an error message
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.post('/replyToItemNotReceived', async (req, res) => {
+  try {
+    const { id, replyText } = req.body;
+
+    // Fetch the existing item from the database
+    const getItemQuery = `
+      SELECT *
+      FROM items_not_arrived
+      WHERE id = $1;
+    `;
+    const { rows } = await pool.query(getItemQuery, [id]);
+    const item = rows[0];
+
+    // Parse the existing response text array or initialize an empty array
+    const responseTextArray = item.response_text_from_seller ? JSON.parse(item.response_text_from_seller) : [];
+
+    // Add the new reply text and created_at to the array
+    responseTextArray.push({ text: replyText, created_at: new Date().toISOString() });
+
+    // Update the item in the database with the new response text array
+    const updateItemQuery = `
+      UPDATE items_not_arrived
+      SET response_text_from_seller = $1
+      WHERE id = $2;
+    `;
+    await pool.query(updateItemQuery, [JSON.stringify(responseTextArray), id]);
+
+    res.status(200).json({ message: 'Reply sent successfully.' });
+  } catch (error) {
+    console.error('Error replying to item not received:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.post("/cancelOrderByVendor", async (req, res) => {
+  try {
+    // Extract data from the request body
+    const { reason, confirmCancellation, order_id, customer_id, vendor_id, product_uniqueid, label, details_charge, total_amount, refundable_amount, currentDateTime } = req.body;
+
+    // Check if a row already exists with the provided order_id, customer_id, and vendor_id
+    const checkQuery = 'SELECT * FROM product_order_cancel WHERE customer_id = $1 AND vendor_id = $2 AND order_id = $3';
+    const checkValues = [customer_id, vendor_id, order_id];
+    const checkResult = await pool.query(checkQuery, checkValues);
+
+    // If a row already exists, send a response indicating the order is already processed for cancellation
+    if (checkResult.rows.length > 0) {
+      return res.status(400).json({ message: 'This order is already processed for cancellation' });
+    }
+
+    // If no row exists, insert data into product_order_cancel table
+    const insertQuery = 'INSERT INTO product_order_cancel (customer_id, vendor_id, order_id, product_id, label, selected_reason, refund_amount, total_amount, detail_charges, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
+    const insertValues = [customer_id, vendor_id, order_id, product_uniqueid, label, reason, refundable_amount, total_amount, JSON.stringify(details_charge), currentDateTime];
+    await pool.query(insertQuery, insertValues);
+
+    console.log('Data inserted into product_order_cancel table:', req.body);
+
+    // If confirmCancellation is true, increment quantity in products table
+    if (confirmCancellation) {
+      const incrementQuantityQuery = 'UPDATE products SET quantity = quantity + 1 WHERE uniquepid = $1';
+      const incrementQuantityValues = [product_uniqueid];
+      await pool.query(incrementQuantityQuery, incrementQuantityValues);
+    }
+
+    const updateStatusQuery = 'UPDATE vendorproductorder SET order_status = $1 WHERE order_id = $2';
+    const updateStatusValues = ['Cancelled', order_id];
+    await pool.query(updateStatusQuery, updateStatusValues);
+
+    // Send success response
+    res.status(200).json({ message: 'Data inserted into product_order_cancel table' });
+  } catch (error) {
+    console.error('Error inserting data into product_order_cancel table:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

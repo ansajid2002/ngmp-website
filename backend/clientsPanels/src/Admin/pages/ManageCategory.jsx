@@ -5,6 +5,7 @@ import { FiEdit3, FiTrash2 } from 'react-icons/fi';
 import { FaEdit } from 'react-icons/fa';
 import { UploadOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
+
 const ManageCategory = ({ adminLoginData }) => {
   // Ensure to define your Hooks at the beginning of the component
   const [categoryData, setData] = useState([]);
@@ -78,7 +79,6 @@ const ManageCategory = ({ adminLoginData }) => {
       title: "Actions",
       key: "actions",
       width: 120,
-      fixed: 'left',
       render: (record) => (
         <Space size="middle" className="flex">
           {/* Edit Icon */}
@@ -100,7 +100,6 @@ const ManageCategory = ({ adminLoginData }) => {
       dataIndex: "category_type",
       key: "category_type",
       width: 120,
-      fixed: 'left',
       sorter: (a, b) => a.category_type.localeCompare(b.category_type), // Add sorter function for string comparison
     },
     {

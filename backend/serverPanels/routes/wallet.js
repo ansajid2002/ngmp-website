@@ -160,7 +160,7 @@ app.get('/fetchCustomerTransaction', async (req, res) => {
 
 app.get('/AllfetchCustomerTransaction', async (req, res) => {
     try {
-        const { page, pageSize, search } = req.query;
+        const { page = 1, pageSize = 100000000000000, search } = req.query;
 
         // Base query for transactions
         const baseQuery = `

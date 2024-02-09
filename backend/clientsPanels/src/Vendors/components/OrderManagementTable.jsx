@@ -101,7 +101,6 @@ const OrderManagementTable = ({
   };
   const showCustomerDetailsModal = (product) => {
     setSelectedCustomer(product);
-    console.log(product);
     setCustomerModalVisible(true);
   };
 
@@ -228,9 +227,12 @@ const OrderManagementTable = ({
       width: 80,
       render: (orderid, record) => {
         return (
-          <Button type="link" onClick={() => showProductDetailsModal(record)}>
-            {orderid}
-          </Button>
+          <div className="flex flex-col justify-center">
+            <Button type="link" onClick={() => showProductDetailsModal(record)}>
+              {orderid}
+            </Button>
+            <a href={`/Vendors/Orders/OrderDetails?order_id=${record.order_id}`} className='text-blue-700 tracking-wide' target='_blank'>View Order</a>
+          </div>
         );
       },
     },
@@ -242,7 +244,7 @@ const OrderManagementTable = ({
       render: (product_name, record) => {
         return (
           <a
-            href={`${websiteUrl}/product-detail?product=${record.prod_slug}&uniqueid=${record.product_uniqueid}`}
+            href={`${websiteUrl}/product-detail?product=${record?.productDetails?.prod_slug}&uniqueid=${record.product_uniqueid}`}
             target="_blank"
             className="line-clamp-2 min-w-[100px]"
           >
@@ -657,7 +659,7 @@ const OrderManagementTable = ({
           columns={columns.slice(0, -11)}
           dataSource={Object.entries(groupedOrders).map(
             ([orderDate, orders]) => ({
-              created_at: orderDate,
+              order_date: orderDate,
               orders,
             })
           )}
@@ -670,17 +672,17 @@ const OrderManagementTable = ({
               if (expanded) {
                 setExpandedRowKeys((prevKeys) => [
                   ...prevKeys,
-                  record.created_at,
+                  record.order_date,
                 ]);
               } else {
                 setExpandedRowKeys((prevKeys) =>
-                  prevKeys.filter((key) => key !== record.created_at)
+                  prevKeys.filter((key) => key !== record.order_date)
                 );
               }
             },
             expandedRowRender: (record) => {
               const filteredNestedOrders = record.orders;
-
+              console.log(filteredNestedOrders);
               return (
                 <div className="bg-white">
                   <Table
@@ -693,7 +695,7 @@ const OrderManagementTable = ({
               );
             },
           }}
-          rowKey="created_at"
+          rowKey="order_date"
           scroll={{
             x: 1200,
             y: 600
@@ -766,7 +768,7 @@ const OrderManagementTable = ({
     setshowCalendar(!showCalendar);
   };
 
-  const fullAddress = selectedProduct && `${selectedProduct.apartment ? selectedProduct.apartment + ', ' : ''}${selectedProduct.selected_city}, ${selectedProduct.selected_state}, ${selectedProduct.zip_code}, ${selectedProduct.selected_country}`;
+  const fullAddress = selectedProduct && `${selectedProduct?.customerInfo?.apartment ? selectedProduct?.customerInfo?.apartment + ', ' : ''}${selectedProduct?.customerInfo?.selected_city}, ${selectedProduct?.customerInfo?.selected_state}, ${selectedProduct?.customerInfo?.zip_code}, ${selectedProduct?.customerInfo?.selected_country}`;
   const { brand_name, company_city, company_state, company_zip_code, company_country, shipping_address, email, country_code, mobile_number, status, vendor_profile_picture_url, brand_logo, vendorname } = selectedProduct && selectedProduct.vendorProfile || {}
   const vendorFullAddress = selectedProduct && `${shipping_address ? shipping_address + ', ' : ''}${company_city}, ${company_state}, ${company_zip_code}, ${company_country}`
   const viewOnMap = () => {
@@ -1055,20 +1057,10 @@ const OrderManagementTable = ({
                 <h4 className="text-lg font-semibold mb-2">Customer Information</h4>
 
                 <Descriptions column={1} bordered>
-                  <Descriptions.Item label="Email">{selectedProduct.email}</Descriptions.Item>
-                  <Descriptions.Item label="Phone Number">{selectedProduct.phone_number}</Descriptions.Item>
+                  <Descriptions.Item label="Email">{selectedProduct?.customerInfo?.email}</Descriptions.Item>
+                  <Descriptions.Item label="Phone Number">{selectedProduct?.customerInfo?.phone_number}</Descriptions.Item>
                   <Descriptions.Item label="Name">
-                    {`${selectedProduct.first_name} ${selectedProduct.last_name}`}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Country">{selectedProduct.selected_country}</Descriptions.Item>
-                  <Descriptions.Item label="City">{selectedProduct.selected_city}</Descriptions.Item>
-                  <Descriptions.Item label="State">{selectedProduct.selected_state}</Descriptions.Item>
-                  <Descriptions.Item label="Zip Code">{selectedProduct.zip_code}</Descriptions.Item>
-                  <Descriptions.Item label="Apartment">{selectedProduct.apartment}</Descriptions.Item>
-                  <Descriptions.Item label="Full Address">{fullAddress}
-                    <Button type="default" onClick={viewOnMap} className="mt-2 flex justify-center items-center gap-2">
-                      <FiMap color="green" /> View on Map
-                    </Button>
+                    {`${selectedProduct?.customerInfo?.given_name} ${selectedProduct?.customerInfo?.family_name}`}
                   </Descriptions.Item>
                 </Descriptions>
               </div>
