@@ -20,8 +20,11 @@ const ThankYou = () => {
   const [orderData, setOrderData] = useState(null);
   const id = customerData?.customer_id || null
 
-  const checkoutItems = localStorage.getItem('selectedOptions');
-  const selectedPaymentMode = localStorage.getItem('selectedPaymentMode');
+
+  const checkoutItems = localStorage?.getItem('selectedOptions');
+  const selectedPaymentMode = localStorage?.getItem('selectedPaymentMode');
+
+  const { languageCode } = useAppSelector((store => store.languagesReducer))
 
   let pickupItemIds = [];
 
@@ -153,7 +156,11 @@ const ThankYou = () => {
         <p>
           Thanks for shopping! Your order
           <span className="text-[#ed642b] ml-1">
-            {orderData && orderData[0]?.ad_title}
+            {
+              orderData &&
+                languageCode === "so" ? orderData[0]?.somali_ad_title === "" ? orderData[0]?.ad_title : orderData[0]?.somali_ad_title : orderData[0]?.ad_title
+            }
+
           </span>{" "}
           {adjustedLength > 0 && (
             <>
@@ -222,7 +229,7 @@ const ThankYou = () => {
                 />
                 <div className="flex flex-col items-start justify-center">
                   <h2 className="text-[0.95rem] md:text-lg font-medium line-clamp-1">
-                    {item.ad_title}
+                    {languageCode === "so" ? item?.somali_ad_title === "" ? item?.ad_title : item?.somali_ad_title : item?.ad_title}
                   </h2>
                   <h2 className="text-[#ed642b] font-medium text-sm">
                     <span className="text-gray-600 font-medium">Sold by: </span>

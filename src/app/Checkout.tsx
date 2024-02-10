@@ -14,6 +14,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
     const { walletTotal } = useAppSelector((store) => store.wallet)
     const [loading, setLoading] = useState(false)
     const router = useRouter()
+    const {languageCode} = useAppSelector((store=> store.languagesReducer))
 
     // const calculateSubtotal = () => {
     //     let subtotal = 0;
@@ -71,12 +72,22 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
     const totalCost = calculateTotalCost();
 
 
+    const getProductTitle = (item) => {
+        console.log('s-----------------------------------------------');
+        
+        if (languageCode === "so") {
+            return item.somali_ad_title === "" ? item.ad_title : item.somali_ad_title;
+        } else {
+            return item.ad_title;
+        }
+    };
+    
     const products = cartItems.map((item, index) => ({
         product: index + 1,
-        name: item.ad_title,
+        name: getProductTitle(item),
         price: calculatePRICE()[index], // Access the calculated price by index
         quantity: item.added_quantity,
-        image: item.images?.[0],
+        image: item?.images?.[0],
         shippingCost
     }));
 
