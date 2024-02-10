@@ -46,7 +46,7 @@ const NotifyAddTocart: FC<Props> = ({
           <div>
             <div className="flex justify-between ">
               <div>
-                <h3 className="text-base font-medium line-clamp-2">{languageCode === "so" ? somali_ad_title === "" ? ad_title : somali_ad_title : ad_title}</h3>
+                <h3 className="text-base font-medium line-clamp-2">{languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}</h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   <span>{label}</span>
                 </p>

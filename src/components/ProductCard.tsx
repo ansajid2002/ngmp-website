@@ -358,7 +358,7 @@ const ProductCard: FC<ProductCardProps> = ({
           {/* <div> */}
           {showTitle && (
             <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-1">
-             {languageCode === "so" ? somali_ad_title === "" ? ad_title : somali_ad_title : ad_title}
+             {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
             </h2>
           )}
           {/* <p className={`text-sm text-gray-500 dark:text-gray-400 mt-1 `}>

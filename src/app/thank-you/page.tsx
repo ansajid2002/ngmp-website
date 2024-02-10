@@ -157,7 +157,7 @@ const ThankYou = () => {
           Thanks for shopping! Your order
           <span className="text-[#ed642b] ml-1">
             {orderData && 
-            {languageCode === "so" ? orderData[0]?.somali_ad_title === "" ? orderData[0]?.ad_title : orderData[0]?.somali_ad_title : orderData[0]?.ad_title}            
+            {languageCode === "so" ? orderData[0]?.somali_ad_title === null ? orderData[0]?.ad_title : orderData[0]?.somali_ad_title : orderData[0]?.ad_title}            
 }
           </span>{" "}
           {adjustedLength > 0 && (
@@ -227,7 +227,7 @@ const ThankYou = () => {
                 />
                 <div className="flex flex-col items-start justify-center">
                   <h2 className="text-[0.95rem] md:text-lg font-medium line-clamp-1">
-                  {languageCode === "so" ? item?.somali_ad_title === "" ? item?.ad_title : item?.somali_ad_title : item?.ad_title}
+                  {languageCode === "so" ? item?.somali_ad_title === null ? item?.ad_title : item?.somali_ad_title : item?.ad_title}
                   </h2>
                   <h2 className="text-[#ed642b] font-medium text-sm">
                     <span className="text-gray-600 font-medium">Sold by: </span>

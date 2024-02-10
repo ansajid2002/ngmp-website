@@ -76,7 +76,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
         console.log('s-----------------------------------------------');
         
         if (languageCode === "so") {
-            return item.somali_ad_title === "" ? item.ad_title : item.somali_ad_title;
+            return item?.somali_ad_title === null ? item?.ad_title : item.somali_ad_title;
         } else {
             return item.ad_title;
         }
