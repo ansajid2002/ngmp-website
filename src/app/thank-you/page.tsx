@@ -162,7 +162,7 @@ const ThankYou = () => {
             }
 
           </span>{" "}
-          {adjustedLength > 0 && (
+          {adjustedLength && adjustedLength > 0 && (
             <>
               and
               <span className="text-[#ed642b] ml-1">
@@ -230,23 +230,23 @@ const ThankYou = () => {
                 <div className="flex flex-col items-start justify-center">
                   <h2 className="text-[0.95rem] md:text-lg font-medium line-clamp-1">
                     {languageCode === "so" ? item?.somali_ad_title === "" ? item?.ad_title : item?.somali_ad_title : item?.ad_title}
-                  </h2>
+                  </h2 >
                   <h2 className="text-[#ed642b] font-medium text-sm">
                     <span className="text-gray-600 font-medium">Sold by: </span>
                     {item.vendorInfo.brand_name}
                   </h2>
-                </div>
-              </div>
+                </div >
+              </div >
               <div>
                 <h2 className="text-gray-700 font-medium md:text-lg">
                   ${item.sellingprice} x {item.added_quantity} = ${(item.sellingprice * item.added_quantity)?.toFixed(2)}
                 </h2>
               </div>
-            </div>
+            </div >
           ))}
-        </div>
-      </div>
-    </div> : "Loading..."
+        </div >
+      </div >
+    </div > : "Loading..."
   );
 };
 
