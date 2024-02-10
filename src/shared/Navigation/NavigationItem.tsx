@@ -60,7 +60,7 @@ const {t} = useTranslation()
 
   const storedDistrict = localStorage.getItem('selectedDistrict') || '';
 
-  console.log(storedDistrict,"storedDistrict");
+
 
   useEffect(() => {
     const ChangeLanguageIcon = () => {

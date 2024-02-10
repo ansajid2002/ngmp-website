@@ -50,7 +50,7 @@ export default async function RootLayout({
   );
 }
 
-// export const AdminUrl = process.env.BASEURL;
+export const AdminUrl = process.env.BASEURL;
 export const HomeUrl = process.env.HOMEURL;
 export const ProductImageUrl = process.env.PRODUCTIMAGEURL;
-export const AdminUrl = "https://admin.nilegmp.com";
+// export const AdminUrl = "https://admin.nilegmp.com";
