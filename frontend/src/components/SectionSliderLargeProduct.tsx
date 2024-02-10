@@ -23,6 +23,7 @@ const SectionSliderLargeProduct: FC<SectionSliderLargeProductProps> = ({
   const sliderRef = useRef(null);
 
   const [isShow, setIsShow] = useState(false);
+  const {languageCode} = useAppSelector((store=> store.languagesReducer))
 
   useEffect(() => {
     const OPTIONS: Partial<Glide.Options> = {
@@ -63,6 +64,20 @@ const SectionSliderLargeProduct: FC<SectionSliderLargeProductProps> = ({
     cardStyle === "style1" ? CollectionCard : CollectionCard2;
   const { cartItems } = useAppSelector((store) => store.cart)
 
+  const getProductName = (product) => {
+    if (languageCode === "so") {
+        return product.somali_ad_title || product.ad_title;
+    } else {
+        return product.ad_title;
+    }
+};
+const getProductDescription = (product) => {
+  if (languageCode === "so") {
+      return product.somali_additionaldescription || product.additionaldescription;
+  } else {
+      return product.additionaldescription;
+  }
+};
   return (
     <div className={`nc-SectionSliderLargeProduct ${className}`}>
       <div ref={sliderRef} className={`flow-root ${isShow ? "" : "invisible"}`}>
@@ -74,10 +89,10 @@ const SectionSliderLargeProduct: FC<SectionSliderLargeProductProps> = ({
             {cartItems && cartItems.map((product, index) => (
               <li className={`glide__slide`} key={index}>
                 <MyCollectionCard
-                  name={product.ad_title}
+                   name={getProductName(product)}
                   price={product.sellingprice}
                   imgs={product?.images || ''}
-                  description={product.additionaldescription}
+                  description={getProductDescription(product)}
                 />
               </li>
             ))}

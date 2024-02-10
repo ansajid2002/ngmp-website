@@ -22,10 +22,12 @@ const CartProducts = ({ removeData = true }) => {
   const dispatch = useDispatch();
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
+  const {languageCode} = useAppSelector((store=> store.languagesReducer))
 const {t} =  useTranslation()
   const renderProduct = (item: Product, index: number) => {
     const {
       ad_title,
+      somali_ad_title,
       mrp,
       sellingprice,
       images,
@@ -248,7 +250,8 @@ const {t} =  useTranslation()
                   <Link
                     href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
                   >
-                    {ad_title}
+                    
+                    {languageCode === "so" ? somali_ad_title === "" ? ad_title : somali_ad_title : ad_title}
                   </Link>
                 </h3>
                 <div className="mt-1.5 sm:mt-2.5 flex flex-col text-sm text-gray-600 dark:text-gray-300">

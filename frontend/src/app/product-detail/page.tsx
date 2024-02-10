@@ -126,6 +126,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const cartItems = useAppSelector((state) => state.cart.cartItems);
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
   const [shippingRate, setShippingrate] = useState(0);
+  const {languageCode} = useAppSelector((store=> store.languagesReducer))
 
 
   const dispatch = useDispatch();
@@ -601,7 +602,8 @@ const ProductDetailPage = ({ searchParams }) => {
         {/* ---------- 1 HEADING ----------  */}
         <div>
           <h2 className="text-[1.2rem] tracking-normal">
-            {responseData?.ad_title}
+            
+            {languageCode === "so" ? responseData?.somali_ad_title === "" ? responseData?.ad_title : responseData?.somali_ad_title : responseData?.ad_title}
           </h2>
 
           <div className="flex items-center text-or mt-5 space-x-4 sm:space-x-5">
@@ -730,7 +732,8 @@ const ProductDetailPage = ({ searchParams }) => {
         <div>
           <h2 className="text-[1.3rem] font-medium">{t("Description")}</h2>
           <p className="leading-normal mt-3 text-[1rem]">
-            {responseData?.additionaldescription}
+        
+            {languageCode === "so" ? responseData?.somali_additionaldescription === "" ? responseData?.additionaldescription : responseData?.somali_additionaldescription : responseData?.additionaldescription}
           </p>
         </div>
 

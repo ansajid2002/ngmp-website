@@ -3,6 +3,7 @@ import { Transition } from "@/app/headlessui";
 import Prices from "@/components/Prices";
 import Image, { StaticImageData } from "next/image";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/redux/store";
 
 interface Props {
   show: boolean;
@@ -12,7 +13,7 @@ interface Props {
   qualitySelected: number;
   itemData: any,
   mrp: number,
-  sellingPrice: number
+  sellingPrice: number,
 }
 
 const NotifyAddTocart: FC<Props> = ({
@@ -25,9 +26,9 @@ const NotifyAddTocart: FC<Props> = ({
   mrp,
   sellingPrice
 }) => {
-  const { ad_title, label } = itemData
+  const { ad_title, label,somali_ad_title } = itemData
   const { push } = useRouter()
-
+  const {languageCode} = useAppSelector((store=> store.languagesReducer))
   const renderProductCartOnNotify = () => {
     return (
       <div className="flex ">
@@ -45,7 +46,7 @@ const NotifyAddTocart: FC<Props> = ({
           <div>
             <div className="flex justify-between ">
               <div>
-                <h3 className="text-base font-medium line-clamp-2">{ad_title}</h3>
+                <h3 className="text-base font-medium line-clamp-2">{languageCode === "so" ? somali_ad_title === "" ? ad_title : somali_ad_title : ad_title}</h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   <span>{label}</span>
                 </p>

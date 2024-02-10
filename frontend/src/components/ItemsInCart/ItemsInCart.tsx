@@ -23,7 +23,7 @@ import ProductCard from "../ProductCard";
 const ItemsInCart = ({ label1, label2 }) => {
   const { cartItems } = useAppSelector((store) => store.cart);
   // console.log(cartItems.length);
-
+  const {languageCode} = useAppSelector((store=> store.languagesReducer))
   if (cartItems.length === 0) {
     return null;
   }
@@ -94,8 +94,8 @@ const ItemsInCart = ({ label1, label2 }) => {
                     />
                   </div>
                   <div className="pt-3">
-                    <h2 className="line-clamp-1">{item.ad_title}</h2>
-                    <Prices price={item.mrp} sellingprice={item.sellingprice} />
+                    <h2 className="line-clamp-1">{languageCode === "so" ? item.somali_ad_title === "" ? item?.ad_title : item?.somali_ad_title : item?.ad_title}</h2>
+                    <Prices price={item?.mrp} sellingprice={item?.sellingprice} />
                   </div>
                 </div>
               </Link>
