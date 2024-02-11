@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DatePicker, Button, Typography, Table, Card, Row, Col } from "antd";
-import { AdminUrl, ProductImageUrl } from "../Admin/constant";
+import { AdminUrl, ProductImageUrl } from "../../Admin/constant";
 const { Title, Text } = Typography;
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -58,7 +58,7 @@ const Reports = ({ vendorDatastate }) => {
     // Add company logo (small and fixed in top-left corner)
     const logoWidth = 30;
     const logoHeight = 30;
-    doc.addImage("/logo.png", "JPEG", 10, 10, logoWidth, logoHeight);
+    doc.addImage("/mainlogovertical.png", "JPEG", 10, 10, logoWidth, logoHeight);
 
     // Add start and end date on the right top corner
     const formattedStartDate =
@@ -193,7 +193,7 @@ const Reports = ({ vendorDatastate }) => {
 
   return (
     <div className="md:p-4">
-      <Title level={2}>Reports</Title>
+      <Title level={2}>Sales Reports</Title>
 
       <div className="mb-4">
         <div className="flex items-center">

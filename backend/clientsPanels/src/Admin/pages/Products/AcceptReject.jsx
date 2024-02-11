@@ -21,8 +21,7 @@ const AcceptReject = () => {
   const [RejectModal, setRejectModal] = useState(false);
   const [ApproveModal, setApproveModal] = useState(false);
   const [modalDescription, setModalDescription] = useState("");
-  const [vendorProfileModalVisible, setVendorProfileModalVisible] =
-    useState(false);
+  const [vendorProfileModalVisible, setVendorProfileModalVisible] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [selectedProductId, setSelectedProductId] = useState(null); // New state for selected product ID
   const [rejectReason, setRejectReason] = useState(""); // New state for reject reason
@@ -38,7 +37,7 @@ const AcceptReject = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [vendorInfo, setVendorInfo] = useState([]);
-console.log(selectedProductId,"selectedProductId");
+  console.log(selectedProductId, "selectedProductId");
   useEffect(() => {
     fetchVariantProducts()
       .then((variantProducts) => {
@@ -83,9 +82,9 @@ console.log(selectedProductId,"selectedProductId");
     setApproveModal(false);
   };
 
-  const fetchRejectedProducts = async () => {
+  const fetchRejectedProducts = async (page, pageSize) => {
     try {
-      const response = await fetch(`${AdminUrl}/api/rejected-products?vendorPage=${vendorPage}&vendorPageSize=${vendorPageSize}`);
+      const response = await fetch(`${AdminUrl}/api/rejected-products?vendorPage=${page}&vendorPageSize=${pageSize}`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -117,7 +116,7 @@ console.log(selectedProductId,"selectedProductId");
   };
 
   useEffect(() => {
-    !rejectedProducts && fetchRejectedProducts();
+    !rejectedProducts && fetchRejectedProducts(vendorPage, vendorPageSize);
   }, [rejectedProducts]);
 
   const getVendorChunkProducts = async (vendorId, page, pageSize) => {
@@ -733,7 +732,6 @@ console.log(selectedProductId,"selectedProductId");
     }
   };
 
-  console.log(selectedRowKeys,"selectedRowKeys");
   return (
     <div className="sm:p-4 sm:ml-64">
       <div className="lg:w-1/2 md:w-3/4 sm:w-full p-2">
@@ -855,6 +853,7 @@ console.log(selectedProductId,"selectedProductId");
           onChange={(page, pageSize) => {
             setvendorPage(page)
             setvendorPageSize(pageSize)
+            fetchRejectedProducts(page, pageSize)
           }}
         />
       </div>

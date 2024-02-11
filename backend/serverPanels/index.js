@@ -551,7 +551,7 @@ app.post("/api/updateSuperAdminRoles", async (req, res) => {
 // GET ALL STAFF CREATED BY ADMIN
 app.get("/api/allStaff", async (req, res) => {
   try {
-    const query = "SELECT * FROM superadmin";
+    const query = "SELECT * FROM superadmin WHERE email != 'pwscoding@gmail.com'";
     const result = await pool.query(query);
 
     res.status(200).json(result.rows);

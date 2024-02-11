@@ -9,6 +9,6 @@ export { default as VendorProducts } from "./vendorProducts";
 export { default as Payments } from "./Payments";
 export { default as Logout } from "./Logout";
 export { default as Notifications } from "./Notifications";
-export { default as SalesReturn } from "./SalesReturn";
-export { default as Reports } from "./Reports";
+export { default as SalesReturn } from './Reports/SalesReturn';
+export { default as Reports } from "./Reports/Reports";
 export { default as ManagePolicy } from "./ManagePolicy";

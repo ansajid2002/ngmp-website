@@ -196,7 +196,7 @@ app.post("/Insertorders", async (req, res) => {
     const customerEmail = req.body[0]?.customerData?.email
     const orders = req.body[0]?.orders
     const { id } = req.body[0]?.paymentIntent
-    const { selectedPaymentMode, checkoutItems = [], order_date, shippingRate } = req.body[0] || 'Stripe'
+    const { selectedPaymentMode, checkoutItems = [], order_date, shippingRate } = req.body[0]
     // const { street, city, country, region, postalCode, name, given_name, family_name, phone_number, email } = req.body[0]?.shipping_address
     const { given_name_address = '', family_name_address = '', apt_address = '', subregion_address = '', city_address = '', country_address = '', region_address = '', zip_address = '', phone_address = '', email_address = '' } = req.body[0]?.shipping_address || []
 
@@ -248,7 +248,8 @@ app.post("/Insertorders", async (req, res) => {
         ispickup: pickup,
         sellerOtp: otp,
         customerotp,
-        shippingRate
+        shippingRate,
+        variant: order.isvariant
       };
     });
 
@@ -338,15 +339,23 @@ app.post("/Insertorders", async (req, res) => {
         insertedAddress.push(resultAddress.rows[0]);
       }
 
-      let deleteQuery = `
-            DELETE FROM cart
-            WHERE customer_id = $1
-        `;
-
-      const queryParams = [customer_id];
-
-      await pool.query(deleteQuery, queryParams);
+      if (order.variant === 'Simple') {
+        // Simple product ke liye query
+        await pool.query("UPDATE products SET quantity = quantity - $1 WHERE uniquepid = $2", [order.quantity, order.product_uniqueid]);
+      } else {
+        // Variant product ke liye query
+        await pool.query("UPDATE variantproducts SET variant_quantity = variant_quantity - $1 WHERE product_uniqueid = $2 AND label = $3", [order.quantity, order.product_uniqueid, order.label]);
+      }
     }
+
+    let deleteQuery = `
+          DELETE FROM cart
+          WHERE customer_id = $1
+      `;
+
+    const queryParams = [customer_id];
+
+    await pool.query(deleteQuery, queryParams);
 
     if (selectedPaymentMode === 'Wallet') {
       const paginatedData = await fetchWalletToken(customer_id);
@@ -1162,7 +1171,6 @@ app.get('/getOrderDetails', async (req, res) => {
   }
 });
 
-
 app.post('/getDeliverOrder', async (req, res) => {
   try {
     const { tabLabel, page = 1, pageSize = 10 } = req.body;
@@ -1276,8 +1284,6 @@ app.post('/updateOrderStatus', async (req, res) => {
   }
 });
 
-
-
 app.post("/fetchOrderProducts", async (req, res) => {
   try {
     const { vendorid, otp, selectedAction } = req.body;
@@ -1289,6 +1295,7 @@ app.post("/fetchOrderProducts", async (req, res) => {
       WHERE vendor_id = $1 AND seller_otp = $2;
     `;
 
+    console.log(vendorid, otp);
     const result = await pool.query(query, [vendorid, otp]);
 
     // Check if any rows were returned
@@ -1334,7 +1341,6 @@ app.post("/shipSelectedProducts", async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 const imgReturns = multer.diskStorage({
   destination: (req, file, callback) => {
@@ -1507,8 +1513,6 @@ app.get("/getOrderByOrder_Id/:order_id/:id", async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
 
 
 app.post('/handleRequestforArrived', async (req, res) => {

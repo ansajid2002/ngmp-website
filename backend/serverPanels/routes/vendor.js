@@ -15,14 +15,14 @@ const fs = require("fs");
 const { Translate } = require('@google-cloud/translate').v2;
 require('dotenv').config()
 const CREDENTIALS = JSON.parse(process.env.CREDENTIALS)
-  const translate = new Translate({
-    credentials:CREDENTIALS,
-    projectId:CREDENTIALS.projectId
-  });
-  
+const translate = new Translate({
+  credentials: CREDENTIALS,
+  projectId: CREDENTIALS.projectId
+});
+
 
 async function quickStart() {
-  
+
   // The text to translate
   const text = 'After verifying and adjusting the JSON string in ';
 
@@ -31,16 +31,17 @@ async function quickStart() {
 
   // Translates some text into Russian
   const [translati] = await translate.translate(text, target);
-  console.log(translati,"ttt");
+  console.log(translati, "ttt");
 
 }
 
 // Call the translateText function
-  quickStart()
-  // translateText();
+quickStart()
+// translateText();
 
 
 const sendEmail = require("./nodemailer");
+
 // const fs = require("fs/promises"); // For reading the HTML template
 
 app.use(express.json());
@@ -1331,19 +1332,279 @@ app.get("/rejected-products", async (req, res) => {
 
 app.get('/product-rejected', async (req, res) => {
   try {
-    const { vendodid } = req.query
+    const { vendorId, page = 1, pageSize = 10, selectedOption } = req.query;
+    let dateFilter;
+    let dateRange;
 
-    const query = "SELECT * FROM products WHERE vendorid = $1 AND status = 2"
-    const value = [vendodid]
+    // Set date range based on selected option
+    switch (selectedOption) {
+      case 'last7days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'7 days\'';
+        break;
+      case 'last30days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'30 days\'';
+        break;
+      case 'last60days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'60 days\'';
+        break;
+      case 'last90days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'90 days\'';
+        break;
+      case 'last6months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'6 months\'';
+        break;
+      case 'last12months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'12 months\'';
+        break;
+      case 'last18months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'18 months\'';
+        break;
+      case 'last24months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'24 months\'';
+        break;
+      default:
+        dateFilter = 'TRUE'; // Default to no filtering
+    }
 
-    const { rows } = await pool.query(query, value)
+    // Count total rejected products
+    const countQuery = `SELECT COUNT(*) AS total FROM products WHERE vendorid = $1 AND status = 2 AND ${dateFilter}`;
+    const countValues = [vendorId];
+    const countResult = await pool.query(countQuery, countValues);
+    const totalRejectedProducts = countResult.rows[0].total;
 
-    res.status(200).json(rows)
+    // Fetch paginated rejected products
+    const offset = (page - 1) * pageSize;
+    const productsQuery = `SELECT * FROM products WHERE vendorid = $1 AND status = 2 AND ${dateFilter} LIMIT $2 OFFSET $3`;
+    const productsValues = [vendorId, pageSize, offset];
+    const { rows } = await pool.query(productsQuery, productsValues);
+
+    res.status(200).json({ total: totalRejectedProducts, products: rows });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
+});
+
+app.get('/product-approved', async (req, res) => {
+  try {
+    const { vendorId, page = 1, pageSize = 10, selectedOption } = req.query;
+    let dateFilter;
+
+    // Set date range based on selected option
+    switch (selectedOption) {
+      case 'last7days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'7 days\'';
+        break;
+      case 'last30days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'30 days\'';
+        break;
+      case 'last60days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'60 days\'';
+        break;
+      case 'last90days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'90 days\'';
+        break;
+      case 'last6months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'6 months\'';
+        break;
+      case 'last12months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'12 months\'';
+        break;
+      case 'last18months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'18 months\'';
+        break;
+      case 'last24months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'24 months\'';
+        break;
+      default:
+        dateFilter = 'TRUE'; // Default to no filtering
+    }
+
+    // Count total rejected products
+    const countQuery = `SELECT COUNT(*) AS total FROM products WHERE vendorid = $1 AND status = 1 AND ${dateFilter}`;
+    const countValues = [vendorId];
+    const countResult = await pool.query(countQuery, countValues);
+    const totalApproved = countResult.rows[0].total;
+
+    // Fetch paginated rejected products
+    const offset = (page - 1) * pageSize;
+    const productsQuery = `SELECT *, status as prod_status FROM products WHERE vendorid = $1 AND status = 1 AND ${dateFilter} LIMIT $2 OFFSET $3`;
+    const productsValues = [vendorId, pageSize, offset];
+    const { rows } = await pool.query(productsQuery, productsValues);
+
+    res.status(200).json({ total: totalApproved, products: rows });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+app.get('/product-returned-products', async (req, res) => {
+  try {
+    const { vendorId, page = 1, pageSize = 10, selectedOption } = req.query;
+    let dateFilter;
+
+    // Set date range based on selected option
+    switch (selectedOption) {
+      case 'last7days':
+        dateFilter = 'order_date >= NOW() - INTERVAL \'7 days\'';
+        break;
+      case 'last30days':
+        dateFilter = 'order_date >= NOW() - INTERVAL \'30 days\'';
+        break;
+      case 'last60days':
+        dateFilter = 'order_date >= NOW() - INTERVAL \'60 days\'';
+        break;
+      case 'last90days':
+        dateFilter = 'order_date >= NOW() - INTERVAL \'90 days\'';
+        break;
+      case 'last6months':
+        dateFilter = 'order_date >= NOW() - INTERVAL \'6 months\'';
+        break;
+      case 'last12months':
+        dateFilter = 'order_date >= NOW() - INTERVAL \'12 months\'';
+        break;
+      case 'last18months':
+        dateFilter = 'order_date >= NOW() - INTERVAL \'18 months\'';
+        break;
+      case 'last24months':
+        dateFilter = 'order_date >= NOW() - INTERVAL \'24 months\'';
+        break;
+      default:
+        dateFilter = 'TRUE'; // Default to no filtering
+    }
+
+    // Count total returned products
+    const countQuery = `SELECT COUNT(*) AS total FROM vendorproductorder WHERE vendor_id = $1 AND order_status LIKE 'Ret%' AND ${dateFilter}`;
+    const countValues = [vendorId];
+    const countResult = await pool.query(countQuery, countValues);
+    const totalReturnedProducts = countResult.rows[0].total;
+
+    // Fetch paginated returned products
+    const offset = (page - 1) * pageSize;
+    const productsQuery = `SELECT * FROM vendorproductorder WHERE vendor_id = $1 AND order_status LIKE 'Ret%' AND ${dateFilter} LIMIT $2 OFFSET $3`;
+    const productsValues = [vendorId, pageSize, offset];
+    const { rows } = await pool.query(productsQuery, productsValues);
+
+    // Fetch customer data based on customer_id
+    const customerIds = rows.map(product => product.customer_id);
+    const customerQuery = `SELECT email, family_name, given_name, phone_number, customer_id FROM customers WHERE customer_id IN (${customerIds.join(',')})`;
+    const customerResult = await pool.query(customerQuery);
+    const customers = customerResult.rows.reduce((acc, customer) => {
+      delete customer.password
+      acc[customer.customer_id] = customer;
+      return acc;
+    }, {});
+
+    // Append customer data to each product
+    const productsWithCustomers = rows.map(product => ({
+      ...product,
+      customer: customers[product.customer_id],
+    }));
+
+    res.status(200).json({ total: totalReturnedProducts, products: productsWithCustomers });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get('/product-inventory-include-variant', async (req, res) => {
+  try {
+    const { vendorId, page = 1, pageSize = 10, selectedOption } = req.query;
+    let dateFilter;
+
+    // Set date range based on selected option, skip if selectedOption is 'All'
+    switch (selectedOption) {
+      case 'last7days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'7 days\'';
+        break;
+      case 'last30days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'30 days\'';
+        break;
+      case 'last60days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'60 days\'';
+        break;
+      case 'last90days':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'90 days\'';
+        break;
+      case 'last6months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'6 months\'';
+        break;
+      case 'last12months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'12 months\'';
+        break;
+      case 'last18months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'18 months\'';
+        break;
+      case 'last24months':
+        dateFilter = 'updated_at_product >= NOW() - INTERVAL \'24 months\'';
+        break;
+      case 'All':
+        dateFilter = ''; // No date filter applied
+        break;
+      default:
+        dateFilter = 'TRUE'; // Default to no filtering
+    }
+
+    // Calculate offset based on pagination
+    const offset = (page - 1) * pageSize;
+
+    // Fetch products with variants along with pagination
+    let productsQuery = `
+      SELECT p.*, vp.*
+      FROM products p
+      LEFT JOIN variantproducts vp ON p.uniquepid::text = vp.product_uniqueid
+      WHERE p.vendorid = $1 AND p.status = 1   
+    `;
+
+    if (dateFilter) {
+      productsQuery += ` AND ${dateFilter}`;
+    }
+
+    const countQuery = `
+      SELECT COUNT(*) AS total
+      FROM (${productsQuery}) AS subquery
+    `;
+
+    const totalCountResult = await pool.query(countQuery, [vendorId]);
+    const total = parseInt(totalCountResult.rows[0].total);
+
+    productsQuery += ` ORDER BY p.updated_at_product DESC LIMIT $2 OFFSET $3`;
+
+    const { rows: productsWithVariants } = await pool.query(productsQuery, [vendorId, pageSize, offset]);
+
+    // Manually calculate total count for each product
+    for (const product of productsWithVariants) {
+      const totalSoldResult = await pool.query(
+        'SELECT COUNT(*) AS total_count FROM vendorproductorder WHERE product_uniqueid = $1 AND (label IS NULL OR label = $2)',
+        [product.uniquepid, product.label]
+      );
+      product.total_count = parseInt(totalSoldResult.rows[0].total_count) || 0;
+    }
+
+    res.status(200).json({ total, products: productsWithVariants });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post('/reupload-product', async (req, res) => {
+  try {
+    const { productId } = req.body;
+
+    // Update the product status to 0 (assuming 0 represents "Pending" status)
+    const updateQuery = "UPDATE products SET status = 0 WHERE id = $1";
+    await pool.query(updateQuery, [productId]);
+
+    res.status(200).json({ message: "Product reuploaded successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.get('/getVendorProductsAR', async (req, res) => {
   try {
@@ -1424,7 +1685,7 @@ app.post("/reject-product-reason", async (req, res) => {
 app.post("/approve-product", async (req, res) => {
   try {
     const { productId } = req.body;
-    console.log(productId,"Productid from Admin panel");
+    console.log(productId, "Productid from Admin panel");
     let updateQuery = "";
     let updateValues = [];
     let idName = "";
@@ -2837,7 +3098,7 @@ app.post("/bulkProductApprove", async (req, res) => {
     for (const uniquepid of selectedRowKeys) {
       // Update product status
       const result = await pool.query(updateQuery, [uniquepid]);
-      
+
       // Fetch ad_title and additionaldescription for the updated row
       const fetchQuery = `
         SELECT ad_title, additionaldescription

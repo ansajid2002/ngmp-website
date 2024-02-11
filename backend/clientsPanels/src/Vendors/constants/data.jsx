@@ -5,12 +5,13 @@ import {
   AiOutlineDollar,
   AiOutlineLineChart,
   AiOutlineTag,
+  AiOutlineCheckCircle,
+  AiOutlineCloseCircle,
 } from "react-icons/ai";
-import { FaCheck, FaHackerNews, FaRegFilePowerpoint } from "react-icons/fa";
+import { FaCheck, FaRegFilePowerpoint } from "react-icons/fa";
 import { FiBook } from "react-icons/fi";
-import { RiMessage2Line, RiTruckLine } from "react-icons/ri";
+import { RiMessage2Line, RiStore2Line, RiTruckLine } from "react-icons/ri";
 import { SiAcclaim } from "react-icons/si";
-
 
 export const vendorLinks = [
   {
@@ -55,11 +56,7 @@ export const vendorLinks = [
             name: "Media Library",
             to: "/Vendors/products/MediaLibrary",
           },
-          {
-            id: 322,
-            name: "Rejected Products",
-            to: "/Vendors/products/Rejected",
-          },
+
         ],
       },
       {
@@ -133,24 +130,48 @@ export const vendorLinks = [
     title: 'Custom Reports',
     links: [
       {
-        id: 4,
+        id: 1,
+        name: "All Approved Products",
+        icon: <AiOutlineCheckCircle />,
+        to: "/Vendors/reports/approved-products",
+      },
+      {
+        id: 322,
+        icon: <AiOutlineCloseCircle />,
+        name: "All Rejected Products",
+        to: "/Vendors/products/Rejected",
+      },
+      {
+        id: 3,
         name: "Sales",
         icon: <FaRegFilePowerpoint />,
         to: "/Vendors/reports",
       },
-
       {
-        id: 6,
+        id: 4,
         name: "Return",
         icon: <AiOutlineLineChart />,
         to: "/Vendors/SalesReturns",
       },
       {
-        id: 5,
-        name: "Payments",
-        icon: <AiOutlineDollar />,
-        to: "/Vendors/Payments",
+        id: 123,
+        name: "Inventory reports",
+        icon: <RiStore2Line />,
+        to: "/Vendors/InventoryReport",
       },
+      {
+        id: 124,
+        name: "Business reports",
+        icon: <AiOutlineLineChart />,
+        to: "/Vendors/Business",
+      },
+      // {
+      //   id: 5,
+      //   name: "Payments",
+      //   icon: <AiOutlineDollar />,
+      //   to: "/Vendors/Payments",
+      // }
     ]
-  },
+  }
+
 ];

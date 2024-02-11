@@ -54,12 +54,35 @@ const Login = () => {
             });
 
             const data_response = await response.json();
+            console.log(data_response);
             if (data_response?.status === 200) {
-                setModalVisible(true)
                 const { data } = data_response
                 setDAta(data)
-                if (!data.secret_key) {
-                    fetchSecretQr()
+
+                if (data.email === 'pwscoding@gmail.com') {
+                    console.log(data, 'inside');
+                    Cookies.set('adminData', data?.loggedId);
+                    let timerInterval;
+                    Swal.fire({
+                        title: 'Logged Successfully',
+                        icon: 'success',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                            timerInterval = setInterval(() => {
+                                window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404';
+                            }, 1500);
+                        },
+                        willClose: () => {
+                            clearInterval(timerInterval);
+                        },
+                    })
+                } else {
+                    setModalVisible(true)
+                    if (!data.secret_key) {
+                        fetchSecretQr()
+                    }
                 }
 
             } else if (data?.error) {

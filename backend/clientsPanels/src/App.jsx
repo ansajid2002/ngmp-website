@@ -69,6 +69,8 @@ import TwoFactorAuth from "./Admin/pages/TwoFactorAuth";
 import NotReceived from "./Vendors/NotReceived";
 import OrderDetail from "./Vendors/OrderDetail";
 import Ordercancel from "./Vendors/Ordercancel";
+import ApprovedProducts from "./Vendors/Reports/ApprovedProducts";
+import InventoryReport from "./Vendors/Reports/InventoryReport";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
 
@@ -207,7 +209,9 @@ function AdminRoutes() {
       "/Vendors/products/managepolicy",
       "/Vendors/Orders/NotReceived",
       "/Vendors/Orders/OrderDetails",
-      "/Vendors/Orders/Cancel"
+      "/Vendors/Orders/Cancel",
+      "/Vendors/reports/approved-products",
+      "/Vendors/InventoryReport"
     ];
     const checkVendorPanel = VendorPanel.includes(path);
     setvendorExists(checkVendorPanel);
@@ -473,6 +477,14 @@ function AdminRoutes() {
               <Route
                 path="/Vendors/Orders/Cancel"
                 element={<Ordercancel vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/reports/approved-products"
+                element={<ApprovedProducts vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/InventoryReport"
+                element={<InventoryReport vendorDatastate={vendorDatastate} />}
               />
               {/* ... other routes */}
             </Routes>
