@@ -79,7 +79,7 @@ const OrderDetail = ({ vendorDatastate }) => {
                 </div>
 
                 <div className='md:flex justify-between py-4 border p-4 rounded-md'>
-                    <div>
+                    <div className='flex-1'>
                         <h1 className='text-xl font-semibold tracking-wide text-gray-700'>{details?.ispickup ? 'Pickup' : 'Shipping'} Address</h1>
                         <div className='py-2 '>
                             {
@@ -103,14 +103,14 @@ const OrderDetail = ({ vendorDatastate }) => {
                             }
                         </div>
                     </div>
-                    <div className='md:w-[60%] py-2'>
+                    <div className='md:w-[20%] py-2'>
                         <h1 className='text-xl font-semibold tracking-wide text-gray-700'>Payment Methods</h1>
                         <div className='py-2'>
                             <p className='text-sm tracking-wide text-gray-800'>{details?.payment_method}</p>
                         </div>
                     </div>
 
-                    <div className='md:w-[50%] py-2'>
+                    <div className='md:w-[30%] py-2'>
                         <h1 className='text-xl font-semibold tracking-wide text-gray-700'>Order Summary</h1>
                         <div className='py-2 space-y-1'>
                             <div className='flex justify-between'>

@@ -31,6 +31,8 @@ const ManageCategory = ({ adminLoginData }) => {
   const [type, setType] = useState("");
   const [visible, setVisible] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState([]);
+  const [selectedNestedCategory, setSelectedNestedCategory] = useState(null);
+
 
   const [pagination, setPagination] = useState({
     current: 1,
@@ -356,6 +358,7 @@ const ManageCategory = ({ adminLoginData }) => {
               />
 
               <FaEdit className='text-gray-500 cursor-pointer' onClick={() => {
+                setSelectedNestedCategory(row?.nested_subcategory_name)
                 setUploadImageButtonModal(true)
                 setSelectedKey(index)
                 setType('submaincategory')
@@ -365,6 +368,7 @@ const ManageCategory = ({ adminLoginData }) => {
         } else {
           return (
             <FaEdit className='text-gray-500 cursor-pointer' onClick={() => {
+              setSelectedNestedCategory(row?.nested_subcategory_name)
               setUploadImageButtonModal(true)
               setSelectedKey(index)
               setType('submaincategory')
@@ -376,16 +380,19 @@ const ManageCategory = ({ adminLoginData }) => {
 
     {
       title: "Status",
-      dataIndex: "subcat_status",
-      key: "subcat_status",
-      render: (subcat_status, record, index) => (
+      dataIndex: "status",
+      key: "status",
+      render: (status, record, index) => (
         <>
           <Switch
-            checked={subcat_status}
-            onChange={(checked) => handleSwitchChange(checked, index, 'submaincategory')}
+            checked={status}
+            onChange={(checked) => {
+              setSelectedNestedCategory(record?.nested_subcategory_name)
+              handleSwitchChange(checked, record?.nested_subcategory_name, 'submaincategory')
+            }}
             className='bg-red-500'
           />
-          <p>{subcat_status}</p>
+          <p>{status}</p>
         </>
       ),
     },
@@ -396,7 +403,6 @@ const ManageCategory = ({ adminLoginData }) => {
     setSelectedKey(key)
     setModalVisible(true)
     const seletcedRow = categoryData?.filter(item => item.category_id === key)
-    console.log(seletcedRow[0]);
     form.setFieldsValue(seletcedRow[0])
     setSelectedRow(seletcedRow[0])
   }
@@ -426,41 +432,36 @@ const ManageCategory = ({ adminLoginData }) => {
 
       if (response.ok) {
         const data = await response.json()
-        setData((prevCategoryData) => {
+
+        setData(prevCategoryData => {
           const updatedCategoryData = [...prevCategoryData];
-          let categoryIndex;
 
           if (type === 'subcategory') {
-            // Find the category index containing the specified subcategory
-            categoryIndex = updatedCategoryData.findIndex((category) =>
-              category.subcategories?.some((subcat) => subcat.subcategory_id === categoryId)
+            const categoryIndex = updatedCategoryData.findIndex(category =>
+              category.subcategories?.some(subcat => subcat.subcategory_id === categoryId)
             );
-          } else {
-            // Find the category index by category_id
-            categoryIndex = updatedCategoryData.findIndex((category) => category.category_id === categoryId);
-          }
-
-          if (categoryIndex !== -1) {
-            if (type === 'category') {
-              // Update category status
-              updatedCategoryData[categoryIndex].category_status = checked;
-            } else if (type === 'subcategory') {
-              // Find the index of the specified subcategory within its category
-              const subcategoryIndex = updatedCategoryData[categoryIndex].subcategories.findIndex((subcat) => subcat.subcategory_id === categoryId);
-
-              // Update subcategory status within the category
+            if (categoryIndex !== -1) {
+              const subcategoryIndex = updatedCategoryData[categoryIndex].subcategories.findIndex(subcat => subcat.subcategory_id === categoryId);
               if (subcategoryIndex !== -1) {
                 updatedCategoryData[categoryIndex].subcategories[subcategoryIndex].subcat_status = checked;
-                updatedCategoryData[categoryIndex].subcategories[subcategoryIndex].nested_subcategories[categoryId].status = checked;
               }
-            } else {
-              // Invalid type provided
-              console.error('Invalid type specified');
+            }
+          } else if (type === 'category') {
+            const categoryToUpdate = updatedCategoryData.find(category => category.category_id === categoryId);
+            if (categoryToUpdate) {
+              categoryToUpdate.category_status = checked;
+            }
+          } else if (type === 'submaincategory') {
+            const matchedSubMain = SubMainSelectedRow?.nested_subcategories?.find(item => item.nested_subcategory_name === categoryId);
+            console.log(matchedSubMain, 'statis');
+            if (matchedSubMain) {
+              matchedSubMain.status = checked;
             }
           }
 
           return updatedCategoryData;
         });
+
         // Show a success notification if the request was successful
         const statusMessage = checked ? 'enabled' : 'disabled';
         notification.success({
@@ -518,7 +519,6 @@ const ManageCategory = ({ adminLoginData }) => {
 
     return false; // Prevent automatic upload
   };
-
 
   const handleDeleteImage = () => {
     // Clear the selected file and set isEditing to false
@@ -625,8 +625,16 @@ const ManageCategory = ({ adminLoginData }) => {
               // Handle success
               const data = await response.json()
 
-              console.log(data?.file);
-              SubMainSelectedRow.nested_subcategories[selectedKey].image_url = data?.file;
+              // SubMainSelectedRow.nested_subcategories[selectedKey].image_url = data?.file;
+              const matchedSubMain = SubMainSelectedRow?.nested_subcategories?.filter((item) => item.nested_subcategory_name === selectedNestedCategory)
+
+              if (matchedSubMain.length > 0) {
+                // Update the image_url property for the first matched item (assuming there's only one match)
+                const matchedItem = matchedSubMain[0];
+                matchedItem.image_url = data?.file;
+              }
+
+
               notification.success({
                 message: 'Success',
                 description: 'SubCategory Image updated successfully!',
@@ -696,7 +704,6 @@ const ManageCategory = ({ adminLoginData }) => {
             // Fetch the new data (for example, from the server response)
             const newData = result.addedSubcategories?.[0];
 
-            console.log(newData);
             setPagination({ current: 1, total: 0, pageSize: 10 })
             // Append the new data to the existing data
             setData([

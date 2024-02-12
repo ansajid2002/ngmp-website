@@ -188,11 +188,11 @@ app.post("/updateCategoryStatus", async (req, res) => {
 
             // Update nested_subcat_status for the matched nested subcategory
             const update = nested_subcategories.map((item, index) => {
-                if (index === categoryId) {
+                if (item.nested_subcategory_name === categoryId) {
                     // Assuming your object has a 'status' property, update it here
                     return {
                         ...item,
-                        status // Replace 'newStatus' with the desired status value
+                        status: status // Replace 'newStatus' with the desired status value
                     };
                 }
                 return item

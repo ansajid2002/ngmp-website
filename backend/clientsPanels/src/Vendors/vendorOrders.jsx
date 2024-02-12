@@ -2,6 +2,7 @@
 import React from "react";
 import OrderManagementTable from "./components/OrderManagementTable";
 import AuthCheck from "./components/AuthCheck"; // Assuming you have this component
+import OrderMetrics from "./components/OrderMetrics";
 
 const OrderManagementPage = ({
   vendorDatastate,
@@ -20,12 +21,18 @@ const OrderManagementPage = ({
           <AuthCheck vendorDatastate={vendorDatastate} />
         </div>
       ) : (
-        <OrderManagementTable
-          vendorDatastate={vendorDatastate}
-          conversionRates={conversionRates}
-          isCurrencyloading={isCurrencyloading}
-          userCurrency={userCurrency}
-        />
+        <>
+          <OrderMetrics type={"vendor"} conversionRates={conversionRates} isCurrencyloading={isCurrencyloading} userCurrency={userCurrency} />
+
+          <div>
+            <OrderManagementTable
+              vendorDatastate={vendorDatastate}
+              conversionRates={conversionRates}
+              isCurrencyloading={isCurrencyloading}
+              userCurrency={userCurrency}
+            />
+          </div>
+        </>
       )}
     </>
   ) : (

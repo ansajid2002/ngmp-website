@@ -6,7 +6,7 @@ const cheerio = require("cheerio");
 const sendEmail = require("./nodemailer");
 const multer = require("multer");
 const fs = require('fs');
-
+const moment = require('moment')
 app.use(express.json());
 app.use(cors());
 app.use((req, res, next) => {
@@ -15,14 +15,13 @@ app.use((req, res, next) => {
 });
 
 app.post("/VendorProductOrder", async (req, res) => {
-  const { type, vendorId, page = 1, pageSize = 10, value = '' } = req.body;
+  const { type, vendorId, page = 1, pageSize = 10, value = '', tabchange, selectedOption } = req.body;
+  console.log(req.body);
   try {
-    // Query to fetch vendorproductorder details
     let query = `
       SELECT vpo.*
       FROM vendorproductorder vpo
     `;
-
     const queryParams = [];
 
     if (type !== "admin") {
@@ -31,14 +30,12 @@ app.post("/VendorProductOrder", async (req, res) => {
     }
 
     if (value && value.trim() !== '') {
-      // Add condition based on the value
       if (type !== "admin") {
         query += " AND (";
       } else {
         query += " WHERE (";
       }
 
-      // Adding conditions for each searchable field
       query += ` vpo.product_name ILIKE $${queryParams.length + 1}::text OR`;
       queryParams.push(`%${value.trim()}%`);
 
@@ -54,13 +51,41 @@ app.post("/VendorProductOrder", async (req, res) => {
       query += ")";
     }
 
-    // Implement pagination in your SQL query
+    if (tabchange && tabchange !== 'All') {
+      query += ` AND vpo.order_status = $${queryParams.length + 1}::text`;
+      queryParams.push(tabchange);
+    }
+
+    if (selectedOption) {
+      // Adjust date filters based on the selected option
+      let startDate;
+      switch (selectedOption) {
+        case 'last7days':
+          startDate = moment().subtract(7, 'days').format('YYYY-MM-DD');
+          break;
+        case 'last30days':
+          startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
+          break;
+        case 'last60days':
+          startDate = moment().subtract(60, 'days').format('YYYY-MM-DD');
+          break;
+        // Add cases for other options
+        default:
+          startDate = null; // Handle default case
+          break;
+      }
+
+      if (startDate) {
+        query += ` AND vpo.created_at >= $${queryParams.length + 1}::date`;
+        queryParams.push(startDate);
+      }
+    }
+
     query += ` ORDER BY vpo.created_at DESC LIMIT $${queryParams.length + 1}::int OFFSET $${queryParams.length + 2}::int;`;
-
     const offset = (page - 1) * pageSize;
-
     queryParams.push(pageSize, offset);
 
+    console.log(query, queryParams);
     const { rows } = await pool.query(query, queryParams);
 
     // Fetch customer delivery address details
@@ -196,7 +221,7 @@ app.post("/Insertorders", async (req, res) => {
     const customerEmail = req.body[0]?.customerData?.email
     const orders = req.body[0]?.orders
     const { id } = req.body[0]?.paymentIntent
-    const { selectedPaymentMode, checkoutItems = [], order_date, shippingRate } = req.body[0] || 'Stripe'
+    const { selectedPaymentMode, checkoutItems = [], order_date, shippingRate } = req.body[0]
     // const { street, city, country, region, postalCode, name, given_name, family_name, phone_number, email } = req.body[0]?.shipping_address
     const { given_name_address = '', family_name_address = '', apt_address = '', subregion_address = '', city_address = '', country_address = '', region_address = '', zip_address = '', phone_address = '', email_address = '' } = req.body[0]?.shipping_address || []
 
@@ -248,7 +273,8 @@ app.post("/Insertorders", async (req, res) => {
         ispickup: pickup,
         sellerOtp: otp,
         customerotp,
-        shippingRate
+        shippingRate,
+        variant: order.isvariant
       };
     });
 
@@ -338,15 +364,23 @@ app.post("/Insertorders", async (req, res) => {
         insertedAddress.push(resultAddress.rows[0]);
       }
 
-      let deleteQuery = `
-            DELETE FROM cart
-            WHERE customer_id = $1
-        `;
-
-      const queryParams = [customer_id];
-
-      await pool.query(deleteQuery, queryParams);
+      if (order.variant === 'Simple') {
+        // Simple product ke liye query
+        await pool.query("UPDATE products SET quantity = quantity - $1 WHERE uniquepid = $2", [order.quantity, order.product_uniqueid]);
+      } else {
+        // Variant product ke liye query
+        await pool.query("UPDATE variantproducts SET variant_quantity = variant_quantity - $1 WHERE product_uniqueid = $2 AND label = $3", [order.quantity, order.product_uniqueid, order.label]);
+      }
     }
+
+    let deleteQuery = `
+          DELETE FROM cart
+          WHERE customer_id = $1
+      `;
+
+    const queryParams = [customer_id];
+
+    await pool.query(deleteQuery, queryParams);
 
     if (selectedPaymentMode === 'Wallet') {
       const paginatedData = await fetchWalletToken(customer_id);
@@ -1162,7 +1196,6 @@ app.get('/getOrderDetails', async (req, res) => {
   }
 });
 
-
 app.post('/getDeliverOrder', async (req, res) => {
   try {
     const { tabLabel, page = 1, pageSize = 10 } = req.body;
@@ -1276,8 +1309,6 @@ app.post('/updateOrderStatus', async (req, res) => {
   }
 });
 
-
-
 app.post("/fetchOrderProducts", async (req, res) => {
   try {
     const { vendorid, otp, selectedAction } = req.body;
@@ -1289,6 +1320,7 @@ app.post("/fetchOrderProducts", async (req, res) => {
       WHERE vendor_id = $1 AND seller_otp = $2;
     `;
 
+    console.log(vendorid, otp);
     const result = await pool.query(query, [vendorid, otp]);
 
     // Check if any rows were returned
@@ -1334,7 +1366,6 @@ app.post("/shipSelectedProducts", async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 const imgReturns = multer.diskStorage({
   destination: (req, file, callback) => {
@@ -1507,8 +1538,6 @@ app.get("/getOrderByOrder_Id/:order_id/:id", async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
 
 
 app.post('/handleRequestforArrived', async (req, res) => {
@@ -1694,7 +1723,7 @@ app.post("/cancelOrderByVendor", async (req, res) => {
 
     // If no row exists, insert data into product_order_cancel table
     const insertQuery = 'INSERT INTO product_order_cancel (customer_id, vendor_id, order_id, product_id, label, selected_reason, refund_amount, total_amount, detail_charges, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
-    const insertValues = [customer_id, vendor_id, order_id, product_uniqueid, label, reason, refundable_amount, total_amount, JSON.stringify(details_charge), currentDateTime];
+    const insertValues = [customer_id, vendor_id, order_id, product_uniqueid, label || '', reason, refundable_amount, total_amount, JSON.stringify(details_charge), currentDateTime];
     await pool.query(insertQuery, insertValues);
 
     console.log('Data inserted into product_order_cancel table:', req.body);

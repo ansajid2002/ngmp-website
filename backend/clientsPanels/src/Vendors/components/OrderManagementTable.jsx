@@ -1,117 +1,57 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
+import { AdminUrl, ProductImageUrl, formatCurrency } from "../../Admin/constant";
+import moment from "moment";
+import { FaCheck, FaClock, FaExchangeAlt, FaShippingFast, FaTimes, FaTruck, FaTruckMoving, FaTruckPickup, FaUndo } from 'react-icons/fa';
+import { RiRefund2Fill } from 'react-icons/ri';
 import {
   Table,
   Tag,
-  Space,
   Button,
   Modal,
-  Image,
   Descriptions,
+  Image,
   Pagination,
-  Row,
-  Col,
-  Tabs,
-  Badge,
-  Tooltip,
-  Dropdown,
-  Menu,
+  Select,
   Input,
-  InputNumber,
+  Space,
 } from "antd";
-import {
-  FaBoxOpen,
-  FaCheck,
-  FaClock,
-  FaCross,
-  FaExchangeAlt,
-  FaFilePdf,
-  FaMapPin,
-  FaShippingFast,
-  FaTimes,
-  FaTruck,
-  FaTruckMoving,
-  FaTruckPickup,
-  FaUndo,
-} from "react-icons/fa";
-import { AdminUrl, ProductImageUrl } from "../../Admin/constant";
-import jsPDF from "jspdf";
-import {
-  CalendarOutlined,
-  MoreOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  UndoOutlined,
-  SwapOutlined,
-} from "@ant-design/icons";
-import autoTable from "jspdf-autotable"; // Import the autotable function from jspdf-autotable
-import OrderMetics from "./OrderMetrics";
-import { DatePicker } from "antd";
-import TabPane from "antd/es/tabs/TabPane";
-import Swal from "sweetalert2"; // Import SweetAlert2
-import { RiRefund2Fill } from "react-icons/ri";
-import { DateTime } from 'luxon';
-import moment from "moment";
-import CreateShip from "./CreateShip";
-import { FiMap } from "react-icons/fi";
 import { websiteUrl } from "../../App";
-import { AiOutlineDeliveredProcedure } from "react-icons/ai";
+import { FiEdit3, FiMap, FiTrash2 } from 'react-icons/fi';
+import { GrDocumentCsv, GrDocumentExcel, GrDocumentPdf } from 'react-icons/gr';
+import { BiDotsVertical } from 'react-icons/bi';
 
 const OrderManagementTable = ({
   vendorDatastate,
   type,
-  conversionRates,
-  isCurrencyloading,
 }) => {
   const [productModalVisible, setProductModalVisible] = useState(false);
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
-  const [showCalendar, setshowCalendar] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [vendorOrder, setvendorOrder] = useState([]);
   const [FilteredOrder, setFilteredOrder] = useState([]);
-  const [expandedRowKeys, setExpandedRowKeys] = useState([]);
-  const [DownloadOrders, setDownloadOrders] = useState([]);
-  const [filteredDateRange, setFilteredDateRange] = useState(null);
-  const [ShipmentModal, setShipmentModal] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  // console.log(type, "Type");
+  const [searchValue, setSearchValue] = useState('');
+  const [tabchange, setTabChange] = useState('All')
+
+  const [PdfLoader, setPdfLoader] = useState(false);
+  const [excelLoader, setExcelLoader] = useState(false);
+  const [csvLoader, setCsvLoader] = useState(false);
+
+  const [selectedOption, setSelectedOption] = useState("last7days");
+
+
   const vendorId = vendorDatastate?.[0].id;
-  const { confirm } = Modal; // Import the Modal component
 
-
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSearchValue(value);
-
-    callVendorProductOrder(1, 10, value)
-
-    setFilteredOrder(filteredProducts);
-  };
-
-
-  const handleDateRangeChange = (dates) => {
-    setFilteredDateRange(dates);
-  };
-
-  const showProductDetailsModal = (product) => {
-    setSelectedProduct(product);
-    setProductModalVisible(true);
-  };
-  const showCustomerDetailsModal = (product) => {
-    setSelectedCustomer(product);
-    setCustomerModalVisible(true);
-  };
-
-  const callVendorProductOrder = async (page, pageSize, value) => {
+  const callVendorProductOrder = async (page, pageSize, value, tabchange, selectedOption) => {
     try {
       const response = await fetch(`${AdminUrl}/api/VendorProductOrder`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ type, vendorId, page, pageSize, value }),
+        body: JSON.stringify({ type, vendorId, page, pageSize, value, selectedOption, tabchange }),
       });
 
       if (response.ok) {
@@ -119,7 +59,6 @@ const OrderManagementTable = ({
         const data = await response.json();
         setvendorOrder(data);
         setFilteredOrder(data);
-        setDownloadOrders(data);
       } else {
         // Handle error response
         console.error("Error sending form data:", response.statusText);
@@ -131,9 +70,15 @@ const OrderManagementTable = ({
   };
 
   useEffect(() => {
-
-    callVendorProductOrder(page, pageSize, searchValue);
+    callVendorProductOrder(page, pageSize, searchValue, tabchange, selectedOption);
   }, []);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    callVendorProductOrder(1, 10, value, 'All', selectedOption)
+    setSearchValue(value);
+    // setFilteredOrder(filteredProducts);
+  };
 
 
   const statusColorMap = {
@@ -158,76 +103,42 @@ const OrderManagementTable = ({
     Delivered: <FaTruck />,
   };
 
+
+  const showProductDetailsModal = (product) => {
+    setSelectedProduct(product);
+    setProductModalVisible(true);
+  };
+
+  const showCustomerDetailsModal = (product) => {
+    setSelectedCustomer(product);
+    setCustomerModalVisible(true);
+  };
+
+
   const columns = [
     {
-      title: "Date",
-      dataIndex: "created_at",
-      key: "created_at",
-      defaultSortOrder: "ascend",
-      sorter: (a, b) => {
-        const dateA = new Date(a.created_at);
-        const dateB = new Date(b.created_at);
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
+      title: "Actions",
+      key: "actions",
+      width: 80,
+      render: (record) => (
+        <Space size="middle" className="flex">
+          {/* Edit Icon */}
+          <BiDotsVertical
+            onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
+            className="text-gray-600 w-6 h-6 cursor-pointer"
+          />
 
-        if (dateA.toDateString() === today.toDateString()) {
-          return -1; // Date A is "Today", so it comes first
-        } else if (dateB.toDateString() === today.toDateString()) {
-          return 1; // Date B is "Today", so it comes first
-        } else if (dateA.toDateString() === yesterday.toDateString()) {
-          return -1; // Date A is "Yesterday", so it comes next
-        } else if (dateB.toDateString() === yesterday.toDateString()) {
-          return 1; // Date B is "Yesterday", so it comes next
-        } else {
-          return dateB - dateA; // Compare other dates normally in descending order
-        }
-      },
-      render: (created_at) => {
-        const date = new Date(created_at);
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-
-        let dateString;
-
-        if (date.toDateString() === today.toDateString()) {
-          dateString = "Today";
-        } else if (date.toDateString() === yesterday.toDateString()) {
-          dateString = "Yesterday";
-        } else {
-          dateString = date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          });
-        }
-
-        return (
-          <p
-            style={{
-              fontSize: "16px", // Adjust the font size as needed
-              fontWeight: "bold", // Set text to bold
-              fontFamily: "Arial", // Change to desired font family
-              margin: "0", // Remove any margin to avoid extra spacing
-            }}
-          >
-            {dateString}
-          </p>
-        );
-      },
-      // Add filter properties
+        </Space>
+      ),
     },
-
-
     {
       title: "Order ID",
       dataIndex: "orderid",
       key: "orderid",
-      width: 80,
+      width: 150,
       render: (orderid, record) => {
         return (
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center text-center">
             <Button type="link" onClick={() => showProductDetailsModal(record)}>
               {orderid}
             </Button>
@@ -240,7 +151,7 @@ const OrderManagementTable = ({
       title: "Product Name",
       dataIndex: "product_name",
       key: "product_name",
-      width: 100,
+      width: 200,
       render: (product_name, record) => {
         return (
           <a
@@ -273,7 +184,7 @@ const OrderManagementTable = ({
       width: 150,
       render: (total_amount, record) =>
         <>
-          <p className=" font-sans text-sm font-bold">{`$${total_amount}`}</p>
+          <p className=" font-sans text-sm font-bold text-gray-600">{`${formatCurrency(total_amount, 'USD')}`}</p>
         </>
     },
     {
@@ -328,7 +239,7 @@ const OrderManagementTable = ({
       title: "Transaction ID",
       dataIndex: "transaction_id",
       key: "transaction_id",
-      width: 150,
+      width: 250,
       render: (transactionId) => transactionId || "N/A", // Render 'N/A' if transaction_id is null
     },
     {
@@ -341,432 +252,10 @@ const OrderManagementTable = ({
       title: "Payment Status",
       dataIndex: "payment_status",
       key: "payment_status",
-      width: 80,
+      width: 150,
     },
 
   ];
-
-
-  const handleShipmentModal = (record) => {
-    setShipmentModal(true)
-    setSelectedProduct(record)
-  }
-  // Define a function to send the status update request
-  const sendStatusUpdateRequest = async (order_id, status, orderid, vendorId) => {
-    try {
-      const requestData = {
-        order_id: order_id,
-        status: status,
-        vendorId: vendorId,
-        orderid: orderid
-      };
-
-      const response = await fetch(`${AdminUrl}/api/manageStatus`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      });
-
-      if (response.ok) {
-        const updatedOrders = vendorOrder.map((order) => {
-          if (order.order_id === order_id) {
-            return {
-              ...order,
-              order_status: status,
-            };
-          }
-          return order;
-        });
-
-        setvendorOrder(updatedOrders);
-        setFilteredOrder(updatedOrders);
-
-        // Display a success message using SweetAlert2
-        Swal.fire({
-          icon: "success",
-          title: `Order ${status} successfully`,
-          showConfirmButton: false,
-          timer: 1500, // Automatically close after 1.5 seconds
-        });
-      } else {
-        // Display an error message using SweetAlert2
-        Swal.fire({
-          icon: "error",
-          title: `Error ${status} order`,
-          text: "An error occurred while updating the order status.",
-        });
-      }
-    } catch (error) {
-      console.error(`An error occurred while ${status}ing the order`, error);
-
-      // Display an error message using SweetAlert2
-      Swal.fire({
-        icon: "error",
-        title: `Error ${status}ing order`,
-        text: "An error occurred while updating the order status.",
-      });
-    }
-  };
-
-  // Define the handleActionClick function
-  const handleActionClick = (action, order_id, orderid, vendorId) => {
-    let confirmationMessage = "";
-    let actionIcon = null;
-    let valuableInfo = "";
-    let okButtonText = "OK";
-    let status = "";
-    let buttonColor = "";
-
-    switch (action) {
-      case "confirm":
-        confirmationMessage = "Are you sure you want to confirm this order?";
-        actionIcon = <CheckCircleOutlined className="text-green-600" />;
-        valuableInfo = "confirm this order to proceed.";
-        okButtonText = "Confirm";
-        status = "Confirmed";
-        buttonColor = "green";
-        break;
-      case "cancel":
-        confirmationMessage = "Are you sure you want to cancel this order?";
-        actionIcon = <CloseCircleOutlined className="text-red-600" />;
-        valuableInfo = "Cancelling this order will mark it as cancelled.";
-        okButtonText = "Cancel";
-        status = "Cancelled";
-        buttonColor = "red";
-        break;
-      case "return":
-        confirmationMessage =
-          "Are you sure you want to process a return for this order?";
-        actionIcon = <UndoOutlined className="text-blue-600" />;
-        valuableInfo =
-          "Processing a return for this order will initiate a return request.";
-        okButtonText = "Return";
-        status = "Returned";
-        buttonColor = "blue";
-        break;
-      case "refund":
-        confirmationMessage =
-          "Are you sure you want to process a refund for this order?";
-        actionIcon = <UndoOutlined className="text-blue-600" />;
-        valuableInfo =
-          "Processing a refund for this order will initiate a refund request.";
-        okButtonText = "Refund";
-        status = "Refunded";
-        buttonColor = "blue";
-        break;
-      case "exchange":
-        confirmationMessage =
-          "Are you sure you want to process an exchange for this order?";
-        actionIcon = <SwapOutlined className="text-orange-600" />;
-        valuableInfo =
-          "Processing an exchange for this order will initiate an exchange request.";
-        okButtonText = "Exchange";
-        status = "Exchanged";
-        buttonColor = "orange";
-        break;
-      default:
-        break;
-    }
-
-    confirm({
-      title: "Confirm Action",
-      icon: actionIcon,
-      content: (
-        <div>
-          <p>{confirmationMessage}</p>
-          <p style={{ color: buttonColor }}>{valuableInfo}</p>
-        </div>
-      ),
-      okText: okButtonText,
-      okButtonProps: {
-        style: {
-          background: buttonColor,
-          borderColor: buttonColor,
-          color: "white",
-        },
-      },
-      onOk() {
-        sendStatusUpdateRequest(order_id, status, orderid, vendorId);
-      },
-      onCancel() {
-        // User canceled the action
-      },
-    });
-  };
-
-  const statusSteps = [
-    { status: "Ordered", label: "Order Placed", color: "blue" },
-    { status: "Confirmed", label: "Order Confirmed", color: "orange" },
-    { status: "Processing", label: "Order Processing", color: "orange" },
-    { status: "Shipped", label: "Order Shipped", color: "green" },
-    { status: "Delivered", label: "Order Delivered", color: "green" },
-    { status: "Cancelled", label: "Order Cancelled", color: "red" },
-  ];
-
-  // Find the corresponding status step object based on the order status
-  const currentStep = statusSteps.find(
-    (step) => step.status === selectedProduct?.order_status
-  );
-
-  const handleDownloadPDF = () => {
-    if (!jsPDF) {
-      return;
-    }
-
-    const doc = new jsPDF();
-    const shortenedTableHeaders = [
-      "ID",
-      "Prod",
-      "Date",
-      "Amount",
-      "Status",
-      "Trans",
-      "Method",
-      "Pay",
-    ];
-
-    const filteredOrders = DownloadOrders.filter((order) => {
-      const orderDate = new Date(order.created_at);
-      return (
-        !filteredDateRange ||
-        (orderDate >= filteredDateRange[0] && orderDate <= filteredDateRange[1])
-      );
-    });
-
-    const sortedVendorOrder = filteredOrders
-      .slice()
-      .sort((a, b) => a.order_id - b.order_id);
-
-
-    const tableData = sortedVendorOrder.map((order) => [
-      order.order_id,
-      order.product_name,
-      moment(order.created_at).format('MMMM Do YYYY, h:mm:ss a'), // Change the format here
-      `${order.currency_symbol} ${order.total_amount}`,
-      order.order_status,
-      order.transaction_id || "N/A",
-      order.payment_method,
-      order.payment_status,
-    ]);
-
-    const startY = 46;
-    const startX = 10;
-
-    const logoDataURL = "/logo.png";
-
-    const logoElement = document.createElement("img");
-    logoElement.src = logoDataURL;
-
-    logoElement.onload = function () {
-      const logoWidth = 20;
-      const logoHeight = (logoElement.height * logoWidth) / logoElement.width;
-
-      const tableOptions = {
-        startY,
-        startX,
-        margin: { top: 10, bottom: 10 },
-        headStyles: { fontSize: 8, textColor: [255, 255, 255] },
-        bodyStyles: { fontSize: 8 },
-        styles: { overflow: "linebreak" },
-        columnStyles: {
-          2: { columnWidth: "auto" },
-          3: { columnWidth: "auto" },
-          4: { columnWidth: "auto" },
-          6: { columnWidth: "auto" },
-          8: { columnWidth: "auto" },
-        },
-      };
-
-      const titleText = "All Orders";
-      const dateRangeText = filteredDateRange
-        ? `Date Range: ${filteredDateRange[0].format(
-          "DD MMM, YYYY"
-        )} - ${filteredDateRange[1].format("DD MMM, YYYY")}`
-        : "Overall Records";
-
-      const textWidth =
-        (doc.getStringUnitWidth(titleText) * doc.internal.getFontSize()) /
-        doc.internal.scaleFactor;
-      const pageWidth = doc.internal.pageSize.getWidth();
-
-      doc.addImage(logoElement, "PNG", 10, 15, logoWidth, logoHeight);
-      doc.text(titleText, (pageWidth - textWidth) / 2, 25);
-      doc.text(
-        dateRangeText,
-        (pageWidth -
-          (doc.getStringUnitWidth(dateRangeText) * doc.internal.getFontSize()) /
-          doc.internal.scaleFactor) /
-        2,
-        35
-      );
-      doc.setFontSize(10);
-
-      doc.autoTable(shortenedTableHeaders, tableData, tableOptions);
-      doc.save("order_management.pdf");
-    };
-  };
-
-  const generateOrderTableContent = (orderStatus) => {
-    let filteredOrders;
-    if (orderStatus === "All") {
-      filteredOrders = FilteredOrder.filter((order) => {
-        if (!filteredDateRange) {
-          return true; // No filter applied
-        }
-        const orderDate = new Date(order.created_at);
-        const startDate = new Date(filteredDateRange[0]);
-        startDate.setDate(startDate.getDate() - 1); // Subtract 1 day from the start date
-        const endDate = new Date(filteredDateRange[1]);
-        return orderDate >= startDate && orderDate <= endDate;
-      });
-    } else {
-      filteredOrders = FilteredOrder
-        .filter((order) => order.order_status === orderStatus)
-        .filter((order) => {
-          if (!filteredDateRange) {
-            return true; // No filter applied
-          }
-          const orderDate = new Date(order.created_at);
-          const startDate = new Date(filteredDateRange[0]);
-          startDate.setDate(startDate.getDate() - 1); // Subtract 1 day from the start date
-          const endDate = new Date(filteredDateRange[1]);
-          return orderDate >= startDate && orderDate <= endDate;
-        });
-    }
-
-    const groupedOrders = filteredOrders.reduce((result, order) => {
-      const orderDate = new Date(order.created_at).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-
-      if (!result[orderDate]) {
-        result[orderDate] = [];
-      }
-
-      result[orderDate].push(order);
-      return result;
-    }, {});
-
-    const expandedRowKeys = Object.keys(groupedOrders);
-
-    return (
-      <div className="w-full overflow-hidden overflow-x-auto">
-        <Table
-          columns={columns.slice(0, -11)}
-          dataSource={Object.entries(groupedOrders).map(
-            ([orderDate, orders]) => ({
-              order_date: orderDate,
-              orders,
-            })
-          )}
-          pagination={false}
-          className="ant-table-bordered"
-          expandable={{
-            expandedRowKeys: expandedRowKeys,
-            onExpand: (expanded, record) => {
-              // This part can be left as is
-              if (expanded) {
-                setExpandedRowKeys((prevKeys) => [
-                  ...prevKeys,
-                  record.order_date,
-                ]);
-              } else {
-                setExpandedRowKeys((prevKeys) =>
-                  prevKeys.filter((key) => key !== record.order_date)
-                );
-              }
-            },
-            expandedRowRender: (record) => {
-              const filteredNestedOrders = record.orders;
-              console.log(filteredNestedOrders);
-              return (
-                <div className="bg-white">
-                  <Table
-                    columns={columns.slice(1)} // Exclude the Order Date column
-                    dataSource={filteredNestedOrders}
-                    rowKey="order_id"
-                    pagination={false}
-                  />
-                </div>
-              );
-            },
-          }}
-          rowKey="order_date"
-          scroll={{
-            x: 1200,
-            y: 600
-          }}
-        />
-        <div className="flex justify-center mt-10">
-          <Pagination
-            current={page}
-            total={vendorOrder?.[0]?.totalCount}
-            onChange={(page, pageSize) => {
-              setPage(page)
-              setPageSize(pageSize)
-              callVendorProductOrder(page, pageSize, searchValue)
-            }}
-          />
-        </div>
-      </div>
-
-    );
-  };
-
-  const CustomBadge = ({ count }) => (
-    <span
-      className={`inline-flex items-center justify-center rounded-full w-8 h-8 text-[14px]  ml-2 ${count === 0 ? "bg-red-200" : "bg-green-200"
-        }`}
-    >
-      {count === 0 ? 0 : count}
-    </span>
-  );
-
-  const generateTabTitle = (orderStatus, count) => (
-    <div className="flex justify-center w-full items-center">
-      {orderStatus} <CustomBadge count={count} />
-    </div>
-  );
-
-  const handleTabChange = (key) => {
-    // Filter the vendorOrder array based on the order_status using the key parameter
-    const filteredOrders =
-      key === "All"
-        ? vendorOrder.filter((order) => {
-          if (!filteredDateRange) {
-            return true; // No filter applied
-          }
-          const orderDate = new Date(order.created_at);
-          const startDate = new Date(filteredDateRange[0]);
-          startDate.setDate(startDate.getDate() - 1); // Subtract 1 day from the start date
-          const endDate = new Date(filteredDateRange[1]);
-          return orderDate >= startDate && orderDate <= endDate;
-        })
-        : vendorOrder
-          .filter((order) => order.order_status === key)
-          .filter((order) => {
-            if (!filteredDateRange) {
-              return true; // No filter applied
-            }
-            const orderDate = new Date(order.created_at);
-            const startDate = new Date(filteredDateRange[0]);
-            startDate.setDate(startDate.getDate() - 1); // Subtract 1 day from the start date
-            const endDate = new Date(filteredDateRange[1]);
-            return orderDate >= startDate && orderDate <= endDate;
-          });
-
-    setDownloadOrders(filteredOrders);
-
-    // Add your logic here with the filteredOrders array
-  };
-
-  const OpenDatepicker = () => {
-    setshowCalendar(!showCalendar);
-  };
 
   const fullAddress = selectedProduct && `${selectedProduct?.customerInfo?.apartment ? selectedProduct?.customerInfo?.apartment + ', ' : ''}${selectedProduct?.customerInfo?.selected_city}, ${selectedProduct?.customerInfo?.selected_state}, ${selectedProduct?.customerInfo?.zip_code}, ${selectedProduct?.customerInfo?.selected_country}`;
   const { brand_name, company_city, company_state, company_zip_code, company_country, shipping_address, email, country_code, mobile_number, status, vendor_profile_picture_url, brand_logo, vendorname } = selectedProduct && selectedProduct.vendorProfile || {}
@@ -780,211 +269,141 @@ const OrderManagementTable = ({
     window.open(mapUrl, '_blank');
   };
 
+  const statusSteps = [
+    { status: "Ordered", label: "Order Placed", color: "blue" },
+    { status: "Confirmed", label: "Order Confirmed", color: "orange" },
+    { status: "Processing", label: "Order Processing", color: "orange" },
+    { status: "Shipped", label: "Order Shipped", color: "green" },
+    { status: "Delivered", label: "Order Delivered", color: "green" },
+    { status: "Cancelled", label: "Order Cancelled", color: "red" },
+    { status: "Returned", label: "Returned", color: "red" },
+  ];
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const currentStep = statusSteps.find(
+    (step) => step.status === selectedProduct?.order_status
+  );
 
-  const handleButtonClick = (order) => {
-    setModalVisible(true);
-    setSelectedOrder(order)
+  const handleChange = value => {
+    setSelectedOption(value);
+    callVendorProductOrder(page, pageSize, searchValue, tabchange, value)
   };
 
-  const handleModalOk = () => {
-    // Handle the logic for Ship or Delivered/Picked Up by Customer
-    // ...
-
-    console.log(selectedOrder);
-
-    // Close the modal
-    // setModalVisible(false);
-  };
-
-  const handleModalCancel = () => {
-    // Close the modal
-    setModalVisible(false);
+  const handleTabChange = value => {
+    setTabChange(value);
+    callVendorProductOrder(page, pageSize, searchValue, value, selectedOption)
   };
 
 
+  const handleDownload = (type) => {
+    switch (type) {
+      case 'pdf':
+        // Logic to export data to PDF
+        exportToPdf()
+        break;
+      case 'csv':
+        exportToCsv()
+        break;
+      case 'excel':
+        exportToExcel()
+        break;
+      default:
+        break;
+    }
+  };
+
+  const exportToPdf = async () => {
+    // setPdfLoader(true)
+    try {
+
+      const response = await fetch(`${AdminUrl}/api/orders-pdf?searchValue=${searchValue}&selectedOption=${selectedOption}&tabChange=${tabchange}&vendorId=${vendorId}`);
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const blob = await response.blob();
+
+      // Define filename with selected option prefix
+      const filename = `${selectedOption}_inventory_products.pdf`;
+
+      // Create a temporary anchor element
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+
+      // Simulate click to trigger download
+      link.click();
+
+      // Clean up
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error('Error exporting to PDF:', error);
+    } finally {
+      setPdfLoader(false)
+    }
+  };
   return (
-    <div className="mb-72">
-      {type !== "admin" && (
-        <>
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-4xl font-semibold mb-4 ">Order Management</h2>
-              <p className="text-lg text-gray-600 mb-10">
-                Explore the key metrics and performance indicators for your
-                order management.
-              </p>
-            </div>
-          </div>
+    <div className='mt-10'>
+      <div>
+        <h1 className='text-2xl font-semibold mb-4'>Orders</h1>
+        <div className="flex justify-end mb-4 py-4 gap-2">
+          {/* <Button loading={PdfLoader} onClick={() => handleDownload('pdf')} className="mr-2 flex justify-center items-center gap-4">
+            <GrDocumentPdf />
+            <p>PDF</p>
+          </Button>
+          <Button loading={csvLoader} onClick={() => handleDownload('csv')} className="mr-2 flex justify-center items-center gap-4">
+            <GrDocumentCsv />
+            <p>CSV</p>
+          </Button>
+          <Button loading={excelLoader} onClick={() => handleDownload('excel')} className='mr-2 flex justify-center items-center gap-4'>
+            <GrDocumentExcel />
+            <p>Excel</p>
+          </Button> */}
 
-          <OrderMetics
-            vendorDatastate={vendorDatastate}
-            type={""}
-            conversionRates={conversionRates}
-            isCurrencyloading={isCurrencyloading}
-          />
-        </>
-      )}
+          <Select value={selectedOption} onChange={handleChange} style={{ width: 200 }}>
+            <Option value="last7days">Last 7 days</Option>
+            <Option value="last30days">Last 30 days</Option>
+            <Option value="last60days">Last 60 days</Option>
+            <Option value="last90days">Last 90 days</Option>
+            <Option value="last6months">Last 6 months</Option>
+            <Option value="last12months">Last 12 months</Option>
+            <Option value="last18months">Last 18 months</Option>
+            <Option value="last24months">Last 24 months</Option>
+            <Option value="">Overall Report</Option>
+          </Select>
 
-      <div className="mt-10 px-2 md:px-4">
-        <div className="flex justify-between">
-          <div className="">
-            <h1 className="text-xl md:text-3xl font-semibold mb-2">
-              {type === "admin"
-                ? "Handle All Orders "
-                : "Manage Your Orders Here "}
-              {filteredDateRange && (
-                <>
-                  ({filteredDateRange[0].format("DD MMM, YYYY")} -{" "}
-                  {filteredDateRange[1].format("DD MMM, YYYY")})
-                </>
-              )}
-            </h1>
+          <Select value={tabchange} onChange={handleTabChange} style={{ width: 200 }}>
+            <Option value="All">All</Option>
+            {Object.keys(statusColorMap).map((status) => (
+              <Option key={status} value={status}>{status}</Option>
+            ))}
+          </Select>
 
-            <p className="text-gray-600 mb-6 text-sm md:text-base">
-              Effortlessly organize and control orders in a structured table
-            </p>
-          </div>
-          <div>
-
-            {DownloadOrders?.length > 0 && (
-              <Row justify="end" align="middle" className="mb-5 mr-4">
-                <div className="relative">
-                  <CalendarOutlined
-                    onClick={OpenDatepicker}
-                    className="  lg:w-36 p-2 sm:justify-end flex text-2xl mr-4"
-                  />
-                  {showCalendar && (
-                    <div className=" w-full">
-                      <DatePicker.RangePicker
-                        value={filteredDateRange}
-                        onChange={handleDateRangeChange}
-                        className="mb-4 w-full"
-                        suffixIcon={<CalendarOutlined />}
-                      />
-                    </div>
-                  )}
-                </div>
-                <Col>
-                  <Button
-                    type="primary"
-                    icon={<FaFilePdf style={{ fontSize: "24px" }} />} // Increase the fontSize value to adjust the size
-                    onClick={handleDownloadPDF}
-                    className="flex py-5 justify-center items-center bg-gradient-to-r from-red-500 to-red-600 border-red-500 hover:from-red-600 hover:to-red-700 hover:border-red-600 text-white transform transition-all duration-300 ease-in-out hover:scale-105 hover:rotate-3"
-                  >
-
-                  </Button>
-                </Col>
-              </Row>
-            )}
+          <div className='w-96'>
+            <Input onChange={handleInputChange} type="text"
+              placeholder="Search by OrderID, Product Name, SKU number"
+              value={searchValue} />
           </div>
         </div>
-        <div className="">
-          <Input
-            type="text"
-            placeholder="Search by OrderID, Product Name, SKU number"
-            value={searchValue}
-            onChange={handleInputChange}
-          />
-        </div>
-        <Tabs defaultActiveKey="All" onChange={handleTabChange}>
-          <TabPane
-            tab={generateTabTitle("All", FilteredOrder?.length)}
-            key={"All"}
-          >
-            {generateOrderTableContent("All")}
-          </TabPane>
-          <TabPane
-            tab={generateTabTitle(
-              "Ordered",
-              FilteredOrder.filter((order) => order.order_status === "Ordered")
-                .length
-            )}
-            key={"Ordered"}
-          >
-            {generateOrderTableContent("Ordered")}
-          </TabPane>
-
-          <TabPane
-            tab={generateTabTitle(
-              "Confirmed",
-              FilteredOrder.filter((order) => order.order_status === "Confirmed")
-                .length
-            )}
-            key={"Confirmed"}
-          >
-            {generateOrderTableContent("Confirmed")}
-          </TabPane>
-
-          <TabPane
-            tab={generateTabTitle(
-              "Shipped",
-              FilteredOrder.filter((order) => order.order_status === "Shipped")
-                .length
-            )}
-            key={"Shipped"}
-          >
-            {generateOrderTableContent("Shipped")}
-          </TabPane>
-
-          <TabPane
-            tab={generateTabTitle(
-              "Returned",
-              FilteredOrder.filter((order) => order.order_status === "Returned")
-                .length
-            )}
-            key={"Returned"}
-          >
-            {generateOrderTableContent("Returned")}
-          </TabPane>
-
-          <TabPane
-            tab={generateTabTitle(
-              "Refunded",
-              FilteredOrder.filter((order) => order.order_status === "Refunded")
-                .length
-            )}
-            key={"Refunded"}
-          >
-            {generateOrderTableContent("Refunded")}
-          </TabPane>
-          <TabPane
-            tab={generateTabTitle(
-              "Exchanged",
-              FilteredOrder.filter((order) => order.order_status === "Exchanged")
-                .length
-            )}
-            key={"Exchanged"}
-          >
-            {generateOrderTableContent("Exchanged")}
-          </TabPane>
-
-          <TabPane
-            tab={generateTabTitle(
-              "Cancelled",
-              FilteredOrder.filter((order) => order.order_status === "Cancelled")
-                .length
-            )}
-            key={"Cancelled"}
-          >
-            {generateOrderTableContent("Cancelled")}
-          </TabPane>
-
-          <TabPane
-            tab={generateTabTitle(
-              "Delivered",
-              FilteredOrder.filter((order) => order.order_status === "Delivered")
-                .length
-            )}
-            key={"Delivered"}
-          >
-            {generateOrderTableContent("Delivered")}
-          </TabPane>
-        </Tabs>
       </div>
-
+      <Table columns={columns} pagination={false} dataSource={vendorOrder} scroll={{ x: 1200, y: 600 }} />
+      <div className="p-5 flex justify-center">
+        <Pagination
+          hideOnSinglePage
+          total={vendorOrder?.[0]?.totalCount || 0}
+          showSizeChanger
+          showQuickJumper
+          current={page}
+          pageSize={pageSize}
+          showTotal={(total) => `Total ${total} items`}
+          responsive={true}
+          onChange={(page, pageSize) => {
+            setPage(page)
+            setPageSize(pageSize)
+            callVendorProductOrder(page, pageSize, searchValue, tabchange, selectedOption)
+          }}
+        />
+      </div>
       <Modal
         title="Product Details"
         open={productModalVisible}
@@ -1106,6 +525,7 @@ const OrderManagementTable = ({
           </div>
         )}
       </Modal>
+
       <Modal
         title=""
         open={customerModalVisible}
@@ -1145,38 +565,10 @@ const OrderManagementTable = ({
         )}
       </Modal>
 
-      <Modal open={ShipmentModal} onCancel={() => setShipmentModal(false)} title="Create Shipment" width={1000}>
-        <CreateShip product={selectedProduct} />
-      </Modal>
 
-      <Modal
-        title="Select Action"
-        visible={modalVisible}
-        onOk={handleModalOk}
-        onCancel={handleModalCancel}
-        okText={"Update Status"}
-        okButtonProps={{ style: { background: 'blue' } }}
-      >
-        {/* Add your Ship and Delivered/Picked Up by Customer options here */}
-        <div className="grid md:grid-cols-3 grid-cols-1 gap-4 py-10">
-          <Button type="default" className="flex justify-center items-center gap-3 border border-blue-500 text-blue-500 py-4 text-lg" onClick={() => handleAction('Shipped')}>
-            <FaShippingFast /> Ship
-          </Button>
-          <Button type="default" className="flex justify-center items-center gap-3 border border-green-500 text-green-500 py-4 text-lg" onClick={() => handleAction('Delivered')}>
-            <FaTruckMoving />  Delivered
-          </Button>
-          <Button type="default" className="flex justify-center items-center gap-3 border border-orange-500 text-orange-500 py-4 text-lg" onClick={() => handleAction('Picked')}>
-            <FaTruckPickup /> Picked
-          </Button>
-        </div>
 
-        <div className="flex flex-col w-full space-y-1">
-          <label htmlFor="Verify Receiver" className="text-sm text-gray-600"> Verify Receiver</label>
-          <InputNumber className="p-2 w-full" placeholder="Enter 4 digit Verification Code" maxLength={4} />
-        </div>
-      </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default OrderManagementTable;
+export default OrderManagementTable
