@@ -311,7 +311,6 @@ const InventoryReport = ({ vendorDatastate }) => {
                                     }}
                                 />
                             </div>
-
                         </>
                 }
             </>
