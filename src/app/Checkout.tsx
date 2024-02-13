@@ -1,4 +1,4 @@
-import { emptyCart } from "@/redux/slices/cartSlice";
+import { addsuccessOrders, emptyCart } from "@/redux/slices/cartSlice";
 import { useAppSelector } from "@/redux/store"
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import getStripePromise from "@/utils/stripe"
@@ -121,21 +121,10 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
 
                 const responseData = await response.json();
                 console.log(responseData, "responseData after payment");
-
-                const orderIds = cartItems.map(item => item.id);
-                console.log(orderIds,"orderids");
+                dispatch(addsuccessOrders(cartItems))
                 
-                // Constructing search parameter string
-                const searchParams = new URLSearchParams();
-                orderIds.forEach(orderId => {
-                    searchParams.append('orderId', orderId);
-                });
-                console.log(searchParams,"searchparams");
-                
-
-                // Generating the URL with search parameters
-                const thankYouRoute = `/thank-you?${searchParams.toString()}`;
-                router.push(thankYouRoute)
+                router.push(`/thank-you`)
+                // dispatch(emptyCart())
 
                 // if (responseData) {
 
@@ -146,7 +135,6 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
                 // }
 
                 // router.push("/thank-you")
-                // dispatch(emptyCart())
             } catch (error) {
                 console.error('Error during payment:', error);
                 // Handle error as needed

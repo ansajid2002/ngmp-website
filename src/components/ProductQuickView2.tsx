@@ -481,7 +481,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
             <Link
               href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
             >
-             {languageCode === "so" ? somali_additionaldescription === "" ? additionaldescription : somali_additionaldescription : additionaldescription}
+             {languageCode === "so" ? somali_additionaldescription === null ? additionaldescription : somali_additionaldescription : additionaldescription}
             </Link>
           </h2>
 
@@ -573,7 +573,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
           <h2 className="text-[1rem] font-medium">{t("Description")}</h2>
           <p className=" text-[0.9rem] line-clamp-2">
             
-            {languageCode === "so" ? somali_additionaldescription === "" ? additionaldescription : somali_additionaldescription : additionaldescription}
+            {languageCode === "so" ? somali_additionaldescription === null ?  additionaldescription : somali_additionaldescription : additionaldescription}
           </p>
         </div>
 

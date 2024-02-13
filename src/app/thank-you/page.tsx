@@ -14,13 +14,13 @@ const ThankYou = () => {
   const { customerData } = useAppSelector((state) => state.customerData)
   const [defaultAddress, setDefaultAddress] = useState(null);
 // console.log(router.query,"qqqq");
-  const {cartItems} = useAppSelector((store => store.cart))
+  const {cartItems,successOrders} = useAppSelector((store => store.cart))
   console.log(cartItems,"ddd");
   const searchParams = useSearchParams()
   const search = searchParams.get('orderId')
   console.log(search,"searchparams");
   
-  
+  const dispatch = useDispatch()
 
   const [orderData,setOrderData] = useState([])
  
@@ -60,58 +60,69 @@ const ThankYou = () => {
 
   const date = new Date();
   const order_date = date.toISOString();
-
-
   useEffect(() => {
-    const fetchAddress = async () => {
-      // Replace 'backendAddressUrl' with the actual endpoint to fetch customer addresses
-      const backendAddressUrl = `${AdminUrl}/api/getCustomersAddress/${id}`;
+    successOrders.length === 0 ? router.push("/") : ""
+  },[successOrders])
+  
+  useEffect(() => {
+    
+    dispatch(emptyCart())
+    if (successOrders.length === 0) {
+      router.push("/")
+    }
+    else {
+      
+          const fetchAddress = async () => {
+            // Replace 'backendAddressUrl' with the actual endpoint to fetch customer addresses
+            const backendAddressUrl = `${AdminUrl}/api/getCustomersAddress/${id}`;
+      
+            try {
+              const response = await fetch(backendAddressUrl);
+      
+              if (response.ok) {
+                const data = await response.json();
+                // Filter addresses with non-empty 'address' before updating the state
+                const defaultAddress = data.find((address) => address.default_address === true);
+      
+                // Dispatch the default address
+                if (defaultAddress) {
+                  setDefaultAddress(defaultAddress)
+                }
+              } else {
+                // Handle non-2xx response
+                console.error('Failed to fetch Address:', response.statusText);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Fetch Error',
+                  text: 'Failed to fetch customer addresses.',
+                });
+              }
+            } catch (error) {
+              // Handle network errors or other exceptions
+              console.error('Failed to fetch Address:', error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Fetch Error',
+                text: 'Failed to fetch customer addresses.',
+              });
+            }
+          };
+          id && successOrders && fetchAddress();
 
-      try {
-        const response = await fetch(backendAddressUrl);
-
-        if (response.ok) {
-          const data = await response.json();
-          // Filter addresses with non-empty 'address' before updating the state
-          const defaultAddress = data.find((address) => address.default_address === true);
-
-          // Dispatch the default address
-          if (defaultAddress) {
-            setDefaultAddress(defaultAddress)
-          }
-        } else {
-          // Handle non-2xx response
-          console.error('Failed to fetch Address:', response.statusText);
-          Swal.fire({
-            icon: 'error',
-            title: 'Fetch Error',
-            text: 'Failed to fetch customer addresses.',
-          });
-        }
-      } catch (error) {
-        // Handle network errors or other exceptions
-        console.error('Failed to fetch Address:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Fetch Error',
-          text: 'Failed to fetch customer addresses.',
-        });
-      }
-    };
+    }
 
     // Fetch addresses from the backend when the component mounts
-    id && orderData && fetchAddress();
-  }, [id, orderData]);
+  }, [id, successOrders]);
 
   // const { given_name_address, family_name_address, apt_address, subregion_address, city_address, country_address, region_address, zip_address, phone_address } = defaultAddress || []
 
 
-  const adjustedLength = orderData && orderData.length - 1;
-  const totalSellingPrice = orderData && orderData.reduce(
+  const adjustedLength = successOrders && successOrders.length - 1;
+  const totalSellingPrice = successOrders && successOrders.reduce(
     (total, item) => total + (parseFloat(item.sellingprice) * item.added_quantity),
     0
   );
-  const totoalShipping = orderData && orderData.reduce(
+  const totoalShipping = successOrders && successOrders.reduce(
     (total, item) => total + (parseFloat(item.shippingCost) || 0),
     0
   );
@@ -121,7 +132,7 @@ const ThankYou = () => {
   const total = parseFloat(subtotal) + parseFloat(totoalShipping);
 
   return (
-    orderData ? <div className="py-10 px-5 md:px-20">
+    successOrders ? <div className="py-10 px-5 md:px-20">
       <div className="space-y-3">
         <h1>
           Hey <span className="font-medium">{customerData?.given_name} {customerData?.family_name}</span>,
@@ -133,10 +144,7 @@ const ThankYou = () => {
         <p>
           Thanks for shopping! Your order
           <span className="text-[#ed642b] ml-1">
-            {
-              orderData &&
-                languageCode === "so" ? orderData[0]?.somali_ad_title === "" ? orderData[0]?.ad_title : orderData[0]?.somali_ad_title : orderData[0]?.ad_title
-            }
+           
 
           </span>{" "}
           {adjustedLength && adjustedLength > 0 && (
@@ -192,7 +200,7 @@ const ThankYou = () => {
         <hr />
 
         <div>
-          {cartItems && cartItems?.map((item: any, index: any) => (
+          {successOrders && successOrders?.map((item: any, index: any) => (
             <div className="flex items-center justify-between" key={index}>
               <div className="flex gap-2 items-center justify-start">
                 <img
