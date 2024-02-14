@@ -112,7 +112,7 @@ const {t} = useTranslation()
                     className="line-clamp-2"
                     href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
                   >
-                   {languageCode === "so" ? somali_ad_title === "" ? ad_title : somali_ad_title : ad_title}
+                   {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
                   </Link>
                 </h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">

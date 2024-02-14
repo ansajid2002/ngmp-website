@@ -14,12 +14,12 @@ i18n
 
 const fetchTranslationResources = async (language: string) => {
 
-    console.log("2222222");
+
     
   try {
     const response = await fetch(`${AdminUrl}/api/translations/${language}`);
     const translationData = await response.json();
-    console.log(translationData,"TRANSLATIONDATA");
+
     
     i18n.addResourceBundle(language, 'translation', translationData);
     i18n.changeLanguage(language);
@@ -29,7 +29,7 @@ const fetchTranslationResources = async (language: string) => {
 };
 
 export const changeLanguage = async (language: string) => {
-    console.log("CALLED TO TRANSLATE TO ANOTHER  LANGUAGE");
+  
     
   if (language !== i18n.language) {
     await fetchTranslationResources(language);

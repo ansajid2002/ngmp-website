@@ -60,7 +60,7 @@ const {t} = useTranslation()
 
   const storedDistrict = localStorage.getItem('selectedDistrict') || '';
 
-  console.log(storedDistrict,"storedDistrict");
+
 
   useEffect(() => {
     const ChangeLanguageIcon = () => {
@@ -174,8 +174,8 @@ const {t} = useTranslation()
         onMouseLeave={() => onMouseLeaveMenu(menu.id)}
       >
         {renderMainItem(menu)}
-        <div className="flex justify-center invisible bg-black/50 h-[100vh]  sub-menu absolute top-full inset-x-0 transform z-50">
-          <div></div>
+        <div className="flex justify-center invisible bg-black/10   sub-menu absolute top-full inset-x-0 transform z-50">
+     
           <div className=" bg-white  flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
             <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto ">
               <div className="text-sm border-none border-gray-200 dark:border-gray-700">

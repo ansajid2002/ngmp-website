@@ -23,7 +23,7 @@ const PaymentMethod: FC<Props> = ({
   const [mothodActive, setMethodActive] = useState<
     "Stripe" | "Internet-banking" | "Wallet"
   >("Stripe");
-  const [selectedMethod, setSelected] = useState('Stripe')
+  const [selectedMethod, setSelected] = useState(null)
 
   const { walletTotal } = useAppSelector((store) => store.wallet)
 
@@ -32,7 +32,7 @@ const PaymentMethod: FC<Props> = ({
 
     return (
       <div className="flex items-start space-x-4 sm:space-x-6">
-        <Radio
+        {/* <Radio
           className="pt-3.5"
           name="payment-method"
           id="Stripe"
@@ -41,9 +41,9 @@ const PaymentMethod: FC<Props> = ({
             setSelected('Stripe')
             setMethodActive(e as any)
           }}
-        />
+        /> */}
         <div className="flex-1">
-          <label
+          {/* <label
             htmlFor="Stripe"
             className="flex items-center space-x-4 sm:space-x-6"
           >
@@ -99,7 +99,7 @@ const PaymentMethod: FC<Props> = ({
               </svg>
             </div>
             <p className="font-medium">Pay with Stripe</p>
-          </label>
+          </label> */}
 
           {/* <div
             className={`mt-6 mb-4 space-y-3 sm:space-y-5 ${active ? "block" : "hidden"
@@ -417,7 +417,10 @@ const PaymentMethod: FC<Props> = ({
               </svg>
             </h3>
             <div className="font-semibold mt-1 text-sm">
-              <span className="">Pay with {selectedMethod || 'Stripe'}</span>
+              {
+                selectedMethod &&
+              <span className="">Pay with {selectedMethod}</span>
+              }
             </div>
           </div>
           <button
@@ -433,7 +436,7 @@ const PaymentMethod: FC<Props> = ({
             }`}
         >
           {/* ==================== */}
-          <div>{renderStripe()}</div>
+          {/* <div>{renderStripe()}</div> */}
 
           {/* ==================== */}
           {/* <div>{renderInterNetBanking()}</div> */}

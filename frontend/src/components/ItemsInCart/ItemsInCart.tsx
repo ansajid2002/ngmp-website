@@ -94,7 +94,7 @@ const ItemsInCart = ({ label1, label2 }) => {
                     />
                   </div>
                   <div className="pt-3">
-                    <h2 className="line-clamp-1">{languageCode === "so" ? item.somali_ad_title === "" ? item?.ad_title : item?.somali_ad_title : item?.ad_title}</h2>
+                    <h2 className="line-clamp-1">{languageCode === "so" ? item.somali_ad_title === null ? item?.ad_title : item?.somali_ad_title : item?.ad_title}</h2>
                     <Prices price={item?.mrp} sellingprice={item?.sellingprice} />
                   </div>
                 </div>

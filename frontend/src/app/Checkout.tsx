@@ -1,4 +1,4 @@
-import { emptyCart } from "@/redux/slices/cartSlice";
+import { addsuccessOrders, emptyCart } from "@/redux/slices/cartSlice";
 import { useAppSelector } from "@/redux/store"
 import ButtonPrimary from "@/shared/Button/ButtonPrimary";
 import getStripePromise from "@/utils/stripe"
@@ -14,19 +14,10 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
     const { walletTotal } = useAppSelector((store) => store.wallet)
     const [loading, setLoading] = useState(false)
     const router = useRouter()
-    const {languageCode} = useAppSelector((store=> store.languagesReducer))
+    const dispatch = useDispatch()
+    const { languageCode } = useAppSelector((store => store.languagesReducer))
 
-    // const calculateSubtotal = () => {
-    //     let subtotal = 0;
-
-    //     if (true) {
-    //         cartItems.forEach((item: any) => {
-    //             subtotal += parseFloat(item.sellingprice) * item.added_quantity;
-    //         });
-    //     }
-
-    //     return subtotal;
-    // };
+    console.log(cartItems, "cdcdcddcd");
 
     const calculatePRICE = () => {
         return cartItems.map((item) => {
@@ -73,15 +64,14 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
 
 
     const getProductTitle = (item) => {
-        console.log('s-----------------------------------------------');
-        
+
         if (languageCode === "so") {
-            return item.somali_ad_title === "" ? item.ad_title : item.somali_ad_title;
+            return item?.somali_ad_title === null ? item?.ad_title : item.somali_ad_title;
         } else {
             return item.ad_title;
         }
     };
-    
+
     const products = cartItems.map((item, index) => ({
         product: index + 1,
         name: getProductTitle(item),
@@ -98,49 +88,81 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
             shipping_address: selectedAddress,
             customerData: customerData,
             paymentIntent: [],
-            selectedPaymentMode: mothodActive_ACTIVE
+            selectedPaymentMode: mothodActive_ACTIVE,
+            order_date: new Date().toISOString()
         }
     ]
+    console.log(checkoutData, "checkoutData");
+
 
 
     const handleClick = async () => {
+        console.log("called the payment initiator");
+
         setLoading(true)
         localStorage.setItem('selectedPaymentMode', mothodActive_ACTIVE)
+        const handlePayment = async () => {
+            try {
+                const response = await fetch(`/api/Customers/InsertOrders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Add any other headers as needed
+                    },
+                    body: JSON.stringify(checkoutData),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                localStorage.removeItem('selectedOptions');
+                localStorage.removeItem('selectedPaymentMode');
+
+                const responseData = await response.json();
+                console.log(responseData, "responseData after payment");
+                dispatch(addsuccessOrders(cartItems))
+                
+                router.push(`/thank-you`)
+                // dispatch(emptyCart())
+
+                // if (responseData) {
+
+                //     router.push({
+                //         pathname: '/thank-you',
+                //         query: { data: JSON.stringify(responseData) },
+                //     });
+                // }
+
+                // router.push("/thank-you")
+            } catch (error) {
+                console.error('Error during payment:', error);
+                // Handle error as needed
+            }
+        };
+
         if (mothodActive_ACTIVE === 'Wallet') {
-            const response = await fetch(`/api/Customers/InsertOrders`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Add any other headers as needed
-                },
-                body: JSON.stringify(checkoutData),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const responseData = await response.json();
-            router.push('/thank-you', { scroll: false })
-        } else if (mothodActive_ACTIVE === 'Stripe') {
-
-
-            const stripe = await getStripePromise()
-
-            const response = await fetch("/api/Checkout", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                cache: "no-cache",
-                body: JSON.stringify({ products })
-            })
-
-            const data = await response.json()
-            if (data.session) {
-
-                // stripe?.redirectToCheckout({ sessionId: data.session.url })
-                window.location.href = data.session.url
-            }
+            await handlePayment();
         }
+        // else if (mothodActive_ACTIVE === 'Stripe') {
+
+
+        //     const stripe = await getStripePromise()
+
+        //     const response = await fetch("/api/Checkout", {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         cache: "no-cache",
+        //         body: JSON.stringify({ products })
+        //     })
+
+        //     const data = await response.json()
+        //     if (data.session) {
+
+        //         // stripe?.redirectToCheckout({ sessionId: data.session.url })
+        //         window.location.href = data.session.url
+        //     }
+        // }
         setLoading(false)
     }
 

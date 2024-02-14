@@ -32,7 +32,6 @@ import { useTranslation } from "react-i18next";
 export default function AvatarDropdown() {
   const customerData = useAppSelector((state) => state.customerData);
   const [profileImage, setImage] = useState('/avatarplaceholder.png');
-  console.log(customerData,"CUSTOMERDATA");
   const {t} = useTranslation()
   const navigation = useRouter();
   const {
@@ -43,11 +42,11 @@ export default function AvatarDropdown() {
     picture = "",
     google_id,
   } = customerData?.customerData || {};
-  console.log(given_name,"name");
+  
   
 
   const { walletTotal } = useAppSelector((store) => store.wallet);
-  console.log(walletTotal,'walletTotal');
+
   
 
   useEffect(() => {
@@ -187,21 +186,7 @@ export default function AvatarDropdown() {
                       </div>
                     </Link>
 
-                    <Link
-                      href={(redirectToLogin("/followed-shops"))}
-
-                      className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                      onClick={() => close()}
-                    >
-                      <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                        <Store size={20} />
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium ">
-                          {t("Followed Shops")}
-                        </p>
-                      </div>
-                    </Link>
+                   
 
                     <Link
                       href={"/select-district"}

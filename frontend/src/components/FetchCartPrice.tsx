@@ -31,7 +31,7 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
     }
 
     let totalShippingCost = 0;
-    console.log(vendorShippingCosts);
+
 
     // Sum up all the vendor shipping costs
     for (const vendorId in vendorShippingCosts) {
@@ -63,6 +63,8 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
     setIsModalVisible(false);
   };
   const {t} = useTranslation()
+
+  
   return (
     <div className="flex-1">
       <div className="sticky top-28">

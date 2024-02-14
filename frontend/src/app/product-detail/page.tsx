@@ -603,7 +603,7 @@ const ProductDetailPage = ({ searchParams }) => {
         <div>
           <h2 className="text-[1.2rem] tracking-normal">
             
-            {languageCode === "so" ? responseData?.somali_ad_title === "" ? responseData?.ad_title : responseData?.somali_ad_title : responseData?.ad_title}
+            {languageCode === "so" ? responseData?.somali_ad_title === null ? responseData?.ad_title : responseData?.somali_ad_title : responseData?.ad_title}
           </h2>
 
           <div className="flex items-center text-or mt-5 space-x-4 sm:space-x-5">

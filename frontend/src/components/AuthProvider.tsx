@@ -24,7 +24,6 @@ export default function Provider({
   const pathname = usePathname();
   const router = useRouter();
 
-  console.log(pathname);
 
   useEffect(() => {
     if (!session && excludedRoutes.includes(pathname)) {
