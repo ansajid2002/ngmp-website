@@ -108,7 +108,6 @@ export const vendorLinks = [
       }
     ]
   },
-
   {
     title: 'Support',
     links: [

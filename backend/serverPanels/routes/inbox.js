@@ -180,7 +180,7 @@ app.post('/sendInboxMessages', async (req, res) => {
         if (conversationCheckResult.rows.length === 0) {
             // Conversation doesn't exist, create one
             const createConversationQuery = 'INSERT INTO conversations (customer_id, vendor_id, conversation_user_type) VALUES ($1, $2, $3)';
-            await pool.query(createConversationQuery, [senderId, recipientId, userType]);
+            await pool.query(createConversationQuery, [recipientId, senderId, userType]);
         }
 
         // Get the conversation_id

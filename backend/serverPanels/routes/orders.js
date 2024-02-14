@@ -25,17 +25,15 @@ app.post("/VendorProductOrder", async (req, res) => {
     const queryParams = [];
 
     if (type !== "admin") {
+      // If it's not an admin query, add the vendor_id condition with WHERE
       query += " WHERE vpo.vendor_id = $1";
       queryParams.push(vendorId);
     }
 
     if (value && value.trim() !== '') {
-      if (type !== "admin") {
-        query += " AND (";
-      } else {
-        query += " WHERE (";
-      }
-
+      // Add conditions related to value
+      query += ` ${type !== "admin" ? 'AND' : 'WHERE'} (`;
+      // Add conditions related to value here
       query += ` vpo.product_name ILIKE $${queryParams.length + 1}::text OR`;
       queryParams.push(`%${value.trim()}%`);
 
@@ -51,10 +49,13 @@ app.post("/VendorProductOrder", async (req, res) => {
       query += ")";
     }
 
+
     if (tabchange && tabchange !== 'All') {
-      query += ` AND vpo.order_status = $${queryParams.length + 1}::text`;
+      // Add conditions related to tabchange
+      query += ` WHERE vpo.order_status = $${queryParams.length + 1}::text`;
       queryParams.push(tabchange);
     }
+
 
     if (selectedOption) {
       // Adjust date filters based on the selected option
@@ -69,6 +70,21 @@ app.post("/VendorProductOrder", async (req, res) => {
         case 'last60days':
           startDate = moment().subtract(60, 'days').format('YYYY-MM-DD');
           break;
+        case 'last90days':
+          startDate = moment().subtract(90, 'days').format('YYYY-MM-DD');
+          break;
+        case 'last6months':
+          startDate = moment().subtract(6, 'months').format('YYYY-MM-DD');
+          break;
+        case 'last12months':
+          startDate = moment().subtract(12, 'months').format('YYYY-MM-DD');
+          break;
+        case 'last18months':
+          startDate = moment().subtract(18, 'months').format('YYYY-MM-DD');
+          break;
+        case 'last24months':
+          startDate = moment().subtract(24, 'months').format('YYYY-MM-DD');
+          break;
         // Add cases for other options
         default:
           startDate = null; // Handle default case
@@ -76,10 +92,14 @@ app.post("/VendorProductOrder", async (req, res) => {
       }
 
       if (startDate) {
-        query += ` AND vpo.created_at >= $${queryParams.length + 1}::date`;
+        // If there is already a condition in the query, add the new condition with "AND"
+        query += queryParams.length ? ' AND' : ' WHERE';
+        query += ` vpo.created_at >= $${queryParams.length + 1}::date`;
         queryParams.push(startDate);
       }
+
     }
+
 
     query += ` ORDER BY vpo.created_at DESC LIMIT $${queryParams.length + 1}::int OFFSET $${queryParams.length + 2}::int;`;
     const offset = (page - 1) * pageSize;
@@ -1179,7 +1199,16 @@ app.get('/getOrderDetails', async (req, res) => {
           const vendorDetails = vendorResult.rows[0];
           orderDetails.vendor = vendorDetails
 
-          res.status(200).json(orderDetails);
+          // res.status(200).json(orderDetails);
+          // Fetch data from vendorClaimBuyerIssue table based on customer_id and order_id
+          const claimIssueResult = await pool.query('SELECT * FROM vendorClaimBuyerIssue WHERE customer_id = $1 AND order_id = $2', [customer_id, orderId]);
+
+          if (claimIssueResult.rows.length > 0) {
+            const claimIssueData = claimIssueResult.rows[0];
+            res.status(200).json({ ...orderDetails, claim_issue_data: claimIssueData });
+          } else {
+            res.status(404).json({ ...orderDetails, claim_issue_data: null });
+          }
         } else {
           res.status(404).json({ error: 'Vendor not found' });
         }
@@ -1747,5 +1776,35 @@ app.post("/cancelOrderByVendor", async (req, res) => {
   }
 });
 
+app.post('/markAsShipped', async (req, res) => {
+  try {
+    const { order_id, vendorId } = req.body;
+
+    // Check if the order status is already Delivered, Picked, or Ret (starts with)
+    const queryCheckStatus = `
+      SELECT order_status FROM vendorproductorder
+      WHERE order_id = $1 AND vendor_id = $2
+    `;
+    const { rows } = await pool.query(queryCheckStatus, [order_id, vendorId]);
+    const currentStatus = rows[0]?.order_status;
+
+    if (currentStatus && ['Delivered', 'Picked'].includes(currentStatus) || currentStatus.startsWith('Ret')) {
+      return res.status(400).json({ error: 'Order status cannot be updated. It is already Delivered, Picked, or in Return process.' });
+    }
+
+    // If the order status is not already Delivered, Picked, or in Return process, update it to Shipped
+    const queryUpdateStatus = `
+      UPDATE vendorproductorder
+      SET order_status = 'Shipped'
+      WHERE order_id = $1 AND vendor_id = $2
+    `;
+    await pool.query(queryUpdateStatus, [order_id, vendorId]);
+
+    res.status(200).json({ message: 'Order status updated successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 module.exports = app;

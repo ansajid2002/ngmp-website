@@ -39,6 +39,7 @@ const ChatScreen = ({ customerData, vendorDatastate, onSend }) => {
         fetchConversations(true);
     }, [customer_id, vendorId]);
 
+    console.log(customer_id, vendorId, 'e');
     const fetchConversations = async (addLoader) => {
         setLoader(addLoader)
         try {

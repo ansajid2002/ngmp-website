@@ -963,22 +963,22 @@ app.post("/removeCustomerProfileImage", async (req, res) => {
   }
 });
 
-app.get('/getinterestsbyCustomerId/:cid', async (req,res) =>{
+app.get('/getinterestsbyCustomerId/:cid', async (req, res) => {
   console.log('called');
   try {
     const cid = req.params.cid
-    const queryText = 
-    "SELECT customer_interest FROM customers WHERE customer_id=$1"
-    const interestIds = await pool.query(queryText,[cid])
+    const queryText =
+      "SELECT customer_interest FROM customers WHERE customer_id=$1"
+    const interestIds = await pool.query(queryText, [cid])
     console.log(interestIds.rows);
-    
+
     // Map over the array of strings and convert each element to a number
     const interests = interestIds.rows[0].customer_interest.map(Number);
-    
+
     res.json(interests);
   } catch (error) {
     console.log("Error while getting Customer Interests");
-    return res.status(500).json({message: "Failed to Fetch Interests"})
+    return res.status(500).json({ message: "Failed to Fetch Interests" })
   }
 })
 
@@ -1617,4 +1617,30 @@ app.post('/checkCustomerNilePin', async (req, res) => {
   }
 });
 
+app.get("/getCustomerbyId/:cid", async (req, res) => {
+  const customerId = req.params.cid;
+
+  try {
+    // Query to retrieve customer data by ID
+    const query = {
+      text: 'SELECT * FROM customers WHERE customer_id = $1',
+      values: [customerId],
+    };
+
+    // Execute the query
+    const result = await pool.query(query);
+
+    // Extract the customer data from the query result
+    const customer = result.rows[0];
+
+    // Remove the password field from the customer data
+    delete customer.password;
+
+    // Send the customer data (excluding password) in the response
+    res.json(customer);
+  } catch (error) {
+    console.error('Error fetching customer by ID:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 module.exports = app;

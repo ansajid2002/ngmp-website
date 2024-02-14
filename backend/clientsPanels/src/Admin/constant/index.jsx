@@ -1,20 +1,28 @@
 import { AiOutlinePieChart, AiOutlineUserAdd } from "react-icons/ai";
 import {
   RiAlbumLine,
+  RiChat1Line,
   RiChatSmile2Fill,
   RiChatVoiceLine,
   RiFileList3Line,
+  RiFileShield2Line,
   RiFilter2Line,
+  RiFlag2Line,
   RiFlagFill,
   RiOrderPlayLine,
+  RiPhoneLine,
+  RiSendPlaneLine,
+  RiUser2Line,
   RiVoiceprintFill,
   RiWallet2Fill,
+  RiWallet2Line,
 } from "react-icons/ri";
 import { FiEdit2, FiEdit3 } from "react-icons/fi";
 import Cookies from "js-cookie";
 import { FaDesktop, FaHandPaper, FaHandRock, FaMobile, FaTruckLoading, FaUserCheck } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { IoLanguage } from "react-icons/io5";
+import { SiDeliveroo } from "react-icons/si";
 
 export const AdminUrl = "http://localhost:3001";
 export const ProductImageUrl = "https://ngmp-products.s3.us-east-005.backblazeb2.com";
@@ -31,25 +39,25 @@ export const links = [
         to: "/Admin",
       },
       {
-        id: 3,
+        id: 2,
         name: "Category",
         icon: <RiFilter2Line />,
         to: "/Admin/ManageCategory",
       },
       {
-        id: 14,
+        id: 3,
         name: "Attributes",
-        icon: <RiFlagFill />,
+        icon: <RiFlag2Line />,
         to: "/Admin/attributes",
       },
       {
-        id: 11,
+        id: 4,
         name: "Specifications",
         icon: <FiEdit2 />,
         to: "/Admin/Settings?mode=Specification",
       },
       {
-        id: 10,
+        id: 5,
         name: "Roles & Permissons",
         icon: <RiOrderPlayLine />,
         to: "/Admin/ManagePermisson",
@@ -61,37 +69,37 @@ export const links = [
     title: 'Manage',
     links: [
       {
-        id: 2,
+        id: 6,
         name: "Vendors",
         icon: <AiOutlineUserAdd />,
         dropdown: true,
         dropList: [
-          { id: 1, name: "View Vendors", to: "/Admin/Vendors" },
-          { id: 2, name: "Approve/Reject Applications", to: "/Admin/Vendors/Approval&Reject" },
-          { id: 3, name: "Enable/Disable Accounts", to: "/Admin/Vendors/vendorEnable" },
-          { id: 4, name: "", to: "/Admin/Vendors/viewDetails" },
-          { id: 5, name: "Product Approval", to: "/Admin/Products/AcceptReject" },
-          { id: 6, name: "Bulk Product Approval", to: "/Admin/Products/BulkApprove" },
+          { id: 7, name: "View Vendors", to: "/Admin/Vendors" },
+          { id: 8, name: "Approve/Reject Applications", to: "/Admin/Vendors/Approval&Reject" },
+          { id: 9, name: "Enable/Disable Accounts", to: "/Admin/Vendors/vendorEnable" },
+          { id: 10, name: "", to: "/Admin/Vendors/viewDetails" },
+          { id: 11, name: "Product Approval", to: "/Admin/Products/AcceptReject" },
+          { id: 12, name: "Bulk Product Approval", to: "/Admin/Products/BulkApprove" },
         ],
       },
       {
-        id: 6,
+        id: 13,
         name: "Orders",
         icon: <RiFileList3Line />,
         dropdown: true,
         dropList: [
-          { id: 7, name: "View Orders", to: "/Admin/Orders/all" },
+          { id: 14, name: "View Orders", to: "/Admin/Orders/all" },
           // { name: "Track Orders", to: "/Admin/Orders/track" },
         ],
       },
       {
-        id: 4,
+        id: 15,
         name: "Customer",
-        icon: <FaUserCheck />,
+        icon: <RiUser2Line />,
         dropdown: true,
         dropList: [
-          { id: 8, name: "View Customers", to: "/Admin/customers" },
-          { id: 9, name: "Customers Address", to: "/Admin/customersAddress" },
+          { id: 16, name: "View Customers", to: "/Admin/customers" },
+          { id: 17, name: "Customers Address", to: "/Admin/customersAddress" },
         ],
       },
     ]
@@ -101,16 +109,22 @@ export const links = [
     title: 'Claims',
     links: [
       {
-        id: 10,
+        id: 18,
         name: "Vendors Claims",
         icon: <RiVoiceprintFill />,
         to: "/Admin/VendorClaimsAdimin",
       },
       {
-        id: 11,
+        id: 19,
         name: "Customers Claims",
         icon: <RiVoiceprintFill />,
         to: "/Admin/CustomerClaimAdimin",
+      },
+      {
+        id: 27,
+        name: "Buyer report",
+        icon: <RiFileShield2Line />,
+        to: "/Admin/BuyerReports",
       }
     ]
   },
@@ -119,9 +133,9 @@ export const links = [
     title: 'Manage Wallet',
     links: [
       {
-        id: 12,
+        id: 20,
         name: "Customer Wallet",
-        icon: <RiWallet2Fill />,
+        icon: <RiWallet2Line />,
         to: "/Admin/Customers/Wallet",
       }
     ]
@@ -131,7 +145,7 @@ export const links = [
     title: 'Manage Loading Screen',
     links: [
       {
-        id: 13,
+        id: 21,
         name: "App Loading Screen",
         icon: <AiOutlineLoading3Quarters />,
         to: "/Admin/AppLoading",
@@ -143,15 +157,15 @@ export const links = [
     title: 'Manage Banner',
     links: [
       {
-        id: 14,
+        id: 22,
         name: "Desktop",
         icon: <FaDesktop />,
         to: "/Admin/HomeBanner",
       },
       {
-        id: 15,
+        id: 23,
         name: "Mobile",
-        icon: <FaMobile />,
+        icon: <RiPhoneLine />,
         to: "/Admin/MobileBanner",
       },
     ]
@@ -161,9 +175,9 @@ export const links = [
     title: 'V-C Chats',
     links: [
       {
-        id: 16,
+        id: 24,
         name: "Chats",
-        icon: <RiChatSmile2Fill />,
+        icon: <RiChat1Line />,
         to: "/Admin/AdminChatwithCustomers",
       },
     ]
@@ -173,9 +187,9 @@ export const links = [
     title: 'Manage Delivery',
     links: [
       {
-        id: 17,
+        id: 25,
         name: "Deliver Order",
-        icon: <RiChatSmile2Fill />,
+        icon: <RiSendPlaneLine />,
         to: "/Admin/OrderDelivery",
       },
     ]
@@ -185,7 +199,7 @@ export const links = [
     title: 'Upload Languages Files',
     links: [
       {
-        id: 18,
+        id: 26,
         name: "Languages Files",
         icon: <IoLanguage />,
         to: "/Admin/Languages",

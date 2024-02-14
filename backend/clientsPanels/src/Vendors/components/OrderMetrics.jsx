@@ -65,10 +65,6 @@ export default function OrderMetrics({ vendorDatastate, type }) {
     { value: "INR", label: "Indian Ruppe" },
   ];
 
-  const handleCurrencySelectChange = (value) => {
-    setPreviousCurrency(selectedCurrency);
-    setSelectedCurrency(value);
-  };
 
   const handleYearChange = (year) => {
     setSelectedYear(year);
@@ -82,6 +78,8 @@ export default function OrderMetrics({ vendorDatastate, type }) {
     const selectedYear = parseInt(value);
     handleYearChange(selectedYear);
   };
+
+  console.log(vendorId);
 
   const callCustomerOrdersByMonth = async () => {
     try {

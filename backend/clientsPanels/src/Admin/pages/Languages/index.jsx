@@ -1,16 +1,18 @@
 
 import React, { useState } from 'react';
-import { Upload, Modal, Button, message } from 'antd';
+import { Upload, Modal, Button, message, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
 import { AdminUrl } from '../../constant';
 import Swal from 'sweetalert2';
+import { Option } from 'antd/es/mentions';
 
 const index = () => {
   const [groupedTranslations, setGroupedTranslations] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const formData = new FormData();
-  console.log(groupedTranslations, "");
+  const [loader, setLoader] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState('so');
+
   const openmodal = () => {
     setIsModalVisible(true);
   }
@@ -79,41 +81,61 @@ const index = () => {
 
 
   const handleSendResponse = async () => {
+    const chunkSize = 100; // Set the chunk size to 100 records
+    const translationsArray = groupedTranslations[selectedCountry]
+      ? Object.entries(groupedTranslations[selectedCountry]).map(([key, value]) => ({ [key]: value }))
+      : [];
+    const chunkCount = Math.ceil(translationsArray?.length / chunkSize); // Calculate the number of chunks
+    setLoader(true)
     try {
+      for (let i = 0; i < chunkCount; i++) {
+        const formData = new FormData(); // Create a new FormData instance for each chunk
+        const chunkStart = i * chunkSize;
+        const chunkEnd = Math.min(chunkStart + chunkSize, translationsArray.length);
+        const chunk = translationsArray.slice(chunkStart, chunkEnd);
 
-      // Append the groupedTranslations as a JSON file to the FormData
-      const blob = new Blob([JSON.stringify(groupedTranslations)], { type: 'application/json' });
-      formData.append('translationsFile', blob, 'translations.json');
-      // Send a POST request with groupedTranslations to the server
-      const response = await fetch(`${AdminUrl}/api/writeTranslations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+        // Append the chunk as a JSON file to the FormData
+        const blob = new Blob([JSON.stringify(chunk)], { type: 'application/json' });
+        formData.append('translationsFile', blob, `translations-chunk-${i}.json`);
+        formData.append('selectedCountry', selectedCountry);
 
-      if (response.ok) {
-        const result = await response.json();
-        //   message.success('Translations sent successfully!');
-        Swal.fire({
-          icon: 'success',
-          title: 'Translations sent successfully!',
+        const response = await fetch(`${AdminUrl}/api/writeTranslations`, {
+          method: 'POST',
+          body: formData,
         });
-      } else {
-        console.error('Failed to send translations to the server.');
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed to send translations',
-          text: 'Please try again.',
-        });
+
+        console.log((chunkCount - 1), i);
+
+        if (!response.ok) {
+          console.error('Failed to send translations to the server in chunk', i);
+          await Swal.fire({
+            icon: 'error',
+            title: 'Failed to send translations',
+            text: 'Please try again.',
+          });
+        } else {
+          if ((chunkCount - 1) === i) {
+            await Swal.fire({
+              icon: 'success',
+              title: 'Translations Sent Successfully',
+              text: 'Translations have been sent successfully.',
+            });
+            setLoader(false)
+
+          }
+        }
       }
-
     } catch (error) {
       console.error('Error sending translations:', error);
-      message.error('Error sending translations. Please try again.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Failed to send translations',
+        text: 'Please try again.',
+      });
     }
   };
+
+
 
   const downloadexcel = async () => {
     try {
@@ -142,6 +164,19 @@ const index = () => {
     }
   };
 
+  const countryCodes = {
+    so: 'Somalia',
+    hi: 'Hindi',
+    sw: 'Swahili',
+    am: 'Amharic',
+    ar: 'Arabic',
+    fr: 'French'
+  };
+
+
+  const handleChange = (value) => {
+    setSelectedCountry(value);
+  };
 
   return (
     <div className='sm:ml-72'>
@@ -156,12 +191,19 @@ const index = () => {
         </Button>
       </Upload>
 
+      <Select className='w-96 mt-5 ml-2' defaultValue={'English'} onChange={handleChange} value={selectedCountry}>
+        {Object.entries(countryCodes).map(([code, name], index) => (
+          <Option key={index} value={code}>{name} ({code.toUpperCase()})</Option>
+        ))}
+      </Select>
+
       {/* Button for sending the response */}
       {groupedTranslations && (
         <>
           <Button
             style={{ marginTop: '16px' }}
             onClick={openmodal}
+            loading={loader}
           >
             Upload Translations
           </Button>

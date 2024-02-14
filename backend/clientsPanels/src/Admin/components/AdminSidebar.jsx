@@ -265,12 +265,14 @@ const AdminSidebar = ({ adminLoginData }) => {
 
                                 <ul className="space-y-2 font-medium">
                                     {links.map((item, index) => {
+                                        console.log(item.links, 'links');
                                         return (
                                             <>
                                                 {item.links && item.links?.length > 0 && <h1 key={index} className="mt-5 text-gray-400">{item.title}</h1 >}
                                                 {
                                                     item.links.map((link, index) => {
                                                         const showLink = adminLoginData[0].role_id?.includes(link.id);
+                                                        // console.log(adminLoginData[0].role_id, link.id);
                                                         return (
                                                             <>
                                                                 {showLink && (

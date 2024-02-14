@@ -341,4 +341,131 @@ app.post(
   }
 );
 
+app.post('/insertVendorClaimBuyerIssue', async (req, res) => {
+  try {
+    // Destructure order_id, customer_id, and vendor_id from the request body
+    const { order_id, customer_id, vendor_id, selected_reason, report_reason, product_uniqueid } = req.body;
+
+    // Check if a row with the given order_id, customer_id, and vendor_id already exists
+    const checkQueryText = 'SELECT * FROM vendorClaimBuyerIssue WHERE order_id = $1 AND customer_id = $2 AND vendor_id = $3';
+    const checkQueryValues = [order_id, customer_id, vendor_id];
+    const { rows } = await pool.query(checkQueryText, checkQueryValues);
+
+    // If a row is found, send response indicating that the customer has already reported this product
+    if (rows.length > 0) {
+      return res.status(200).json({ success: false, message: 'You have already reported this product for this customer.' });
+    }
+
+    // If no row is found, proceed with inserting the data into the table
+    const insertQueryText = 'INSERT INTO vendorClaimBuyerIssue (vendor_id, customer_id, order_id, selected_reason, report_reason, product_uniqueid) VALUES ($1, $2, $3, $4, $5, $6)';
+    const insertQueryValues = [vendor_id, customer_id, order_id, selected_reason, report_reason, product_uniqueid];
+    await pool.query(insertQueryText, insertQueryValues);
+
+    // Respond with a success message if insertion is successful
+    res.status(200).json({ success: true, message: 'Your report process has been sent to the admin panel for processing.' });
+
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get("/getAllBuyerReports", async (req, res) => {
+  try {
+    const { page, pageSize } = req.query;
+    const offset = (page - 1) * pageSize; // Calculate the offset
+
+    // Query to retrieve paginated data
+    const query = `
+      SELECT * 
+      FROM vendorClaimBuyerIssue 
+      ORDER BY id
+      LIMIT ${pageSize}
+      OFFSET ${offset};
+    `;
+
+    // Query to retrieve total count of items
+    const totalCountQuery = `
+      SELECT COUNT(*) AS total_count FROM vendorClaimBuyerIssue;
+    `;
+    const totalCountResult = await pool.query(totalCountQuery);
+    const totalItems = totalCountResult.rows[0].total_count;
+
+    const result = await pool.query(query);
+
+    // Fetch additional data from vendors and customers tables
+    const additionalData = await Promise.all(result.rows.map(async (row) => {
+      const vendorQuery = `SELECT * FROM vendors WHERE id = $1`;
+      const vendorResult = await pool.query(vendorQuery, [row.vendor_id]);
+      const vendorData = vendorResult.rows[0];
+      delete vendorData?.password
+      const customerQuery = `SELECT * FROM customers WHERE customer_id = $1`;
+      const customerResult = await pool.query(customerQuery, [row.customer_id]);
+      const customerData = customerResult.rows[0];
+      delete customerData?.password
+
+      return {
+        ...row,
+        vendor: vendorData || null,
+        customer: customerData || null,
+      };
+    }));
+
+    res.status(200).json({ totalItems, data: additionalData });
+  } catch (error) {
+    console.error("Error retrieving buyer reports:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+app.post('/updateAdminResponse', async (req, res) => {
+  try {
+    const { id, adminResponse, switchValue } = req.body;
+
+    // Fetch data based on the id from the vendorClaimBuyerIssue table
+    const query = `
+      SELECT * 
+      FROM vendorClaimBuyerIssue 
+      WHERE id = $1
+    `;
+    const result = await pool.query(query, [id]);
+    const rowData = result.rows[0];
+
+    // Retrieve the adminresponse from the fetched data
+    let adminResponseData = rowData.adminresponse || [];
+
+    // If adminResponseData is not an array, initialize it as an empty array
+    if (!Array.isArray(adminResponseData)) {
+      adminResponseData = [];
+    }
+
+    // Create the new admin response object
+    const newAdminResponse = { text: adminResponse, date: new Date().toISOString() };
+
+    // Append the new admin response to the existing adminresponse array
+    adminResponseData.push(newAdminResponse);
+
+    // Increment showcountofactionbyadmin by 1
+    const updatedShowCount = rowData.showcountofactionbyadmin + 1;
+
+    // Update the row in the database with the modified adminresponse and incremented showcountofactionbyadmin
+    const updateQuery = `
+      UPDATE vendorClaimBuyerIssue
+      SET adminresponse = $1,
+          showcountofactionbyadmin = $2,
+          report_approved_by_admin = $4
+      WHERE id = $3
+    `;
+    await pool.query(updateQuery, [JSON.stringify(adminResponseData), updatedShowCount, id, switchValue]);
+
+    res.status(200).json({ message: 'Admin response updated successfully' });
+  } catch (error) {
+    console.error("Error updating admin response:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 module.exports = app;

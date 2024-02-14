@@ -3,6 +3,7 @@ import { AdminUrl } from '../../Admin/constant';
 import { Image } from 'antd';
 import moment from 'moment';
 import ChatScreen from './ChatScreen';
+import { useLocation } from 'react-router-dom';
 
 const ChatwithCustomers = ({ vendorDatastate }) => {
     const [error, setError] = useState('')
@@ -10,6 +11,10 @@ const ChatwithCustomers = ({ vendorDatastate }) => {
     const [CustomerState, setCustomerState] = useState(null)
     const [lastMessages, setLastMessage] = useState('')
     const [updateCustomerId, setCustomerId] = useState(null)
+
+    const params = new URLSearchParams(location.search);
+    const customer = params.get("customer");
+
 
     const vendorId = vendorDatastate?.[0]?.id
 
@@ -42,6 +47,29 @@ const ChatwithCustomers = ({ vendorDatastate }) => {
     };
 
     useEffect(() => {
+        // Check if customer is not null
+        if (customer) {
+            // Send a request to the backend to fetch customer data by ID
+            fetch(`${AdminUrl}/api/getCustomerbyId/${customer}`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Failed to fetch customer data');
+                    }
+                })
+                .then(data => {
+                    // Update the CustomerState with the received customer data
+                    setCustomerState(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching customer data:', error);
+                    // Handle error, if needed
+                });
+        }
+    }, [customer]);
+
+    useEffect(() => {
         fetchConversations();
     }, [vendorId, lastMessages]);
 
@@ -57,6 +85,7 @@ const ChatwithCustomers = ({ vendorDatastate }) => {
 
     const handleCustomerChat = (customerData) => {
         setCustomerState(customerData)
+        console.log(customerData?.customer_id);
     }
 
     const handleLastMessage = (lastMessages, customer_id) => {
@@ -69,7 +98,6 @@ const ChatwithCustomers = ({ vendorDatastate }) => {
         fetchConversations();
     }, 5000);
 
-    console.log(conversations);
     return (
         <div className="lg:flex h-[85vh] border">
 

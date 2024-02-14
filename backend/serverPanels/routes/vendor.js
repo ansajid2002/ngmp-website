@@ -164,6 +164,7 @@ app.post("/resetVendorPassword", async (req, res) => {
 app.post("/updateVendor", async (req, res) => {
   const { id, ...data } = req.body;
 
+  console.log(data);
   try {
     const client = await pool.connect();
 

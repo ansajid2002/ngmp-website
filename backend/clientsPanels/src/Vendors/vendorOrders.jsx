@@ -22,7 +22,7 @@ const OrderManagementPage = ({
         </div>
       ) : (
         <>
-          <OrderMetrics type={"vendor"} conversionRates={conversionRates} isCurrencyloading={isCurrencyloading} userCurrency={userCurrency} />
+          <OrderMetrics type={"vendor"} vendorDatastate={vendorDatastate} conversionRates={conversionRates} isCurrencyloading={isCurrencyloading} userCurrency={userCurrency} />
 
           <div>
             <OrderManagementTable

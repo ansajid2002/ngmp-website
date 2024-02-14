@@ -16,48 +16,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Define an endpoint for receiving the PDF file
-app.post("/receiveReportPDF", async (req, res) => {
-  try {
-    const pdfData = req.body.pdfData; // Assuming you send the PDF data in the request body
-    const pdfFileName = `report_${new Date().toISOString()}.pdf`;
-    const htmlFileName = `report_${new Date().toISOString()}.html`;
-
-    // Specify the paths where you want to store the PDF and HTML files
-    const pdfFilePath = `/uploads/ReportsVendors/${pdfFileName}`;
-    const htmlFilePath = `/uploads/ReportsVendors/${htmlFileName}`;
-
-    // Save the PDF file to the server
-    fs.writeFileSync(pdfFilePath, pdfData);
-
-    // Create an HTML file with a link to the saved PDF
-    const htmlContent = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Report PDF</title>
-          </head>
-          <body>
-            <h1>Report PDF</h1>
-            <p><a href="${pdfFileName}" target="_blank">View PDF</a></p>
-          </body>
-        </html>
-      `;
-
-    // Save the HTML file to the server
-    fs.writeFileSync(htmlFilePath, htmlContent);
-
-    // You can now store the HTML file path in your database or return it as a response to the client.
-
-    res
-      .status(200)
-      .json({ message: "PDF received and saved as HTML successfully" });
-  } catch (error) {
-    console.error("Error receiving and saving PDF as HTML:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 app.get('/product-approved-pdf', async (req, res) => {
   try {
     const { vendorId, selectedOption } = req.query;
@@ -620,43 +578,367 @@ app.get('/product-inventory-csv', async (req, res) => {
 });
 
 app.get("/orders-pdf", async (req, res) => {
+  const { type, vendorId, tabchange, selectedOption } = req.query;
+
   try {
-    const { vendorId, value = '', selectedOption, tabchange } = req.query;
-
-    // Construct the WHERE clause for filtering orders based on search criteria
-    let whereClause = '';
-    let queryParams = [vendorId, `%${value}%`, `%${value}%`, `%${value}%`, `%${value}%`];
-
-    if (selectedOption === 'last7days') {
-      const date = new Date();
-      date.setDate(date.getDate() - 7); // Get the date 7 days ago
-      whereClause += ' AND vpo.created_at >= $6::date';
-      queryParams.push(date);
-    } else if (selectedOption === 'last30days') {
-      const date = new Date();
-      date.setDate(date.getDate() - 30); // Get the date 30 days ago
-      whereClause += ' AND vpo.created_at >= $6::date';
-      queryParams.push(date);
-    }
-    // Add conditions for other selectedOptions if needed
-
-    // Construct the SQL query
-    const query = `
+    let query = `
       SELECT vpo.*
       FROM vendorproductorder vpo
-      WHERE vpo.vendor_id = $1 
-        AND (vpo.product_name ILIKE $2::text OR vpo.orderid ILIKE $3::text OR vpo.order_status ILIKE $4::text OR vpo.skuid_order ILIKE $5::text)
-        ${whereClause}
-      ORDER BY vpo.created_at DESC;
+    `;
+    const queryParams = [];
+
+    let whereClause
+    if (type !== "admin") {
+      query += " WHERE vpo.vendor_id = $1";
+      queryParams.push(vendorId);
+    }
+
+    if (tabchange && tabchange !== 'All') {
+      query += ` AND vpo.order_status = $${queryParams.length + 1}::text`;
+      queryParams.push(tabchange);
+    }
+
+    if (selectedOption) {
+      let startDate;
+      switch (selectedOption) {
+        case 'last7days':
+          startDate = moment().subtract(7, 'days').format('YYYY-MM-DD');
+          break;
+        case 'last30days':
+          startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
+          break;
+        case 'last60days':
+          startDate = moment().subtract(60, 'days').format('YYYY-MM-DD');
+          break;
+        case 'last90days':
+          startDate = moment().subtract(90, 'days').format('YYYY-MM-DD');
+          break;
+        case 'last6months':
+          startDate = moment().subtract(6, 'months').format('YYYY-MM-DD');
+          break;
+        case 'last12months':
+          startDate = moment().subtract(12, 'months').format('YYYY-MM-DD');
+          break;
+        case 'last18months':
+          startDate = moment().subtract(18, 'months').format('YYYY-MM-DD');
+          break;
+        case 'last24months':
+          startDate = moment().subtract(24, 'months').format('YYYY-MM-DD');
+          break;
+        default:
+          startDate = null; // Handle default case
+          break;
+      }
+
+    }
+
+
+    query += ` ORDER BY vpo.created_at DESC;`;
+
+    console.log(query, queryParams);
+    const { rows } = await pool.query(query, queryParams);
+
+    // Fetch customer delivery address details
+    const deliveryAddressDetails = await Promise.all(
+      rows.map(async (row) => {
+        const addressDetails = await pool.query(
+          "SELECT * FROM customer_delivery_address WHERE unique_order_id = $1;",
+          [row.order_id]
+        );
+
+        return { ...row, deliveryAddress: addressDetails.rows[0] || {} };
+      })
+    );
+
+    // Fetch product details
+    const productDetails = await Promise.all(
+      deliveryAddressDetails.map(async (row) => {
+        const productDetails = await pool.query(
+          "SELECT * FROM products WHERE uniquepid = $1;",
+          [row.product_uniqueid]
+        );
+
+        return { ...row, productDetails: productDetails.rows[0] || {} };
+      })
+    );
+
+    // Fetch customer details based on customer_id
+    const rowsWithCustomerInfo = await Promise.all(
+      productDetails.map(async (row) => {
+        const customerDetails = await pool.query(
+          "SELECT * FROM customers WHERE customer_id = $1;",
+          [row.customer_id]
+        );
+
+        const customerInfo = customerDetails.rows[0] || {};
+        delete customerInfo.password;
+        return { ...row, customerInfo };
+      })
+    );
+
+    const totalCountQuery = `
+      SELECT COUNT(*) as total_count
+      FROM vendorproductorder
+      ${type !== "admin" ? 'WHERE vendor_id = $1' : ''};
+    `;
+
+    const totalCountResult = await pool.query(totalCountQuery, type !== "admin" ? [vendorId] : []);
+    const totalCount = parseInt(totalCountResult.rows[0].total_count, 10);
+
+    // Fetch additional details from the vendors table for each vendor_id
+    const rowsWithVendorProfiles = await Promise.all(
+      rowsWithCustomerInfo.map(async (row) => {
+        const vendorDetails = await pool.query(
+          "SELECT brand_name, email, country_code, mobile_number, status, vendor_profile_picture_url, brand_logo, vendorname, company_city, company_zip_code, company_state, company_country, shipping_address FROM vendors WHERE id = $1;",
+          [row.vendor_id]
+        );
+
+        const vendorProfile = vendorDetails.rows[0] || {};
+
+        return { ...row, vendorProfile, totalCount };
+      })
+    );
+
+    const headers = ['Order Id', 'Group Order Id',
+      'Product Name', 'Quantity', 'Total Amount', 'Customer Data',
+      'Order Date', 'Order Status',
+      'Transaction Id', 'Payment Method', 'Payment Status'];
+
+    const data = rowsWithVendorProfiles.map(row => [
+      row.order_id,
+      row.orderid,
+      row.product_name,
+      row.quantity,
+      row.total_amount,
+      `Customer Id: ${row.customer_id}\nEmail: ${row.customerInfo?.email}\nFull Name: ${row.customerInfo?.given_name} ${row.customerInfo?.family_name}`,
+      moment(row.order_date)?.format('LLL'),
+      row.order_status,
+      row.transaction_id,
+      row.payment_method,
+      row.payment_status
+    ])
+
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a2'
+    })
+
+    // Generate PDF
+    doc.autoTable({
+      startY: 20,
+      head: [headers],
+      body: data,
+    });
+
+    // Send the PDF file as response
+    res.setHeader('Content-Disposition', 'attachment; filename="approved_products.pdf"');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.send(doc.output());
+  } catch (error) {
+    console.error('Error exporting to PDF:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post("/generate-order-slip", async (req, res) => {
+  try {
+    const { order_id, orderid, vendorId } = req.body;
+
+    console.log(req.body);
+    // Construct the SQL query
+    const query = `
+      SELECT *
+      FROM vendorproductorder
+      WHERE order_id = $1 AND orderid = $2 AND vendor_id = $3;
     `;
 
     // Execute the query
-    const { rows } = await pool.query(query, queryParams);
+    const { rows } = await pool.query(query, [order_id, orderid, vendorId]);
 
-    // Generate PDF
-    console.log(rows);
+    // Fetch customer delivery address details
+    const deliveryAddressDetails = await Promise.all(
+      rows.map(async (row) => {
+        const addressDetails = await pool.query(
+          "SELECT * FROM customer_delivery_address WHERE unique_order_id = $1;",
+          [row.orderid]
+        );
+
+        return { ...row, deliveryAddress: addressDetails.rows[0] || {} };
+      })
+    );
+
+    const vendorDetails = await Promise.all(
+      deliveryAddressDetails.map(async (row) => {
+        const vendorData = await pool.query(
+          "SELECT mobile_number, email, brand_name, business_model,country_code,company_name,company_city, company_state,company_country,company_zip_code,brand_logo,vendorname,vendor_username, shipping_address FROM vendors WHERE id = $1;",
+          [row.vendor_id]
+        );
+
+        return { ...row, vendorDetails: vendorData.rows[0] || {} };
+      })
+    );
+
+    // Fetch product details
+    const productDetails = await Promise.all(
+      vendorDetails.map(async (row) => {
+        const productDetails = await pool.query(
+          "SELECT * FROM products WHERE uniquepid = $1;",
+          [row.product_uniqueid]
+        );
+
+        return { ...row, productDetails: productDetails.rows[0] || {} };
+      })
+    );
+
+    // Fetch customer details based on customer_id
+    const rowsWithCustomerInfo = await Promise.all(
+      productDetails.map(async (row) => {
+        const customerDetails = await pool.query(
+          "SELECT * FROM customers WHERE customer_id = $1;",
+          [row.customer_id]
+        );
+
+        const customerInfo = customerDetails.rows[0] || {};
+        delete customerInfo.password;
+        return { ...row, customerInfo };
+      })
+    );
+
+
+    const doc = new jsPDF({
+      orientation: 'portrait', // or 'landscape' as needed
+      unit: 'in', // specifying unit as inchesR
+      format: [4, 6] // specifying custom dimensions [width, height]
+    });
+
+    const { ispickup } = rowsWithCustomerInfo?.[0] || []
+    let heightofline = 0;
+    let brand_name_data = rowsWithCustomerInfo?.[0]?.vendorDetails?.brand_name
+    if (ispickup) {
+      const { vendorDetails } = rowsWithCustomerInfo?.[0] || [];
+      const {
+        brand_name,
+        vendorname,
+        business_model,
+        company_city,
+        company_state,
+        company_country,
+        company_zip_code,
+        shipping_address,
+      } = vendorDetails;
+
+      // Set font size and position for "Picked From:" text
+      doc.setFontSize(8); // Set font size to 10pt
+      doc.text('Pickup From:', 0.15, 0.25); // Position "Picked From:" text
+
+      let addressLines = [
+        brand_name,
+        vendorname,
+        business_model,
+        `${shipping_address},`,
+        `${company_city}, ${company_state}, ${company_zip_code},`,
+        `${company_country}`,
+      ];
+
+      addressLines.forEach((line, index) => {
+        doc.setFont("helvetica", "bold"); // Set font to bold
+        doc.setFontSize(6); // Set font size to 10pt
+        doc.text(line, 0.15, 0.42 + index * 0.1); // Position each line of the address accordingly with smaller spacing
+      });
+
+      const lineHeight = 0.4 + addressLines.length * 0.1; // Calculate the vertical position of the line
+      doc.setLineWidth(0.01); // Set line width
+      doc.line(0.15, lineHeight + 0.05, 4 - 0.25, lineHeight + 0.05); // Draw a horizontal line
+
+      heightofline = lineHeight + 0.05
+    } else {
+      const { deliveryAddress } = rowsWithCustomerInfo?.[0] || [];
+      const {
+        first_name, last_name, selected_country, street_address, apartment, selected_city, selected_state, zip_code, email, phone_number
+      } = deliveryAddress;
+      // Set font size and position for "Ship to:" text
+      doc.setFontSize(10); // Set font size to 10pt
+      doc.text('Ship to:', 0.15, 0.25).setFont(undefined, 'bold');
+
+      // Set font size and position for address text
+      doc.setFontSize(9); // Set font size to 9pt for smaller text
+      const addressLines = [
+        `${first_name} ${last_name}`,
+        `${email}, ${phone_number}`,
+        `${street_address}, ${apartment}`,
+        `${selected_city}, ${selected_state}`,
+        `${zip_code}, ${selected_country}`
+      ];
+
+      addressLines.forEach((line, index) => {
+        doc.setFont("helvetica", "bold"); // Set font to bold
+        doc.setFontSize(6); // Set font size to 10pt
+        doc.text(line, 0.15, 0.42 + index * 0.1); // Position each line of the address accordingly with smaller spacing
+      });
+
+      const lineHeight = 0.4 + addressLines.length * 0.1; // Calculate the vertical position of the line
+      doc.setLineWidth(0.01); // Set line width
+      doc.line(0.15, lineHeight + 0.05, 4 - 0.25, lineHeight + 0.05); // Draw a horizontal line
+
+      heightofline = lineHeight
+    }
+
+    // Display "Order ID" text below the horizontal line
+    doc.setFontSize(12)
+    doc.text(`Order ID: ${order_id}`, 0.15, heightofline + 0.3).setFont(undefined, 'bold');
+    doc.setFontSize(6)
+    doc.text(`Thank you for buying from ${brand_name_data} on Nile Global Market-place`, 0.15, heightofline + 0.45)
+
+    doc.setTextColor('#323232')
+    doc.setFontSize(6)
+
+    doc.text('Qty', 0.15, heightofline + 0.75)
+    doc.text('Product Details', 0.75, heightofline + 0.75)
+    doc.text('Unit Price', 0.75 + 1.45, heightofline + 0.75)
+    doc.text('Extended Price', 0.75 + 2.15, heightofline + 0.75)
+    doc.setFont('helvetica', 'light')
+
+    const { quantity = 0, product_name, label, skuid_order, sell_price, total_amount, shipping_fee } = rowsWithCustomerInfo?.[0] || {}
+    doc.text(`${quantity}`, 0.15, heightofline + 0.90)
+    const maxWidth = 1.2; // Width in inches
+
+    // Split the product name into multiple lines if it exceeds the maximum width
+    const productNameLines = doc.splitTextToSize(product_name, maxWidth);
+
+    // Calculate the height of the text based on the number of lines
+    const lineHeight = 0.09; // Height of each line
+    const productNameHeight = productNameLines.length * lineHeight;
+
+    // Output the product name lines
+    productNameLines.forEach((line, index) => {
+      doc.text(line, 0.75, heightofline + 0.90 + (index * lineHeight));
+    });
+
+    // Output label and SKU
+    if (label) {
+      doc.text(label, 0.75, heightofline + 0.90 + productNameHeight);
+    }
+    doc.text(`SKU: ${skuid_order}`, 0.75, heightofline + 0.90 + productNameHeight + (label ? lineHeight : 0));
+    doc.text(`$${sell_price}`, 0.75 + 1.45, heightofline + 0.90)
+    doc.text(`$${total_amount * quantity}`, 0.75 + 2.15, heightofline + 0.90)
+
+    doc.setFont('helvetica', 'bold')
+    doc.text(`Sub Total:       $${total_amount * quantity}`, 0.75 + 2.15, heightofline + 1.40)
+    doc.text(`Shipping:        ${shipping_fee || 0}`, 0.75 + 2.15, heightofline + 1.50)
+    doc.text(`Grand Total:     $${(total_amount * quantity) + parseFloat(shipping_fee || 0)}`, 0.75 + 2.15, heightofline + 1.60)
+
+
+    // res.status(200).json({ data: rowsWithCustomerInfo });
+    // return
+    res.setHeader('Content-Disposition', 'attachment; filename="payment_report.pdf"');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.send(doc.output());
+    // Send the fetched data as response
+
+
   } catch (error) {
-    console.error('Error exporting to PDF:', error);
+    console.error('Error generating order slip:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

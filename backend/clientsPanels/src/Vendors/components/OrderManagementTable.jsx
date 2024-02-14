@@ -14,11 +14,17 @@ import {
   Select,
   Input,
   Space,
+  Dropdown,
+  Typography,
+  Menu,
 } from "antd";
 import { websiteUrl } from "../../App";
 import { FiEdit3, FiMap, FiTrash2 } from 'react-icons/fi';
 import { GrDocumentCsv, GrDocumentExcel, GrDocumentPdf } from 'react-icons/gr';
+import { DownOutlined } from '@ant-design/icons';
 import { BiDotsVertical } from 'react-icons/bi';
+import Swal from 'sweetalert2';
+
 
 const OrderManagementTable = ({
   vendorDatastate,
@@ -36,11 +42,11 @@ const OrderManagementTable = ({
   const [tabchange, setTabChange] = useState('All')
 
   const [PdfLoader, setPdfLoader] = useState(false);
-  const [excelLoader, setExcelLoader] = useState(false);
-  const [csvLoader, setCsvLoader] = useState(false);
+  const [modalvisible, setModalVisisble] = useState(false);
+  const [order_id_modal, setOrderId] = useState(null);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const [selectedOption, setSelectedOption] = useState("last7days");
-
 
   const vendorId = vendorDatastate?.[0].id;
 
@@ -90,6 +96,7 @@ const OrderManagementTable = ({
     Exchanged: "orange",
     Cancelled: "red",
     Delivered: "green",
+    Picked: "green",
   };
 
   const statusIconMap = {
@@ -114,20 +121,83 @@ const OrderManagementTable = ({
     setCustomerModalVisible(true);
   };
 
+  const handleActionClick = async (key, order_id, orderid, customer_id) => {
+    if (key === 'print') {
+      try {
+        const response = await fetch(`${AdminUrl}/api/generate-order-slip`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ order_id, orderid, vendorId })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate PDF');
+        }
+
+        const pdfData = await response.blob();
+
+        // Create a URL for the PDF blob
+        const pdfUrl = URL.createObjectURL(pdfData);
+
+        // Open the PDF in a new window
+        window.open(pdfUrl, '_blank');
+
+        // Alternatively, you can use a library like jsPDF to directly print the PDF
+        // const pdf = new jsPDF();
+        // pdf.open(pdfData);
+        // pdf.print();
+
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+        // Handle error appropriately, e.g., show an error message to the user
+      }
+    }
+    else if (key === 'shipped') {
+      // Create a modal element
+      setModalVisisble(true)
+      setOrderId(order_id)
+    } else if (key === 'cancel') {
+      const cancelPageUrl = `/Vendors/Orders/Cancel?order_id=${order_id}`;
+      window.open(cancelPageUrl, '_blank');
+    } else if (key === 'buyer') {
+      const buyerChat = `/Vendors/ChatwithCustomers?customer=${customer_id}`;
+      window.open(buyerChat, '_blank');
+    } else if (key === 'report') {
+      const buyerChat = `/Vendors/ReportBuyer?order=${order_id}&customer=${customer_id}`;
+      window.open(buyerChat, '_blank');
+    } else if (key === 'refund') {
+      console.log('refund');
+      const refundlink = `/Vendors/InitiateRefund?order=${order_id}&customer=${customer_id}`;
+      window.open(refundlink, '_blank');
+    }
+  }
 
   const columns = [
     {
       title: "Actions",
       key: "actions",
-      width: 80,
+      width: 150,
       render: (record) => (
-        <Space size="middle" className="flex">
-          {/* Edit Icon */}
-          <BiDotsVertical
-            onClick={() => handleUpdate(record.category_id)} // Replace 'id' with 'category_id'
-            className="text-gray-600 w-6 h-6 cursor-pointer"
-          />
-
+        <Space>
+          <Dropdown
+            overlay={
+              <Menu
+                onClick={({ key }) => handleActionClick(key, record.order_id, record.orderid, record?.customer_id)}
+              >
+                <Menu.Item key="print">Print Packing Slip</Menu.Item>
+                <Menu.Item key="cancel">Cancel Order</Menu.Item>
+                <Menu.Item key="shipped">Mark as Shipped</Menu.Item>
+                <Menu.Item key="buyer">Contact Buyer</Menu.Item>
+                <Menu.Item key="report">Report a Buyer</Menu.Item>
+                <Menu.Item key="refund">Initiate Refund</Menu.Item>
+              </Menu>
+            }
+            trigger={["click"]}
+          >
+            <Button type="button" icon={<BiDotsVertical />} title='Action' />
+          </Dropdown>
         </Space>
       ),
     },
@@ -142,7 +212,7 @@ const OrderManagementTable = ({
             <Button type="link" onClick={() => showProductDetailsModal(record)}>
               {orderid}
             </Button>
-            <a href={`/Vendors/Orders/OrderDetails?order_id=${record.order_id}`} className='text-blue-700 tracking-wide' target='_blank'>View Order</a>
+            {type !== 'admin' && <a href={`/${type !== 'admin' ? 'Vendors' : 'Admin'}/Orders/OrderDetails?order_id=${record.order_id}`} className='text-blue-700 tracking-wide' target='_blank'>View Order</a>}
           </div>
         );
       },
@@ -257,6 +327,7 @@ const OrderManagementTable = ({
 
   ];
 
+
   const fullAddress = selectedProduct && `${selectedProduct?.customerInfo?.apartment ? selectedProduct?.customerInfo?.apartment + ', ' : ''}${selectedProduct?.customerInfo?.selected_city}, ${selectedProduct?.customerInfo?.selected_state}, ${selectedProduct?.customerInfo?.zip_code}, ${selectedProduct?.customerInfo?.selected_country}`;
   const { brand_name, company_city, company_state, company_zip_code, company_country, shipping_address, email, country_code, mobile_number, status, vendor_profile_picture_url, brand_logo, vendorname } = selectedProduct && selectedProduct.vendorProfile || {}
   const vendorFullAddress = selectedProduct && `${shipping_address ? shipping_address + ', ' : ''}${company_city}, ${company_state}, ${company_zip_code}, ${company_country}`
@@ -315,7 +386,7 @@ const OrderManagementTable = ({
     // setPdfLoader(true)
     try {
 
-      const response = await fetch(`${AdminUrl}/api/orders-pdf?searchValue=${searchValue}&selectedOption=${selectedOption}&tabChange=${tabchange}&vendorId=${vendorId}`);
+      const response = await fetch(`${AdminUrl}/api/orders-pdf?searchValue=${searchValue}&selectedOption=${selectedOption}&tabChange=${tabchange}&vendorId=${vendorId}&type=${type}`);
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -324,7 +395,7 @@ const OrderManagementTable = ({
       const blob = await response.blob();
 
       // Define filename with selected option prefix
-      const filename = `${selectedOption}_inventory_products.pdf`;
+      const filename = `${selectedOption}_orders_products.pdf`;
 
       // Create a temporary anchor element
       const link = document.createElement('a');
@@ -342,16 +413,72 @@ const OrderManagementTable = ({
       setPdfLoader(false)
     }
   };
+
+  const handleOk = async () => {
+    setButtonLoading(true);
+    try {
+      const response = await fetch(`${AdminUrl}/api/markAsShipped`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          order_id: order_id_modal,
+          vendorId
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Display success message using Swal
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: data.message // Assuming the response contains a "message" field
+        });
+        // Optionally, close the modal after successful operation
+        setModalVisisble(false);
+        setvendorOrder(prevOrder => prevOrder.map(order => {
+          if (order.order_id === order_id_modal) {
+            return { ...order, order_status: 'Shipped' };
+          }
+          return order;
+        }));
+      } else {
+        const data = await response.json();
+
+        // Handle error response here
+        console.error('Failed to mark order as shipped');
+        // Display error message using Swal
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: data?.error || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error marking order as shipped:', error);
+      // Display error message using Swal
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while marking order as shipped. Please try again.'
+      });
+    } finally {
+      setButtonLoading(false);
+    }
+  };
+
   return (
     <div className='mt-10'>
       <div>
         <h1 className='text-2xl font-semibold mb-4'>Orders</h1>
         <div className="flex justify-end mb-4 py-4 gap-2">
-          {/* <Button loading={PdfLoader} onClick={() => handleDownload('pdf')} className="mr-2 flex justify-center items-center gap-4">
+          <Button loading={PdfLoader} onClick={() => handleDownload('pdf')} className="mr-2 flex justify-center items-center gap-4">
             <GrDocumentPdf />
             <p>PDF</p>
           </Button>
-          <Button loading={csvLoader} onClick={() => handleDownload('csv')} className="mr-2 flex justify-center items-center gap-4">
+          {/* <Button loading={csvLoader} onClick={() => handleDownload('csv')} className="mr-2 flex justify-center items-center gap-4">
             <GrDocumentCsv />
             <p>CSV</p>
           </Button>
@@ -386,7 +513,7 @@ const OrderManagementTable = ({
           </div>
         </div>
       </div>
-      <Table columns={columns} pagination={false} dataSource={vendorOrder} scroll={{ x: 1200, y: 600 }} />
+      <Table columns={type !== 'admin' ? columns : columns.slice(1)} pagination={false} dataSource={vendorOrder} scroll={{ x: 1200, y: 600 }} />
       <div className="p-5 flex justify-center">
         <Pagination
           hideOnSinglePage
@@ -404,6 +531,20 @@ const OrderManagementTable = ({
           }}
         />
       </div>
+
+      <Modal
+        title="Mark as Shipped"
+        open={modalvisible}
+        onCancel={() => setModalVisisble(false)}
+        okButtonProps={{ style: { background: 'green' } }}
+        okText={"Yes, Mark as Shipped"}
+        onOk={handleOk}
+        confirmLoading={buttonLoading}
+      >
+        <p>Do you want to mark this item as shipped?</p>
+
+      </Modal>
+
       <Modal
         title="Product Details"
         open={productModalVisible}

@@ -274,113 +274,118 @@ app.get("/translations/:language", (req, res) => {
     }
 })
 
+const storage = multer.memoryStorage(); // Use memory storage for handling FormData
+const upload = multer({ storage: storage });
 
-app.post("/writeTranslations", async (req, res) => {
+app.post("/writeTranslations", upload.single('translationsFile'), async (req, res) => {
     try {
-      const translations = req.body;
-  
-      // Assuming req.body is an object containing language as a key and translation as a value
-  
-      // Write translations to files
-      await writeTranslationsToFiles(translations);
-  
-      res.status(200).json({ success: true, message: 'Translations have been saved.' });
+        const translationsBuffer = req.file.buffer;
+        const selectedCountry = req.body?.selectedCountry
+        const translations = JSON.parse(translationsBuffer.toString());
+
+        // Assuming translations is an array of translation objects
+        await writeTranslationsToFiles(translations, selectedCountry);
+
+        res.status(200).json({ success: true, message: 'Translations have been saved.' });
     } catch (error) {
-      console.error('Error writing translation files:', error);
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Error writing translation files:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
-  });
-  
-const writeTranslationsToFiles = async (translations) => {
-    await Promise.all(Object.keys(translations).map(async (language) => {
-      try {
+});
+
+const writeTranslationsToFiles = async (translationsChunk, selectedCountry) => {
+    try {
+        // Construct the file path
         const jsonFolderPath = path.join(__dirname, '..', 'JSON');
-        const fileName = `${language.toLowerCase()}.json`;
+        const fileName = `${selectedCountry.toLowerCase()}.json`;
         const filePath = path.join(jsonFolderPath, fileName);
-  
-        // Write to file, replacing old content
-        await new Promise((resolve, reject) => {
-          fs.writeFile(filePath, JSON.stringify(translations[language], null, 2), (err) => {
-            if (err) reject(err);
-            else {
-              console.log('File written successfully:', filePath);
-              resolve();
-            }
-          });
+
+        // Read existing translations or initialize an empty object
+        let translations = {};
+        try {
+            translations = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        } catch (error) {
+            // File doesn't exist or is empty
+            console.log(`File ${filePath} does not exist or is empty. Initializing new translations object.`);
+        }
+
+        // Merge the translations from the chunk into the existing translations object
+        translationsChunk.forEach(chunk => {
+            translations = { ...translations, ...chunk };
         });
-      } catch (writeError) {
-        console.error(`Error writing translation file for ${language}:`, writeError.message);
-      }
-    }));
-  };
 
-
-
-  ////////////////////READ TRANSLATIONS//////////////////////////
-  // Function to read translation files and return Excel data
-  const readTranslationsAndGenerateExcel = () => {
-    const jsonFolderPath = path.join(__dirname, '..', 'JSON');
-    const languages = [ 'so', 'hi', 'sw','am', 'ar', 'fr']; // Add more languages as needed
-    const translations = {};
-  
-    try {
-      languages.forEach((language) => {
-        const fileName = `${language.toLowerCase()}.json`;
-        const filePath = path.join(jsonFolderPath, fileName);
-  
-        // Read translation file synchronously
-        const fileData = fs.readFileSync(filePath, 'utf-8');
-        translations[language] = JSON.parse(fileData);
-      });
-  
-      // Generate Excel data
-      const workbook = new exceljs.Workbook();
-      const worksheet = workbook.addWorksheet('Translations');
-  
-      // Add headers
-      worksheet.addRow(['English', ...languages]);
-  
-      // Get all keys available in any language (assuming all languages have the same keys)
-      const allKeys = Object.keys(translations[languages[0]]);
-  
-      // Add data rows
-      allKeys.forEach((key) => {
-        const rowData = [key];
-        languages.forEach((language) => {
-          rowData.push(translations[language][key] || ''); // Handle missing translations
-        });
-        worksheet.addRow(rowData);
-      });
-  
-      return workbook;
-    } catch (readError) {
-      console.error('Error reading translation files:', readError.message);
-      throw readError;
-    }
-  };
-  
-  
-  app.get("/getTranslationsAsExcel", (req, res) => {
-    try {
-      const workbook = readTranslationsAndGenerateExcel();
-  
-      // Send Excel file as response
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', 'attachment; filename=translations.xlsx');
-  
-      workbook.xlsx.write(res).then(() => {
-        res.end();
-      });
-  
+        // Write the merged translations object back to the file
+        fs.writeFileSync(filePath, JSON.stringify(translations, null, 2));
+        console.log('Translations written to file:', filePath);
     } catch (error) {
-      console.error('Error generating Excel file:', error);
-      res.status(500).send('Internal Server Error');
+        console.error('Error processing translations chunk:', error.message);
     }
-  });
-  
-  ////////////////////READ TRANSLATIONS//////////////////////////
-  
-  app.post('/storeNotification', async (req, res) => {
+};
+////////////////////READ TRANSLATIONS//////////////////////////
+// Function to read translation files and return Excel data
+const readTranslationsAndGenerateExcel = () => {
+    const jsonFolderPath = path.join(__dirname, '..', 'JSON');
+    const languages = ['so', 'hi', 'sw', 'am', 'ar', 'fr']; // Add more languages as needed
+    const translations = {};
+
+    try {
+        languages.forEach((language) => {
+            const fileName = `${language.toLowerCase()}.json`;
+            const filePath = path.join(jsonFolderPath, fileName);
+
+            // Read translation file synchronously
+            const fileData = fs.readFileSync(filePath, 'utf-8');
+            translations[language] = JSON.parse(fileData);
+        });
+
+        // Generate Excel data
+        const workbook = new exceljs.Workbook();
+        const worksheet = workbook.addWorksheet('Translations');
+
+        // Add headers
+        worksheet.addRow(['English', ...languages]);
+
+        // Get all keys available in any language (assuming all languages have the same keys)
+        const allKeys = Object.keys(translations[languages[0]]);
+
+        // Add data rows
+        allKeys.forEach((key) => {
+            const rowData = [key];
+            languages.forEach((language) => {
+                rowData.push(translations[language][key] || ''); // Handle missing translations
+            });
+            worksheet.addRow(rowData);
+        });
+
+        return workbook;
+    } catch (readError) {
+        console.error('Error reading translation files:', readError.message);
+        throw readError;
+    }
+};
+
+
+app.get("/getTranslationsAsExcel", (req, res) => {
+    try {
+        const workbook = readTranslationsAndGenerateExcel();
+
+        // Send Excel file as response
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=translations.xlsx');
+
+        workbook.xlsx.write(res).then(() => {
+            res.end();
+        });
+
+    } catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+////////////////////READ TRANSLATIONS//////////////////////////
+
+app.post('/storeNotification', async (req, res) => {
     const { customerId, notification_type, message, timestamp } = req.body;
 
     try {

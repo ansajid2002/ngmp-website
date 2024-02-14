@@ -247,7 +247,7 @@ const NotReceived = ({ vendorDatastate }) => {
         <Spin spinning={loading}>
             <div style={{ overflowX: 'auto' }}> {/* Add horizontal scrolling */}
                 <h2 className='py-4 text-xl font-semibold tracking-wide text-gray-700'>Items Not Received</h2> {/* Add a heading */}
-                <Table dataSource={data} columns={columns} scroll={{ x: true }} /> {/* Enable horizontal scrolling */}
+                <Table dataSource={data} columns={columns} scroll={{ x: 1200, y: 600 }} /> {/* Enable horizontal scrolling */}
             </div>
 
             <Modal

@@ -10,6 +10,7 @@ import {
   AcceptReject,
   AdminDashboard,
   AdminProfile,
+  BuyerReports,
   HomeBanner,
   Login,
   ManageCategory,
@@ -71,6 +72,8 @@ import OrderDetail from "./Vendors/OrderDetail";
 import Ordercancel from "./Vendors/Ordercancel";
 import ApprovedProducts from "./Vendors/Reports/ApprovedProducts";
 import InventoryReport from "./Vendors/Reports/InventoryReport";
+import ReportBuyer from "./Vendors/ReportBuyer";
+import InitiateRefund from "./Vendors/InitiateRefund";
 
 export const websiteUrl = "https://stg.nilegmp.com/"
 
@@ -177,7 +180,8 @@ function AdminRoutes() {
       "/Admin/Products/BulkApprove",
       "/Admin/Customers/Wallet",
       "/Admin/OrderDelivery",
-      "/Admin/Languages"
+      "/Admin/Languages",
+      "/Admin/BuyerReports"
     ];
     const checkSuperAdmin = SuperAdmin.includes(path);
     setsuperadmin(checkSuperAdmin);
@@ -211,7 +215,9 @@ function AdminRoutes() {
       "/Vendors/Orders/OrderDetails",
       "/Vendors/Orders/Cancel",
       "/Vendors/reports/approved-products",
-      "/Vendors/InventoryReport"
+      "/Vendors/InventoryReport",
+      "/Vendors/ReportBuyer",
+      "/Vendors/InitiateRefund"
     ];
     const checkVendorPanel = VendorPanel.includes(path);
     setvendorExists(checkVendorPanel);
@@ -344,6 +350,10 @@ function AdminRoutes() {
             <Route
               path="/Admin/Customers/Wallet"
               element={<Wallet adminLoginData={adminLoginData} />}
+            />
+            <Route
+              path="/Admin/BuyerReports"
+              element={<BuyerReports adminLoginData={adminLoginData} />}
             />
           </Routes>
         </>
@@ -485,6 +495,14 @@ function AdminRoutes() {
               <Route
                 path="/Vendors/InventoryReport"
                 element={<InventoryReport vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/ReportBuyer"
+                element={<ReportBuyer vendorDatastate={vendorDatastate} />}
+              />
+              <Route
+                path="/Vendors/InitiateRefund"
+                element={<InitiateRefund vendorDatastate={vendorDatastate} />}
               />
               {/* ... other routes */}
             </Routes>
