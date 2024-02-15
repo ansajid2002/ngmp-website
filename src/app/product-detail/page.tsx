@@ -648,7 +648,7 @@ const ProductDetailPage = ({ searchParams }) => {
             dealimg={
               "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
             }
-            label1={t("Free shipping on all orders")}
+ 
             label2={t("Time-Limited Offer")}
           />
         </div>
@@ -1169,6 +1169,11 @@ const ProductDetailPage = ({ searchParams }) => {
                       }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
+
+                    onError={(e) => {
+                      e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                      e.target.alt = 'dummyimage';
+                    }}
                   />
                 </div>
               </div>
@@ -1182,7 +1187,12 @@ const ProductDetailPage = ({ searchParams }) => {
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               src={`${selectedImage ? `${ProductImageUrl}/${selectedImage}` : (responseData?.images?.[0] ? `${ProductImageUrl}/${responseData.images[0]}` : "/placeholder.png")}`}
-              className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
+              
+              onError={(e) => {
+                e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                e.target.alt = 'dummyimage';
+              }}
+              className="w-full aspect-[0.85] rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
               alt="Main Product Image"
               loading="lazy"
             />

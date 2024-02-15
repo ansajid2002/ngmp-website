@@ -42,8 +42,8 @@ const ProductCard: FC<ProductCardProps> = ({
 }) => {
 
   const [wishlistLoading, setWishlistLoading] = useState(false);
-
   const { ad_title, mrp, sellingprice, images, uniquepid, prod_slug ,somali_ad_title} = data;
+  const [src, setSrc] = React.useState(`${ProductImageUrl}/${images?.[0]}`);
   const [inFavorite, setinFavorite] = useState(false);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
@@ -302,7 +302,10 @@ const ProductCard: FC<ProductCardProps> = ({
             <div className="relative group-hover:scale-105 transition-transform duration-300">
               <NcImage
                 containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
-                src={`${ProductImageUrl}/${images?.[0]}`}
+                src={src}
+                placeholder="blur"
+                blurDataURL="/noimage.jpg"
+                onError={() => setSrc('/noimage.jpg')}
                 className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"

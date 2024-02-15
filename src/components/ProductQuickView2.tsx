@@ -373,6 +373,8 @@ const company_district = vendorInfo?.company_district
   };
 
   const renderVariants = () => {
+    console.log(variantsWithArray,"");
+    
     if (!variantsWithArray) {
       // Show skeleton skimmer placeholder when variants are not available yet
       return (
@@ -522,7 +524,7 @@ const company_district = vendorInfo?.company_district
               dealimg={
                 "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
               }
-              label1={"Free shipping on all orders"}
+         
               label2={"Time-Limited Offer"}
             />
           </div>
@@ -557,7 +559,7 @@ const company_district = vendorInfo?.company_district
               <NcInputNumber
                 defaultValue={qualitySelected}
                 onChange={setQualitySelected}
-              />
+              />0
             </div>
             <ButtonPrimary
               className="flex-1 flex-shrink-0 transition-all duration-300"
@@ -692,6 +694,10 @@ const company_district = vendorInfo?.company_district
                     src={`${ProductImageUrl}/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
+                      onError={(e) => {
+                        e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                        e.target.alt = 'dummyimage';
+                      }}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -704,7 +710,10 @@ const company_district = vendorInfo?.company_district
           <div className="flex-1 relative w-full h-[500px] rounded-2xl overflow-hidden">
             <Image
               // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-
+              onError={(e) => {
+                e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                e.target.alt = 'dummyimage';
+              }}
               src={`${ProductImageUrl}/${selectedImage || images?.[0]
                 }`}
               className="w-full h-full object-cover"
