@@ -81,14 +81,12 @@ const company_district = vendorInfo?.company_district
     sellingprice
   );
   const [wishlistLoading, setWishlistLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(images?.[0]);
-  const [src, setSrc] = React.useState(`${ProductImageUrl}/${selectedImage || images?.[0]
-  }`);
 
   const [discountPercentage, setDiscountPercentage] = useState<number | null>(
     ((mrp - sellingprice) / mrp) * 100
   );
   const [singleData, setsingleData] = useState(item);
+  const [selectedImage, setSelectedImage] = useState(images?.[0]);
   const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(
     null
   );
@@ -375,7 +373,7 @@ const company_district = vendorInfo?.company_district
   };
 
   const renderVariants = () => {
-    console.log(variantsWithArray,"variantsWithArray");
+    console.log(variantsWithArray,"");
     
     if (!variantsWithArray) {
       // Show skeleton skimmer placeholder when variants are not available yet
@@ -696,7 +694,10 @@ const company_district = vendorInfo?.company_district
                     src={`${ProductImageUrl}/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
-                    
+                      onError={(e) => {
+                        e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                        e.target.alt = 'dummyimage';
+                      }}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -709,11 +710,12 @@ const company_district = vendorInfo?.company_district
           <div className="flex-1 relative w-full h-[500px] rounded-2xl overflow-hidden">
             <Image
               // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              src={src}
-              placeholder="/noimage.jpg"
-              blurDataURL="/noimage.jpg"
-              onError={() => setSrc('/noimage.jpg')}
-           
+              onError={(e) => {
+                e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                e.target.alt = 'dummyimage';
+              }}
+              src={`${ProductImageUrl}/${selectedImage || images?.[0]
+                }`}
               className="w-full h-full object-cover"
               alt="Main Product Image"
               loading="lazy" // Add the lazy loading attribute here
