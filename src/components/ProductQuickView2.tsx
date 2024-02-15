@@ -81,12 +81,14 @@ const company_district = vendorInfo?.company_district
     sellingprice
   );
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(images?.[0]);
+  const [src, setSrc] = React.useState(`${ProductImageUrl}/${selectedImage || images?.[0]
+  }`);
 
   const [discountPercentage, setDiscountPercentage] = useState<number | null>(
     ((mrp - sellingprice) / mrp) * 100
   );
   const [singleData, setsingleData] = useState(item);
-  const [selectedImage, setSelectedImage] = useState(images?.[0]);
   const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(
     null
   );
@@ -694,6 +696,7 @@ const company_district = vendorInfo?.company_district
                     src={`${ProductImageUrl}/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
+                    
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -706,9 +709,11 @@ const company_district = vendorInfo?.company_district
           <div className="flex-1 relative w-full h-[500px] rounded-2xl overflow-hidden">
             <Image
               // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-
-              src={`${ProductImageUrl}/${selectedImage || images?.[0]
-                }`}
+              src={src}
+              placeholder="/noimage.jpg"
+              blurDataURL="/noimage.jpg"
+              onError={() => setSrc('/noimage.jpg')}
+           
               className="w-full h-full object-cover"
               alt="Main Product Image"
               loading="lazy" // Add the lazy loading attribute here
