@@ -49,12 +49,17 @@ app.post("/VendorProductOrder", async (req, res) => {
       query += ")";
     }
 
-
     if (tabchange && tabchange !== 'All') {
-      // Add conditions related to tabchange
-      query += ` WHERE vpo.order_status = $${queryParams.length + 1}::text`;
+      if (type !== 'admin') { // Replace yourCondition with your specific condition
+        // Add conditions related to tabchange with AND
+        query += ` AND vpo.order_status = $${queryParams.length + 1}::text`;
+      } else {
+        // Add conditions related to tabchange with WHERE
+        query += ` WHERE vpo.order_status = $${queryParams.length + 1}::text`;
+      }
       queryParams.push(tabchange);
     }
+
 
 
     if (selectedOption) {
@@ -176,7 +181,6 @@ app.post("/VendorProductOrder", async (req, res) => {
   }
 });
 
-
 function generateRandomOrderID(length) {
   // Ensure the length is at least 1
   if (length < 1) {
@@ -194,7 +198,6 @@ function generateRandomOrderID(length) {
 
   return randomOrderID;
 }
-
 const generateRandomWalletId = () => {
   const min = 10 ** 11; // 10^11 (minimum 12-digit number)
   const max = 10 ** 12 - 1; // 10^12 - 1 (maximum 12-digit number)
@@ -298,7 +301,6 @@ app.post("/Insertorders", async (req, res) => {
       };
     });
 
-
     const insertedOrders = []
     const insertedAddress = []
     let totalPaidAmount = 0
@@ -354,7 +356,7 @@ app.post("/Insertorders", async (req, res) => {
         ]
       );
 
-      totalPaidAmount += parseFloat(order.total_amount)
+      totalPaidAmount += parseFloat(order.total_amount * order?.quantity) + parseFloat(order.shippingRate || 0)
 
       const insertedOrderId = result.rows[0].order_id; // Get the inserted order_id
 
@@ -402,11 +404,12 @@ app.post("/Insertorders", async (req, res) => {
 
     await pool.query(deleteQuery, queryParams);
 
+    let walletamount = 0
     if (selectedPaymentMode === 'Wallet') {
       const paginatedData = await fetchWalletToken(customer_id);
 
       const walletId = generateRandomWalletId();
-
+      walletamount = parseFloat(paginatedData?.totalBalance) - parseFloat(totalPaidAmount)
       // Insert data into the customer_transactions table
       const query = `
               INSERT INTO customer_transactions (
@@ -437,7 +440,7 @@ app.post("/Insertorders", async (req, res) => {
 
     // Calculate the overall total price
     const overallTotalPrice = insertedOrders.reduce((total, order) => {
-      const discountedPrice = parseFloat(order.total_amount); // Convert to a number
+      const discountedPrice = parseFloat(order.total_amount) * parseInt(order.quantity); // Convert to a number
       return total + discountedPrice;
     }, 0).toFixed(2);
 
@@ -465,7 +468,6 @@ app.post("/Insertorders", async (req, res) => {
 
     const insertedPayment = paymentResult.rows[0];
 
-    console.log(insertedOrders, 'insertedOrders');
     const orderDetailsHTML = insertedOrders.map((order) => `
         <tr>
           <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${order.product_name}</td>
@@ -476,7 +478,6 @@ app.post("/Insertorders", async (req, res) => {
         </tr>
       `).join('');
 
-    console.log(orderDetailsHTML, 'orderDetailsHTML');
 
     const emailBody = `
       <html>
@@ -504,10 +505,11 @@ app.post("/Insertorders", async (req, res) => {
       </html>
     `;
 
+
     // // Use the sendEmail function to send the email with the updated HTML content
     await sendEmail(customerEmail, `Order #${order_id}`, emailBody)
-
-    res.status(200).json({ message: 'Orders inserted successfully', insertedOrders, insertedAddress, insertedPayment });
+    console.log(walletamount);
+    res.status(200).json({ message: 'Orders inserted successfully', insertedOrders, insertedAddress, insertedPayment, walletamount });
 
   } catch (error) {
     console.log(error);
@@ -1193,7 +1195,7 @@ app.get('/getOrderDetails', async (req, res) => {
         }
 
         // Fetch vendor details (only ID and name)
-        const vendorResult = await pool.query('SELECT id, vendorname FROM vendors WHERE id = $1', [orderDetails.vendor_id]);
+        const vendorResult = await pool.query('SELECT id, vendorname, company_name, company_city, company_state, company_country, company_zip_code, shipping_address  FROM vendors WHERE id = $1', [orderDetails.vendor_id]);
 
         if (vendorResult.rows.length > 0) {
           const vendorDetails = vendorResult.rows[0];
@@ -1207,7 +1209,7 @@ app.get('/getOrderDetails', async (req, res) => {
             const claimIssueData = claimIssueResult.rows[0];
             res.status(200).json({ ...orderDetails, claim_issue_data: claimIssueData });
           } else {
-            res.status(404).json({ ...orderDetails, claim_issue_data: null });
+            res.status(200).json({ ...orderDetails, claim_issue_data: null });
           }
         } else {
           res.status(404).json({ error: 'Vendor not found' });

@@ -61,7 +61,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sellerProfile, setSellerProfile] = useState(null);
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const showDetailModal = () => {
     setIsDetailModalOpen(true);
   };
@@ -126,7 +126,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const cartItems = useAppSelector((state) => state.cart.cartItems);
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
   const [shippingRate, setShippingrate] = useState(0);
-  const {languageCode} = useAppSelector((store=> store.languagesReducer))
+  const { languageCode } = useAppSelector((store => store.languagesReducer))
 
 
   const dispatch = useDispatch();
@@ -149,10 +149,11 @@ const ProductDetailPage = ({ searchParams }) => {
         }
 
         const responseDataProduct = await response.json();
+        console.log(responseDataProduct?.product, "this is the post request called for fetch single product");
 
         setResponseData(responseDataProduct?.product);
 
-        responseDataProduct?.product?.mogadishudistrict_ship_from && renderCost(responseDataProduct?.product?.mogadishudistrict_ship_from)
+        responseDataProduct?.product?.vendorInfo?.company_district && renderCost(responseDataProduct?.product?.vendorInfo?.company_district)
 
         setSellerId(responseDataProduct.product.vendorid);
         // console.log(sellerId, "SELLLERDATATATATATATAT");
@@ -530,11 +531,11 @@ const ProductDetailPage = ({ searchParams }) => {
     return (
       <div>
         {
-          responseData?.mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
-            {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {responseData?.mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
+          responseData?.vendorInfo?.company_district && storedDistrict ? <div className="flex justify-center">
+
+            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {responseData?.vendorInfo?.company_district} {t("To")} {storedDistrict}</h1>
           </div> : (
-            !responseData?.mogadishudistrict_ship_from ? (
+            !responseData?.vendorInfo?.company_district ? (
               <div className="flex justify-center">
                 <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
               </div>
@@ -602,7 +603,7 @@ const ProductDetailPage = ({ searchParams }) => {
         {/* ---------- 1 HEADING ----------  */}
         <div>
           <h2 className="text-[1.2rem] tracking-normal">
-            
+
             {languageCode === "so" ? responseData?.somali_ad_title === null ? responseData?.ad_title : responseData?.somali_ad_title : responseData?.ad_title}
           </h2>
 
@@ -614,7 +615,7 @@ const ProductDetailPage = ({ searchParams }) => {
               sellingprice={sellingPriceData || responseData?.sellingprice}
             />
 
-            <div className="h-7 border-l border-gray-300 dark:border-gray-700"></div>
+            {/* <div className="h-7 border-l border-gray-300 dark:border-gray-700"></div>
 
             <div className="flex items-center">
               <a
@@ -633,9 +634,9 @@ const ProductDetailPage = ({ searchParams }) => {
               <span className="hidden sm:block mx-2.5">·</span>
               <div className="hidden sm:flex items-center text-sm">
                 <SparklesIcon className="w-3.5 h-3.5" />
-                {/* <span className="ml-1 leading-none">{status}</span> */}
+                <span className="ml-1 leading-none">{status}</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -647,7 +648,7 @@ const ProductDetailPage = ({ searchParams }) => {
             dealimg={
               "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
             }
-            label1={t("Free shipping on all orders")}
+ 
             label2={t("Time-Limited Offer")}
           />
         </div>
@@ -732,7 +733,7 @@ const ProductDetailPage = ({ searchParams }) => {
         <div>
           <h2 className="text-[1.3rem] font-medium">{t("Description")}</h2>
           <p className="leading-normal mt-3 text-[1rem]">
-        
+
             {languageCode === "so" ? responseData?.somali_additionaldescription === "" ? responseData?.additionaldescription : responseData?.somali_additionaldescription : responseData?.additionaldescription}
           </p>
         </div>
@@ -757,11 +758,11 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="text-left flex flex-col gap-2">
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <ShieldCheck size={20} className="mr-1" />
-             {t("Safe Payment Options")}
+              {t("Safe Payment Options")}
             </span>
             <div className="md:px-5 flex flex-col gap-2 md:gap-2">
               <li className="list-disc">
-               {t(` Nile is committed to protecting your payment information. We
+                {t(` Nile is committed to protecting your payment information. We
                 follow PCI DSS standards, use strong encryption, and perform
                 regular reviews of its system to protect your privacy.`)}
               </li>
@@ -793,11 +794,11 @@ const ProductDetailPage = ({ searchParams }) => {
 
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <LockKeyhole size={20} className="mr-1" />
-             {t("Secure Privacy")}
+              {t("Secure Privacy")}
             </span>
             <div className="md:px-5 flex flex-col gap-1 md:gap-2">
               <li className="list-disc">
-               {t(` Protecting your privacy is important to us! Please be assured
+                {t(` Protecting your privacy is important to us! Please be assured
                 that your information will be kept secured and uncompromised. We
                 do not sell your personal information for money and will only
                 use your information in accordance with our privacy and cookie
@@ -1060,7 +1061,7 @@ const ProductDetailPage = ({ searchParams }) => {
   };
 
   const notifyAddTocart = async () => {
-    const shipping = responseData?.mogadishudistrict_ship_from && storedDistrict ? 'shipping' : 'pickup'
+    const shipping = responseData?.vendorInfo?.company_district && storedDistrict ? 'shipping' : 'pickup'
 
     const updatedSingleData = {
       ...responseData,
@@ -1168,6 +1169,11 @@ const ProductDetailPage = ({ searchParams }) => {
                       }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
+
+                    onError={(e) => {
+                      e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                      e.target.alt = 'dummyimage';
+                    }}
                   />
                 </div>
               </div>
@@ -1181,7 +1187,12 @@ const ProductDetailPage = ({ searchParams }) => {
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               src={`${selectedImage ? `${ProductImageUrl}/${selectedImage}` : (responseData?.images?.[0] ? `${ProductImageUrl}/${responseData.images[0]}` : "/placeholder.png")}`}
-              className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
+              
+              onError={(e) => {
+                e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                e.target.alt = 'dummyimage';
+              }}
+              className="w-full aspect-[0.85] rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
               alt="Main Product Image"
               loading="lazy"
             />

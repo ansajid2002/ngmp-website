@@ -36,6 +36,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   const [inFavorite, setinFavorite] = useState(false);
   const [shippingRate, setShippingrate] = useState(0);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
+console.log(item,"whole ittem🐱‍🏍");
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
@@ -61,9 +62,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     slug_cat,
     additionaldescription,
     somali_additionaldescription,
-    mogadishudistrict_ship_from
+    mogadishudistrict_ship_from,
+    vendorInfo={}
   } = item;
-
+const company_district = vendorInfo?.company_district
 
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
@@ -292,7 +294,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
   const notifyAddTocart = async () => {
     const { category, subcategory, uniquepid, vendorid, id } = singleData;
-    const shipping = mogadishudistrict_ship_from && storedDistrict ? 'shipping' : 'pickup'
+    const shipping = company_district && storedDistrict ? 'shipping' : 'pickup'
     const updatedSingleData = {
       ...singleData,
       added_quantity: qualitySelected, // This adds the productToAdd object as a property of singleData
@@ -371,6 +373,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   };
 
   const renderVariants = () => {
+    console.log(variantsWithArray,"");
+    
     if (!variantsWithArray) {
       // Show skeleton skimmer placeholder when variants are not available yet
       return (
@@ -418,16 +422,18 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   };
 
   const storedDistrict = localStorage.getItem('selectedDistrict');
+  console.log(company_district,storedDistrict,"pickup and delivery locations");
+  
 
   const renderShippingAvailability = () => {
     return (
       <div>
         {
-          mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
-            {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
+          company_district && storedDistrict ? <div className="flex justify-center">
+          
+            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {company_district} {t("To")} {storedDistrict}</h1>
           </div> : (
-            !mogadishudistrict_ship_from ? (
+            !company_district ? (
               <div className="flex justify-center">
                 <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
               </div>
@@ -437,7 +443,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                   <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">{t("Choose District")}</a>
                 </div>
               ) : (
-                <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
+                <p>{t("Both company_district and storedDistrict are not present")}</p>
               )
             )
           )
@@ -449,7 +455,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
   const renderCost = async () => {
     try {
-      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${mogadishudistrict_ship_from}&destination=${storedDistrict}`)
+      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${company_district}&destination=${storedDistrict}`)
       if (response.ok) {
         const data = await response.json()
         if (data.rate === 0) {
@@ -469,7 +475,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   }
 
   useEffect(() => {
-    mogadishudistrict_ship_from && storedDistrict && renderCost()
+    company_district && storedDistrict && renderCost()
   }, [])
 
   const renderSectionContent = () => {
@@ -481,7 +487,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
             <Link
               href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
             >
-             {languageCode === "so" ? somali_additionaldescription === null ? additionaldescription : somali_additionaldescription : additionaldescription}
+             {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
             </Link>
           </h2>
 
@@ -518,7 +524,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
               dealimg={
                 "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
               }
-              label1={"Free shipping on all orders"}
+         
               label2={"Time-Limited Offer"}
             />
           </div>
@@ -553,7 +559,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
               <NcInputNumber
                 defaultValue={qualitySelected}
                 onChange={setQualitySelected}
-              />
+              />0
             </div>
             <ButtonPrimary
               className="flex-1 flex-shrink-0 transition-all duration-300"
@@ -688,6 +694,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                     src={`${ProductImageUrl}/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
+                      onError={(e) => {
+                        e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                        e.target.alt = 'dummyimage';
+                      }}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -700,7 +710,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
           <div className="flex-1 relative w-full h-[500px] rounded-2xl overflow-hidden">
             <Image
               // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-
+              onError={(e) => {
+                e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                e.target.alt = 'dummyimage';
+              }}
               src={`${ProductImageUrl}/${selectedImage || images?.[0]
                 }`}
               className="w-full h-full object-cover"

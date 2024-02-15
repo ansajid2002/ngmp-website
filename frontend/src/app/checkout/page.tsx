@@ -12,6 +12,8 @@ import FetchCartPrice from "@/components/FetchCartPrice";
 import { HomeUrl } from "../layout";
 import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
+import FetchCheckoutPrice from "@/components/FetchCheckoutPrice";
+import CheckoutProducts from "../../components/Checkoutproducts";
 
 const CheckoutPage = () => {
   const [tabActive, setTabActive] = useState<
@@ -119,7 +121,7 @@ const CheckoutPage = () => {
   return (
     <div className="nc-CheckoutPage">
       <main className="px-5 md:px-10 py-16 lg:pb-28 lg:pt-20 ">
-        <div className="mb-16">
+        <div className="mb-10">
           <h2 className="block text-2xl sm:text-3xl lg:text-4xl font-semibold ">
             Checkout
           </h2>
@@ -142,7 +144,7 @@ const CheckoutPage = () => {
           <div className="w-full lg:w-[36%] ">
             <h3 className="text-lg font-semibold">Order summary</h3>
             <div className="mt-8 divide-y divide-gray-200/70 dark:divide-gray-700 ">
-              <CartProducts removeData={false} />
+              <CheckoutProducts canNavigate={false} removeData={false} />
             </div>
 
             <div className="mt-10 pt-6 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200/70 dark:border-gray-700 ">
@@ -156,7 +158,7 @@ const CheckoutPage = () => {
                 </div>
               </div>
 
-              <FetchCartPrice showTitle={false} showCheckout={false} />
+              <FetchCheckoutPrice showTitle={false} showCheckout={false} />
             </div>
             {/* <ButtonPrimary className="mt-8 w-full" >Confirm order</ButtonPrimary> */}
 

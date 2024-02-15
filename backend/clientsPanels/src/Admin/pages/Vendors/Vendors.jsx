@@ -51,12 +51,14 @@ const Vendors = ({ adminLoginData }) => {
   const [page, setPage] = useState(1); // Separate state for the second set of tabs
   const [pageSize, setPageSize] = useState(10); // Separate state for the second set of tabs
   const [totalcount, setTotalcount] = useState(0); // Separate state for the second set of tabs
+  const [searchvalue, setSearchValue] = useState(''); // Separate state for the second set of tabs
 
-  const callVendor = async (pageNumber, pageSize) => {
+  const callVendor = async (pageNumber, pageSize, search) => {
     try {
       const queryParams = new URLSearchParams({
         pageNumber,
         pageSize,
+        search
       });
 
       const response = await fetch(`${AdminUrl}/api/allVendors?${queryParams}`, {
@@ -83,7 +85,7 @@ const Vendors = ({ adminLoginData }) => {
   };
 
   useEffect(() => {
-    callVendor(page, pageSize)
+    callVendor(page, pageSize, searchvalue)
   }, []);
 
   const allVendors = vendors.filter((vendor) => vendor);
@@ -363,7 +365,7 @@ const Vendors = ({ adminLoginData }) => {
 
   const handlePageChange = (page, pageSize) => {
     setPage(page);
-    callVendor(page, pageSize)
+    callVendor(page, pageSize, searchvalue)
   };
 
   function handleCreate() {
@@ -1304,6 +1306,12 @@ const Vendors = ({ adminLoginData }) => {
     title: item.title,
   }));
 
+  const handleVendorFind = (e) => {
+    setPage(1)
+    const query = e.target.value
+    setSearchValue(query)
+    callVendor(1, 10, query)
+  }
   return (
     <>
       {adminLoginData == null || adminLoginData?.length == 0 ? (
@@ -1335,8 +1343,13 @@ const Vendors = ({ adminLoginData }) => {
             <p className="text-slate-500 hover:text-slate-600">
               Manage Vendor Listing's
             </p>
+
+
           </nav>
 
+          <div className='w-full mt-10 flex justify-end'>
+            <Input.Search onChange={handleVendorFind} placeholder='Search by Vendor name, email, brand name, Bank Name, company name' />
+          </div>
           {
             <>
               <button
@@ -1382,8 +1395,15 @@ const Vendors = ({ adminLoginData }) => {
                 />
                 <div className="mt-4">
                   <Pagination
+                    hideOnSinglePage
+                    showQuickJumper
+                    showSizeChanger
                     current={page}
-                    onChange={(page, pageSize) => handlePageChange(page, pageSize)}
+                    onChange={(page, pageSize) => {
+                      setPage(page)
+                      setPageSize(pageSize)
+                      handlePageChange(page, pageSize)
+                    }}
                     pageSize={pageSize}
                     total={totalcount}
                   />
@@ -1587,7 +1607,7 @@ const Vendors = ({ adminLoginData }) => {
                           maxFiles={1}
                           ids={selectedKey}
                           vendors={selectedVendors}
-                          updateVendor={() => callVendor(page, pageSize)}
+                          updateVendor={() => callVendor(page, pageSize, searchvalue)}
                         />
                       </>
                     )}
@@ -1599,7 +1619,7 @@ const Vendors = ({ adminLoginData }) => {
                           maxFiles={1}
                           ids={selectedKey}
                           vendors={selectedVendors}
-                          updateVendor={() => callVendor(page, pageSize)}
+                          updateVendor={() => callVendor(page, pageSize, searchvalue)}
                         />
                       </>
                     )}

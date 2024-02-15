@@ -151,7 +151,6 @@ const OrderDetail = ({ vendorDatastate }) => {
                             <p className='text-gray-700 text-sm tracking-wide'>{details?.product_type}</p>
                         </div>
                         <div className='flex flex-col gap-2'>
-                            {visibility_Buy && <Button className='w-[200px] bg-orange-500 text-white hover:!text-white hover:!border-none'> Buy Again</Button>}
                             {!visibility_Buy && <Button type='link' className='w-[200px] tracking-wide' target='_blank' href={`/Vendors/Orders/Cancel?order_id=${orderId}`}> Cancel Item</Button>}
                         </div>
                     </div>

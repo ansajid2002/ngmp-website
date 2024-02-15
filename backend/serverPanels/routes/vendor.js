@@ -2790,11 +2790,13 @@ app.get("/getSearchedProducts_Panel", async (req, res) => {
       OR mrp::text ILIKE $1
       OR sellingprice::text ILIKE $1
       OR countryoforigin ILIKE $1)
-      AND status = 1;
+      ;
   
       `,
       values: [`%${searchTerm}%`],
     };
+
+    console.log(countQuery);
 
     const countResult = await pool.query(countQuery);
     const totalCount = countResult.rows[0].total_count;
@@ -2814,8 +2816,8 @@ app.get("/getSearchedProducts_Panel", async (req, res) => {
           OR skuid::text ILIKE $1
           OR mrp::text ILIKE $1
           OR sellingprice::text ILIKE $1
-          OR countryoforigin ILIKE $1) AND 
-          status = 1 GROUP BY status, id
+          OR countryoforigin ILIKE $1) 
+           GROUP BY status, id
         LIMIT $2 OFFSET $3
       `,
       values: [`%${searchTerm}%`, limit, (page - 1) * limit],

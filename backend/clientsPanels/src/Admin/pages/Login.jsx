@@ -54,13 +54,12 @@ const Login = () => {
             });
 
             const data_response = await response.json();
-            console.log(data_response);
             if (data_response?.status === 200) {
                 const { data } = data_response
                 setDAta(data)
 
                 if (data.email === 'pwscoding@gmail.com') {
-                    console.log(data, 'inside');
+                    const roleData = getFilteredLinks(data)
                     Cookies.set('adminData', data?.loggedId);
                     let timerInterval;
                     Swal.fire({
@@ -71,7 +70,7 @@ const Login = () => {
                         didOpen: () => {
                             Swal.showLoading();
                             timerInterval = setInterval(() => {
-                                window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404';
+                                window.location.href = roleData?.length > 0 ? roleData[0] : '/Admin/404';
                             }, 1500);
                         },
                         willClose: () => {
@@ -85,7 +84,7 @@ const Login = () => {
                     }
                 }
 
-            } else if (data?.error) {
+            } else if (data_response?.error) {
                 Swal.fire({
                     title: 'Internal Server Error..',
                     icon: 'error',
@@ -95,7 +94,7 @@ const Login = () => {
             } else {
                 let timerInterval;
                 Swal.fire({
-                    title: data.message,
+                    title: data_response?.message,
                     icon: 'error',
                     timer: 2000,
                     timerProgressBar: true,
@@ -115,6 +114,19 @@ const Login = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const getFilteredLinks = (data) => {
+        return (
+            data?.role_id?.length > 0
+                ? links[0].links?.flatMap((link) => {
+                    if (data?.role_id.includes(link.id)) {
+                        return link.to ? [link.to] : link.dropList?.map((drplist) => drplist.to);
+                    }
+                    return null;
+                }).filter((toValue) => toValue !== null)
+                : []
+        );
     };
 
     // useEffect(() => {
@@ -144,18 +156,7 @@ const Login = () => {
         console.log('Failed:', errorInfo);
     };
 
-    const getFilteredLinks = () => {
-        return (
-            adminLoginData?.[0]?.role_id?.length > 0
-                ? links[0].links?.flatMap((link) => {
-                    if (adminLoginData[0].role_id.includes(link.id)) {
-                        return link.to ? [link.to] : link.dropList?.map((drplist) => drplist.to);
-                    }
-                    return null;
-                }).filter((toValue) => toValue !== null)
-                : []
-        );
-    };
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -206,6 +207,8 @@ const Login = () => {
             });
 
             if (response.ok) {
+                const roleData = getFilteredLinks(adminData_backend)
+                console.log(adminData_backend);
                 Cookies.set('adminData', adminData_backend?.loggedId);
                 let timerInterval;
                 Swal.fire({
@@ -216,7 +219,8 @@ const Login = () => {
                     didOpen: () => {
                         Swal.showLoading();
                         timerInterval = setInterval(() => {
-                            window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404';
+                            // window.location.href = filteredLinks.length > 0 ? filteredLinks[0] : '/Admin/404';
+                            window.location.href = roleData?.length > 0 ? roleData[0] : '/Admin/404';
                         }, 1500);
                     },
                     willClose: () => {

@@ -590,14 +590,7 @@ const SellerForm = ({ onModal }) => {
                     <Form.Item
                         label="Zip Code"
                         name="company_zip_code"
-                        rules={[{ required: true, message: "Please enter zip code" }, ({ getFieldValue }) => ({
-                            validator(_, value) {
-                                if (!value || value.trim() !== "") {
-                                    return Promise.resolve();
-                                }
-                                return Promise.reject(new Error("Zipcode cannot be empty"));
-                            },
-                        }),]}
+
                     >
                         <Input className="border border-gray-300 rounded-md" />
                     </Form.Item>
@@ -715,7 +708,7 @@ const SellerForm = ({ onModal }) => {
                 // If all fields pass validation, proceed
                 const updatedFormData = { ...formData, ...values };
                 setFormData(updatedFormData);
-                
+
                 // Send data to backend
                 const response = await fetch(`${AdminUrl}/api/addVendorstoDb`, {
                     method: "POST",
@@ -729,7 +722,7 @@ const SellerForm = ({ onModal }) => {
                     // Handle successful response
                     const responseData = await response.json();
                     console.log("Response from backend:", responseData);
-                    
+
                     localStorage.removeItem('formData');
                     // Show success message with redirect button
                     Swal.fire({

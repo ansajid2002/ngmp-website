@@ -14,7 +14,7 @@ const TabsCategory = ({ categoriesdata }) => {
   );
   const [activeTab, setActiveTab] = React.useState(0);
   const [subcatname, setSubcatname] = React.useState(
-    allSubcategories[0].subcategory_name
+    allSubcategories[0]?.subcategory_name
   );
   const [loading, setLoading] = React.useState(true);
   const [products, setProducts] = React.useState(null);

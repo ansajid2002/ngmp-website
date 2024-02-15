@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AdminUrl } from '../../constant'
-import { Alert, Input, Modal, Radio, Space, Table, Tabs, message } from 'antd';
+import { Alert, Input, Modal, Pagination, Radio, Space, Table, Tabs, message } from 'antd';
 import { FcSearch } from 'react-icons/fc';
 import { RiDeleteBin2Fill, RiEyeLine, RiPencilFill } from 'react-icons/ri';
 import { FaArchive, FaBan, FaCheck, FaClock, FaTimes } from 'react-icons/fa';
@@ -18,6 +18,12 @@ const VendorEnable = ({ adminLoginData }) => {
     const [modalVisible, setModalVisible] = useState(false)
     const [selectedKey, setSelectedKey] = useState(null)
     const [status, setStatus] = useState('0');
+
+    const [page, setPage] = useState(1); // Separate state for the second set of tabs
+    const [pageSize, setPageSize] = useState(10); // Separate state for the second set of tabs
+    const [totalcount, setTotalcount] = useState(0); // Separate state for the second set of tabs
+    const [searchvalue, setSearchValue] = useState(''); // Separate state for the second set of tabs
+
 
     const handleStatusChange = (e) => {
         setStatus(e.target.value);
@@ -38,42 +44,40 @@ const VendorEnable = ({ adminLoginData }) => {
                 return 'info';
         }
     };
-    const callVendor = async () => {
+    const callVendor = async (pageNumber, pageSize, search) => {
         try {
-            const response = await fetch(`${AdminUrl}/api/allVendors`, {
-                method: 'GET',
+            const queryParams = new URLSearchParams({
+                pageNumber,
+                pageSize,
+                search
+            });
+
+            const response = await fetch(`${AdminUrl}/api/allVendors?${queryParams}`, {
+                method: "GET",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
             });
 
             if (response.ok) {
                 // Handle successful response
                 const data = await response.json();
-
-                // Sort the filtered vendors by ID
                 const sortedVendors = data.vendors.sort((a, b) => a.id - b.id);
-
-                // Set the filtered and sorted vendors to the state
                 setVendors(sortedVendors);
-
+                setTotalcount(data?.totalCount)
             } else {
                 // Handle error response
-                console.error('Error sending form data:', response.statusText);
+                console.error("Error fetching vendors:", response.statusText);
             }
         } catch (error) {
             // Handle error
-            console.error('Error sending form data:', error);
+            console.error("Error fetching vendors:", error);
         }
     };
 
     useEffect(() => {
-        callVendor()
+        callVendor(page, pageSize, searchvalue)
     }, [])
-
-    const approveVendorFromDb = vendors.filter((vendor) => vendor.status === 0);
-    const rejectedVendorFromDb = vendors.filter((vendor) => vendor.status === 1);
-    const archivedVendor = vendors.filter((vendor) => vendor.status === 2);
 
     const handleSearch = (selectedKeys, confirm, search) => {
         confirm();
@@ -177,7 +181,6 @@ const VendorEnable = ({ adminLoginData }) => {
         },
     ];
 
-
     const handleVendor = (key) => {
         callVendor();
         const selectedRow = vendors.find(item => item.id === key);
@@ -186,9 +189,6 @@ const VendorEnable = ({ adminLoginData }) => {
         setStatus(selectedRow?.status.toString())
     }
 
-    const handleTab = (key) => {
-        setapproveTab(key);
-    };
 
     const cancelModal = () => {
         setModalVisible(false)
@@ -240,6 +240,20 @@ const VendorEnable = ({ adminLoginData }) => {
                 return '';
         }
     };
+
+    const handleVendorFind = (e) => {
+        setPage(1)
+        const query = e.target.value
+        setSearchValue(query)
+        callVendor(1, 10, query)
+    }
+
+    const handlePageChange = (page, pageSize) => {
+        setPage(page);
+        callVendor(page, pageSize, searchvalue)
+    };
+
+
     return (
         <>
             {
@@ -258,48 +272,36 @@ const VendorEnable = ({ adminLoginData }) => {
                             <p className="text-slate-500 hover:text-slate-600">Enable & Disable Application</p>
                         </nav>
 
-                        <div className="mb-4 mt-4 flex justify-end">
+                        <div className="mb-4 mt-4 flex justify-center">
                             <Input
                                 placeholder="Search Brand or Company Name"
-                                value={searchText}
-                                onChange={(e) => handleSearch([searchText], () => { }, e.target.value)}
+                                value={searchvalue}
+                                onChange={handleVendorFind}
                                 // onPressEnter={() => handleSearch([searchText], () => { })}
-                                style={{ width: 200 }}
-                                prefix={<FcSearch />}
-                                className='border border-gray-400'
+                                style={{ width: 300, height: 50 }}
+                                className=' border-2 border-gray-400'
                             />
                         </div>
-                        <Tabs defaultActiveKey="1" activeKey={approveTab} onChange={handleTab} centered>
-                            <TabPane tab="All" key="1">
-                                <Table columns={columns}
-                                    dataSource={searchText != '' ? filteredVendors : vendors}
-                                    pagination={false}
-                                    className="w-full mt-10"
-                                    rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300" />
-                            </TabPane>
-                            <TabPane tab="Enabled Accounts" key="2">
-                                <Table columns={columns}
-                                    dataSource={searchText != '' ? approveVendors : approveVendorFromDb}
-                                    pagination={false}
-                                    className="w-full mt-10"
-                                    rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300" />
-                            </TabPane>
-                            <TabPane tab="Blocked Accounts" key="3">
-                                <Table columns={columns}
-                                    dataSource={searchText != '' ? rejectedVendors : rejectedVendorFromDb}
-                                    pagination={false}
-                                    className="w-full mt-10"
-                                    rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300" />
-                            </TabPane>
-                            <TabPane tab="Archived Accounts" key="4">
-                                <Table columns={columns}
-                                    dataSource={searchText != '' ? archived : archivedVendor}
-                                    pagination={false}
-                                    className="w-full mt-10"
-                                    rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300" />
-                            </TabPane>
+                        <Table columns={columns}
+                            dataSource={vendors}
+                            pagination={false}
+                            className="w-full mt-10"
+                            rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300" />
 
-                        </Tabs>
+                        <div className="mt-4">
+                            <Pagination
+                                hideOnSinglePage
+                                showQuickJumper
+                                showSizeChanger
+                                current={page}
+                                onChange={(page, pageSize) => {
+
+                                    handlePageChange(page, pageSize)
+                                }}
+                                pageSize={pageSize}
+                                total={totalcount}
+                            />
+                        </div>
 
                         <Modal
                             title=""

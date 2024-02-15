@@ -619,7 +619,6 @@ app.post("/api/addVendorstoDb", async (req, res) => {
       company_zip_code,
       shipping_address,
       business_type,
-      tax_id_number,
       support_contact_1,
       support_contact_2,
       bank_name,
@@ -945,9 +944,10 @@ app.post("/api/updateVendorDataWithOtp", async (req, res) => {
 
 app.get("/api/allVendors", async (req, res) => {
   try {
-    // Get pageNumber and pageSize from query parameters, defaulting to all vendors if not provided
-    const { pageNumber, pageSize } = req.query;
+    // Get pageNumber, pageSize, and search query from query parameters, defaulting to all vendors if not provided
+    const { pageNumber, pageSize, search } = req.query;
     let queryParameters = [];
+    let searchClause = '';
 
     if (pageNumber && pageSize) {
       // Convert pageNumber and pageSize to integers
@@ -967,8 +967,13 @@ app.get("/api/allVendors", async (req, res) => {
       queryParameters = [endIndex - startIndex + 1, startIndex];
     }
 
-    // Construct the SQL query to get paginated vendors
-    const getAllVendorsQuery = `SELECT * FROM vendors${queryParameters.length > 0 ? ' LIMIT $1 OFFSET $2' : ''}`;
+    if (search) {
+      // Construct search clause for SQL query
+      searchClause = `WHERE LOWER(vendorname) LIKE LOWER('%${search}%') OR LOWER(email) LIKE LOWER('%${search}%') OR LOWER(brand_name) LIKE LOWER('%${search}%') OR LOWER(business_model) LIKE LOWER('%${search}%') OR LOWER(company_name) LIKE LOWER('%${search}%') OR LOWER(bank_name) LIKE LOWER('%${search}%')`;
+    }
+
+    // Construct the SQL query to get paginated vendors with search functionality
+    const getAllVendorsQuery = `SELECT * FROM vendors ${searchClause} ${queryParameters.length > 0 ? 'LIMIT $1 OFFSET $2' : ''}`;
     const resultVendors = await pool.query(getAllVendorsQuery, queryParameters);
 
     // Extract the vendors from the result
@@ -977,8 +982,8 @@ app.get("/api/allVendors", async (req, res) => {
     // Remove the 'password' field from each vendor
     const vendorsWithoutPassword = vendors.map(({ password, ...rest }) => rest);
 
-    // Construct the SQL query to get the total count of vendors
-    const getCountQuery = 'SELECT COUNT(*) FROM vendors';
+    // Construct the SQL query to get the total count of vendors with search functionality
+    const getCountQuery = `SELECT COUNT(*) FROM vendors ${searchClause}`;
     const resultCount = await pool.query(getCountQuery);
 
     // Extract the total count from the result

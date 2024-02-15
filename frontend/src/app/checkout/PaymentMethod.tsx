@@ -22,8 +22,8 @@ const PaymentMethod: FC<Props> = ({
 }) => {
   const [mothodActive, setMethodActive] = useState<
     "Stripe" | "Internet-banking" | "Wallet"
-  >("Stripe");
-  const [selectedMethod, setSelected] = useState(null)
+  >("Wallet");
+  const [selectedMethod, setSelected] = useState('Wallet')
 
   const { walletTotal } = useAppSelector((store) => store.wallet)
 
@@ -336,11 +336,7 @@ const PaymentMethod: FC<Props> = ({
           </label>
           <div className={`mt-6 mb-4 space-y-6 ${active ? "block" : "hidden"}`}>
             <div className="text-sm prose dark:prose-invert">
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque
-                dolore quod quas fugit perspiciatis architecto, temporibus quos
-                ducimus libero explicabo?
-              </p>
+
             </div>
           </div>
         </div>
@@ -419,15 +415,14 @@ const PaymentMethod: FC<Props> = ({
             <div className="font-semibold mt-1 text-sm">
               {
                 selectedMethod &&
-              <span className="">Pay with {selectedMethod}</span>
+                <span className="">Pay with {selectedMethod}</span>
               }
             </div>
           </div>
           <button
             className="py-2 px-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 mt-5 sm:mt-0 sm:ml-auto text-sm font-medium rounded-lg"
             onClick={onOpenActive}
-          >
-            Change
+          >Change
           </button>
         </div>
 

@@ -207,7 +207,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className = "" }) => {
 
             <div className="h-6 border-s border-gray-300 dark:border-gray-700"></div>
 
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <Link
                 href="/product-detail"
                 className="flex items-center text-sm font-medium"
@@ -226,7 +226,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className = "" }) => {
                 <SparklesIcon className="w-3.5 h-3.5" />
                 <span className="ms-1 leading-none">{status}</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

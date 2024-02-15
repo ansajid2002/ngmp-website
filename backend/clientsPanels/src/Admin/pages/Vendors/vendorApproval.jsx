@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AdminUrl } from '../../constant'
-import { Input, Space, Table, Tabs } from 'antd';
+import { Input, Pagination, Space, Table, Tabs } from 'antd';
 import { FcSearch } from 'react-icons/fc';
 import { RiEyeLine } from 'react-icons/ri';
 
@@ -14,62 +14,47 @@ const VendorApproval = ({ adminLoginData }) => {
     const [searchText, setSearchText] = useState('');
     const [approveTab, setapproveTab] = useState('1'); // Separate state for the second set of tabs
 
-    const callVendor = async () => {
+    const [page, setPage] = useState(1); // Separate state for the second set of tabs
+    const [pageSize, setPageSize] = useState(10); // Separate state for the second set of tabs
+    const [totalcount, setTotalcount] = useState(0); // Separate state for the second set of tabs
+    const [searchvalue, setSearchValue] = useState(''); // Separate state for the second set of tabs
+
+
+    const callVendor = async (pageNumber, pageSize, search) => {
         try {
-            const response = await fetch(`${AdminUrl}/api/allVendors`, {
-                method: 'GET',
+            const queryParams = new URLSearchParams({
+                pageNumber,
+                pageSize,
+                search
+            });
+
+            const response = await fetch(`${AdminUrl}/api/allVendors?${queryParams}`, {
+                method: "GET",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
             });
 
             if (response.ok) {
                 // Handle successful response
                 const data = await response.json();
-
-                // Sort the filtered vendors by ID
                 const sortedVendors = data.vendors.sort((a, b) => a.id - b.id);
-
-                // Set the filtered and sorted vendors to the state
                 setVendors(sortedVendors);
+                setTotalcount(data?.totalCount)
             } else {
                 // Handle error response
-                console.error('Error sending form data:', response.statusText);
+                console.error("Error fetching vendors:", response.statusText);
             }
         } catch (error) {
             // Handle error
-            console.error('Error sending form data:', error);
+            console.error("Error fetching vendors:", error);
         }
     };
 
     useEffect(() => {
-        callVendor()
+        callVendor(page, pageSize, searchvalue)
     }, [])
 
-    const approveVendorFromDb = vendors.filter((vendor) => vendor.status === 3);
-    const rejectedVendorFromDb = vendors.filter((vendor) => vendor.status === 4);
-
-    const handleSearch = (selectedKeys, confirm, search) => {
-        confirm();
-        setSearchText(search)
-        const filtered = vendors.filter((vendor) =>
-            vendor?.brand_name?.toLowerCase()?.includes(selectedKeys[0]?.toLowerCase()) ||
-            vendor?.company_name?.toLowerCase()?.includes(selectedKeys[0]?.toLowerCase())
-        );
-        setFilteredVendors(filtered);
-
-        const approve = vendors.filter((vendor) =>
-            vendor?.brand_name?.toLowerCase()?.includes(selectedKeys[0]?.toLowerCase()) && vendor.status == 3 ||
-            vendor?.company_name?.toLowerCase()?.includes(selectedKeys[0]?.toLowerCase()) && vendor.status == 3
-        );
-        setapproveVendors(approve);
-
-        const rejected = vendors.filter((vendor) =>
-            vendor?.brand_name?.toLowerCase()?.includes(selectedKeys[0]?.toLowerCase()) && vendor.status == 4 ||
-            vendor?.company_name?.toLowerCase()?.includes(selectedKeys[0]?.toLowerCase()) && vendor.status == 4
-        );
-        setrejectedVendors(rejected);
-    };
 
     const columns = [
         {
@@ -140,9 +125,18 @@ const VendorApproval = ({ adminLoginData }) => {
         navigate('/Admin/Vendors/viewDetails', { state: vendor })
     }
 
-    const handleTab = (key) => {
-        setapproveTab(key);
+    const handleVendorFind = (e) => {
+        setPage(1)
+        const query = e.target.value
+        setSearchValue(query)
+        callVendor(1, 10, query)
+    }
+
+    const handlePageChange = (page, pageSize) => {
+        setPage(page);
+        callVendor(page, pageSize, searchvalue)
     };
+
 
     return (
         <>
@@ -165,38 +159,34 @@ const VendorApproval = ({ adminLoginData }) => {
                         <div className="mb-4 mt-4 flex justify-center">
                             <Input
                                 placeholder="Search Brand or Company Name"
-                                value={searchText}
-                                onChange={(e) => handleSearch([searchText], () => { }, e.target.value)}
+                                value={searchvalue}
+                                onChange={handleVendorFind}
                                 // onPressEnter={() => handleSearch([searchText], () => { })}
                                 style={{ width: 300, height: 50 }}
                                 className=' border-2 border-gray-400'
                             />
                         </div>
 
-                        <Tabs defaultActiveKey="1" activeKey={approveTab} onChange={handleTab} centered>
-                            <TabPane tab="All" key="1">
-                                <Table columns={columns}
-                                    dataSource={searchText != '' ? filteredVendors : vendors}
-                                    pagination={false}
-                                    className="w-full mt-10"
-                                    rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300" />
-                            </TabPane>
-                            <TabPane tab="Approve Application" key="3">
-                                <Table columns={columns}
-                                    dataSource={searchText != '' ? approveVendors : approveVendorFromDb}
-                                    pagination={false}
-                                    className="w-full mt-10"
-                                    rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300" />
-                            </TabPane>
-                            <TabPane tab="Reject Application" key="4">
-                                <Table columns={columns}
-                                    dataSource={searchText != '' ? rejectedVendors : rejectedVendorFromDb}
-                                    pagination={false}
-                                    className="w-full mt-10"
-                                    rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300" />
-                            </TabPane>
 
-                        </Tabs>
+                        <Table columns={columns}
+                            dataSource={vendors}
+                            pagination={false}
+                            className="w-full mt-10"
+                            rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300" />
+                        <div className="mt-4">
+                            <Pagination
+                                hideOnSinglePage
+                                showQuickJumper
+                                showSizeChanger
+                                current={page}
+                                onChange={(page, pageSize) => {
+
+                                    handlePageChange(page, pageSize)
+                                }}
+                                pageSize={pageSize}
+                                total={totalcount}
+                            />
+                        </div>
                     </div>
             }
         </>

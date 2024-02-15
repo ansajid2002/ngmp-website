@@ -31,7 +31,7 @@ const AcceptReject = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [totalvendors, settotalVendors] = useState(0);
   const [vendorPage, setvendorPage] = useState(1);
-  const [vendorPageSize, setvendorPageSize] = useState(5);
+  const [vendorPageSize, setvendorPageSize] = useState(10);
   const [vendorProducts, setVendorProducts] = useState(null);
   const [vendorTotalProducts, setVendorTotalProducts] = useState(0);
   const [page, setPage] = useState(1);
