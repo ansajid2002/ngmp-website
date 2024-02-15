@@ -373,6 +373,8 @@ const company_district = vendorInfo?.company_district
   };
 
   const renderVariants = () => {
+    console.log(variantsWithArray,"variantsWithArray");
+    
     if (!variantsWithArray) {
       // Show skeleton skimmer placeholder when variants are not available yet
       return (
@@ -522,7 +524,7 @@ const company_district = vendorInfo?.company_district
               dealimg={
                 "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
               }
-              label1={"Free shipping on all orders"}
+         
               label2={"Time-Limited Offer"}
             />
           </div>
@@ -557,7 +559,7 @@ const company_district = vendorInfo?.company_district
               <NcInputNumber
                 defaultValue={qualitySelected}
                 onChange={setQualitySelected}
-              />
+              />0
             </div>
             <ButtonPrimary
               className="flex-1 flex-shrink-0 transition-all duration-300"

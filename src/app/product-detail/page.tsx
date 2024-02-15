@@ -648,7 +648,7 @@ const ProductDetailPage = ({ searchParams }) => {
             dealimg={
               "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
             }
-            label1={t("Free shipping on all orders")}
+ 
             label2={t("Time-Limited Offer")}
           />
         </div>

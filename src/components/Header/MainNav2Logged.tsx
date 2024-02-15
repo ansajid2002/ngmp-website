@@ -216,7 +216,7 @@ const {t} = useTranslation()
           /> */}
           <Truck strokeWidth={1} className="text-[#ADFFA2]" size={35} />
           <h1 className="text-[15px] leading-tight md:text-[16px] text-[#ADFFA2] font-semibold">
-           {t("Free Shipping on all Orders")}
+           {t("Great Deals on all Orders")}
             <br />
             {t("Time-limited offer")}
           </h1>
