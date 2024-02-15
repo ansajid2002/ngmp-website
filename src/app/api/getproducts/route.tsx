@@ -3,7 +3,7 @@ import { AdminUrl } from "@/app/layout";
 export async function PUT(request: Request) {
     try {
         const requestData = await request.json();
-
+        
         const requestOptions = {
             method: 'PUT',
             headers: {

@@ -9,11 +9,14 @@ import { useTranslation } from "react-i18next";
 import { AdminUrl } from "@/app/layout";
 
 
-const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true }) => {
-  const { cartItems } = useAppSelector((store) => store.cart);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const navigation = useRouter()
-
+const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true }) => {
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const navigation = useRouter()
+    const { cartItems } = useAppSelector((store) => store.cart);
+  const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
+  const itemstoPick = cartItems.filter(item => pickupItems.includes(item.uniquepid))
+  const itemstoShip = cartItems.filter(item => !pickupItems.includes(item.uniquepid))
+    
   const [totalShippingCharges,setTotalShippingCharges] = useState(0)
   const renderCost = async (company_district: string, storedDistrict: string) => {
     try {
@@ -42,7 +45,6 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
     return 0
   }
 
-  console.log(cartItems,"xc");
   const storedDistrict = localStorage.getItem('selectedDistrict');
 
   const calculateShippingCharges = async (cartItems) => {
@@ -75,12 +77,12 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
   };
   
   // Call the function with your array of objects
-  calculateShippingCharges(cartItems).then((totalShippingCharges) => {
+  calculateShippingCharges(itemstoShip).then((totalShippingCharges) => {
     
     setTotalShippingCharges(totalShippingCharges)
   });
   
-console.log(totalShippingCharges,"asasasfdgsadfwetgfvsfdgv");
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Function to calculate subtotal for an individual item
@@ -97,16 +99,9 @@ const calculateCartSubtotal = (cartItems) => {
   return subtotal;
 };
 
-// Example usage:
-// Assuming your cartItems array contains objects with sellingPrice and quantity properties
-
-
 // Calculate subtotal for the entire cart
 const subtotal = calculateCartSubtotal(cartItems);
 console.log("Subtotal:", subtotal);
-
-
-
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -213,4 +208,4 @@ console.log("Subtotal:", subtotal);
   );
 };
 
-export default FetchCartPrice;
+export default FetchCheckoutPrice;

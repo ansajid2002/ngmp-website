@@ -17,7 +17,6 @@ const OrderDetails = () => {
   const customerId = customerData?.customerData?.customer_id
   const [orderData, setOrderData] = useState(null)
   const { orderid } = params
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [deliveryStatus, setDeliveryStatus] = useState('');
 
 
@@ -90,6 +89,8 @@ const OrderDetails = () => {
     phone_number = '',
   } = orderData?.shipping_address || {};
 
+  console.log(orderData?.shipping_address);
+
   const {
     product_name = '',
     total_amount = '',
@@ -103,21 +104,15 @@ const OrderDetails = () => {
     customer_otp
   } = orderData || {};
 
-  console.log(ispickup);
-
   const filteredProgressData = ispickup
     ? data
       .filter(step => step.title !== 'Shipped' && step.title !== 'Out for Delivery')
       .map(step => (step.title === 'Delivered' ? { ...step, title: 'Picked' } : step))
     : data;
 
-  console.log(filteredProgressData);
+  const currentProgressIndex = filteredProgressData.findIndex((step) => step.title === order_status?.trim());
 
-  const currentProgressIndex = filteredProgressData.findIndex((step) => step.title === order_status);
-
-  console.log(currentProgressIndex);
-
-  const { vendorname = '' } = orderData?.vendor || {};
+  const { vendorname = '', company_name, company_city, company_state, company_country, company_zip_code, shipping_address } = orderData?.vendor || {};
 
   const formattedTotalAmount = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -171,6 +166,8 @@ const OrderDetails = () => {
 
   // Format the date as "Mon DD"
   const formattedDate = `${month} ${day}`;
+  console.log(order_status.trim(), 'Picked');
+
   return (
     !orderData ?
       <div className="w-full h-screen flex justify-center items-center">
@@ -184,13 +181,13 @@ const OrderDetails = () => {
           <div className=" md:w-[50%] space-y-1 md:pr-10 md:border-r-2 border-b-2 md:border-b-0 pb-5 md:pb-0 border-gray-300">
             {
               tentative_delivery_date &&
-                order_status != 'Ordered' || order_status != 'Shipped' ? <h1 className="text-sm font-semibold text-green-600 md:text-xl">{`${'Arriving on ' + formattedDate}`}</h1> : order_status
+                order_status.trim() != 'Ordered' || order_status.trim() != 'Shipped' ? <h1 className="text-sm font-semibold text-green-600 md:text-xl">{`${'Arriving on ' + formattedDate}`}</h1> : order_status.trim()
             }
-            <div className={`border-t-4 border-b-4 p-4 border-gray-200 space-y-1 ${(order_status === 'Delivered' || order_status === 'Picked') && 'bg-green-700'}`}>
+            <div className={`border-t-4 border-b-4 p-4 border-gray-200 space-y-1 ${(order_status.trim() === 'Delivered' || order_status.trim() === 'Picked') && 'bg-green-700'}`}>
               {
-                order_status === 'Delivered' || order_status === 'Picked' ?
+                order_status.trim() === 'Delivered' || order_status.trim() === 'Picked' ?
                   <>
-                    <h1 className="text-lg text-green-100 font-semibold tracking-widest">Order {order_status} successfully...</h1>
+                    <h1 className="text-lg text-green-100 font-semibold tracking-widest">Order {order_status.trim()} successfully...</h1>
 
                   </> : <>
                     <h1 className="text-base font-semibold">
@@ -206,7 +203,7 @@ const OrderDetails = () => {
               }
             </div>
             {
-              !ispickup && <>
+              !ispickup ? <>
                 <h2 className="font-medium">Delivery Address</h2>
                 <h2 className="font-medium">{first_name} {last_name}</h2>
                 <p className="">
@@ -216,6 +213,13 @@ const OrderDetails = () => {
                 <h3 className="font-medium">
                   Phone number <span className="font-normal">{phone_number} </span>
                 </h3>
+              </> : <>
+                <h2 className="font-medium">Pickup Address</h2>
+                <h2 className="font-medium">{company_name}</h2>
+                <p className="">
+                  {shipping_address} {company_city},
+                  {company_state}, {company_zip_code}, {company_country}
+                </p>
               </>
             }
           </div>
@@ -310,7 +314,7 @@ const OrderDetails = () => {
                 {filteredProgressData.map((item, index) => (
                   <Step
                     key={index}
-                    title={item.title}
+                    title={item.title?.trim()}
                     description={''}
                     onMouseEnter={() => onStepHover(index)}
                     onMouseLeave={() => setCurrent(currentStep)}

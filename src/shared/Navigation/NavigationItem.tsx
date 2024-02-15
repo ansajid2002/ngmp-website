@@ -96,7 +96,7 @@ const {t} = useTranslation()
 
         const updatedCartData = await Promise.all(
           data?.cartData.map(async (item: any) => {
-            let shippingCost = await renderCost(item.mogadishudistrict_ship_from, storedDistrict);
+            let shippingCost = await renderCost(item.vendorInfo?.company_district, storedDistrict);
             const selectedOption = item.mogadishudistrict_ship_from ? 'shipping' : 'pickup';
 
             // Retrieve existing selectedOptions from localStorage
@@ -121,23 +121,26 @@ const {t} = useTranslation()
     fetchCart(customerId);
   }, [customerId, dispatch]);
 
-  const renderCost = async (mogadishudistrict_ship_from: string, storedDistrict: string) => {
+  const renderCost = async (company_district: string, storedDistrict: string) => {
     try {
-      if (!mogadishudistrict_ship_from) return
-      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${mogadishudistrict_ship_from}&destination=${storedDistrict}`)
-      if (response.ok) {
-        const data = await response.json()
-        if (data.rate === 0) {
-          return 0
+      if (company_district) {
+
+        const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${company_district}&destination=${storedDistrict}`)
+        if (response.ok) {
+          const data = await response.json()
+
+          
+          if (data.rate === 0) {
+            return 0
+          }
+          else {
+            // setShippingrate(data.rate)
+            return data.rate
+          }
         }
         else {
-          // setShippingrate(data.rate)
-          return data.rate
-
+          console.log("fetching failed ");
         }
-      }
-      else {
-        console.log("fetching failed ");
       }
     } catch (error) {
       console.log(error, "ERROR FETCHING RATES");
@@ -192,7 +195,7 @@ const {t} = useTranslation()
                     {/* <Image
                         className="rounded-full mr-3"
                         width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} /> */}
-                    <p className="font-medium text-black/70 dark:text-neutral-200 text-base ">
+                    <p className="font-medium text-black/70 dark:text-neutral-200 text-sm lg:text-base ">
                       {t("Featured")}
                     </p>
                     <ChevronRightIcon

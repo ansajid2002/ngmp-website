@@ -13,7 +13,8 @@ interface CartState {
 
 const initialState: CartState = {
     cartItems: [],
-    successOrders:[]
+    successOrders:[],
+
 };
 
 export const cartSlice = createSlice({

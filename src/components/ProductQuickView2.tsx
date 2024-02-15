@@ -36,6 +36,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   const [inFavorite, setinFavorite] = useState(false);
   const [shippingRate, setShippingrate] = useState(0);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
+console.log(item,"whole ittem🐱‍🏍");
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
@@ -61,9 +62,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     slug_cat,
     additionaldescription,
     somali_additionaldescription,
-    mogadishudistrict_ship_from
+    mogadishudistrict_ship_from,
+    vendorInfo={}
   } = item;
-
+const company_district = vendorInfo?.company_district
 
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
@@ -292,7 +294,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
   const notifyAddTocart = async () => {
     const { category, subcategory, uniquepid, vendorid, id } = singleData;
-    const shipping = mogadishudistrict_ship_from && storedDistrict ? 'shipping' : 'pickup'
+    const shipping = company_district && storedDistrict ? 'shipping' : 'pickup'
     const updatedSingleData = {
       ...singleData,
       added_quantity: qualitySelected, // This adds the productToAdd object as a property of singleData
@@ -418,16 +420,18 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   };
 
   const storedDistrict = localStorage.getItem('selectedDistrict');
+  console.log(company_district,storedDistrict,"pickup and delivery locations");
+  
 
   const renderShippingAvailability = () => {
     return (
       <div>
         {
-          mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
-            {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
+          company_district && storedDistrict ? <div className="flex justify-center">
+          
+            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {company_district} {t("To")} {storedDistrict}</h1>
           </div> : (
-            !mogadishudistrict_ship_from ? (
+            !company_district ? (
               <div className="flex justify-center">
                 <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
               </div>
@@ -437,7 +441,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                   <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">{t("Choose District")}</a>
                 </div>
               ) : (
-                <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
+                <p>{t("Both company_district and storedDistrict are not present")}</p>
               )
             )
           )
@@ -449,7 +453,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
   const renderCost = async () => {
     try {
-      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${mogadishudistrict_ship_from}&destination=${storedDistrict}`)
+      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${company_district}&destination=${storedDistrict}`)
       if (response.ok) {
         const data = await response.json()
         if (data.rate === 0) {
@@ -469,7 +473,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   }
 
   useEffect(() => {
-    mogadishudistrict_ship_from && storedDistrict && renderCost()
+    company_district && storedDistrict && renderCost()
   }, [])
 
   const renderSectionContent = () => {
@@ -481,7 +485,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
             <Link
               href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
             >
-             {languageCode === "so" ? somali_additionaldescription === null ? additionaldescription : somali_additionaldescription : additionaldescription}
+             {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
             </Link>
           </h2>
 
