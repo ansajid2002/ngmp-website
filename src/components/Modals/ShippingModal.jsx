@@ -3,42 +3,35 @@ import { Modal, Table, Button, Space, Image } from 'antd';
 import { useDispatch } from 'react-redux';
 import { updateProductsListCart } from '@/redux/slices/cartSlice';
 import FetchCartPrice from '../FetchCartPrice';
-import { AdminUrl, ProductImageUrl } from '@/app/layout';
+import { ProductImageUrl } from '@/app/layout';
+import FetchCheckoutPrice from '../FetchCheckoutPrice';
+import { useTranslation } from 'react-i18next';
+import ButtonPrimary from '@/shared/Button/ButtonPrimary';
+import { useRouter } from 'next/navigation';
 
 export const ShippingModal = ({ visible, onCancel, cartItems }) => {
     const dispatch = useDispatch();
-
+    const { t } = useTranslation()
     const [selectedOptions, setSelectedOptions] = useState({});
+    const navigation = useRouter()
+    const localPickupItems = localStorage.getItem('pickupitems');
+    console.log(localPickupItems,"lp.;.;.;;;..;;;.;.;");
+    const [pickupItems, setPickupItems] = useState(localPickupItems ? JSON.parse(localPickupItems) : cartItems?.filter(product => product.vendorInfo?.company_district === null)
+        .map(product => product?.uniquepid))
+
+    console.log(pickupItems
+        , "array of pickups!!!!!!!!!!!!!!!");
+
 
     const handleSelect = (itemId, selectedOption) => {
-        // Retrieve existing selectedOptions from localStorage
-        const existingSelectedOptionsString = localStorage.getItem('selectedOptions');
-        const existingSelectedOptions = existingSelectedOptionsString ? JSON.parse(existingSelectedOptionsString) : {};
-
-        // Update the selectedOption for the current item in the local storage
-        existingSelectedOptions[itemId] = selectedOption;
-        localStorage.setItem('selectedOptions', JSON.stringify(existingSelectedOptions));
-
-        // Update the state to reflect the selected option for the item
-        setSelectedOptions(existingSelectedOptions);
-
-        const updatedCartItems = cartItems.map((item) => {
-            console.log(item.uniquepid, itemId);
-            if (item.uniquepid === itemId) {
-                return {
-                    ...item,
-                    selectedOption,
-                };
+        if (selectedOption === 'pickup') {
+            if (!pickupItems.includes(itemId)) {
+                setPickupItems([...pickupItems, itemId]);
             }
-            return item;
-        });
-
-        console.log(selectedOption, 'selectedOption');
-        // Use the updatedCartItems as needed (e.g., dispatch to update the global state)
-        dispatch(updateProductsListCart(updatedCartItems));
+        } else if (selectedOption === 'shipping') {
+            setPickupItems(pickupItems.filter(item => item !== itemId));
+        }
     };
-
-
 
     const columns = [
         {
@@ -62,17 +55,23 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
             key: 'action',
             width: 200,
             render: (text, record) => (
-                record.mogadishudistrict_ship_from ? <Space size="middle">
+                record?.vendorInfo?.company_district ? <Space size="middle">
                     <Button
                         type={''}
-                        className={`${selectedOptions[record.uniquepid] === 'shipping' ? 'bg-blue-500 text-white' : 'bg-transparent border border-gray-500 rounded-lg'}`}
+                        className={`${!pickupItems.includes(record.uniquepid)
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-transparent border border-gray-500 rounded-lg'
+                            }`}
                         onClick={() => handleSelect(record.uniquepid, 'shipping')}
                     >
-                        Ship
+                        Shipping
                     </Button>
                     <Button
                         type={''}
-                        className={`${selectedOptions[record.uniquepid] === 'pickup' ? 'bg-blue-500 text-white' : 'bg-transparent border border-gray-500 rounded-lg'}`}
+                        className={`${pickupItems.includes(record.uniquepid)
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-transparent border border-gray-500 rounded-lg'
+                            }`}
                         onClick={() => handleSelect(record.uniquepid, 'pickup')}
                     >
                         Pickup
@@ -101,7 +100,66 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
             />
 
             <div className='mt-10 '>
-                <FetchCartPrice />
+                <>
+                    <ButtonPrimary onClick={() => {
+                        localStorage.setItem("pickupitems",JSON.stringify(pickupItems))
+                        navigation.push('/checkout')
+                    }} className="mt-8 w-full">
+                        {"Proceed To Checkout"}
+                    </ButtonPrimary>
+                    <div className="mt-5 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center">
+                        <p className="block relative pl-5">
+                            <svg
+                                className="w-4 h-4 absolute -left-1 top-0.5"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                            >
+                                <path
+                                    d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                                <path
+                                    d="M12 8V13"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                                <path
+                                    d="M11.9945 16H12.0035"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                            {t("Learn more")}{` `}
+                            <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href="##"
+                                className="text-gray-900 dark:text-gray-200 underline font-medium"
+                            >
+                                {t("Taxes")}
+                            </a>
+                            <span>
+                                {` `}{t("and")}{` `}
+                            </span>
+                            <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href="##"
+                                className="text-gray-900 dark:text-gray-200 underline font-medium"
+                            >
+                                {t("Shipping")}
+                            </a>
+                            {` `} {t("infomation")}
+                        </p>
+                    </div>
+                </>
             </div>
         </Modal>
     );

@@ -149,10 +149,11 @@ const ProductDetailPage = ({ searchParams }) => {
         }
 
         const responseDataProduct = await response.json();
-
+        console.log(responseDataProduct?.product,"this is the post request called for fetch single product");
+        
         setResponseData(responseDataProduct?.product);
 
-        responseDataProduct?.product?.mogadishudistrict_ship_from && renderCost(responseDataProduct?.product?.mogadishudistrict_ship_from)
+        responseDataProduct?.product?.vendorInfo?.company_district && renderCost(responseDataProduct?.product?.vendorInfo?.company_district)
 
         setSellerId(responseDataProduct.product.vendorid);
         // console.log(sellerId, "SELLLERDATATATATATATAT");
@@ -530,11 +531,11 @@ const ProductDetailPage = ({ searchParams }) => {
     return (
       <div>
         {
-          responseData?.mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
-            {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {responseData?.mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
+          responseData?.vendorInfo?.company_district && storedDistrict ? <div className="flex justify-center">
+
+            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {responseData?.vendorInfo?.company_district} {t("To")} {storedDistrict}</h1>
           </div> : (
-            !responseData?.mogadishudistrict_ship_from ? (
+            !responseData?.vendorInfo?.company_district ? (
               <div className="flex justify-center">
                 <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
               </div>
@@ -1060,7 +1061,7 @@ const ProductDetailPage = ({ searchParams }) => {
   };
 
   const notifyAddTocart = async () => {
-    const shipping = responseData?.mogadishudistrict_ship_from && storedDistrict ? 'shipping' : 'pickup'
+    const shipping = responseData?.vendorInfo?.company_district && storedDistrict ? 'shipping' : 'pickup'
 
     const updatedSingleData = {
       ...responseData,

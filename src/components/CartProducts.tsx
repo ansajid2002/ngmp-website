@@ -17,13 +17,15 @@ import NcInputNumber from "./NcInputNumber";
 import Divider from "./divider/Divider";
 import { useTranslation } from "react-i18next";
 
-const CartProducts = ({ removeData = true }) => {
+const CartProducts = ({ removeData = true,canNavigate=true }) => {
   const { cartItems } = useAppSelector((store) => store.cart);
   const dispatch = useDispatch();
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
   const {languageCode} = useAppSelector((store=> store.languagesReducer))
 const {t} =  useTranslation()
+
+
   const renderProduct = (item: Product, index: number) => {
     const {
       ad_title,
@@ -40,6 +42,8 @@ const {t} =  useTranslation()
       selectedOption,
       vendorInfo
     } = item;
+    console.log(cartItems,"cccc");
+    
 
     const { brand_name = "", vendorname="" } = vendorInfo || []
 
@@ -189,18 +193,17 @@ const {t} =  useTranslation()
 
     const storedDistrict = localStorage.getItem('selectedDistrict');
 
+    
     const renderShippingAvailability = () => {
       return (
         <div>
           {
-            selectedOption === 'pickup' ? <div className="flex">
-              <h1 className="text-red-600 font-semibold text-sm md:text-xl">{t("Only Pickup Available")}</h1>
-            </div> :
-              mogadishudistrict_ship_from && storedDistrict ? <div className="flex">
-                {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-                <h1 className="text-green-600 font-semibold text-sm md:text-xl">{t("Shipping Fee")} : ${shippingCost}, {t("From")} {mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
+           
+              vendorInfo?.company_district && storedDistrict ? <div className="flex">
+              
+                <h1 className="text-green-600 font-semibold text-sm md:text-lg">{t("Shipping Fee")} : ${shippingCost}, {t("From")} {vendorInfo?.company_district} {t("To")} {storedDistrict}</h1>
               </div> : (
-                !mogadishudistrict_ship_from ? (
+                !vendorInfo?.company_district ? (
                   <div className="flex">
                     <h1 className="text-red-600 font-semibold text-sm md:text-xl">{t("Only Pickup Available")}</h1>
                   </div>
@@ -219,6 +222,14 @@ const {t} =  useTranslation()
         </div>
       )
     }
+    function getTitle() {
+      const title = languageCode === "so" ? (somali_ad_title || ad_title) : ad_title;
+      return canNavigate ? (
+        <Link href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}>
+          {title}
+        </Link>
+      ) : title;
+    }
 
     return (
       <div
@@ -233,27 +244,25 @@ const {t} =  useTranslation()
             sizes="300px"
             className="h-full w-full object-contain object-center"
           />
+          {
+            canNavigate &&
           <Link
-            href={{
-              pathname: "/product-detail",
-              query: { product: ad_title, uniqueid: uniquepid },
-            }}
-            className="absolute inset-0"
+          href={{
+            pathname: "/product-detail",
+            query: { product: ad_title, uniqueid: uniquepid },
+          }}
+          className="absolute inset-0"
           ></Link>
+        }
         </div>
 
         <div className="ml-3 sm:ml-6 flex flex-1 flex-col">
           <div>
             <div className="flex justify-between ">
               <div className="flex-[1.5] ">
-                <h3 className="text-base font-semibold line-clamp-2 w-11/12">
-                  <Link
-                    href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
-                  >
-                    
-                    {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
-                  </Link>
-                </h3>
+              <h3 className="text-base font-semibold line-clamp-2 w-11/12">
+    {getTitle()}
+  </h3>
                 <div className="mt-1.5 sm:mt-2.5 flex flex-col text-sm text-gray-600 dark:text-gray-300">
                   {/* <span className="mx-4 border-l border-gray-200 dark:border-gray-700 "></span> */}
                   {label && (

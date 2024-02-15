@@ -426,8 +426,7 @@ const PaymentMethod: FC<Props> = ({
           <button
             className="py-2 px-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 mt-5 sm:mt-0 sm:ml-auto text-sm font-medium rounded-lg"
             onClick={onOpenActive}
-          >
-            Change
+          >Change
           </button>
         </div>
 

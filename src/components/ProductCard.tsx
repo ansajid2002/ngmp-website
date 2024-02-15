@@ -357,7 +357,7 @@ const ProductCard: FC<ProductCardProps> = ({
           {/* {renderVariants()} */}
           {/* <div> */}
           {showTitle && (
-            <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-1">
+            <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-2">
              {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
             </h2>
           )}
@@ -374,7 +374,7 @@ const ProductCard: FC<ProductCardProps> = ({
                   allowHalf
                   disabled
                   value={(ratingData?.[0]?.averageRating)?.toFixed(2) || 2}
-                  className="text-sm text-green-800"
+                  className="text-[10px] sm:text-sm text-green-800"
                 />
                 <span className="text-sm ml-2 font-medium text-green-800">({(ratingData?.[0]?.averageRating)?.toFixed(2) || 2})</span>
               </div>
