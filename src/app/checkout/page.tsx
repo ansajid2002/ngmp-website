@@ -24,24 +24,35 @@ const CheckoutPage = () => {
   const customerData = useAppSelector((state) => state.customerData)
   const { cartItems } = useAppSelector((state) => state.cart)
   const router = useRouter()
+console.log(cartItems,"cartItems");
+
+const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
+
+  
+  const remainingItems = cartItems.filter((item) => !pickupItems.includes(item.uniquepid)).map((s) => s.uniquepid);
+
+console.log(remainingItems,"remainingItems");
+
+
 
   useEffect(() => {
     cartItems && cartItems?.length === 0 && router.push('/')
   }, [cartItems])
 
-  const checkoutItems = localStorage.getItem('selectedOptions');
+  // const checkoutItems = localStorage.getItem('selectedOptions');
 
-  let shippingIds = [];
+  // let shippingIds = [];
 
-  // Parse the JSON string
-  const selectedOptions = JSON.parse(checkoutItems);
+  // // Parse the JSON string
+  // const selectedOptions = JSON.parse(checkoutItems);
 
-  // Check if the selected option is "pickup" and store the item ID
-  for (const itemId in selectedOptions) {
-    if (selectedOptions[itemId] === 'shipping') {
-      shippingIds.push(parseInt(itemId));
-    }
-  }
+  // // Check if the selected option is "pickup" and store the item ID
+  // for (const itemId in selectedOptions) {
+  //   if (selectedOptions[itemId] === 'shipping') {
+  //     shippingIds.push(parseInt(itemId));
+  //   }
+  // }
+  
 
 
   const handleScrollToEl = (id: string) => {
@@ -75,7 +86,7 @@ const CheckoutPage = () => {
         {
           customerData?.customerData && <>
             {
-              shippingIds?.length > 0 && <div id="ShippingAddress" className="scroll-mt-24">
+              remainingItems?.length > 0 && <div id="ShippingAddress" className="scroll-mt-24">
                 <ShippingAddress
                   isActive={tabActive === "ShippingAddress"}
                   onOpenActive={() => {
@@ -100,7 +111,7 @@ const CheckoutPage = () => {
                     setTabActive("PaymentMethod");
                     handleScrollToEl("PaymentMethod");
                   } else {
-                    if (shippingIds.length > 0) {
+                    if (remainingItems.length > 0) {
                       alert('No Address Selected')
                     } else {
                       setTabActive("PaymentMethod");
