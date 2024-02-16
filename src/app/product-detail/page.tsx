@@ -61,7 +61,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sellerProfile, setSellerProfile] = useState(null);
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const showDetailModal = () => {
     setIsDetailModalOpen(true);
   };
@@ -126,7 +126,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const cartItems = useAppSelector((state) => state.cart.cartItems);
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
   const [shippingRate, setShippingrate] = useState(0);
-  const {languageCode} = useAppSelector((store=> store.languagesReducer))
+  const { languageCode } = useAppSelector((store => store.languagesReducer))
 
 
   const dispatch = useDispatch();
@@ -149,8 +149,8 @@ const ProductDetailPage = ({ searchParams }) => {
         }
 
         const responseDataProduct = await response.json();
-        console.log(responseDataProduct?.product,"this is the post request called for fetch single product");
-        
+        console.log(responseDataProduct?.product, "this is the post request called for fetch single product");
+
         setResponseData(responseDataProduct?.product);
 
         responseDataProduct?.product?.vendorInfo?.company_district && renderCost(responseDataProduct?.product?.vendorInfo?.company_district)
@@ -603,7 +603,7 @@ const ProductDetailPage = ({ searchParams }) => {
         {/* ---------- 1 HEADING ----------  */}
         <div>
           <h2 className="text-[1.2rem] tracking-normal">
-            
+
             {languageCode === "so" ? responseData?.somali_ad_title === null ? responseData?.ad_title : responseData?.somali_ad_title : responseData?.ad_title}
           </h2>
 
@@ -615,7 +615,7 @@ const ProductDetailPage = ({ searchParams }) => {
               sellingprice={sellingPriceData || responseData?.sellingprice}
             />
 
-            <div className="h-7 border-l border-gray-300 dark:border-gray-700"></div>
+            {/* <div className="h-7 border-l border-gray-300 dark:border-gray-700"></div>
 
             <div className="flex items-center">
               <a
@@ -634,9 +634,9 @@ const ProductDetailPage = ({ searchParams }) => {
               <span className="hidden sm:block mx-2.5">·</span>
               <div className="hidden sm:flex items-center text-sm">
                 <SparklesIcon className="w-3.5 h-3.5" />
-                {/* <span className="ml-1 leading-none">{status}</span> */}
+                <span className="ml-1 leading-none">{status}</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -733,7 +733,7 @@ const ProductDetailPage = ({ searchParams }) => {
         <div>
           <h2 className="text-[1.3rem] font-medium">{t("Description")}</h2>
           <p className="leading-normal mt-3 text-[1rem]">
-        
+
             {languageCode === "so" ? responseData?.somali_additionaldescription === "" ? responseData?.additionaldescription : responseData?.somali_additionaldescription : responseData?.additionaldescription}
           </p>
         </div>
@@ -758,11 +758,11 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="text-left flex flex-col gap-2">
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <ShieldCheck size={20} className="mr-1" />
-             {t("Safe Payment Options")}
+              {t("Safe Payment Options")}
             </span>
             <div className="md:px-5 flex flex-col gap-2 md:gap-2">
               <li className="list-disc">
-               {t(` Nile is committed to protecting your payment information. We
+                {t(` Nile is committed to protecting your payment information. We
                 follow PCI DSS standards, use strong encryption, and perform
                 regular reviews of its system to protect your privacy.`)}
               </li>
@@ -794,11 +794,11 @@ const ProductDetailPage = ({ searchParams }) => {
 
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <LockKeyhole size={20} className="mr-1" />
-             {t("Secure Privacy")}
+              {t("Secure Privacy")}
             </span>
             <div className="md:px-5 flex flex-col gap-1 md:gap-2">
               <li className="list-disc">
-               {t(` Protecting your privacy is important to us! Please be assured
+                {t(` Protecting your privacy is important to us! Please be assured
                 that your information will be kept secured and uncompromised. We
                 do not sell your personal information for money and will only
                 use your information in accordance with our privacy and cookie

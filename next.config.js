@@ -51,7 +51,6 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
-
       // Add a new pattern for the new IP address
       {
         protocol: "https",
