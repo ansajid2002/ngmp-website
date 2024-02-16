@@ -14,7 +14,7 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useRouter()
 
-  const [totalShippingCharges,setTotalShippingCharges] = useState(0)
+  const [totalShippingCharges, setTotalShippingCharges] = useState(0)
   const renderCost = async (company_district: string, storedDistrict: string) => {
     try {
       if (company_district) {
@@ -22,8 +22,8 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
         const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${company_district}&destination=${storedDistrict}`)
         if (response.ok) {
           const data = await response.json()
-     
-          
+
+
           if (data.rate === 0) {
             return 0
           }
@@ -42,68 +42,68 @@ const FetchCartPrice = ({ showTitle = true, showCheckout = true, checkoutLink = 
     return 0
   }
 
-  console.log(cartItems,"xc");
+  console.log(cartItems, "xc");
   const storedDistrict = localStorage.getItem('selectedDistrict');
 
   const calculateShippingCharges = async (cartItems) => {
     // Create a Set to keep track of visited vendorIds
     const visitedVendorIds = new Set();
-  
+
     // Initialize total shipping charges
     let totalShippingCharges = 0;
-  
+
     // Iterate through each cart item and calculate shipping charges
     for (const item of cartItems) {
       const { vendorid, vendorInfo } = item;
-      const { company_district } = vendorInfo;
-    
-  
+      const { company_district = null } = vendorInfo || {};
+
+
       // Check if the vendorId has been visited already
       if (!visitedVendorIds.has(vendorid)) {
         // Call the renderCost function to get shipping charges
         const shippingCharges = await renderCost(company_district, storedDistrict);
-        
+
         // Add shipping charges to the total
         totalShippingCharges += shippingCharges;
-  
+
         // Add the vendorId to the visited set
         visitedVendorIds.add(vendorid);
       }
     }
-  
+
     return totalShippingCharges;
   };
-  
+
   // Call the function with your array of objects
   calculateShippingCharges(cartItems).then((totalShippingCharges) => {
-    
+
     setTotalShippingCharges(totalShippingCharges)
   });
-  
-console.log(totalShippingCharges,"asasasfdgsadfwetgfvsfdgv");
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Function to calculate subtotal for an individual item
-const calculateItemSubtotal = (sellingprice, quantity) => {
-  return parseFloat(sellingprice)  * quantity;
-};
+  console.log(totalShippingCharges, "asasasfdgsadfwetgfvsfdgv");
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Function to calculate subtotal for the entire cart
-const calculateCartSubtotal = (cartItems) => {
-  let subtotal = 0;
-  for (const item of cartItems) {
-    subtotal += calculateItemSubtotal(item.sellingprice, item.added_quantity);
-  }
-  return subtotal;
-};
+  // Function to calculate subtotal for an individual item
+  const calculateItemSubtotal = (sellingprice, quantity) => {
+    return parseFloat(sellingprice) * quantity;
+  };
 
-// Example usage:
-// Assuming your cartItems array contains objects with sellingPrice and quantity properties
+  // Function to calculate subtotal for the entire cart
+  const calculateCartSubtotal = (cartItems) => {
+    let subtotal = 0;
+    for (const item of cartItems) {
+      subtotal += calculateItemSubtotal(item.sellingprice, item.added_quantity);
+    }
+    return subtotal;
+  };
+
+  // Example usage:
+  // Assuming your cartItems array contains objects with sellingPrice and quantity properties
 
 
-// Calculate subtotal for the entire cart
-const subtotal = calculateCartSubtotal(cartItems);
-console.log("Subtotal:", subtotal);
+  // Calculate subtotal for the entire cart
+  const subtotal = calculateCartSubtotal(cartItems);
+  console.log("Subtotal:", subtotal);
 
 
 
@@ -111,9 +111,9 @@ console.log("Subtotal:", subtotal);
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-  const {t} = useTranslation()
+  const { t } = useTranslation()
 
-  
+
   return (
     <div className="flex-1">
       <div className="sticky top-28">

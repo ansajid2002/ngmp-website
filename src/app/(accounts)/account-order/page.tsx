@@ -21,7 +21,8 @@ const AccountOrder = () => {
   const [reviewItems, setReviewData] = useState(null);
   const [loading, setLoading] = useState(true);
   const customerId = customerData?.customerData?.customer_id || null;
-  const {t} = useTranslation()
+  const { t } = useTranslation()
+
   const getAllCustomerOrder = async () => {
     if (customerId === null || customerId === undefined) {
       // Handle the case when customerId is null or undefined, such as displaying an error message or taking appropriate action.
@@ -99,6 +100,8 @@ const AccountOrder = () => {
     );
   };
 
+
+
   const renderProductItem = (product: any, index: number) => {
     const {
       product_image,
@@ -118,6 +121,7 @@ const AccountOrder = () => {
 
     return (
       <div key={product_uniqueid + order_id + index} className="md:flex p-2">
+
         <div className="relative h-24 w-16 sm:w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
           <NcImage
             fill
@@ -129,7 +133,6 @@ const AccountOrder = () => {
             containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
             className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
             sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
-
           />
         </div>
 

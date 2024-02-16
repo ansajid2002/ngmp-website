@@ -56,6 +56,12 @@ const CheckoutPage = () => {
     setTabActive('PaymentMethod')
   }
 
+  useEffect(() => {
+    if (!selectedAddress) {
+      setTabActive("PaymentMethod");
+      handleScrollToEl("PaymentMethod");
+    }
+  }, [])
   const renderLeft = () => {
     return (
       <div className="space-y-8">
@@ -148,7 +154,7 @@ const CheckoutPage = () => {
             </div>
 
             <div className="mt-10 pt-6 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200/70 dark:border-gray-700 ">
-              <div>
+              {/* <div>
                 <Label className="text-sm">Discount code</Label>
                 <div className="flex mt-1.5">
                   <Input sizeClass="h-10 px-4 py-3" className="flex-1" />
@@ -156,7 +162,7 @@ const CheckoutPage = () => {
                     Apply
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               <FetchCheckoutPrice showTitle={false} showCheckout={false} />
             </div>

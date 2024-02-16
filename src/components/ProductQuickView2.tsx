@@ -36,7 +36,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   const [inFavorite, setinFavorite] = useState(false);
   const [shippingRate, setShippingrate] = useState(0);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
-console.log(item,"whole ittem🐱‍🏍");
+  console.log(item, "whole ittem🐱‍🏍");
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
@@ -63,9 +63,9 @@ console.log(item,"whole ittem🐱‍🏍");
     additionaldescription,
     somali_additionaldescription,
     mogadishudistrict_ship_from,
-    vendorInfo={}
+    vendorInfo = {}
   } = item;
-const company_district = vendorInfo?.company_district
+  const company_district = vendorInfo?.company_district
 
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
@@ -73,7 +73,7 @@ const company_district = vendorInfo?.company_district
   const [qualitySelected, setQualitySelected] = useState(1);
   const [variantsWithArray, setVariantsWithArray] = useState(null);
   const [variantsData, setVariantsData] = useState(null);
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const [selectedAttributes, setSelectedAttributes] = useState<null>(null); // Replace 'YourAttributeType' with the actual type
   const [selectLabel, setSelectLabel] = useState<string | null>(item?.label);
   const [mrpData, setMrp] = useState<number | null>(mrp);
@@ -86,12 +86,13 @@ const company_district = vendorInfo?.company_district
     ((mrp - sellingprice) / mrp) * 100
   );
   const [singleData, setsingleData] = useState(item);
+  const [loader, setLoader] = useState(false);
   const [selectedImage, setSelectedImage] = useState(images?.[0]);
   const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(
     null
   );
   const cartItems = useAppSelector((state) => state.cart.cartItems);
-  const {languageCode} = useAppSelector((store=> store.languagesReducer))
+  const { languageCode } = useAppSelector((store => store.languagesReducer))
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
 
@@ -318,7 +319,7 @@ const company_district = vendorInfo?.company_district
     localStorage.setItem('selectedOptions', JSON.stringify(existingSelectedOptions));
 
 
-
+    setLoader(true)
     if (customerId) {
       try {
         const requestData = {
@@ -350,9 +351,13 @@ const company_district = vendorInfo?.company_district
         setisUniquepidMatched(true);
       } catch (error) {
         console.error("Error updating cart:", error);
+      } finally {
+        setLoader(false)
       }
     } else {
       dispatch(addItem(updatedSingleData));
+      setLoader(false)
+
     }
 
     toast.custom(
@@ -373,8 +378,8 @@ const company_district = vendorInfo?.company_district
   };
 
   const renderVariants = () => {
-    console.log(variantsWithArray,"");
-    
+    console.log(variantsWithArray, "");
+
     if (!variantsWithArray) {
       // Show skeleton skimmer placeholder when variants are not available yet
       return (
@@ -422,15 +427,15 @@ const company_district = vendorInfo?.company_district
   };
 
   const storedDistrict = localStorage.getItem('selectedDistrict');
-  console.log(company_district,storedDistrict,"pickup and delivery locations");
-  
+  console.log(company_district, storedDistrict, "pickup and delivery locations");
+
 
   const renderShippingAvailability = () => {
     return (
       <div>
         {
           company_district && storedDistrict ? <div className="flex justify-center">
-          
+
             <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {company_district} {t("To")} {storedDistrict}</h1>
           </div> : (
             !company_district ? (
@@ -487,7 +492,7 @@ const company_district = vendorInfo?.company_district
             <Link
               href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
             >
-             {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
+              {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
             </Link>
           </h2>
 
@@ -524,7 +529,7 @@ const company_district = vendorInfo?.company_district
               dealimg={
                 "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
               }
-         
+              label1={''}
               label2={"Time-Limited Offer"}
             />
           </div>
@@ -559,11 +564,12 @@ const company_district = vendorInfo?.company_district
               <NcInputNumber
                 defaultValue={qualitySelected}
                 onChange={setQualitySelected}
-              />0
+              />
             </div>
             <ButtonPrimary
               className="flex-1 flex-shrink-0 transition-all duration-300"
               onClick={notifyAddTocart}
+              loading={loader}
             >
               <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
               <span className="ml-3">{t("Add to Cart")}</span>
@@ -578,8 +584,8 @@ const company_district = vendorInfo?.company_district
         <div>
           <h2 className="text-[1rem] font-medium">{t("Description")}</h2>
           <p className=" text-[0.9rem] line-clamp-2">
-            
-            {languageCode === "so" ? somali_additionaldescription === null ?  additionaldescription : somali_additionaldescription : additionaldescription}
+
+            {languageCode === "so" ? somali_additionaldescription === null ? additionaldescription : somali_additionaldescription : additionaldescription}
           </p>
         </div>
 
@@ -694,10 +700,10 @@ const company_district = vendorInfo?.company_district
                     src={`${ProductImageUrl}/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
-                      onError={(e) => {
-                        e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
-                        e.target.alt = 'dummyimage';
-                      }}
+                    onError={(e) => {
+                      e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                      e.target.alt = 'dummyimage';
+                    }}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />

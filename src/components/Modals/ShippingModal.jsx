@@ -10,17 +10,12 @@ import ButtonPrimary from '@/shared/Button/ButtonPrimary';
 import { useRouter } from 'next/navigation';
 
 export const ShippingModal = ({ visible, onCancel, cartItems }) => {
-    const dispatch = useDispatch();
     const { t } = useTranslation()
-    const [selectedOptions, setSelectedOptions] = useState({});
     const navigation = useRouter()
     const localPickupItems = localStorage.getItem('pickupitems');
-    console.log(localPickupItems,"lp.;.;.;;;..;;;.;.;");
+    console.log(localPickupItems, "lp.;.;.;;;..;;;.;.;");
     const [pickupItems, setPickupItems] = useState(localPickupItems ? JSON.parse(localPickupItems) : cartItems?.filter(product => product.vendorInfo?.company_district === null)
         .map(product => product?.uniquepid))
-
-    console.log(pickupItems
-        , "array of pickups!!!!!!!!!!!!!!!");
 
 
     const handleSelect = (itemId, selectedOption) => {
@@ -59,8 +54,8 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
                     <Button
                         type={''}
                         className={`${!pickupItems.includes(record.uniquepid)
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-transparent border border-gray-500 rounded-lg'
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-transparent border border-gray-500 rounded-lg'
                             }`}
                         onClick={() => handleSelect(record.uniquepid, 'shipping')}
                     >
@@ -102,7 +97,7 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
             <div className='mt-10 '>
                 <>
                     <ButtonPrimary onClick={() => {
-                        localStorage.setItem("pickupitems",JSON.stringify(pickupItems))
+                        localStorage.setItem("pickupitems", JSON.stringify(pickupItems))
                         navigation.push('/checkout')
                     }} className="mt-8 w-full">
                         {"Proceed To Checkout"}
