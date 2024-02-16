@@ -32,7 +32,7 @@ import { useTranslation } from "react-i18next";
 export default function AvatarDropdown() {
   const customerData = useAppSelector((state) => state.customerData);
   const [profileImage, setImage] = useState('/avatarplaceholder.png');
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const navigation = useRouter();
   const {
     given_name = "",
@@ -42,12 +42,12 @@ export default function AvatarDropdown() {
     picture = "",
     google_id,
   } = customerData?.customerData || {};
-  
-  
+
+
 
   const { walletTotal } = useAppSelector((store) => store.wallet);
 
-  
+
 
   useEffect(() => {
 
@@ -171,7 +171,7 @@ export default function AvatarDropdown() {
                       </div>
                     </Link>
 
-                    <Link
+                    {/* <Link
                       href={(redirectToLogin("/my-reviews"))}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
@@ -184,9 +184,9 @@ export default function AvatarDropdown() {
                           {t("My Reviews")}
                         </p>
                       </div>
-                    </Link>
+                    </Link> */}
 
-                   
+
 
                     <Link
                       href={"/select-district"}
@@ -204,7 +204,7 @@ export default function AvatarDropdown() {
                       </div>
                     </Link>
 
-                    <Link
+                    {/* <Link
                       href={(redirectToLogin("/your-address"))}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
@@ -217,9 +217,9 @@ export default function AvatarDropdown() {
                           {t("Addresses")}
                         </p>
                       </div>
-                    </Link>
+                    </Link> */}
 
-                    <Link
+                    {/* <Link
                       href={(redirectToLogin("/notifications"))}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
@@ -232,7 +232,7 @@ export default function AvatarDropdown() {
                           {t("Notifications")}
                         </p>
                       </div>
-                    </Link>
+                    </Link> */}
 
                     {/* ------------------ 2 --------------------- */}
                     <Link

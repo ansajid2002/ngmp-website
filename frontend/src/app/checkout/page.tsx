@@ -24,24 +24,35 @@ const CheckoutPage = () => {
   const customerData = useAppSelector((state) => state.customerData)
   const { cartItems } = useAppSelector((state) => state.cart)
   const router = useRouter()
+  console.log(selectedAddress, "selectedAddress");
+
+  const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
+
+
+  const remainingItems = cartItems.filter((item) => !pickupItems.includes(item.uniquepid)).map((s) => s.uniquepid);
+
+  console.log(pickupItems, "pickupItems");
+
+
 
   useEffect(() => {
     cartItems && cartItems?.length === 0 && router.push('/')
   }, [cartItems])
 
-  const checkoutItems = localStorage.getItem('selectedOptions');
+  // const checkoutItems = localStorage.getItem('selectedOptions');
 
-  let shippingIds = [];
+  // let shippingIds = [];
 
-  // Parse the JSON string
-  const selectedOptions = JSON.parse(checkoutItems);
+  // // Parse the JSON string
+  // const selectedOptions = JSON.parse(checkoutItems);
 
-  // Check if the selected option is "pickup" and store the item ID
-  for (const itemId in selectedOptions) {
-    if (selectedOptions[itemId] === 'shipping') {
-      shippingIds.push(parseInt(itemId));
-    }
-  }
+  // // Check if the selected option is "pickup" and store the item ID
+  // for (const itemId in selectedOptions) {
+  //   if (selectedOptions[itemId] === 'shipping') {
+  //     shippingIds.push(parseInt(itemId));
+  //   }
+  // }
+
 
 
   const handleScrollToEl = (id: string) => {
@@ -55,6 +66,17 @@ const CheckoutPage = () => {
     setSelectedAddress(address)
     setTabActive('PaymentMethod')
   }
+
+  useEffect(() => {
+    if (!selectedAddress && pickupItems?.length === 0) {
+      setTabActive("PaymentMethod");
+      handleScrollToEl("PaymentMethod");
+    } else {
+      setTabActive('ShippingAddress')
+      handleScrollToEl("ShippingAddress");
+
+    }
+  }, [])
 
   const renderLeft = () => {
     return (
@@ -75,7 +97,7 @@ const CheckoutPage = () => {
         {
           customerData?.customerData && <>
             {
-              shippingIds?.length > 0 && <div id="ShippingAddress" className="scroll-mt-24">
+              remainingItems?.length > 0 && <div id="ShippingAddress" className="scroll-mt-24">
                 <ShippingAddress
                   isActive={tabActive === "ShippingAddress"}
                   onOpenActive={() => {
@@ -100,7 +122,7 @@ const CheckoutPage = () => {
                     setTabActive("PaymentMethod");
                     handleScrollToEl("PaymentMethod");
                   } else {
-                    if (shippingIds.length > 0) {
+                    if (remainingItems.length > 0) {
                       alert('No Address Selected')
                     } else {
                       setTabActive("PaymentMethod");
@@ -148,7 +170,7 @@ const CheckoutPage = () => {
             </div>
 
             <div className="mt-10 pt-6 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200/70 dark:border-gray-700 ">
-              <div>
+              {/* <div>
                 <Label className="text-sm">Discount code</Label>
                 <div className="flex mt-1.5">
                   <Input sizeClass="h-10 px-4 py-3" className="flex-1" />
@@ -156,7 +178,7 @@ const CheckoutPage = () => {
                     Apply
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               <FetchCheckoutPrice showTitle={false} showCheckout={false} />
             </div>

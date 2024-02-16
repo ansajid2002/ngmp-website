@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 const CartDetails = () => {
   const { cartItems } = useAppSelector((store) => store.cart);
-const {t} = useTranslation()
+  const { t } = useTranslation()
   return cartItems?.length === 0 ? (
     <div className="py-10 text-center">
       <h2 className="text-2xl text-gray-700 font-bold capitalize">

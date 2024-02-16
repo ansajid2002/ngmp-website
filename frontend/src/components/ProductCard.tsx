@@ -29,6 +29,7 @@ import ProductOfferBadge from "./ProductOfferBadge";
 import { useTranslation } from "react-i18next";
 
 
+
 export interface ProductCardProps {
   className?: string;
   data?: Product;
@@ -158,7 +159,7 @@ const ProductCard: FC<ProductCardProps> = ({
           onClick={() => setShowModalQuickView(true)}
         >
           <ArrowsPointingOutIcon className="w-3.5 h-3.5" />
-          <span className="ms-1 pl-1.5 text-[14px]">Quick view</span>
+          <span className="ms-1 pl-1.5 text-[14px]">{t("Quick view")}</span>
         </ButtonPrimary>
       </div>
     );

@@ -8,6 +8,7 @@ import { useAppSelector } from "@/redux/store";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import NcImage from "@/shared/NcImage/NcImage";
 import { ChevronRight } from "lucide-react";
+import moment from "moment";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -21,7 +22,8 @@ const AccountOrder = () => {
   const [reviewItems, setReviewData] = useState(null);
   const [loading, setLoading] = useState(true);
   const customerId = customerData?.customerData?.customer_id || null;
-  const {t} = useTranslation()
+  const { t } = useTranslation()
+
   const getAllCustomerOrder = async () => {
     if (customerId === null || customerId === undefined) {
       // Handle the case when customerId is null or undefined, such as displaying an error message or taking appropriate action.
@@ -82,15 +84,30 @@ const AccountOrder = () => {
     customerId && !reviewItems && fetchRatings();
   }, [customerId]);
 
-  const renderOrderGroup = (orderId: string, orders: any[]) => {
+  const formatOrderDate = (orderDate) => {
+    const today = moment().startOf('day');
+    const yesterday = moment().subtract(1, 'days').startOf('day');
 
+    const formattedDate = moment(orderDate);
+
+    if (formattedDate.isSame(today, 'd')) {
+      return `Today ${formattedDate.format('h:mm A')}`;
+    } else if (formattedDate.isSame(yesterday, 'd')) {
+      return `Yesterday ${formattedDate.format('h:mm A')}`;
+    } else {
+      return formattedDate.format('LLL'); // Adjust the format as needed
+    }
+  };
+
+  const renderOrderGroup = (orderId: string, orders: any[]) => {
     return (
       <div key={orderId}>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 sm:p-8 bg-gray-50 dark:bg-gray-500/5">
           <div>
             <p className="text-lg font-semibold">Order #{orderId}</p>
           </div>
-          <div className="mt-3 sm:mt-0"></div>
+          <div className="mt-3 sm:mt-0">{formatOrderDate(orders?.[0]?.order_date)}</div>
+
         </div>
         <div className="p-2 md:p-4">
           {orders.map((order, index) => renderProductItem(order, index))}
@@ -98,6 +115,8 @@ const AccountOrder = () => {
       </div>
     );
   };
+
+
 
   const renderProductItem = (product: any, index: number) => {
     const {
@@ -110,11 +129,9 @@ const AccountOrder = () => {
       label,
       product_uniqueid,
       ratings_and_reviews,
-      ispickup
+      ispickup,
+      shipping_fee
     } = product;
-
-    console.log(`${ProductImageUrl}/${product_image}`);
-
 
     return (
       <div key={product_uniqueid + order_id + index} className="md:flex p-2">
@@ -129,7 +146,6 @@ const AccountOrder = () => {
             containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
             className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
             sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
-
           />
         </div>
 
@@ -155,13 +171,15 @@ const AccountOrder = () => {
               </div>
               <Prices
                 price={""}
-                sellingprice={total_amount || 0}
+                sellingprice={(parseFloat(total_amount) * parseInt(quantity)) + parseFloat(shipping_fee || 0) || 0}
                 className="mt-0.5 ml-2"
               />
             </div>
           </div>
           <div className="flex flex-1 items-end justify-between text-sm">
             <p className="text-gray-500 dark:text-gray-400 flex items-center">
+              <p>{label || ''}</p>
+
               <span className="hidden sm:inline-block">Qty</span>
               <span className="inline-block sm:hidden">x</span>
               <span className="ml-2">{quantity}</span>

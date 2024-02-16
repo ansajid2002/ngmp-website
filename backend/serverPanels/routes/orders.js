@@ -245,6 +245,7 @@ app.post("/Insertorders", async (req, res) => {
     const orders = req.body[0]?.orders
     const { id } = req.body[0]?.paymentIntent
     const { selectedPaymentMode, checkoutItems = [], order_date, shippingRate } = req.body[0]
+    console.log(shippingRate, 'shippingRate');
     // const { street, city, country, region, postalCode, name, given_name, family_name, phone_number, email } = req.body[0]?.shipping_address
     const { given_name_address = '', family_name_address = '', apt_address = '', subregion_address = '', city_address = '', country_address = '', region_address = '', zip_address = '', phone_address = '', email_address = '' } = req.body[0]?.shipping_address || []
 
@@ -535,7 +536,7 @@ app.get('/getAllCustomerOrder/:customer_id', async (req, res) => {
       WHERE
         vpo.customer_id = $1
       ORDER BY
-        vpo.created_at DESC;
+        vpo.order_date DESC;
     `;
 
     const getRatingofThatOrder = `SELECT * FROM ratings_and_reviews WHERE customer_id = $1`;
@@ -572,7 +573,6 @@ app.get('/getAllCustomerOrder/:customer_id', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching data' });
   }
 });
-
 
 
 app.get("/customer-orders-by-month/:vendor_id", async (req, res) => {

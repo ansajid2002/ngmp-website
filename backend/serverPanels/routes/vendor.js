@@ -1999,6 +1999,27 @@ app.put("/getSingleProduct", async (req, res) => {
     if (result.rows.length > 0) {
       // Product found, send it in the response
       const singleProduct = result.rows[0];
+
+      if (singleProduct.vendorid) {
+
+        const vendorCountQuery = "SELECT COUNT(*) FROM products WHERE vendorid = $1";
+        const vendorCountResult = await pool.query(vendorCountQuery, [singleProduct.vendorid]);
+
+        if (vendorCountResult.rows.length > 0) {
+          // Append vendor count to the product response
+          singleProduct.vendorCount = parseInt(vendorCountResult.rows[0].count);
+        }
+        // Query the vendors table to fetch vendor data based on vendorid
+        const vendorQuery = "SELECT * FROM vendors WHERE id = $1";
+        const vendorResult = await pool.query(vendorQuery, [singleProduct.vendorid]);
+
+        if (vendorResult.rows.length > 0) {
+          delete vendorResult?.rows?.[0]?.password
+          // Append vendor data to the product response
+          singleProduct.vendorInfo = vendorResult.rows[0];
+        }
+      }
+
       if (singleProduct.isvariant === "Variant") {
         const variantData = await fetchVariantData(
           pool,

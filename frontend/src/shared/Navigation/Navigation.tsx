@@ -9,13 +9,13 @@ import Skeleton from "react-loading-skeleton";
 
 function Navigation() {
   const [navigationData, setNavigationData] = useState([]);
-  const [fdata,setFdata] = useState([])
+  const [fdata, setFdata] = useState([])
   const [isLoading, setIsLoading] = useState(true);
   const { availablelanguages } = useAppSelector(
     (store) => store.languagesReducer
   );
 
-  
+
 
   useEffect(() => {
     const fetchAndSetData = async () => {
@@ -49,13 +49,13 @@ function Navigation() {
     const getFeatured = async () => {
       const featuredData = await getFeaturedData()
       setFdata(featuredData)
-    
+
     }
 
-    if (fdata.length===0) {
+    if (fdata.length === 0) {
       getFeatured()
     }
-  },[])
+  }, [])
 
   return (
     <ul className="nc-Navigation flex items-center">

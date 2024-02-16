@@ -9,15 +9,15 @@ import { useTranslation } from "react-i18next";
 import { AdminUrl } from "@/app/layout";
 
 
-const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true }) => {
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const navigation = useRouter()
-    const { cartItems } = useAppSelector((store) => store.cart);
+const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true, successOrders }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const navigation = useRouter()
+  const { cartItems } = useAppSelector((store) => store.cart);
   const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
-  const itemstoPick = cartItems.filter(item => pickupItems.includes(item.uniquepid))
-  const itemstoShip = cartItems.filter(item => !pickupItems.includes(item.uniquepid))
-    
-  const [totalShippingCharges,setTotalShippingCharges] = useState(0)
+  // const itemstoPick = cartItems.filter(item => pickupItems.includes(item.uniquepid))
+  const itemstoShip = successOrders ? successOrders.filter(item => !pickupItems.includes(item.uniquepid)) : cartItems.filter(item => !pickupItems.includes(item.uniquepid))
+
+  const [totalShippingCharges, setTotalShippingCharges] = useState(0)
   const renderCost = async (company_district: string, storedDistrict: string) => {
     try {
       if (company_district) {
@@ -25,8 +25,8 @@ const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLin
         const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${company_district}&destination=${storedDistrict}`)
         if (response.ok) {
           const data = await response.json()
-     
-          
+
+
           if (data.rate === 0) {
             return 0
           }
@@ -50,65 +50,65 @@ const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLin
   const calculateShippingCharges = async (cartItems) => {
     // Create a Set to keep track of visited vendorIds
     const visitedVendorIds = new Set();
-  
+
     // Initialize total shipping charges
     let totalShippingCharges = 0;
-  
+
     // Iterate through each cart item and calculate shipping charges
     for (const item of cartItems) {
       const { vendorid, vendorInfo } = item;
       const { company_district } = vendorInfo;
-    
-  
+
+
       // Check if the vendorId has been visited already
       if (!visitedVendorIds.has(vendorid)) {
         // Call the renderCost function to get shipping charges
         const shippingCharges = await renderCost(company_district, storedDistrict);
-        
+
         // Add shipping charges to the total
         totalShippingCharges += shippingCharges;
-  
+
         // Add the vendorId to the visited set
         visitedVendorIds.add(vendorid);
       }
     }
-  
+
     return totalShippingCharges;
   };
-  
+
   // Call the function with your array of objects
   calculateShippingCharges(itemstoShip).then((totalShippingCharges) => {
-    
+
     setTotalShippingCharges(totalShippingCharges)
   });
-  
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Function to calculate subtotal for an individual item
-const calculateItemSubtotal = (sellingprice, quantity) => {
-  return parseFloat(sellingprice)  * quantity;
-};
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Function to calculate subtotal for the entire cart
-const calculateCartSubtotal = (cartItems) => {
-  let subtotal = 0;
-  for (const item of cartItems) {
-    subtotal += calculateItemSubtotal(item.sellingprice, item.added_quantity);
-  }
-  return subtotal;
-};
+  // Function to calculate subtotal for an individual item
+  const calculateItemSubtotal = (sellingprice, quantity) => {
+    return parseFloat(sellingprice) * quantity;
+  };
 
-// Calculate subtotal for the entire cart
-const subtotal = calculateCartSubtotal(cartItems);
-console.log("Subtotal:", subtotal);
+  // Function to calculate subtotal for the entire cart
+  const calculateCartSubtotal = (cartItems) => {
+    let subtotal = 0;
+    for (const item of cartItems) {
+      subtotal += calculateItemSubtotal(item.sellingprice, item.added_quantity);
+    }
+    return subtotal;
+  };
+
+  // Calculate subtotal for the entire cart
+  const subtotal = calculateCartSubtotal(successOrders || cartItems);
+  console.log("Subtotal:", subtotal);
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-  const {t} = useTranslation()
+  const { t } = useTranslation()
 
-  
+
   return (
     <div className="flex-1">
       <div className="sticky top-28">
@@ -134,7 +134,7 @@ console.log("Subtotal:", subtotal);
             </span>
           </div> */}
           <div className="flex justify-between font-semibold text-gray-900 dark:text-gray-200 text-base pt-4">
-            <span>Order total</span>
+            <span>{t("Order total")}</span>
             {/* <span>${calculateSubtotal()}</span> */}
             {formatCurrency((subtotal + totalShippingCharges).toFixed(2))}
           </div>
