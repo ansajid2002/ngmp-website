@@ -84,6 +84,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
     setTotalShippingCharges(totalShippingCharges)
   });
 
+  console.log(totalShippingCharges, 'shippin');
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -117,7 +118,8 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
       paymentIntent: [],
       selectedPaymentMode: mothodActive_ACTIVE,
       order_date: new Date().toISOString(),
-      checkoutItems: uniqueProductIds || []
+      checkoutItems: uniqueProductIds || [],
+      shippingRate: totalShippingCharges
     }
   ]
 
