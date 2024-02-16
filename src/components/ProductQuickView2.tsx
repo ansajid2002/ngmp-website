@@ -62,6 +62,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     slug_cat,
     additionaldescription,
     somali_additionaldescription,
+    quantity,
     mogadishudistrict_ship_from,
     vendorInfo = {}
   } = item;
@@ -564,6 +565,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
               <NcInputNumber
                 defaultValue={qualitySelected}
                 onChange={setQualitySelected}
+                max={quantity}
               />
             </div>
             <ButtonPrimary

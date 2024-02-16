@@ -90,6 +90,10 @@ const ItemsInCart = ({ label1, label2 }) => {
                           ? `${ProductImageUrl}/${item?.images?.[0]}`
                           : "/placeholder.png"
                       }
+                      onError={(e) => {
+                        e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                        e.target.alt = 'dummyimage';
+                      }}
                       alt=""
                     />
                   </div>

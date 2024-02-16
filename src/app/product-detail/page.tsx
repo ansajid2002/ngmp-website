@@ -6,31 +6,23 @@ import LikeButton from "@/components/LikeButton";
 import { StarIcon } from "@heroicons/react/24/solid";
 import BagIcon from "@/components/BagIcon";
 import NcInputNumber from "@/components/NcInputNumber";
-import { PRODUCTS } from "@/data/data";
+
 import payment from "@/images/payment.png";
 import security from "@/images/security.png";
-import {
-  NoSymbolIcon,
-  ClockIcon,
-  SparklesIcon,
-} from "@heroicons/react/24/outline";
-import IconDiscount from "@/components/IconDiscount";
+
 import Prices from "@/components/Prices";
 import toast from "react-hot-toast";
-import SectionSliderProductCard from "@/components/SectionSliderProductCard";
 import ReviewItem from "@/components/ReviewItem";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import ModalViewAllReviews from "./ModalViewAllReviews";
 import NotifyAddTocart from "@/components/NotifyAddTocart";
-// import Image from "next/image";
-import AccordionInfo from "@/components/AccordionInfo";
+
 import { AdminUrl, HomeUrl, ProductImageUrl } from "../layout";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
 import { addItem } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
 import Link from "next/link";
-import AddToCartButton from "@/components/AddtoCart";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   addItemToWishlist,
@@ -52,10 +44,8 @@ import {
 } from "lucide-react";
 import { Image, Modal, Rate } from "antd";
 import ProductSalebadge from "@/components/ProductSalebadge";
-import SellerProfileProductPage from "@/components/SellerProfileProductPage";
 import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
 import { useTranslation } from "react-i18next";
-
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -126,6 +116,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
   const [shippingRate, setShippingrate] = useState(0);
   const { languageCode } = useAppSelector((store => store.languagesReducer))
+console.log(responseData,"responsedatra");
 
 
   const dispatch = useDispatch();
@@ -651,6 +642,7 @@ const ProductDetailPage = ({ searchParams }) => {
               <NcInputNumber
                 defaultValue={qualitySelected}
                 onChange={setQualitySelected}
+                max={responseData?.quantity}
               />
             </div>
             <ButtonPrimary

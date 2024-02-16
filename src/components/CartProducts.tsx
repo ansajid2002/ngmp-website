@@ -32,14 +32,15 @@ const CartProducts = ({ removeData = true, canNavigate = true }) => {
       somali_ad_title,
       mrp,
       sellingprice,
+      quantity,
       images,
       label,
       added_quantity,
       prod_slug,
       uniquepid,
-      mogadishudistrict_ship_from,
+     
       shippingCost,
-      selectedOption,
+     
       vendorInfo
     } = item;
 
@@ -303,6 +304,7 @@ const CartProducts = ({ removeData = true, canNavigate = true }) => {
                   className="relative z-10"
                   onChange={getvalueData}
                   item={item}
+                  max={quantity}
                 />
               </div>
 
