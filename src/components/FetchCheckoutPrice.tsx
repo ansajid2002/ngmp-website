@@ -134,7 +134,7 @@ console.log("Subtotal:", subtotal);
             </span>
           </div> */}
           <div className="flex justify-between font-semibold text-gray-900 dark:text-gray-200 text-base pt-4">
-            <span>Order total</span>
+            <span>{t("Order total")}</span>
             {/* <span>${calculateSubtotal()}</span> */}
             {formatCurrency((subtotal + totalShippingCharges).toFixed(2))}
           </div>

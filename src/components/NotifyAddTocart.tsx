@@ -4,6 +4,7 @@ import Prices from "@/components/Prices";
 import Image, { StaticImageData } from "next/image";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
+import { t } from "i18next";
 
 interface Props {
   show: boolean;
@@ -19,9 +20,7 @@ interface Props {
 const NotifyAddTocart: FC<Props> = ({
   show,
   productImage,
-  variantActive,
   qualitySelected,
-  sizeSelected,
   itemData,
   mrp,
   sellingPrice
@@ -63,7 +62,7 @@ const NotifyAddTocart: FC<Props> = ({
                 onClick={() => push("/cart")}
                 className="font-medium text-primary-6000 dark:text-primary-500 "
               >
-                View cart
+                {t("View cart")}
               </button>
             </div>
           </div>
@@ -85,7 +84,7 @@ const NotifyAddTocart: FC<Props> = ({
       leaveTo="opacity-0 trangray-x-20"
     >
       <p className="block text-base font-semibold leading-none">
-        Added to cart!
+        {t("Added to cart!")}
       </p>
       <hr className=" border-gray-200 dark:border-gray-700 my-4" />
       {renderProductCartOnNotify()}

@@ -35,7 +35,7 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
 
     const columns = [
         {
-            title: 'Image',
+            title: t("Image"),
             dataIndex: 'images',
             key: 'images',
             width: 100,
@@ -44,14 +44,14 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
             )
         },
         {
-            title: 'Product Name',
+            title: t('Product Name'),
             dataIndex: 'ad_title',
             key: 'ad_title',
             width: 150,
         },
 
         {
-            title: 'Action',
+            title: t('Action'),
             key: 'action',
             width: 200,
             render: (text, record) => (
@@ -64,7 +64,7 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
                             }`}
                         onClick={() => handleSelect(record.uniquepid, 'shipping')}
                     >
-                        Shipping
+                        {t("Shipping")}
                     </Button>
                     <Button
                         type={''}
@@ -74,16 +74,16 @@ export const ShippingModal = ({ visible, onCancel, cartItems }) => {
                             }`}
                         onClick={() => handleSelect(record.uniquepid, 'pickup')}
                     >
-                        Pickup
+                        {t("Pickup")}
                     </Button>
-                </Space> : <p className='text-red-500 text-lg text-center font-semibold'>Only Pickup</p>
+                </Space> : <p className='text-red-500 text-lg text-center font-semibold'>{t("Only Pickup")}</p>
             ),
         },
     ];
 
     return (
         <Modal
-            title="Choose Delivery Method.."
+            title={t("Choose Delivery Method..")}
             visible={visible}
             onCancel={onCancel}
             footer={null}

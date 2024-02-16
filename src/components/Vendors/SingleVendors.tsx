@@ -7,11 +7,12 @@ import { AdminUrl } from "@/app/layout";
 import SingleVendorsDetails from "./SingleVendorsDetails";
 import Skeleton from "react-loading-skeleton";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 const SingleVendors = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [singleVendors, setSingleVendors] = useState(null);
-
+const {t} = useTranslation()
   const params = useSearchParams();
   const vendorid = params.get("vendorid");
 
@@ -135,7 +136,7 @@ const SingleVendors = () => {
                 <Link href={'/ChatwithSeller'}>
                   <div className="flex flex-col  items-center transition-all ease-in-out hover:bg-gray-200 rounded-xl p-2">
                     <MessageCircle size={32} className="text-gray-700" />
-                    <h2 className="text-sm tracking-wide text-gray-700 font-semibold">Connect with Vendor</h2>
+                    <h2 className="text-sm tracking-wide text-gray-700 font-semibold">{t("Connect with Vendor")}</h2>
                   </div>
                 </Link>
               </div>
