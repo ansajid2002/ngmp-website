@@ -960,9 +960,7 @@ const Vendors = ({ adminLoginData }) => {
             <Form.Item
               label="Business Website"
               name="business_website"
-              rules={[
-                { required: true, message: "Please enter business website" },
-              ]}
+              
             >
               <Input className="border border-gray-300 rounded-md" />
             </Form.Item>
