@@ -8,30 +8,30 @@ import Swal from "sweetalert2";
 import { emptyCart } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
 import { useRouter, useSearchParams } from "next/navigation";
+import FetchCheckoutPrice from "@/components/FetchCheckoutPrice";
 
 const ThankYou = () => {
   const router = useRouter();
   const { customerData } = useAppSelector((state) => state.customerData)
   const [defaultAddress, setDefaultAddress] = useState(null);
-// console.log(router.query,"qqqq");
-  const {cartItems,successOrders} = useAppSelector((store => store.cart))
-  console.log(cartItems,"ddd");
+  // console.log(router.query,"qqqq");
+  const { cartItems, successOrders } = useAppSelector((store => store.cart))
+  console.log(cartItems, "ddd");
   const searchParams = useSearchParams()
   const search = searchParams.get('orderId')
-  console.log(search,"searchparams");
-  
+  console.log(search, "searchparams");
+
   const dispatch = useDispatch()
 
-  const [orderData,setOrderData] = useState([])
- 
+
   const id = customerData?.customer_id || null
 
   const selectedPaymentMode = localStorage?.getItem('selectedPaymentMode');
 
   const { languageCode } = useAppSelector((store => store.languagesReducer))
-  
+
   let pickupItemIds = [];
-  
+
   // const makePayment = async () => {
   //   try {
   //     setSendedResponse(false)
@@ -59,55 +59,54 @@ const ThankYou = () => {
   // }
 
   const date = new Date();
-  const order_date = date.toISOString();
   useEffect(() => {
     successOrders.length === 0 ? router.push("/") : ""
-  },[successOrders])
-  
+  }, [successOrders])
+
   useEffect(() => {
-    
-    dispatch(emptyCart())
+
     if (successOrders.length === 0) {
       router.push("/")
     }
     else {
-      
-          const fetchAddress = async () => {
-            // Replace 'backendAddressUrl' with the actual endpoint to fetch customer addresses
-            const backendAddressUrl = `${AdminUrl}/api/getCustomersAddress/${id}`;
-      
-            try {
-              const response = await fetch(backendAddressUrl);
-      
-              if (response.ok) {
-                const data = await response.json();
-                // Filter addresses with non-empty 'address' before updating the state
-                const defaultAddress = data.find((address) => address.default_address === true);
-      
-                // Dispatch the default address
-                if (defaultAddress) {
-                  setDefaultAddress(defaultAddress)
-                }
-              } else {
-                // Handle non-2xx response
-                console.error('Failed to fetch Address:', response.statusText);
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Fetch Error',
-                  text: 'Failed to fetch customer addresses.',
-                });
-              }
-            } catch (error) {
-              // Handle network errors or other exceptions
-              console.error('Failed to fetch Address:', error);
-              Swal.fire({
-                icon: 'error',
-                title: 'Fetch Error',
-                text: 'Failed to fetch customer addresses.',
-              });
+
+      const fetchAddress = async () => {
+        // Replace 'backendAddressUrl' with the actual endpoint to fetch customer addresses
+        const backendAddressUrl = `${AdminUrl}/api/getCustomersAddress/${id}`;
+
+        try {
+          const response = await fetch(backendAddressUrl);
+
+          if (response.ok) {
+            const data = await response.json();
+            // Filter addresses with non-empty 'address' before updating the state
+            const defaultAddress = data.find((address) => address.default_address === true);
+
+            // Dispatch the default address
+            if (defaultAddress) {
+              setDefaultAddress(defaultAddress)
             }
-          };
-          id && successOrders && fetchAddress();
+          } else {
+            // Handle non-2xx response
+            console.error('Failed to fetch Address:', response.statusText);
+            Swal.fire({
+              icon: 'error',
+              title: 'Fetch Error',
+              text: 'Failed to fetch customer addresses.',
+            });
+          }
+        } catch (error) {
+          // Handle network errors or other exceptions
+          console.error('Failed to fetch Address:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Fetch Error',
+            text: 'Failed to fetch customer addresses.',
+          });
+        }
+      };
+
+      id && successOrders && fetchAddress();
 
     }
 
@@ -144,7 +143,7 @@ const ThankYou = () => {
         <p>
           Thanks for shopping! Your order
           <span className="text-[#ed642b] ml-1">
-           
+
 
           </span>{" "}
           {adjustedLength && adjustedLength > 0 && (
@@ -159,6 +158,7 @@ const ThankYou = () => {
         </p>
 
         <hr />
+        <FetchCheckoutPrice showCheckout={false} />
 
         <div className="py-2">
           <h2 className="font-medium">

@@ -73,7 +73,6 @@ const ProductDetailPage = ({ searchParams }) => {
   const detailhandleCancel = () => {
     setIsDetailModalOpen(false);
   };
-  // console.log(isDetailModalOpen, "isDetailModalOpen");
 
   const [seeMore, setSeeMore] = useState(false);
 
@@ -149,14 +148,12 @@ const ProductDetailPage = ({ searchParams }) => {
         }
 
         const responseDataProduct = await response.json();
-        console.log(responseDataProduct?.product, "this is the post request called for fetch single product");
 
         setResponseData(responseDataProduct?.product);
-
+        setSellerProfile(responseDataProduct?.product?.vendorInfo)
         responseDataProduct?.product?.vendorInfo?.company_district && renderCost(responseDataProduct?.product?.vendorInfo?.company_district)
 
-        setSellerId(responseDataProduct.product.vendorid);
-        // console.log(sellerId, "SELLLERDATATATATATATAT");
+        setSellerId(responseDataProduct?.vendorid);
       } catch (error) {
         console.error("Error processing request:", error);
         // Handle error gracefully
@@ -165,38 +162,6 @@ const ProductDetailPage = ({ searchParams }) => {
 
     handlePutRequest();
   }, [searchParams]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Assuming getAllVendors accepts an ID parameter
-
-        const response = await fetch(`/api/Vendors/getProfile`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ vendorid: sellerId }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data, "SSSSSSSSSSSSSDATAA");
-          setSellerProfile(data);
-          // console.log(sellerProfile);
-
-          // setIsLoading(false);
-        } else {
-          console.error(`HTTP error! Status: ${response.status}`);
-        }
-      } catch (error) {
-        console.error("Error fetching vendors:", error);
-      }
-    };
-
-    sellerId && fetchData();
-    // If you want to perform some action when singleVendors changes, do it here
-  }, [sellerId]);
 
 
   useEffect(() => {
@@ -545,7 +510,7 @@ const ProductDetailPage = ({ searchParams }) => {
                   <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">{t("Choose District")}</a>
                 </div>
               ) : (
-                <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
+                <p>{t("Both company_district and storedDistrict are not present")}</p>
               )
             )
           )
@@ -555,13 +520,12 @@ const ProductDetailPage = ({ searchParams }) => {
     )
   }
 
-  const renderCost = async (origin) => {
+  const renderCost = async (district: any) => {
+    if (!district) return
     try {
-      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${origin}&destination=${storedDistrict}`)
+      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${district}&destination=${storedDistrict}`)
       if (response.ok) {
         const data = await response.json()
-        console.log(data, 'data');
-
         if (data.rate === 0) {
           setShippingrate(0)
         }
@@ -577,6 +541,10 @@ const ProductDetailPage = ({ searchParams }) => {
     }
     // return <h1>Hello</h1>
   }
+
+  useEffect(() => {
+    !responseData?.vendorInfo?.company_district && storedDistrict && renderCost(responseData?.vendorInfo?.company_district)
+  }, [])
 
 
   const renderSectionContent = () => {
@@ -648,7 +616,7 @@ const ProductDetailPage = ({ searchParams }) => {
             dealimg={
               "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
             }
- 
+
             label2={t("Time-Limited Offer")}
           />
         </div>
@@ -962,7 +930,7 @@ const ProductDetailPage = ({ searchParams }) => {
                   {sellerProfile?.brand_name || "NA"}
                 </h2>
               </Link>
-              <span
+              {/* <span
                 onClick={() => setIsOpenModalViewAllReviews(true)}
                 className="cursor-pointer p-1"
               >
@@ -973,18 +941,18 @@ const ProductDetailPage = ({ searchParams }) => {
                   defaultValue={4.9}
                   className="text-gray-900 text-sm md:text-lg ml-2"
                 />
-              </span>
+              </span> */}
             </div>
 
             <div className="flex items-center justify-start">
-              <div className="flex gap-1 items-center">
+              {/* <div className="flex gap-1 items-center">
                 <h2 className="font-medium">
                   {sellerProfile?.followers || "NA"}
                 </h2>
                 <h3 className="text-gray-600 text-xs">{t("Followers")}</h3>
               </div>
 
-              <Minus className="rotate-90 text-gray-400" />
+              <Minus className="rotate-90 text-gray-400" /> */}
 
               {/* <div className="flex gap-1 items-center">
                 <h2 className="font-medium">
@@ -997,13 +965,13 @@ const ProductDetailPage = ({ searchParams }) => {
 
               <div className="flex items-center gap-1">
                 <h2 className="font-medium">
-                  {sellerProfile?.total_products || "NA"}
+                  {responseData?.vendorCount || "0"}
                 </h2>
                 <h3 className="text-gray-600 text-xs">{t("Items")}</h3>
               </div>
             </div>
 
-            <div className="flex gap-2 items-center ">
+            {/* <div className="flex gap-2 items-center ">
               <h2 className="w-[50%] flex gap-1 md:gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
                 <Heart className="" size={16} />
                 <p className="text-sm font-medium">{t("Follow")}</p>
@@ -1011,7 +979,7 @@ const ProductDetailPage = ({ searchParams }) => {
               <h2 className="w-[50%] flex gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
                 <p className="text-sm font-medium">{t("Shop all items")}</p>
               </h2>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -1052,7 +1020,13 @@ const ProductDetailPage = ({ searchParams }) => {
                 </h1>,
               ]}
             >
-              <div>{sellerProfile?.vendorname}</div>
+              <div><b>Name:</b> {sellerProfile?.vendorname}</div>
+              <div><b>Brand Name:</b> {sellerProfile?.brand_name}</div>
+              <div><b>Company name:</b> {sellerProfile?.company_name}</div>
+              <div><b>District:</b> {sellerProfile?.company_district}</div>
+              <div><b>Business Type:</b> {sellerProfile?.business_type}</div>
+              <div><b>Website:</b> {sellerProfile?.business_website}</div>
+              <div><b>About Business:</b> {sellerProfile?.business_description}</div>
             </Modal>
           </ul>
         </div>
@@ -1187,7 +1161,7 @@ const ProductDetailPage = ({ searchParams }) => {
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               src={`${selectedImage ? `${ProductImageUrl}/${selectedImage}` : (responseData?.images?.[0] ? `${ProductImageUrl}/${responseData.images[0]}` : "/placeholder.png")}`}
-              
+
               onError={(e) => {
                 e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
                 e.target.alt = 'dummyimage';
@@ -1222,6 +1196,7 @@ const ProductDetailPage = ({ searchParams }) => {
       </>
     );
   };
+
   return (
     <div className={`nc-ProductDetailPage `}>
       {/* MAIn */}

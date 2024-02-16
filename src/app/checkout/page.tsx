@@ -24,14 +24,14 @@ const CheckoutPage = () => {
   const customerData = useAppSelector((state) => state.customerData)
   const { cartItems } = useAppSelector((state) => state.cart)
   const router = useRouter()
-console.log(cartItems,"cartItems");
+  console.log(selectedAddress, "selectedAddress");
 
-const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
+  const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
 
-  
+
   const remainingItems = cartItems.filter((item) => !pickupItems.includes(item.uniquepid)).map((s) => s.uniquepid);
 
-console.log(remainingItems,"remainingItems");
+  console.log(pickupItems, "pickupItems");
 
 
 
@@ -52,7 +52,7 @@ console.log(remainingItems,"remainingItems");
   //     shippingIds.push(parseInt(itemId));
   //   }
   // }
-  
+
 
 
   const handleScrollToEl = (id: string) => {
@@ -66,6 +66,17 @@ console.log(remainingItems,"remainingItems");
     setSelectedAddress(address)
     setTabActive('PaymentMethod')
   }
+
+  useEffect(() => {
+    if (!selectedAddress && pickupItems?.length === 0) {
+      setTabActive("PaymentMethod");
+      handleScrollToEl("PaymentMethod");
+    } else {
+      setTabActive('ShippingAddress')
+      handleScrollToEl("ShippingAddress");
+
+    }
+  }, [])
 
   const renderLeft = () => {
     return (
@@ -159,7 +170,7 @@ console.log(remainingItems,"remainingItems");
             </div>
 
             <div className="mt-10 pt-6 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200/70 dark:border-gray-700 ">
-              <div>
+              {/* <div>
                 <Label className="text-sm">Discount code</Label>
                 <div className="flex mt-1.5">
                   <Input sizeClass="h-10 px-4 py-3" className="flex-1" />
@@ -167,7 +178,7 @@ console.log(remainingItems,"remainingItems");
                     Apply
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               <FetchCheckoutPrice showTitle={false} showCheckout={false} />
             </div>
