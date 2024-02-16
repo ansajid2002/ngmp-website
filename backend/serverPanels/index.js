@@ -611,7 +611,7 @@ app.post("/api/addVendorstoDb", async (req, res) => {
       company_name,
       business_phone,
       business_email,
-      business_website,
+      
       business_description,
       company_country,
       company_state,
@@ -721,7 +721,7 @@ app.post("/api/addVendorstoDb", async (req, res) => {
       company_name,
       business_phone,
       business_email,
-      business_website,
+      business_website || '',
       business_description,
       company_country,
       company_district,
