@@ -2,6 +2,7 @@
 
 import BreadCrumb from "@/components/BreadCrumb";
 import { ArrowDownToLine, FileText, HelpCircle, Loader2, Star } from "lucide-react";
+<<<<<<< HEAD
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Steps, Modal, Input } from "antd";
@@ -27,6 +28,15 @@ const reasons = [
   { id: 10, reason: 'Doesn’t match description or photos', photosRequired: true },
 ];
 
+=======
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { Steps, Modal } from "antd";
+import { AdminUrl, ProductImageUrl } from "@/app/layout";
+import { useAppSelector } from "@/redux/store";
+// import "antd/dist/antd.css";
+
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 const { Step } = Steps;
 
 const OrderDetails = () => {
@@ -36,6 +46,7 @@ const OrderDetails = () => {
   const [orderData, setOrderData] = useState(null)
   const { orderid } = params
   const [deliveryStatus, setDeliveryStatus] = useState('');
+<<<<<<< HEAD
   const { Option } = Select;
   const [fileList, setFileList] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -185,6 +196,9 @@ const OrderDetails = () => {
   const handleCloseModal = () => {
     setModalVisible(false);
   };
+=======
+
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
   const data = [
     {
@@ -212,6 +226,7 @@ const OrderDetails = () => {
       ],
     },
   ];
+<<<<<<< HEAD
   const items = [
     {
       id: 1,
@@ -226,6 +241,9 @@ const OrderDetails = () => {
       label: "Buy Again"
     }
   ]
+=======
+
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
 
   const onStepHover = (index: number) => {
@@ -267,8 +285,13 @@ const OrderDetails = () => {
     zip_code = '',
     phone_number = '',
   } = orderData?.shipping_address || {};
+<<<<<<< HEAD
 console.log(orderData,"odd");
 
+=======
+
+  console.log(orderData?.shipping_address);
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
   const {
     product_name = '',
@@ -283,9 +306,12 @@ console.log(orderData,"odd");
     customer_otp
   } = orderData || {};
 
+<<<<<<< HEAD
 
   console.log(order_status,"status------------------------------------------------------");
   
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
   const filteredProgressData = ispickup
     ? data
       .filter(step => step.title !== 'Shipped' && step.title !== 'Out for Delivery')
@@ -294,7 +320,10 @@ console.log(orderData,"odd");
 
   const currentProgressIndex = filteredProgressData.findIndex((step) => step.title === order_status?.trim());
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
   const { vendorname = '', company_name, company_city, company_state, company_country, company_zip_code, shipping_address } = orderData?.vendor || {};
 
   const formattedTotalAmount = new Intl.NumberFormat('en-US', {
@@ -349,7 +378,11 @@ console.log(orderData,"odd");
 
   // Format the date as "Mon DD"
   const formattedDate = `${month} ${day}`;
+<<<<<<< HEAD
 
+=======
+  console.log(order_status.trim(), 'Picked');
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
   return (
     !orderData ?
@@ -475,6 +508,7 @@ console.log(orderData,"odd");
                   </div>
                 </div>
               </div>
+<<<<<<< HEAD
               {
                 order_status !== "Returned" &&
               <h2 className="text-sm text-gray-700 mt-2">
@@ -485,6 +519,11 @@ console.log(orderData,"odd");
                 order_status === "Returned" &&
                 <h3 className="mt-2 text-[#fb7701] font-semibold">Your Item is under Review for RETURNS</h3>
               }
+=======
+              <h2 className="text-sm text-gray-700 mt-2">
+                {deliveryStatus}
+              </h2>
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
             </div>
             {/* 2 */}
             <div className="w-full md:w-[50%] py-2 text-[#ed642b] space-y-2 text-sm font-medium">
@@ -498,6 +537,7 @@ console.log(orderData,"odd");
               </h2>
             </div>
           </div>
+<<<<<<< HEAD
           <div className={`w-full ${order_status !== "Returned" ? 'pt-14' : ''}`}>
             <div>
               {
@@ -626,6 +666,24 @@ console.log(orderData,"odd");
                   </div>
                 }
               </div>
+=======
+          <div className="w-full pt-14">
+            <div>
+              <Steps current={currentProgressIndex}>
+                {filteredProgressData.map((item, index) => (
+                  <Step
+                    key={index}
+                    title={item.title?.trim()}
+                    description={''}
+                    onMouseEnter={() => onStepHover(index)}
+                    onMouseLeave={() => setCurrent(currentStep)}
+                  />
+                ))}
+              </Steps>
+              <div className="p-5 text-center">
+                <p className="text-[#ed642b] text-lg">{desc?.content}</p>
+              </div>
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
             </div>
           </div>
         </div>

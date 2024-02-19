@@ -26,16 +26,55 @@ const ThankYou = () => {
 
   const id = customerData?.customer_id || null
 
+<<<<<<< HEAD
   const { languageCode } = useAppSelector((store => store.languagesReducer))
 
 
+=======
+  const selectedPaymentMode = localStorage?.getItem('selectedPaymentMode');
+
+  const { languageCode } = useAppSelector((store => store.languagesReducer))
+
+  let pickupItemIds = [];
+
+  // const makePayment = async () => {
+  //   try {
+  //     setSendedResponse(false)
+  //     const response = await fetch(`/api/Customers/InsertOrders`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         // Add any other headers as needed
+  //       },
+  //       body: JSON.stringify(checkoutData),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+
+
+  //     setOrderData(cartItems || [])
+  //     dispatch(emptyCart());
+  //     localStorage.removeItem('selectedOptions')
+  //     localStorage.removeItem('selectedPaymentMode')
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  const date = new Date();
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
   useEffect(() => {
     successOrders.length === 0 ? router.push("/") : ""
   }, [successOrders])
 
   useEffect(() => {
 
+<<<<<<< HEAD
     dispatch(emptyCart())
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
     if (successOrders.length === 0) {
       router.push("/")
     }
@@ -85,7 +124,10 @@ const ThankYou = () => {
   }, [id, successOrders]);
 
   // const { given_name_address, family_name_address, apt_address, subregion_address, city_address, country_address, region_address, zip_address, phone_address } = defaultAddress || []
+<<<<<<< HEAD
   console.log(successOrders, "succsxx");
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
 
   const adjustedLength = successOrders && successOrders.length - 1;
@@ -115,10 +157,17 @@ const ThankYou = () => {
         <p>
           Thanks for shopping! Your order
           <span className="text-[#ed642b] ml-1">
+<<<<<<< HEAD
             {successOrders[0].ad_title}
 
           </span>{" "}
           {adjustedLength > 0 && (
+=======
+
+
+          </span>{" "}
+          {adjustedLength && adjustedLength > 0 && (
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
             <>
               and
               <span className="text-[#ed642b] ml-1">
@@ -130,7 +179,11 @@ const ThankYou = () => {
         </p>
 
         <hr />
+<<<<<<< HEAD
 
+=======
+        <FetchCheckoutPrice showCheckout={false} />
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
         <div className="py-2">
           <h2 className="font-medium">
@@ -138,16 +191,33 @@ const ThankYou = () => {
           </h2>
         </div>
 
+<<<<<<< HEAD
         <div className="">
           <div className="pb-5 md:pb-0 mb-4">
             <Link href={"/account-order"}>
               <h2 className="bg-[#ed642b] w-full md:w-2/4 text-center md:text-left transition-all cursor-pointer ease-in-out hover:scale-105 text-white py-2 px-5 rounded-lg shadow-md">
+=======
+        <div className="md:flex items-center justify-between">
+          <div className="pb-5 md:pb-0">
+            <Link href={"/account-order"}>
+              <h2 className="bg-[#ed642b] text-center md:text-left transition-all cursor-pointer ease-in-out hover:scale-105 text-white py-2 px-5 rounded-lg shadow-md">
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
                 View or Manage Order
               </h2>
             </Link>
           </div>
+<<<<<<< HEAD
           <div className="flex-1 md:ml-4 items-center justify-end md:justify-normal gap-5 text-gray-700 font-medium">
             {/* <div className="text-right space-y-1">
+=======
+          <div className="flex items-center justify-end md:justify-normal gap-5 text-gray-700 font-medium">
+            <div className="text-right space-y-1">
+              <h2>Sub-total</h2>
+              <h2>Shipping Cost</h2>
+              <h2 className="font-bold text-black">Total</h2>
+            </div>
+            <div className="text-right space-y-1">
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
               <h2>
                 <span>$</span>
                 {subtotal}
@@ -160,7 +230,11 @@ const ThankYou = () => {
                 <span>$</span>
                 {total}
               </h4>
+<<<<<<< HEAD
             </div> */}
+=======
+            </div>
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
           </div>
         </div>
 
@@ -197,9 +271,12 @@ const ThankYou = () => {
             </div >
           ))}
         </div >
+<<<<<<< HEAD
 
         <FetchCheckoutPrice successOrders={successOrders} showCheckout={false} />
 
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
       </div >
     </div > : "Loading..."
   );

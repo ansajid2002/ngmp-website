@@ -32,7 +32,11 @@ import { useTranslation } from "react-i18next";
 export default function AvatarDropdown() {
   const customerData = useAppSelector((state) => state.customerData);
   const [profileImage, setImage] = useState('/avatarplaceholder.png');
+<<<<<<< HEAD
   const { t } = useTranslation()
+=======
+  const {t} = useTranslation()
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
   const navigation = useRouter();
   const {
     given_name = "",
@@ -42,12 +46,21 @@ export default function AvatarDropdown() {
     picture = "",
     google_id,
   } = customerData?.customerData || {};
+<<<<<<< HEAD
 
 
 
   const { walletTotal } = useAppSelector((store) => store.wallet);
 
 
+=======
+  
+  
+
+  const { walletTotal } = useAppSelector((store) => store.wallet);
+
+  
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
   useEffect(() => {
 
@@ -171,7 +184,11 @@ export default function AvatarDropdown() {
                       </div>
                     </Link>
 
+<<<<<<< HEAD
                     {/* <Link
+=======
+                    <Link
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
                       href={(redirectToLogin("/my-reviews"))}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
@@ -184,9 +201,15 @@ export default function AvatarDropdown() {
                           {t("My Reviews")}
                         </p>
                       </div>
+<<<<<<< HEAD
                     </Link> */}
 
 
+=======
+                    </Link>
+
+                   
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
                     <Link
                       href={"/select-district"}
@@ -204,7 +227,11 @@ export default function AvatarDropdown() {
                       </div>
                     </Link>
 
+<<<<<<< HEAD
                     {/* <Link
+=======
+                    <Link
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
                       href={(redirectToLogin("/your-address"))}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
@@ -217,9 +244,15 @@ export default function AvatarDropdown() {
                           {t("Addresses")}
                         </p>
                       </div>
+<<<<<<< HEAD
                     </Link> */}
 
                     {/* <Link
+=======
+                    </Link>
+
+                    <Link
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
                       href={(redirectToLogin("/notifications"))}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
@@ -232,7 +265,11 @@ export default function AvatarDropdown() {
                           {t("Notifications")}
                         </p>
                       </div>
+<<<<<<< HEAD
                     </Link> */}
+=======
+                    </Link>
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
                     {/* ------------------ 2 --------------------- */}
                     <Link

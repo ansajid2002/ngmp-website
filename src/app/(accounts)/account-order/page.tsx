@@ -8,7 +8,10 @@ import { useAppSelector } from "@/redux/store";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import NcImage from "@/shared/NcImage/NcImage";
 import { ChevronRight } from "lucide-react";
+<<<<<<< HEAD
 import moment from "moment";
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -84,6 +87,7 @@ const AccountOrder = () => {
     customerId && !reviewItems && fetchRatings();
   }, [customerId]);
 
+<<<<<<< HEAD
   
  
   const formatOrderDate = (orderDate) => {
@@ -102,14 +106,22 @@ const AccountOrder = () => {
   };
 
   const renderOrderGroup = (orderId: string, orders: any[]) => {
+=======
+  const renderOrderGroup = (orderId: string, orders: any[]) => {
+
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
     return (
       <div key={orderId}>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 sm:p-8 bg-gray-50 dark:bg-gray-500/5">
           <div>
             <p className="text-lg font-semibold">Order #{orderId}</p>
           </div>
+<<<<<<< HEAD
           <div className="mt-3 sm:mt-0">{formatOrderDate(orders?.[0]?.order_date)}</div>
 
+=======
+          <div className="mt-3 sm:mt-0"></div>
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
         </div>
         <div className="p-2 md:p-4">
           {orders.map((order, index) => renderProductItem(order, index))}
@@ -131,12 +143,24 @@ const AccountOrder = () => {
       label,
       product_uniqueid,
       ratings_and_reviews,
+<<<<<<< HEAD
       ispickup,
       shipping_fee
     } = product;
 
     return (
       <div key={product_uniqueid + order_id + index} className="md:flex p-2">
+=======
+      ispickup
+    } = product;
+
+    console.log(`${ProductImageUrl}/${product_image}`);
+
+
+    return (
+      <div key={product_uniqueid + order_id + index} className="md:flex p-2">
+
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
         <div className="relative h-24 w-16 sm:w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
           <NcImage
             fill
@@ -173,15 +197,22 @@ const AccountOrder = () => {
               </div>
               <Prices
                 price={""}
+<<<<<<< HEAD
                 sellingprice={(parseFloat(total_amount) * parseInt(quantity)) + parseFloat(shipping_fee || 0) || 0}
+=======
+                sellingprice={total_amount || 0}
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
                 className="mt-0.5 ml-2"
               />
             </div>
           </div>
           <div className="flex flex-1 items-end justify-between text-sm">
             <p className="text-gray-500 dark:text-gray-400 flex items-center">
+<<<<<<< HEAD
               <p>{label || ''}</p>
 
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
               <span className="hidden sm:inline-block">Qty</span>
               <span className="inline-block sm:hidden">x</span>
               <span className="ml-2">{quantity}</span>

@@ -51,8 +51,11 @@ const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sellerProfile, setSellerProfile] = useState(null);
+<<<<<<< HEAD
   const [loader, setLoader] = useState(false);
 
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
   const { t } = useTranslation()
   const showDetailModal = () => {
     setIsDetailModalOpen(true);
@@ -494,6 +497,7 @@ console.log(responseData,"responsedatra");
             <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {responseData?.vendorInfo?.company_district} {t("To")} {storedDistrict}</h1>
           </div> : (
             !responseData?.vendorInfo?.company_district ? (
+<<<<<<< HEAD
               <div className="flex flex-col justify-center w-full">
                 <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
                 <div className="mt-2">
@@ -504,6 +508,10 @@ console.log(responseData,"responsedatra");
                     <p>{sellerProfile?.company_district}, {sellerProfile?.company_country}</p>
                   </address>
                 </div>
+=======
+              <div className="flex justify-center">
+                <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
               </div>
             ) : (
               !storedDistrict ? (
@@ -658,7 +666,10 @@ console.log(responseData,"responsedatra");
             <ButtonPrimary
               className="flex-1 flex-shrink-0 transition-all duration-300"
               onClick={notifyAddTocart}
+<<<<<<< HEAD
               loading={loader}
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
             >
               <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
               <span className="ml-3">{t("Add to Cart")}</span>
@@ -1057,8 +1068,11 @@ console.log(responseData,"responsedatra");
       .replace(/[^\w\s]/g, "")
       .replace(/\s/g, "");
 
+<<<<<<< HEAD
     setLoader(true)
 
+=======
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
     if (customerId) {
       try {
         const requestData = {
@@ -1088,6 +1102,7 @@ console.log(responseData,"responsedatra");
         const responseDataResponse = await response.json();
         dispatch(addItem(updatedSingleData));
         setisUniquepidMatched(true);
+<<<<<<< HEAD
         setLoader(false)
 
       } catch (error) {
@@ -1099,6 +1114,13 @@ console.log(responseData,"responsedatra");
       dispatch(addItem(updatedSingleData));
       setLoader(false)
 
+=======
+      } catch (error) {
+        console.error("Error updating cart:", error);
+      }
+    } else {
+      dispatch(addItem(updatedSingleData));
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
     }
 
     toast.custom(

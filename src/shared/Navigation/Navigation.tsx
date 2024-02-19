@@ -9,13 +9,21 @@ import Skeleton from "react-loading-skeleton";
 
 function Navigation() {
   const [navigationData, setNavigationData] = useState([]);
+<<<<<<< HEAD
   const [fdata, setFdata] = useState([])
+=======
+  const [fdata,setFdata] = useState([])
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
   const [isLoading, setIsLoading] = useState(true);
   const { availablelanguages } = useAppSelector(
     (store) => store.languagesReducer
   );
 
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
   useEffect(() => {
     const fetchAndSetData = async () => {
@@ -49,6 +57,7 @@ function Navigation() {
     const getFeatured = async () => {
       const featuredData = await getFeaturedData()
       setFdata(featuredData)
+<<<<<<< HEAD
 
     }
 
@@ -56,6 +65,15 @@ function Navigation() {
       getFeatured()
     }
   }, [])
+=======
+    
+    }
+
+    if (fdata.length===0) {
+      getFeatured()
+    }
+  },[])
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
   return (
     <ul className="nc-Navigation flex items-center">

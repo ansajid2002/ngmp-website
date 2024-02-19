@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { AdminUrl } from "@/app/layout";
 
 
+<<<<<<< HEAD
 const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true, successOrders }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useRouter()
@@ -18,6 +19,17 @@ const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLin
   const itemstoShip = successOrders ? successOrders.filter(item => !pickupItems.includes(item.uniquepid)) : cartItems.filter(item => !pickupItems.includes(item.uniquepid))
 
   const [totalShippingCharges, setTotalShippingCharges] = useState(0)
+=======
+const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true }) => {
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const navigation = useRouter()
+    const { cartItems } = useAppSelector((store) => store.cart);
+  const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
+  const itemstoPick = cartItems.filter(item => pickupItems.includes(item.uniquepid))
+  const itemstoShip = cartItems.filter(item => !pickupItems.includes(item.uniquepid))
+    
+  const [totalShippingCharges,setTotalShippingCharges] = useState(0)
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
   const renderCost = async (company_district: string, storedDistrict: string) => {
     try {
       if (company_district) {
@@ -25,8 +37,13 @@ const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLin
         const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${company_district}&destination=${storedDistrict}`)
         if (response.ok) {
           const data = await response.json()
+<<<<<<< HEAD
 
 
+=======
+     
+          
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
           if (data.rate === 0) {
             return 0
           }
@@ -50,28 +67,48 @@ const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLin
   const calculateShippingCharges = async (cartItems) => {
     // Create a Set to keep track of visited vendorIds
     const visitedVendorIds = new Set();
+<<<<<<< HEAD
 
     // Initialize total shipping charges
     let totalShippingCharges = 0;
 
+=======
+  
+    // Initialize total shipping charges
+    let totalShippingCharges = 0;
+  
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
     // Iterate through each cart item and calculate shipping charges
     for (const item of cartItems) {
       const { vendorid, vendorInfo } = item;
       const { company_district } = vendorInfo;
+<<<<<<< HEAD
 
 
+=======
+    
+  
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
       // Check if the vendorId has been visited already
       if (!visitedVendorIds.has(vendorid)) {
         // Call the renderCost function to get shipping charges
         const shippingCharges = await renderCost(company_district, storedDistrict);
+<<<<<<< HEAD
 
         // Add shipping charges to the total
         totalShippingCharges += shippingCharges;
 
+=======
+        
+        // Add shipping charges to the total
+        totalShippingCharges += shippingCharges;
+  
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
         // Add the vendorId to the visited set
         visitedVendorIds.add(vendorid);
       }
     }
+<<<<<<< HEAD
 
     return totalShippingCharges;
   };
@@ -102,13 +139,51 @@ const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLin
   // Calculate subtotal for the entire cart
   const subtotal = calculateCartSubtotal(successOrders || cartItems);
   console.log("Subtotal:", subtotal);
+=======
+  
+    return totalShippingCharges;
+  };
+  
+  // Call the function with your array of objects
+  calculateShippingCharges(itemstoShip).then((totalShippingCharges) => {
+    
+    setTotalShippingCharges(totalShippingCharges)
+  });
+  
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Function to calculate subtotal for an individual item
+const calculateItemSubtotal = (sellingprice, quantity) => {
+  return parseFloat(sellingprice)  * quantity;
+};
+
+// Function to calculate subtotal for the entire cart
+const calculateCartSubtotal = (cartItems) => {
+  let subtotal = 0;
+  for (const item of cartItems) {
+    subtotal += calculateItemSubtotal(item.sellingprice, item.added_quantity);
+  }
+  return subtotal;
+};
+
+// Calculate subtotal for the entire cart
+const subtotal = calculateCartSubtotal(cartItems);
+console.log("Subtotal:", subtotal);
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+<<<<<<< HEAD
   const { t } = useTranslation()
 
 
+=======
+  const {t} = useTranslation()
+
+  
+>>>>>>> 49e569702b3e1264631b9f56cdef96a4fe729f2e
   return (
     <div className="flex-1">
       <div className="sticky top-28">
