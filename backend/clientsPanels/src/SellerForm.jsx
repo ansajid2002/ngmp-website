@@ -472,10 +472,7 @@ const SellerForm = ({ onModal }) => {
                         label="Business Website"
                         name="business_website"
                         rules={[
-                            {
-                                required: true,
-                                message: "Please enter business website",
-                            },
+                           
                             {
                                 pattern: /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[a-zA-Z0-9-._?%&=]*)?$/,
                                 message: "Please enter a valid website URL",
