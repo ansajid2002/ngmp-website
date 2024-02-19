@@ -2,12 +2,30 @@
 
 import BreadCrumb from "@/components/BreadCrumb";
 import { ArrowDownToLine, FileText, HelpCircle, Loader2, Star } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Steps, Modal } from "antd";
+import { Steps, Modal, Input } from "antd";
 import { AdminUrl, ProductImageUrl } from "@/app/layout";
 import { useAppSelector } from "@/redux/store";
+import { Select } from 'antd';
+import { Radio, Tabs } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { Upload, Button, message, List } from 'antd';
+import Swal from "sweetalert2";
 // import "antd/dist/antd.css";
+
+const reasons = [
+  { id: 1, reason: 'Ordered by mistake', photosRequired: false },
+  { id: 2, reason: 'Arrived damaged', photosRequired: true },
+  { id: 3, reason: 'Don’t like it', photosRequired: false },
+  { id: 4, reason: 'Missing parts or pieces', photosRequired: true },
+  { id: 5, reason: 'Changed my mind', photosRequired: false },
+  { id: 6, reason: 'Item is defective', photosRequired: true },
+  { id: 7, reason: 'Received the wrong item', photosRequired: true },
+  { id: 8, reason: 'Doesn’t fit', photosRequired: false },
+  { id: 9, reason: 'Found a better price', photosRequired: false },
+  { id: 10, reason: 'Doesn’t match description or photos', photosRequired: true },
+];
 
 const { Step } = Steps;
 
@@ -18,7 +36,155 @@ const OrderDetails = () => {
   const [orderData, setOrderData] = useState(null)
   const { orderid } = params
   const [deliveryStatus, setDeliveryStatus] = useState('');
+  const { Option } = Select;
+  const [fileList, setFileList] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [additionalDetails, setAdditionalDetails] = useState('');
+  const router = useRouter()
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedReason, setSelectedReason] = useState(null);
 
+
+
+
+  const handleUpload = async () => {
+
+
+
+    // Check if photos are required for the selected reason
+    //   if (selectedReason.photosRequired && selectedImages.length === 0) {
+    //     console.log("Please provide photos.");
+
+    //     return;
+    // }
+
+    // Check if details are provided
+    if (!additionalDetails.trim()) {
+      console.log("Please provide details.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please provide additional details',
+      });
+      return;
+    }
+
+    // Create a new FormData object
+    const formData = new FormData();
+    // Append reason to the form data
+    formData.append('reason', reasons.filter((s) => s.id === selectedReason).map((s) => s.reason));
+    formData.append('order_id', orderid);
+    // Append details to the form data
+    formData.append('details', additionalDetails);
+    // Append images to the form data
+    fileList.forEach((image, index) => {
+      formData.append(`images`, {
+        uri: image,
+        type: 'image/jpeg', // Adjust the type if necessary
+        name: `image${index + 1}.jpg`
+      });
+    });
+
+
+
+
+    try {
+
+      // Send data to the backend
+      const response = await fetch(`${AdminUrl}/api/updateReturn`, {
+        method: 'POST',
+        body: formData,
+
+      });
+
+      // Check if the request was successful
+      if (response.ok) {
+        const responseData = await response.json();
+        // Process the response data
+        console.log("Response from backend:", responseData);
+        setSelectedReason(null)
+        setAdditionalDetails('')
+        setModalVisible(false)
+        router.push(`/account-order`)
+        Swal.fire({
+          icon: 'success',
+          title: 'Return Procedure Initiated',
+          text: 'Your return request has been successfully submitted. We will process it shortly.',
+        });
+
+      } else {
+        console.log("Error:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handlePreview = (file) => {
+
+
+    setPreviewImage(file.url || file.preview);
+    setPreviewVisible(true);
+  };
+
+
+  const handleCancelPreview = () => {
+    setPreviewVisible(false);
+  };
+
+  const props = {
+    onRemove: (file) => {
+      setFileList((prev) => {
+        const index = prev.indexOf(file);
+        const newFileList = prev.slice();
+        newFileList.splice(index, 1);
+        return newFileList;
+      });
+    },
+    beforeUpload: (file) => {
+      setFileList([...fileList, file]);
+      return false;
+    },
+    fileList,
+  };
+
+  const Tab = ({ label, isActive, onClick }) => (
+    <div
+      style={{
+        padding: '8px 16px',
+
+        cursor: 'pointer',
+
+      }}
+      className=" hover:text-gray-500 font-semibold"
+      onClick={onClick}
+    >
+      {label}
+    </div>
+  );
+
+
+  const handleClick = (index: any) => {
+    setActiveIndex(index === activeIndex ? null : index);
+    if (index === 0) {
+      setModalVisible(true);
+    }
+    // if (index == 2) {
+    //   router.replace(`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`)
+
+    // }
+  };
+
+  const handleChange = (value) => {
+    setSelectedReason(value);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
 
   const data = [
     {
@@ -46,7 +212,20 @@ const OrderDetails = () => {
       ],
     },
   ];
-
+  const items = [
+    {
+      id: 1,
+      label: "Return"
+    },
+    {
+      id: 2,
+      label: "Contact Seller"
+    },
+    {
+      id: 3,
+      label: "Buy Again"
+    }
+  ]
 
 
   const onStepHover = (index: number) => {
@@ -88,8 +267,8 @@ const OrderDetails = () => {
     zip_code = '',
     phone_number = '',
   } = orderData?.shipping_address || {};
+  console.log(orderData, "odd");
 
-  console.log(orderData?.shipping_address);
 
   const {
     product_name = '',
@@ -103,6 +282,7 @@ const OrderDetails = () => {
     seller_otp,
     customer_otp
   } = orderData || {};
+
 
   const filteredProgressData = ispickup
     ? data
@@ -166,7 +346,7 @@ const OrderDetails = () => {
 
   // Format the date as "Mon DD"
   const formattedDate = `${month} ${day}`;
-  console.log(order_status.trim(), 'Picked');
+
 
   return (
     !orderData ?
@@ -292,9 +472,16 @@ const OrderDetails = () => {
                   </div>
                 </div>
               </div>
-              <h2 className="text-sm text-gray-700 mt-2">
-                {deliveryStatus}
-              </h2>
+              {
+                order_status !== "Returned" &&
+                <h2 className="text-sm text-gray-700 mt-2">
+                  {deliveryStatus}
+                </h2>
+              }
+              {
+                order_status === "Returned" &&
+                <h3 className="mt-2 text-[#fb7701] font-semibold">Your Item is under Review for RETURNS</h3>
+              }
             </div>
             {/* 2 */}
             <div className="w-full md:w-[50%] py-2 text-[#ed642b] space-y-2 text-sm font-medium">
@@ -308,21 +495,133 @@ const OrderDetails = () => {
               </h2>
             </div>
           </div>
-          <div className="w-full pt-14">
+          <div className={`w-full ${order_status !== "Returned" ? 'pt-14' : ''}`}>
             <div>
-              <Steps current={currentProgressIndex}>
-                {filteredProgressData.map((item, index) => (
-                  <Step
-                    key={index}
-                    title={item.title?.trim()}
-                    description={''}
-                    onMouseEnter={() => onStepHover(index)}
-                    onMouseLeave={() => setCurrent(currentStep)}
-                  />
-                ))}
-              </Steps>
+              {
+                order_status !== "Returned" &&
+                <Steps current={currentProgressIndex}>
+                  {filteredProgressData.map((item, index) => (
+                    <Step
+                      key={index}
+                      title={item.title?.trim()}
+                      description={''}
+                      onMouseEnter={() => onStepHover(index)}
+                      onMouseLeave={() => setCurrent(currentStep)}
+                    />
+                  ))}
+                </Steps>
+              }
               <div className="p-5 text-center">
                 <p className="text-[#ed642b] text-lg">{desc?.content}</p>
+              </div>
+              {/* ////////////////RETURNS////////////////////// */}
+
+              <div>
+                {
+                  (ispickup && currentProgressIndex === 1 || !ispickup && currentProgressIndex === 3) &&
+                  <div className="flex justify-center">
+                    {items.map((item, index) => (
+                      <Tab
+                        key={item.key}
+                        label={item.label}
+                        isActive={index === activeIndex}
+                        onClick={() => handleClick(index)}
+                      />
+
+
+                    ))}
+                    <Modal
+                      title="Return Item"
+                      visible={modalVisible && activeIndex === 0}
+                      onCancel={handleCloseModal}
+                      footer={null}
+                    >
+                      <div className="flex gap-2 items-center justify-start">
+                        <img
+                          src={`${ProductImageUrl}/${product_image}` || '/placeholder.png'}
+                          className="h-20 md:h-24 w-20 md:w-24 object-contain"
+                          alt="Product Image"
+                        />
+                        <div>
+                          <h2 className="line-clamp-1">{product_name}</h2>
+                          <p className="text-sm text-gray-700">
+                            {label && label}
+                          </p>
+                          <p className="text-sm text-gray-700">
+                            Seller: <span>{vendorname}</span>
+                          </p>
+                          <div className="flex gap-3 items-center ">
+                            <p className="font-medium">{formattedTotalAmount}</p>
+
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="mt-4 text-base mb-2">Why are you returning this item?</h3>
+                        <Select style={{ width: 200 }} onChange={handleChange} defaultValue={reasons[0].id}>
+                          {reasons.map((reason) => (
+                            <Option key={reason.id} value={reason.id}>
+                              {reason.reason}
+                            </Option>
+                          ))}
+                        </Select>
+                        {selectedReason && reasons.find((r) => r.id === selectedReason).photosRequired && (
+                          <div className=" p-2 mt-4 bg-gray-50">
+                            <h4 className="mb-1">Upload photos of the issue</h4>
+                            <>
+                              <Upload {...props}>
+                                <Button icon={<UploadOutlined />}>Select File</Button>
+                              </Upload>
+                              <List
+                                style={{ marginTop: 16 }}
+                                bordered
+                                dataSource={fileList}
+                                renderItem={(file) => (
+                                  <List.Item>
+                                    <img
+                                      src={URL.createObjectURL(file)}
+                                      alt={file.name}
+                                      style={{ maxWidth: 100, maxHeight: 100, cursor: 'pointer' }}
+                                      onClick={() => handlePreview(file)}
+                                    />
+                                    <p>{file.name}</p>
+                                  </List.Item>
+                                )}
+                              />
+
+
+
+
+                              <Modal visible={previewVisible} footer={null} onCancel={handleCancelPreview}>
+                                <img alt="Preview" style={{ width: '100%' }} src={previewImage} />
+                              </Modal>
+
+                            </>
+                          </div>
+                        )}
+                        <h3 className="mt-4 text-base mb-1">Additional Details</h3>
+                        <Input
+                          style={{ marginTop: 2 }}
+                          className="rounded-md h-8 "
+                          placeholder="Give us a little more info"
+                          value={additionalDetails}
+                          onChange={(e) => setAdditionalDetails(e.target.value)}
+                        />
+                        <Button
+
+                          onClick={handleUpload}
+
+                          loading={uploading}
+                          style={{
+                            marginTop: 16,
+                          }}
+                        >
+                          {uploading ? 'Uploading' : 'Start Upload'}
+                        </Button>
+                      </div>
+                    </Modal>
+                  </div>
+                }
               </div>
             </div>
           </div>
