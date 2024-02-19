@@ -22,7 +22,7 @@ export interface WidgetFooterMenu {
 
 const Footer: React.FC = () => {
   const footerPathname = usePathname();
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const widgetMenus: WidgetFooterMenu[] = [
     {
       id: "5",
@@ -37,31 +37,32 @@ const Footer: React.FC = () => {
       title: "Customer service",
       menus: [
         {
-          href: `${HomeUrl}/company/return-refund-policy`,
-          label: "Return and refund policy",
+          href: `${HomeUrl}/company/privacy-policy`,
+          label: "Privacy policy",
         },
+        { href: `${HomeUrl}/company/copyright-policy`, label: "Copyright Policy" },
         {
           href: `${HomeUrl}/company/terms-conditions`,
           label: "Terms & conditions",
         },
         {
-          href: `${HomeUrl}/company/privacy-policy`,
-          label: "Privacy policy",
+          href: `${HomeUrl}/company/return-refund-policy`,
+          label: "Return and refund policy",
         },
-        { href: `${HomeUrl}/company/shipping-info`, label: "Shipping info" },
+        // { href: `${HomeUrl}/company/shipping-info`, label: "Shipping info" },
       ],
     },
     {
       id: "2",
       title: "Help",
       menus: [
+        { href: `${process.env.SELLERURL}/seller`, label: "Sell on Nile" },
+        { href: `${HomeUrl}/company/how-to-order`, label: "How to order" },
         {
           href: `${HomeUrl}/SupportCenter?querys=BuyingOnNile`,
           label: "Support center & FAQ",
         },
-        { href: `${HomeUrl}/company/how-to-order`, label: "How to order" },
-        { href: `${HomeUrl}/company/how-to-track`, label: "How to track" },
-        { href: `${process.env.SELLERURL}/seller`, label: "Sell on Nile" },
+        // { href: `${HomeUrl}/company/how-to-track`, label: "How to track" },
       ],
     },
   ];
@@ -70,7 +71,7 @@ const Footer: React.FC = () => {
     return (
       <div key={index} className="text-sm">
         <h2 className="font-semibold text-base text-neutral-700 dark:text-neutral-200">
-         {t(`${menu.title}`)} 
+          {t(`${menu.title}`)}
         </h2>
         <ul className="mt-5 space-y-4">
           {menu.menus.map((item, index) => (
@@ -96,7 +97,7 @@ const Footer: React.FC = () => {
       {footerPathname !== "/auth/signIn" &&
         footerPathname !== "/auth/register" &&
         footerPathname !== "/auth/forgotpassword" && (
-          <div className="nc-Footer  top-32 relative px-2 py-10 lg:pt-20 mt-20 lg:pb-5 border-t border-neutral-200 dark:border-neutral-700">
+          <div className="nc-Footer  bg-gray-100 top-32 relative px-2 py-10 lg:pt-20 mt-20 lg:pb-5 border-t border-neutral-200 dark:border-neutral-700">
             <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-4 lg:gap-x-10 ">
               {widgetMenus.map(renderWidgetMenuItem)}
               <div className="">
@@ -129,7 +130,7 @@ const Footer: React.FC = () => {
             </div>
             <div className=" flex justify-around text-center mt-4">
               <p>Copyright © NGMP {new Date().getFullYear()}. All Rights Reserved.</p>
-              <p>Crafted By : <a href="https://gsmash.com/"> GSMASH TECHNOLOGIES</a> </p>
+              <p className="hover:text-gray-600">Crafted By : <a href="https://gsmash.com/"> GSMASH TECHNOLOGIES</a> </p>
             </div>
 
             {
