@@ -1,9 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { fetchCategoriesAndSubcategories, getAllProducts } from "@/app/page";
+import { getnewArrivals } from "@/app/page";
 import { Skeleton } from "../ui/skeleton";
 import ProductCard from "../ProductCard";
-import { ChevronRight } from "lucide-react";
 import BreadCrumb from "../BreadCrumb";
 
 const NewArrivals = () => {
@@ -20,7 +19,7 @@ const NewArrivals = () => {
         setLoading(true);
 
         // Fetch all products
-        const response = await getAllProducts();
+        const response = await getnewArrivals();
 
         setNewArrivalProducts(response);
 
@@ -43,16 +42,16 @@ const NewArrivals = () => {
       <div className="px-2 md:mx-8 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 mt-5">
         {loading
           ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item: any, index: number) => (
-              <div>
-                <Skeleton className="w-full h-[250px] bg-gray-200" />
-                <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
-                <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
-              </div>
-            ))
+            <div>
+              <Skeleton className="w-full h-[250px] bg-gray-200" />
+              <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
+              <Skeleton className="w-full mt-2 h-[10px] bg-gray-200 rounded-none" />
+            </div>
+          ))
           : newArrivalProducts &&
-            newArrivalProducts?.map((subcat: any, index: number) => (
-              <ProductCard key={index} data={subcat} showTitle={true} />
-            ))}
+          newArrivalProducts?.map((subcat: any, index: number) => (
+            <ProductCard key={index} data={subcat} showTitle={true} />
+          ))}
       </div>
     </div>
   );

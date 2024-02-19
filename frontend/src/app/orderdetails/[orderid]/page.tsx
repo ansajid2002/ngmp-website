@@ -361,15 +361,15 @@ const OrderDetails = () => {
           <div className=" md:w-[50%] space-y-1 md:pr-10 md:border-r-2 border-b-2 md:border-b-0 pb-5 md:pb-0 border-gray-300">
             {
               tentative_delivery_date &&
-                order_status.trim() != 'Ordered' || order_status.trim() != 'Shipped' ? <h1 className="text-sm font-semibold text-green-600 md:text-xl">{`${'Arriving on ' + formattedDate}`}</h1> : order_status.trim()
+                order_status?.startsWith("Ret") ? '' : (order_status.trim() != 'Ordered' || order_status.trim() != 'Shipped') ? <h1 className="text-sm font-semibold text-green-600 md:text-xl">{`${'Arriving on ' + formattedDate}`}</h1> : order_status.trim()
             }
             <div className={`border-t-4 border-b-4 p-4 border-gray-200 space-y-1 ${(order_status.trim() === 'Delivered' || order_status.trim() === 'Picked') && 'bg-green-700'}`}>
               {
-                order_status.trim() === 'Delivered' || order_status.trim() === 'Picked' ?
+                (order_status.trim() === 'Delivered' || order_status.trim() === 'Picked') ?
                   <>
                     <h1 className="text-lg text-green-100 font-semibold tracking-widest">Order {order_status.trim()} successfully...</h1>
 
-                  </> : <>
+                  </> : !order_status?.startsWith("Ret") ? <>
                     <h1 className="text-base font-semibold">
                       OTP for {ispickup ? 'pickup' : 'delivery'}:
                       <h1 className="text-lg font-semibold">{ispickup ? seller_otp : customer_otp}</h1>
@@ -379,7 +379,7 @@ const OrderDetails = () => {
                         ? 'Tell this PIN to the shop owner to confirm pickup'
                         : 'Tell this PIN to the delivery agent to get the delivery'}
                     </h1>
-                  </>
+                  </> : ''
               }
             </div>
             {
@@ -473,15 +473,17 @@ const OrderDetails = () => {
                 </div>
               </div>
               {
-                order_status !== "Returned" &&
+                !order_status?.startsWith("Ret") &&
                 <h2 className="text-sm text-gray-700 mt-2">
                   {deliveryStatus}
                 </h2>
               }
               {
-                order_status === "Returned" &&
-                <h3 className="mt-2 text-[#fb7701] font-semibold">Your Item is under Review for RETURNS</h3>
+                order_status.startsWith("Ret") && (
+                  <h3 className="mt-2 text-[#fb7701] font-semibold">{order_status}</h3>
+                )
               }
+
             </div>
             {/* 2 */}
             <div className="w-full md:w-[50%] py-2 text-[#ed642b] space-y-2 text-sm font-medium">
@@ -569,9 +571,10 @@ const OrderDetails = () => {
                           <div className=" p-2 mt-4 bg-gray-50">
                             <h4 className="mb-1">Upload photos of the issue</h4>
                             <>
-                              <Upload {...props}>
+                              <Upload {...props} accept=".png,.webp,.jpg, .jpeg">
                                 <Button icon={<UploadOutlined />}>Select File</Button>
                               </Upload>
+
                               <List
                                 style={{ marginTop: 16 }}
                                 bordered
@@ -588,19 +591,11 @@ const OrderDetails = () => {
                                   </List.Item>
                                 )}
                               />
-
-
-
-
-                              <Modal visible={previewVisible} footer={null} onCancel={handleCancelPreview}>
-                                <img alt="Preview" style={{ width: '100%' }} src={previewImage} />
-                              </Modal>
-
                             </>
                           </div>
                         )}
                         <h3 className="mt-4 text-base mb-1">Additional Details</h3>
-                        <Input
+                        <Input.TextArea
                           style={{ marginTop: 2 }}
                           className="rounded-md h-8 "
                           placeholder="Give us a little more info"

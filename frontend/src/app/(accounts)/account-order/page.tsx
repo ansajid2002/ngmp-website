@@ -3,13 +3,11 @@
 import { AdminUrl, ProductImageUrl } from "@/app/layout";
 import Prices from "@/components/Prices";
 import StarRating from "@/components/StarRating";
-import { PRODUCTS } from "@/data/data";
 import { useAppSelector } from "@/redux/store";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import NcImage from "@/shared/NcImage/NcImage";
 import { ChevronRight } from "lucide-react";
 import moment from "moment";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -84,8 +82,8 @@ const AccountOrder = () => {
     customerId && !reviewItems && fetchRatings();
   }, [customerId]);
 
-  
- 
+
+
   const formatOrderDate = (orderDate) => {
     const today = moment().startOf('day');
     const yesterday = moment().subtract(1, 'days').startOf('day');
@@ -161,7 +159,15 @@ const AccountOrder = () => {
 
                 <div className="md:flex gap-2 md:gap-4 items-center">
                   <h1 className={`text-sm font-semibold ${ispickup ? 'text-green-500' : 'text-orange-600'}`}>
-                    {(order_status !== 'Delivered' && order_status !== 'Picked') ? (ispickup ? 'Pickup' : 'will be deliver soon...') : ''}
+                    {
+                      order_status.startsWith('Ret') ? (
+                        <h3 className="mt-2 text-[#fb7701] font-semibold">{order_status}</h3>
+                      ) : (
+                        (order_status !== 'Delivered' && order_status !== 'Picked') ?
+                          (ispickup ? 'Pickup' : 'Will be delivered soon...') : ''
+                      )
+                    }
+
                   </h1>
                   <h1 className={`text-lg font-semibold ${(order_status === "Delivered" || order_status === 'Picked') && "text-green-700"}`}>{(order_status === "Delivered" || order_status === 'Picked') && order_status}</h1>
                   {

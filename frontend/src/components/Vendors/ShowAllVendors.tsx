@@ -2,33 +2,40 @@
 import React, { useEffect, useState } from "react";
 import { ChevronRight, MoveRight } from "lucide-react";
 import Link from "next/link";
-import { Rate } from "antd";
+import { Pagination, Rate } from "antd";
 import { getAllVendors } from "@/app/page";
 import { AdminUrl } from "@/app/layout";
 import SingleVendorsCard from "./SingleVendorsCard";
 
 const ShowAllVendors = () => {
   const [allVendors, setAllVendors] = useState();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+  const [total, setTotal] = useState(0);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const vendors = await getAllVendors();
-        // console.log(vendors);
-        setAllVendors(vendors);
-      } catch (error) {
-        console.error("Error fetching vendors:", error);
+  const getAllVendors = async (page: number, pageSize: number) => {
+    try {
+      const response = await fetch(`${AdminUrl}/api/allVendors?pageNumber=${page}&pageSize=${pageSize}`, {
+        next: { revalidate: 30 },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    };
 
-    fetchData();
-  }, []); // Empty dependency array means this effect runs once when the component mounts
+      const data = await response.json();
 
-  // Logging outside useEffect or using useEffect cleanup function
+      setAllVendors(data?.vendors);
+      setTotal(data?.totalCount)
+      // Log the data
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
-    console.log(allVendors, "VENDORSSS");
-    // If you want to perform some action when allVendors changes, do it here
-  }, [allVendors]);
+    getAllVendors(page, pageSize)
+  }, []); // Empty dependency array means this effect runs once when the component mounts
 
   return (
     <div className="px-5 md:px-10 ">
@@ -44,6 +51,28 @@ const ShowAllVendors = () => {
             allVendors.map((item: any, index: any) => (
               <SingleVendorsCard item={item} index={index} />
             ))}
+
+
+        </div>
+
+        <div className="flex justify-center items-center py-10">
+          <Pagination
+            hideOnSinglePage
+            showQuickJumper
+            showSizeChanger
+            total={total}
+            pageSize={pageSize}
+            current={page}
+            onChange={async (page, pageSize) => {
+              setPage(page)
+              setPageSize(pageSize)
+              try {
+                getAllVendors(page, pageSize)
+              } catch (error) {
+                console.error("Error fetching vendors:", error);
+              }
+            }}
+          />
         </div>
       </div>
     </div>
