@@ -17,30 +17,55 @@ app.use((req, res, next) => {
 
 app.get("/allCustomers", async (req, res) => {
   try {
-    const query = `
-        SELECT customers.*,
-        COALESCE(followers.total_followers, 0) AS total_followers,
-        COALESCE(following.total_following, 0) AS total_following
-        FROM customers
-        LEFT JOIN (
-            SELECT follower_id, COUNT(*) AS total_followers
-            FROM customer_follows
-            GROUP BY follower_id
-        ) AS followers ON customers.customer_id = followers.follower_id
-        LEFT JOIN (
-            SELECT following_id, COUNT(*) AS total_following
-            FROM customer_follows
-            GROUP BY following_id
-        ) AS following ON customers.customer_id = following.following_id;
- 
-`;
+    let { page, pageSize, status, searchValue } = req.query;
+    page = parseInt(page);
+    pageSize = parseInt(pageSize);
+    let query = `SELECT * FROM customers`;
+
+    // If status is provided and not -1, add filter
+    if (status && status !== '-1') {
+      query += ` WHERE status = '${status}'`;
+    }
+
+    // If searchValue is provided and not empty, add filter
+    if (searchValue && searchValue.trim() !== "") {
+      if (status && status !== '-1') {
+        query += ` AND (`;
+      } else {
+        query += ` WHERE (`;
+      }
+      query += ` given_name ILIKE '%${searchValue}%' OR family_name ILIKE '%${searchValue}%' OR email ILIKE '%${searchValue}%' OR phone_number ILIKE '%${searchValue}%')`;
+    }
+
+    const offset = (page - 1) * pageSize;
+    query += ` ORDER BY customer_id OFFSET ${offset} LIMIT ${pageSize}`;
+
     const { rows } = await pool.query(query);
-    res.status(200).json(rows);
+
+    const totalCountQuery = `SELECT status, COUNT(*) AS count FROM customers GROUP BY status`;
+    const { rows: statusCounts } = await pool.query(totalCountQuery);
+
+    // Calculate the total count of all customers
+    const totalCustomersQuery = `SELECT COUNT(*) AS total_count FROM customers`;
+    const { rows: totalCustomersCount } = await pool.query(totalCustomersQuery);
+    const totalCount = totalCustomersCount[0].total_count;
+
+    // Create an array with all status values from 0 to 4 and initialize their counts to 0
+    const allStatusCounts = Array.from({ length: 5 }, (_, i) => {
+      const statusObject = statusCounts.find(row => parseInt(row.status) === i);
+      return { status: i, count: statusObject ? parseInt(statusObject.count || 0) : 0 };
+    });
+
+    res.status(200).json({ data: rows, status_counts: allStatusCounts, total_count: totalCount });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
 
 app.post("/addcustomers", async (req, res) => {
   try {

@@ -21,25 +21,6 @@ const translate = new Translate({
 });
 
 
-async function quickStart() {
-
-  // The text to translate
-  const text = 'After verifying and adjusting the JSON string in ';
-
-  // The target language
-  const target = 'hi';
-
-  // Translates some text into Russian
-  const [translati] = await translate.translate(text, target);
-  console.log(translati, "ttt");
-
-}
-
-// Call the translateText function
-quickStart()
-// translateText();
-
-
 const sendEmail = require("./nodemailer");
 
 // const fs = require("fs/promises"); // For reading the HTML template
@@ -172,40 +153,32 @@ app.post("/updateVendor", async (req, res) => {
       UPDATE vendors
       SET
         vendorname = $1,
-        email = $2,
-        country_code = $3,
-        mobile_number = $4,
-        bank_name = $5,
-        bank_account_name = $6,
-        bank_account_number = $7,
-        bank_branch = $8,
-        bank_swift_code = $9,
-        business_model = $10,
-        business_type = $11,
-        business_website = $12,
-        business_email = $13,
-        business_phone = $14,
-        business_description = $15,
-        company_name = $16,
-        shipping_address = $17,
-        company_city = $18,
-        company_state = $19,
-        company_zip_code = $20,
-        company_country = $21,
-        facebook_url = $22,
-        instagram_url = $23,
-        linkedin_url = $24,
-        twitter_url = $25,
-        support_contact_1 = $26,
-        support_contact_2 = $27,
-        tax_id_number = $28
-      WHERE id = $29
+        country_code = $2,
+        mobile_number = $3,
+        bank_name = $4,
+        bank_account_name = $5,
+        bank_account_number = $6,
+        bank_branch = $7,
+        bank_swift_code = $8,
+        business_model = $9,
+        business_type = $10,
+        business_website = $11,
+        business_email = $12,
+        business_phone = $13,
+        business_description = $14,
+        facebook_url = $15,
+        instagram_url = $16,
+        linkedin_url = $17,
+        twitter_url = $18,
+        support_contact_1 = $19,
+        support_contact_2 = $20,
+        tax_id_number = $21
+      WHERE id = $22
       RETURNING *;
     `;
 
     const params = [
       data.vendorname,
-      data.email,
       data.country_code,
       data.mobile_number,
       data.bank_name,
@@ -219,12 +192,6 @@ app.post("/updateVendor", async (req, res) => {
       data.business_email,
       data.business_phone,
       data.business_description,
-      data.company_name,
-      data.shipping_address,
-      data.company_city,
-      data.company_state,
-      data.company_zip_code,
-      data.company_country,
       data.facebook_url,
       data.instagram_url,
       data.linkedin_url,
@@ -232,7 +199,7 @@ app.post("/updateVendor", async (req, res) => {
       data.support_contact_1,
       data.support_contact_2,
       data.tax_id_number,
-      id,
+      id
     ];
 
     const result = await client.query(query, params);

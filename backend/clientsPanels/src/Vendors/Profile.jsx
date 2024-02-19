@@ -202,8 +202,8 @@ const Profile = ({ vendorDatastate }) => {
               <Form.Item label="Vendor Name" name="vendorname">
                 <Input />
               </Form.Item>
-              <Form.Item label="Email" name="email">
-                <Input />
+              <Form.Item label="Email" name="email" >
+                <Input disabled />
               </Form.Item>
               <Form.Item label="Country Code" name="country_code">
                 <Input />
@@ -253,9 +253,9 @@ const Profile = ({ vendorDatastate }) => {
                 <Input.TextArea rows={3} />
               </Form.Item>
 
-              <h2 className='mb-4 font-semibold text-xl text-gray-500'>Company Information</h2>
+              {/* <h2 className='mb-4 font-semibold text-xl text-gray-500'>Company Information</h2> */}
               {/* Company Information */}
-              <Form.Item label="Company Name" name="company_name">
+              {/* <Form.Item label="Company Name" name="company_name">
                 <Input />
               </Form.Item>
               <Form.Item label="Company Street Address" name="shipping_address">
@@ -273,7 +273,7 @@ const Profile = ({ vendorDatastate }) => {
               </Form.Item>
               <Form.Item label="Company Country" name="company_country">
                 <Input />
-              </Form.Item>
+              </Form.Item> */}
 
               <h2 className='mb-4 font-semibold text-xl text-gray-500'>Social Links</h2>
               {/* Social Links */}

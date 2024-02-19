@@ -481,7 +481,10 @@ const VendorLogin = () => {
             label="New Password"
             name="newPassword"
             rules={[
-              { required: true, message: "Please enter the new password" },
+              {
+                required: true,
+                message: "Please enter the new password"
+              },
               {
                 min: 8, // Minimum password length
                 message: "Password must be at least 8 characters long",
@@ -490,9 +493,10 @@ const VendorLogin = () => {
                 pattern:
                   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
                 message:
-                  "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+                  "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character. Only the following special characters are allowed: @$!%*?&",
               },
             ]}
+
           >
             <Input.Password />
           </Form.Item>

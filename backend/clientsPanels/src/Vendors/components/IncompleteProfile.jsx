@@ -29,7 +29,13 @@ const IncompleteProfile = ({ vendorDatastate }) => {
         'return_policy',
         'shipping_policy',
         'terms_and_conditions',
-        'vendor_profile_picture_url'
+        'vendor_profile_picture_url',
+        'company_city',
+        'shipping_address',
+        'company_state',
+        'company_country',
+        'company_zip_code',
+        ''
     ];
 
     const checkExcludedFields = () => {

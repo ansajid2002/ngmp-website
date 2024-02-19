@@ -31,18 +31,27 @@ const CustomerHome = ({ adminLoginData }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedKey, setSelectedKey] = useState(null);
   const [Loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [customers, setCustomers] = useState([]);
   const [FilteredCustomer, setFilteredCustomer] = useState([]);
   const [selectedCustomers, setselectedCustomers] = useState([]);
   const [imageUploadTab, setImageUploadTab] = useState("1"); // Separate state for the second set of tabs
+  const [status, setStatus] = useState(-1); // Separate state for the second set of tabs
+  const [page, setPage] = useState(1); // Separate state for the second set of tabs
+  const [pageSize, setPageSize] = useState(10); // Separate state for the second set of tabs
+  const [totalCustomer, settotalCustomer] = useState(0);
+  const [status0, setStatus0] = useState(0);
+  const [status1, setStatus1] = useState(0);
+  const [status2, setStatus2] = useState(0);
+  const [status3, setStatus3] = useState(0);
+  const [status4, setStatus4] = useState(0);
+  const [searchValue, setSearchValue] = useState('');
 
   const [form] = useForm();
 
   // import { RiShieldCrossFill } from 'react-icons/ri';
-  const callCustomers = async () => {
+  const callCustomers = async (status, page, pageSize, searchValue) => {
     try {
-      const response = await fetch(`${AdminUrl}/api/allCustomers`, {
+      const response = await fetch(`${AdminUrl}/api/allCustomers?status=${status}&page=${page}&pageSize=${pageSize}&searchValue=${searchValue}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -52,11 +61,15 @@ const CustomerHome = ({ adminLoginData }) => {
       if (response.ok) {
         // Handle successful response
         const data = await response.json();
-        const sortedCustomers = data.sort(
-          (a, b) => b.total_followers - a.total_followers
-        );
-        setCustomers(sortedCustomers);
-        setFilteredCustomer(sortedCustomers);
+
+        setCustomers(data?.data);
+        setFilteredCustomer(data?.data);
+        settotalCustomer(data?.total_count)
+        setStatus0(data?.status_counts?.[0]?.count)
+        setStatus1(data?.status_counts?.[1]?.count)
+        setStatus2(data?.status_counts?.[2]?.count)
+        setStatus3(data?.status_counts?.[3]?.count)
+        setStatus4(data?.status_counts?.[4]?.count)
       } else {
         // Handle error response
         console.error("Error sending form data:", response.statusText);
@@ -68,34 +81,17 @@ const CustomerHome = ({ adminLoginData }) => {
   };
 
   useEffect(() => {
-    callCustomers();
+    callCustomers(status, page, pageSize, searchValue);
   }, [selectedCustomers]);
 
   const allVendors = FilteredCustomer.filter((vendor) => vendor);
-  const activeVendors = FilteredCustomer.filter((vendor) => vendor.status === 0);
-  const blockedVendors = FilteredCustomer.filter((vendor) => vendor.status === 1);
-  const archivedVendors = FilteredCustomer.filter((vendor) => vendor.status === 2);
-  const approvedVendor = FilteredCustomer.filter((vendor) => vendor.status === 3);
-  const rejectvendor = FilteredCustomer.filter((vendor) => vendor.status === 4);
-  const [searchValue, setSearchValue] = useState('');
 
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchValue(value);
+    setPage(1)
     // Call your search function here based on the value
-    const searchResults = searchCustomers(value);
-    setFilteredCustomer(searchResults);
-  };
-
-  const searchCustomers = (searchText) => {
-    return customers.filter((customer) => {
-      const fullName = `${customer.given_name} ${customer.family_name}`;
-      const lowerCaseSearch = searchText.toLowerCase();
-      return (
-        fullName.toLowerCase().includes(lowerCaseSearch) ||
-        customer.email.toLowerCase().includes(lowerCaseSearch)
-      );
-    });
+    callCustomers(status, 1, pageSize, value);
   };
 
   const getIcon = (verificationMethod) => {
@@ -156,7 +152,7 @@ const CustomerHome = ({ adminLoginData }) => {
             <p className="text-gray-700 font-semibold">{`${record.given_name} ${record.family_name}`}</p>
             <p className="text-gray-500">{record.email}</p>
             <p className="text-gray-500">{record.phone_number}</p>
-            <div className="flex mt-1">
+            {/* <div className="flex mt-1">
               <div className="mr-4">
                 <span className="text-gray-700 font-semibold">Followers:</span>
                 <span className="text-gray-500 ml-1">
@@ -169,7 +165,7 @@ const CustomerHome = ({ adminLoginData }) => {
                   {record.total_following}
                 </span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       ),
@@ -304,12 +300,17 @@ const CustomerHome = ({ adminLoginData }) => {
 
   const handleTabChangeforTable = (key) => {
     setImageUploadTab(key);
+    setStatus(key - 2)
+    setPage(1)
+
+    callCustomers(key - 2, 1, pageSize, searchValue);
+
   };
 
-  const pageSize = 10;
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handlePageChange = (page, pageSize) => {
+    setPage(page);
+    setPageSize(pageSize)
+    callCustomers(status, page, pageSize, searchValue);
   };
 
   function handleCreate() {
@@ -320,7 +321,6 @@ const CustomerHome = ({ adminLoginData }) => {
   }
 
   function handleUpdate(key) {
-    callCustomers();
     const selectedRow = FilteredCustomer.find((item) => item.customer_id === key);
     setselectedCustomers(selectedRow);
     form.setFieldsValue(selectedRow);
@@ -339,7 +339,7 @@ const CustomerHome = ({ adminLoginData }) => {
       ) : (
         <div className="mx-auto p-5 mt-10 sm:ml-72 sm:p-4">
           <h1 className="text-4xl text-gray-700 font-bold mb-2">
-            Customer Listing ({FilteredCustomer?.length})
+            Customer Listing ({totalCustomer || 0})
           </h1>
           <nav
             aria-label="Breadcrumbs"
@@ -403,13 +403,10 @@ const CustomerHome = ({ adminLoginData }) => {
                   onChange={handleTabChangeforTable}
                   centered
                 >
-                  <TabPane tab={`All (${allVendors?.length})`} key="1">
+                  <TabPane tab={`All (${totalCustomer || 0})`} key="1">
                     <Table
                       columns={columns}
-                      dataSource={allVendors?.slice(
-                        (currentPage - 1) * pageSize,
-                        currentPage * pageSize
-                      )}
+                      dataSource={allVendors}
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
@@ -420,20 +417,18 @@ const CustomerHome = ({ adminLoginData }) => {
                     />
                     <div className="mt-4">
                       <Pagination
-                        current={currentPage}
+                        hideOnSinglePage
+                        current={page}
                         onChange={handlePageChange}
                         pageSize={pageSize}
-                        total={allVendors?.length}
+                        total={totalCustomer || 0}
                       />
                     </div>
                   </TabPane>
-                  <TabPane tab={`Pending (${activeVendors?.length})`} key="2">
+                  <TabPane tab={`Pending (${status0 || 0})`} key="2">
                     <Table
                       columns={columns}
-                      dataSource={activeVendors?.slice(
-                        (currentPage - 1) * pageSize,
-                        currentPage * pageSize
-                      )}
+                      dataSource={allVendors}
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
@@ -444,20 +439,18 @@ const CustomerHome = ({ adminLoginData }) => {
                     />
                     <div className="mt-4">
                       <Pagination
-                        current={currentPage}
+                        hideOnSinglePage
+                        current={page}
                         onChange={handlePageChange}
                         pageSize={pageSize}
-                        total={activeVendors?.length}
+                        total={status0}
                       />
                     </div>
                   </TabPane>
-                  <TabPane tab={`Blocked (${blockedVendors?.length})`} key="3">
+                  <TabPane tab={`Blocked (${status1 || 0})`} key="3">
                     <Table
                       columns={columns}
-                      dataSource={blockedVendors?.slice(
-                        (currentPage - 1) * pageSize,
-                        currentPage * pageSize
-                      )}
+                      dataSource={allVendors}
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
@@ -468,23 +461,21 @@ const CustomerHome = ({ adminLoginData }) => {
                     />
                     <div className="mt-4">
                       <Pagination
-                        current={currentPage}
+                        hideOnSinglePage
+                        current={page}
                         onChange={handlePageChange}
                         pageSize={pageSize}
-                        total={blockedVendors?.length}
+                        total={status1}
                       />
                     </div>
                   </TabPane>
                   <TabPane
-                    tab={`Archived (${archivedVendors?.length})`}
+                    tab={`Archived (${status2 || 0})`}
                     key="4"
                   >
                     <Table
                       columns={columns}
-                      dataSource={archivedVendors?.slice(
-                        (currentPage - 1) * pageSize,
-                        currentPage * pageSize
-                      )}
+                      dataSource={allVendors}
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
@@ -495,20 +486,18 @@ const CustomerHome = ({ adminLoginData }) => {
                     />
                     <div className="mt-4">
                       <Pagination
-                        current={currentPage}
+                        hideOnSinglePage
+                        current={page}
                         onChange={handlePageChange}
                         pageSize={pageSize}
-                        total={archivedVendors?.length}
+                        total={status2}
                       />
                     </div>
                   </TabPane>
-                  <TabPane tab={`Approved (${approvedVendor?.length})`} key="5">
+                  <TabPane tab={`Approved (${status3 || 0})`} key="5">
                     <Table
                       columns={columns}
-                      dataSource={approvedVendor?.slice(
-                        (currentPage - 1) * pageSize,
-                        currentPage * pageSize
-                      )}
+                      dataSource={allVendors}
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
@@ -519,20 +508,18 @@ const CustomerHome = ({ adminLoginData }) => {
                     />
                     <div className="mt-4">
                       <Pagination
-                        current={currentPage}
+                        hideOnSinglePage
+                        current={page}
                         onChange={handlePageChange}
                         pageSize={pageSize}
-                        total={approvedVendor?.length}
+                        total={status3}
                       />
                     </div>
                   </TabPane>
-                  <TabPane tab={`Rejected (${rejectvendor?.length})`} key="6">
+                  <TabPane tab={`Rejected (${status4 || 0})`} key="6">
                     <Table
                       columns={columns}
-                      dataSource={rejectvendor?.slice(
-                        (currentPage - 1) * pageSize,
-                        currentPage * pageSize
-                      )}
+                      dataSource={allVendors}
                       pagination={false}
                       className="w-full mt-10"
                       rowClassName="dark:bg-secondary-dark-bg no-hover text-gray-600 dark:text-gray-200 hover:text-slate-800 dark:hover:text-slate-800 rounded-none border-b-2 border-zinc-300"
@@ -543,10 +530,11 @@ const CustomerHome = ({ adminLoginData }) => {
                     />
                     <div className="mt-4">
                       <Pagination
-                        current={currentPage}
+                        hideOnSinglePage
+                        current={page}
                         onChange={handlePageChange}
                         pageSize={pageSize}
-                        total={rejectvendor?.length}
+                        total={status4}
                       />
                     </div>
                   </TabPane>

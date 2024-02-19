@@ -1190,7 +1190,7 @@ app.get('/getOrderDetails', async (req, res) => {
         const deliveryAddressResult = await pool.query('SELECT * FROM customer_delivery_address WHERE unique_order_id = $1', [parseInt(orderId)]);
 
         if (deliveryAddressResult.rows.length > 0) {
-          const shippingAddress = deliveryAddressResult.rows[0];
+          const shippingAddress = deliveryAddressResult?.rows[0];
           orderDetails.shipping_address = shippingAddress;
         }
 
