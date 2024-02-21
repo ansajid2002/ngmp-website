@@ -1,792 +1,0 @@
-{
-  "Account Settings": "إعدادات الحساب",
-  "My Ads": "إعلاناتي",
-  "Favorite": "المفضلة",
-  "Notifications": "الإشعارات",
-  "About us": "معلومات عنا",
-  "Contact us": "اتصل بنا",
-  "Language": "اللغة",
-  "Share app": "مشاركة التطبيق",
-  "Logout": "تسجيل الخروج",
-  "Electronics": "الإلكترونيات",
-  "Fashion & Accessories": "الأزياء والإكسسوارات",
-  "Jewelry and Accessories": "المجوهرات والإكسسوارات",
-  "Home & Garden": "المنزل والحديقة",
-  "Health & Beauty": "الصحة والجمال",
-  "Toys & Games": "الألعاب والألعاب",
-  "Sports & Outdoors": "الرياضة والهواء الطلق",
-  "Books & Stationery": "الكتب والقرطاسية",
-  "Food & Beverages": "الطعام والمشروبات",
-  "Men's Clothing": "ملابس رجالية",
-  "Women's Clothing": "ملابس نسائية",
-  "Automotive": "السيارات",
-  "Baby & Kids": "الأطفال والأطفال",
-  "Office & School Supplies": "لوازم المكتب والمدرسة",
-  "Art & Collectibles": "الفنون والتحف",
-  "Electronic Accessories": "ملحقات الإلكترونيات",
-  "Smart Devices": "الأجهزة الذكية",
-  "Home Appliances": "أجهزة منزلية",
-  "Music & Instruments": "الموسيقى والآلات",
-  "Legal Services": "الخدمات القانونية",
-  "Freelance Services": "خدمات العمل الحر",
-  "Real Estate": "العقارات",
-  "Events Services": "خدمات الفعاليات",
-  "Repair Services": "خدمات الإصلاح",
-  "Jobs & Services": "الوظائف والخدمات",
-  "Health and Fitness Services": "خدمات الصحة واللياقة",
-  "Business Services": "خدمات الأعمال",
-  "Food Delivery Services": "خدمات توصيل الطعام",
-  "Education & Learning": "التعليم والتعلم",
-  "Beauty Services": "خدمات التجميل",
-  "Travel & Experience": "السفر والتجربة",
-  "Handmade & Crafts": "الصناعات اليدوية والحرف",
-  "Dating": "التعارف",
-  "Feces": "البراز",
-  "Browse Categories": "تصفح الفئات",
-  "View All": "عرض الكل",
-  "Fresh Recommendations": "توصيات جديدة",
-  "All Categories": "جميع الفئات",
-  "SERVICES": "الخدمات",
-  "Products": "المنتجات",
-  "Search here...": "ابحث هنا...",
-  "Mobile Electronics": "إلكترونيات المحمول",
-  "Laptops & Computers": "أجهزة الكمبيوتر واللابتوبات",
-  "Camera & Photography": "الكاميرات والتصوير",
-  "Audio & Headphones ": "الصوتيات وسماعات الرأس",
-  "Clothing": "الملابس",
-  "Shoes": "الأحذية",
-  "Bags & Luggages": "الحقائب والأمتعة",
-  "Watch Accessories": "ملحقات الساعات",
-  "Women's Jewelry": "مجوهرات النساء",
-  "Women's Glasses": "نظارات النساء",
-  "Men's Glasses": "نظارات الرجال",
-  "Jewelry & Watches": "المجوهرات والساعات",
-  "Piercings": "الثقوب",
-  "Furniture": "الأثاث",
-  "Kitchenware & Appliances": "أدوات المطبخ والأجهزة",
-  "Home Decor": "ديكور المنزل",
-  "Tools & DIY": "الأدوات والعمل الحرفي",
-  "Skincare & Makeup": "منتجات العناية بالبشرة والمكياج",
-  "Haircare": "منتجات العناية بالشعر",
-  "Health & Wellness": "الصحة والعافية",
-  "Fragrances": "العطور",
-  "Massage Tools & Equipment": "أدوات ومعدات التدليك",
-  "Health Care Products": "منتجات الرعاية الصحية",
-  "Dental Care Products": "منتجات العناية بالأسنان",
-  "Facial Care Products": "منتجات العناية بالوجه",
-  "Action Figures & Collectibles": "تماثيل الأكشن والتحف",
-  "Board Games and Puzzles": "ألعاب اللوحة والألغاز",
-  "Outdoor Play": "اللعب في الهواء الطلق",
-  "Remote Control Toys": "ألعاب التحكم عن بعد",
-  "Games & Accessories": "ألعاب وملحقاتها",
-  "Baby & Toddler Toys": "ألعاب الأطفال والرضع",
-  "Fitness & Exercise Equipment": "معدات اللياقة والتمرين",
-  "Camping & Hiking Gear": "معدات التخييم والتسلق",
-  "Cycling": "ركوب الدراجات",
-  "Sports Apparel & Footwear": "ملابس الرياضة والأحذية",
-  "Outdoor Lights": "إضاءة خارجية",
-  "Boat Supplies": "إمدادات القوارب",
-  "Fiction & Non-Fictional Books": "الكتب الخيالية وغير الخيالية",
-  "School & Office Supplies": "لوازم المدرسة والمكتب",
-  "Art & Craft Supplies": "لوازم الفنون والحرف",
-  "Fresh Fruits & Vegetables": "الفواكه والخضروات الطازجة",
-  "Dry Fruits & Nuts": "الفواكه المجففة والمكسرات",
-  "Beverages & Juices": "المشروبات وعصائر الفاكهة",
-  "Snacks & Sweets": "الوجبات الخفيفة والحلويات",
-  "T-Shirts and Polos": "القمصان والبولو",
-  "Shirts and Dress Shirts": "القمصان والبلوزات الرسمية",
-  "Jackets & Coats": "السترات والمعاطف",
-  "Jeans and Pants": "الجينز والبنطلونات",
-  "Kurta & Pajamas": "الكورتا والبيجامات",
-  "Swimwear": "ملابس السباحة",
-  "Shorts": "الشورتات",
-  "Tops and Blouses": "القمم والبلوزات",
-  "T-Shirts and Tank Tops": "القمصان والبلوزات القصيرة",
-  "Dresses": "الفساتين",
-  "Skirts": "التنانير",
-  "Hoodies and Sweatshirts": "الهوديز والبلوزات الرياضية",
-  "Suits and Blazers": "البدل والبليزرات",
-  "Lingerie and Intimates": "ملابس داخلية وملابس مثيرة",
-  "Sleepwear and Loungewear": "ملابس النوم والاستراحة",
-  "Women's Abaya": "عبايات النساء",
-  "Women's Hijab": "الحجاب النسائي",
-  "Cars & Trucks": "السيارات والشاحنات",
-  "Auto Parts & Accessories": "قطع السيارات والإكسسوارات",
-  "Motorcycles & Scooters": "الدراجات النارية والسكوترات",
-  "Car Rentals & Services": "تأجير السيارات والخدمات",
-  "TukTuk Rentals & Services": "تأجير توكتوك والخدمات",
-  "TukTuk Parts & Accessories": "قطع توكتوك والإكسسوارات",
-  "TukTuk for Sale": "توكتوك للبيع",
-  "Baby's Gear": "معدات الأطفال",
-  "Kids Clothing & Accessories": "ملابس الأطفال والإكسسوارات",
-  "Toys & Educational Items": "ألعاب ومواد تعليمية",
-  "Gift Wrapping & Craft Supplies": "تغليف الهدايا ولوازم الحرف",
-  "Office Electronics": "إلكترونيات المكتب",
-  "Storage and Organization": "تخزين وتنظيم",
-  "Paintings & Artwork": "لوحات فنية وأعمال فنية",
-  "Sculptures & Statues": "نحت وتماثيل",
-  "Antiques & Vintage Items": "أثاث قديم وقطع كلاسيكية",
-  "Coins & Stamps": "عملات وطوابع",
-  "Phone Cases & Covers": "أغطية وحافظات الهاتف",
-  "Chargers & Cables": "شواحن وكابلات",
-  "Laptop Bags & Sleeves": "حقائب اللابتوب والغطاء الواقي",
-  "Camera Accessories": "ملحقات الكاميرا",
-  "Smart Lighting": "إضاءة ذكية",
-  "Home Entertainment": "ترفيه منزلي",
-  "WiFi & Networking": "شبكات واي فاي",
-  "Refrigerators & Freezers": "ثلاجات ومجمدات",
-  "Washing Machines & Dryers": "غسالات ومجففات",
-  "Air Conditioners & Heaters": "مكيفات هواء وسخانات",
-  "Vacuum Cleaners": "مكانس كهربائية",
-  "Musical Instruments (e.g., guitars, pianos, drums)": "آلات موسيقية (مثل الجيتارات والبيانو والطبول)",
-  "Sheet Music & SongBooks": "ورق الموسيقى وكتب الأغاني",
-  "Audio Equipment & Speakers": "معدات الصوت والسماعات",
-  "Music Lessons": "دروس موسيقية",
-  "Lawyer for Hire": "محامي للتوظيف",
-  "Legal Document Preparation": "إعداد الوثائق القانونية",
-  "Notary Services": "خدمات الكاتب العدلي",
-  "Patent & Trademark Services": "خدمات البراءات والعلامات التجارية",
-  "Graphic Design": "تصميم جرافيكي",
-  "Content Writing & Translation": "كتابة المحتوى والترجمة",
-  "Virtual Assistance": "المساعدة الافتراضية",
-  "Land for Sale": "أراضي للبيع",
-  "Apartments for Rent": "شقق للإيجار",
-  "Property Management": "إدارة العقارات",
-  "Vacation Rentals": "إيجارات العطلات",
-  "Event Planning & Coordination": "تخطيط الفعاليات والتنسيق",
-  "Catering & Food Services": "خدمات التموين والطعام",
-  "Photography & Videography": "تصوير الفوتوغرافيا والفيديو",
-  "Entertainment & Performers": "الترفيه والفنانين",
-  "Mobile Phone Repairs": "إصلاحات الهواتف المحمولة",
-  "Laptop & Computer Repairs": "إصلاحات اللابتوب والكمبيوتر",
-  "TV & Appliance Repairs": "إصلاحات التلفزيون والأجهزة",
-  "Camera & Photography Equipment Repairs": "إصلاحات معدات الكاميرا والتصوير",
-  "Job Offers": "عروض الوظائف",
-  "Job Seekers": "باحثون عن وظائف",
-  "Freelance Gigs": "أعمال حرة",
-  "Pet Services": "خدمات الحيوانات الأليفة",
-  "Personal Trainers": "مدربين شخصيين",
-  "Nutritionists & Dietitians": "أخصائيو التغذية والتغذية",
-  "Yoga & Pilates Instructors": "مدربو اليوغا والبيلاتيس",
-  "Sports Coaches": "مدربو الرياضة",
-  "Accounting & Bookkeeping": "المحاسبة والمحافظة على السجلات",
-  "Marketing & Advertising": "التسويق والإعلان",
-  "Business Consultation": "استشارات الأعمال",
-  "Office Space & Coworking": "مساحة المكتب والعمل المشترك",
-  "Grocery Delivery": "توصيل المتاجر",
-  "Meal Kit Delivery": "توصيل أطقم الوجبات",
-  "Specialty Food Delivery": "توصيل المأكولات المتخصصة",
-  "Online Courses & Tutorials": "دورات ودروس عبر الإنترنت",
-  "Tutoring & Academic Support": "التدريس والدعم الأكاديمي",
-  "Language Learning Services": "خدمات تعلم اللغات",
-  "Professional Development": "تطوير مهني",
-  "Salon Services (Haircut, Styling)": "خدمات الصالون (قص الشعر، تصفيف)",
-  "Spa Treatments": "علاجات السبا",
-  "Makeup Artists": "فناني المكياج",
-  "Beauty Workshops": "ورش عمل تجميلية",
-  "Travel Packages & Tours": "باقات السفر والجولات",
-  "Concert & Event Tickets": "تذاكر الحفلات والفعاليات",
-  "Experiential Workshops": "ورش عمل تجريبية",
-  "Handmade Jewelry": "مجوهرات مصنوعة يدويًا",
-  "Handcrafted Home Decor": "ديكور المنزل المصنوع يدويًا",
-  "DIY Craft Supplies": "لوازم الحرف اليدوية",
-  "Knitted & Crocheted Items": "أشياء محبوكة ومنسوجة",
-  "Online Dating": "التعارف عبر الإنترنت",
-  "Speed Dating": "التعارف السريع",
-  "Matchmaking Services": "خدمات الوساطة",
-  "Casual Dating": "التعارف العارض",
-  "Serious Relationships": "علاقات جادة",
-  "Religious Dating": "التعارف الديني",
-  "Human Feces": "البراز البشري",
-  "Animal Feces": "البراز الحيواني",
-  "Pet Waste Management": "إدارة نفايات الحيوانات الأليفة",
-  "Select Category": "اختر الفئة",
-  "Select Location": "اختر الموقع",
-  "Apply": "تطبيق",
-  "Select Budget Range": "اختر نطاق الميزانية",
-  "All": "الكل",
-  "Description": "الوصف",
-  "Chat": "الدردشة",
-  "Call": "اتصال",
-  "Posted on": "نشر في",
-  "Posted By": "نشر بواسطة",
-  "View Profile": "عرض الملف الشخصي",
-  "Similar Items": "عناصر مماثلة",
-  "Remove From Favorite": "إزالة من المفضلة",
-  "Removed From Favorite": "إزالة من المفضلة",
-  "Added To Favorite": "تمت الإضافة إلى المفضلة",
-  "Location": "الموقع",
-  "Use My Current Location": "استخدام موقعي الحالي",
-  "Enable Location": "تمكين الموقع",
-  "CHOOSE COUNTRY": "اختر البلد",
-  "CHOOSE STATE": "اختر الولاية",
-  "CHOOSE CITY": "اختر المدينة",
-  "Search Results...": "نتائج البحث...",
-  "Filter": "تصفية",
-  "Sort By": "ترتيب حسب",
-  "Condition": "الحالة",
-  "Price": "السعر",
-  "Distance": "المسافة",
-  "Select Sub Category": "اختر فئة فرعية",
-  "APPLY FILTER": "تطبيق الفلتر",
-  "Date Published": "تاريخ النشر",
-  "Price:low to high": "السعر: من الأدنى إلى الأعلى",
-  "Price:high to low": "السعر: من الأعلى إلى الأدنى",
-  "New": "جديد",
-  "Used": "مستعمل",
-  "Recondition": "مجدد",
-  "Min": "الحد الأدنى",
-  "Max": "الحد الأعلى",
-  "to": "إلى",
-  "Search": "بحث",
-  "Search here": "ابحث هنا",
-  "Recent Searches": "البحوث الأخيرة",
-  "Currency": "عملة (ʿamla)",
-  "Account": "حساب (hisab)",
-  "What are you offering?": "ماذا تقدم؟ (Mādhā taqdimu?)",
-  "NEXT": "التالي (al-tālī)",
-  "Search Market-Place ...": "البحث في السوق...",
-  "Use Current Location": "استخدام الموقع الحالي",
-  "Laptop & Computers": "أجهزة الكمبيوتر واللابتوب",
-  "Facial Care Products ": "منتجات العناية بالوجه",
-  "Fragrances ": "عطور",
-  "Massage Tools & Equipments": "أدوات ومعدات التدليك",
-  "Outdoor Play ": "ألعاب في الهواء الطلق",
-  "Games & Accessories ": "ألعاب وإكسسوارات",
-  "Fitness & Exercise Equipments": "معدات اللياقة والتمارين",
-  "Ratings": "التقييمات",
-  "Discount": "خصم",
-  "Musical Instruments": "آلات موسيقية",
-  "Sheet Music & Song Books": "الموسيقى المنظمة وكتب الأغاني",
-  "School & Office Supplies ": "لوازم المدرسة والمكتب",
-  "Salon Services": "خدمات الصالون",
-  "Electronics Repair": "إصلاح الإلكترونيات",
-  "Vocation Rentals": "تأجير العطلات",
-  "Typing & Transcription": "الكتابة والنسخ",
-  "Recommended": "موصى به",
-  "Featured": "مميز",
-  "Shop By Category": "التسوق حسب الفئة",
-  "My Interests": "اهتماماتي",
-  "Wishlist": "القائمة المفضلة",
-  "My Orders": "طلباتي",
-  "Profile": "الملف الشخصي",
-  "Shop Now": "تسوق الآن",
-  "Your cart is empty!": "سلة التسوق الخاصة بك فارغة!",
-  "Rating & Reviews": "التقييم والمراجعات",
-  "ratings and": "التقييمات و",
-  "reviews": "مراجعات",
-  "Added": "تمت الإضافة",
-  "Sort By ": "ترتيب حسب",
-  "Relevance": "الصلة",
-  "Price: Low to High": "السعر: من الأدنى إلى الأعلى",
-  "Price: High to Low": "السعر: من الأعلى إلى الأدنى",
-  "Most Recent": "الأحدث",
-  "Select Price Range": "اختيار نطاق السعر",
-  "Reset": "إعادة تعيين",
-  "Apply ": "تطبيق",
-  "Clear all": "مسح الكل",
-  "and more": "والمزيد",
-  "No Product Found !": "لم يتم العثور على منتجات!",
-  "Add To Cart": "أضف إلى السلة",
-  "Country / Region": "الدولة / المنطقة",
-  "My Cart": "سلتي",
-  "Expected Delivery By : ": "التوصيل المتوقع بواسطة :",
-  "Save For Later": "حفظ لاحقًا",
-  "Remove": "إزالة",
-  "Price Details": "تفاصيل السعر",
-  "Total : ": "الإجمالي :",
-  "Place Order": "قدّم الطلب",
-  "Delivery Charges": "رسوم التوصيل",
-  "Total Amount": "المبلغ الإجمالي",
-  "on this order": "على هذا الطلب",
-  "You will save": "ستوفر",
-  "Select a delivery Address": "اختيار عنوان التوصيل",
-  "Edit Address": "تحرير العنوان",
-  "Deliver to this address": "توصيل إلى هذا العنوان",
-  "Save": "حفظ",
-  "Your Delivery Address": "عنوان التوصيل الخاص بك",
-  "Order Summary": "ملخص الطلب",
-  "Delivery Address": "عنوان التوصيل",
-  "Apply Coupon": "تطبيق القسيمة",
-  "Enter Coupon Code": "أدخل رمز القسيمة",
-  "Choose Payment Mode": "اختيار وسيلة الدفع",
-  "Pay": "دفع",
-  "Thanks for shopping with us!": "شكرًا لتسوقك معنا!",
-  "Track & manage order": "تتبع وإدارة الطلب",
-  "Continue Shopping": "متابعة التسوق",
-  "Download Invoice": "تنزيل الفاتورة",
-  "Select Currency": "اختيار العملة",
-  "Select Country": "اختيار الدولة",
-  "Sure you want to Logout?": "هل أنت متأكد من رغبتك في تسجيل الخروج؟",
-  "CANCEL": "إلغاء",
-  "LOGOUT": "تسجيل الخروج",
-  "Cancel Item": "إلغاء العنصر",
-  "Shipping Address": "عنوان الشحن",
-  "Orders Details": "تفاصيل الطلب",
-  "Payment Information": "معلومات الدفع",
-  "Browse Services": "تصفح الخدمات",
-  "Recommended Products": "المنتجات الموصى بها",
-  "Go To Cart": "الانتقال إلى العربة",
-  "Manage Address": "إدارة العنوان",
-  "New Arrivals": "وصل حديثا",
-  "items in Your Cart!": "العناصر في عربتك!",
-  "Home": "الرئيسية",
-  "Categories": "التصنيفات",
-  "Cart": "العربة",
-  "fetching location data": "جلب بيانات الموقع",
-  "raise_ticket": "رفع تذكرة",
-  "inbox": "صندوق الوارد",
-  "select_mogadishu_district": "اختيار منطقة مقديشو",
-  "cancel": "إلغاء",
-  "select_language": "اختيار اللغة",
-  "view_raised_ticket": "عرض التذكرة المفتوحة",
-  "search_ticket_by_id": "البحث عن التذكرة برقم الهوية:",
-  "enter_ticket_id": "أدخل رقم التذكرة",
-  "raise_new_ticket": "رفع تذكرة جديدة",
-  "recent_tickets": "التذاكر الأخيرة",
-  "no_ticket_found": "لم يتم العثور على تذاكر",
-  "ticket_id": "رقم التذكرة",
-  "body": "النص",
-  "date": "التاريخ",
-  "reply": "الرد",
-  "mogadishu_districts": "مناطق مقديشو",
-  "ngmp_id": "هوية NGMP",
-  "posted_by": "نشر بواسطة",
-  "message_seller": "رسالة للبائع",
-  "no_product_found": "لم يتم العثور على منتج...",
-  "sort_by": "ترتيب حسب",
-  "filter": "تصفية",
-  "close": "إغلاق",
-  "relevance": "الصلة",
-  "most_recent": "الأحدث",
-  "price_low_to_high": "السعر من الأدنى إلى الأعلى",
-  "price_high_to_low": "السعر من الأعلى إلى الأدنى",
-  "Hi Welcome Back ! 👋": "مرحبًا مرة أخرى! 👋",
-  "hello_again": "مرحبًا مجددًا، لقد غبت!",
-  "email_address": "عنوان البريد الإلكتروني",
-  "password": "كلمة المرور",
-  "forgot_password": "نسيت كلمة المرور؟",
-  "or_login_with": "أو قم بتسجيل الدخول باستخدام",
-  "register": "تسجيل",
-  "dont_have_account": "ليس لديك حساب؟",
-  "create_account": "إنشاء حساب",
-  "discover_deals": "اكتشف عروض رائعة وتسوق بسهولة!",
-  "first_name": "الاسم الأول",
-  "last_name": "الاسم الأخير",
-  "mobile_number": "رقم الجوال",
-  "confirm_password": "تأكيد كلمة المرور",
-  "agree_terms_conditions": "أوافق على الشروط والأحكام",
-  "no_product_eligible": "لا يوجد لديك أي عنصر مؤهل للشحن",
-  "no_address_selected": "لم يتم اختيار عنوان",
-  "proceed_to_checkout": "المتابعة إلى الدفع",
-  "loading": "جار التحميل",
-  "list_price": "سعر القائمة",
-  "pickup_info": "معلومات الاستلام",
-  "items_for_shipping": "العناصر للشحن",
-  "insufficient_balance": "رصيد غير كاف",
-  "Raise Ticket": "فتح تذكرة",
-  "Inbox": "صندوق الوارد",
-  "Select Mogadishu District": "اختيار منطقة مقديشو",
-  "Select Language": "اختيار اللغة",
-  "View Raised Ticket": "عرض التذكرة المفتوحة",
-  "Search Ticket by ID:": "البحث عن تذكرة برقم الهوية",
-  "Enter Ticket ID": "أدخل رقم تذكرة",
-  "Raise a New Ticket": "فتح تذكرة جديدة",
-  "Recent Ticket's": "آخر التذاكر",
-  "No Ticket found": "لم يتم العثور على تذكرة",
-  "Ticket Id:": "رقم التذكرة:",
-  "Body ": "الجسم ",
-  "Date ": "التاريخ ",
-  "Reply ": "الرد ",
-  "Mogadishu Districts": "مناطق مقديشو",
-  "NGMP ID :": "هوية NGMP :",
-  "Message Seller": "رسالة للبائع",
-  "Close": "إغلاق",
-  "No Product Found...": "لم يتم العثور على منتج...",
-  "Price Low to High": "السعر منخفض إلى مرتفع",
-  "Price High to Low": "السعر من مرتفع إلى منخفض",
-  "Hello again you have been missed!": "مرحبًا مرة أخرى، لقد غبت!",
-  "Email address": "عنوان البريد الإلكتروني",
-  "Password": "كلمة المرور",
-  "Forgot Passowrd ?": "هل نسيت كلمة المرور؟",
-  "Or Login with": "أو تسجيل الدخول بواسطة",
-  "Register": "تسجيل",
-  "Don't have an account ?": "ليس لديك حساب؟",
-  "Create Account": "إنشاء حساب",
-  "Discover great deals and shop with ease!": "اكتشف صفقات رائعة وتسوق بسهولة!",
-  "First Name": "الاسم الأول",
-  "Last Name": "الاسم الأخير",
-  "Mobile Number": "رقم الجوال",
-  "Confirm Password": "تأكيد كلمة المرور",
-  "I agree to the terms and conditions": "أوافق على الشروط والأحكام",
-  "You don't have any item eligible for shipping": "ليس لديك أي عنصر يحق للشحن",
-  "No Address Selected": "لم يتم اختيار عنوان",
-  "Proceed to checkout": "المتابعة إلى الدفع",
-  "Loading...": "جار التحميل...",
-  "List Price :": "سعر القائمة :",
-  "Pickup Info": "معلومات الاستلام",
-  "Items For Shipping": "العناصر للشحن",
-  "Insufficent Balance": "رصيد غير كاف",
-  "Sign Up": "التسجيل",
-  "Services": "خدمات",
-  "Audio & Headphones": "الصوت وسماعات الرأس",
-  "Search Results": "نتائج البحث",
-  "Price low to high": "السعر من الارخص للاعلى",
-  "Price high to low": "السعر الاعلى الى الادنى",
-  "Search Market-Place": "بحث في السوق",
-  "No Product Found!": "لم يتم العثور على منتج!",
-  "Expected Delivery By": "يتوقع التسليم عن طريق",
-  "Total": "المجموع",
-  "No Description Available": "لا يوجد وصف متاح",
-  "Key Features": "دلائل الميزات",
-  "Specifications": "تحديد",
-  "No Specifications Available": "لا توجد مواصفات متاحة",
-  "Product location : ": "موقع المنتج :",
-  "Subcategory : ": "تصنيف فرعي :",
-  "Category : ": "فئة :",
-  "Refurbished": "مجدد",
-  "Condition : ": "حالة :",
-  "Price: ": "سعر:",
-  "List Price: ": "قائمة الأسعار:",
-  "Expected By : ": "المتوقع بواسطة :",
-  "Special Offer": "عرض خاص",
-  "Explore More": "استكشاف المزيد",
-  "Select A Deliver Mode": "حدد وضع التسليم",
-  "Pickup From Store": "الاستلام من المتجر",
-  "Products Found": "تم العثور على المنتجات",
-  "No More Products!": "لا مزيد من المنتجات!",
-  "Become a Seller": "كن بائعًا",
-  "Enter OTP": "أدخل كلمة المرور لمرة واحدة",
-  "A verification code has been sent to your email.": "تم إرسال رمز التحقق إلى بريدك الإلكتروني.",
-  "Cancel": "يلغي",
-  "Verify": "يؤكد",
-  "No items in favorite": "لا توجد عناصر في المفضلة",
-  "Pick interest": "اختر الفائدة",
-  "Pick Interest": "اختر الاهتمام",
-  "You are online!": "أنت متصل!",
-  "No internet connection": "لا يوجد اتصال بالإنترنت",
-  "Please check your network settings and ensure you are connected to the internet to continue shopping.": "يرجى التحقق من إعدادات الشبكة الخاصة بك والتأكد من اتصالك بالإنترنت لمواصلة التسوق.",
-  "Skip": "يتخطى",
-  "Press Back Once Again to Exit": "اضغط على \"الرجوع\" مرة أخرى للخروج",
-  "Login": "تسجيل الدخول",
-  "Next": "التالي",
-  "Sign in / Register": "التوقيع في السجل",
-  "Sign in for the best experience": "تسجيل الدخول للحصول على أفضل تجربة",
-  "Signin": "تسجيل الدخول",
-  "Add Money to Wallet": "إضافة المال إلى المحفظة",
-  "Send Money from Wallet": "إرسال الأموال من المحفظة",
-  "View Transaction History": "عرض سجل المعاملات",
-  "Request Wallet Statement": "طلب كشف حساب المحفظة",
-  "Available Balance": "الرصيد المتوفر",
-  "Wallet": "محفظة",
-  "Check Paid Status": "التحقق من الحالة المدفوعة",
-  "Description:": "وصف:",
-  "Amount:": "كمية:",
-  "Send To User:": "إرسال إلى المستخدم:",
-  "Wallet Transaction ID:": "معرف معاملة المحفظة:",
-  "Date:": "تاريخ:",
-  "Closing Balance:": "الرصيد الختامي:",
-  "Filter Options": "خيارات التصفية",
-  "Dismiss": "رفض",
-  "NGMP Token": "رمز NGMP",
-  "Send Money To Friend": "إرسال الأموال إلى صديق",
-  "Add Money": "إضافة المال",
-  "From Date:": "من التاريخ:",
-  "To Date:": "ان يذهب في موعد:",
-  "Email to received statement:": "البريد الإلكتروني إلى البيان المستلم:",
-  "Select Time Period:": "اختر الفترة الزمنية:",
-  "Choose Duration": "اختر المدة",
-  "Confirm": "يتأكد",
-  "Enter at least three letters to search user.": "أدخل ثلاثة أحرف على الأقل للبحث عن المستخدم.",
-  "Loading": "تحميل",
-  "No users found": "لم يتم العثور على مستخدمين",
-  "Summary": "ملخص",
-  "Transaction Details": "تفاصيل الصفقه",
-  "Token to be sent": "رمز ليتم إرسالها",
-  "Charges": "رسوم",
-  "Total Payable ": "مجموع المستحق الدفع",
-  "Proceed": "يتابع",
-  "Send NileToken from wallet to Friend": "أرسل NileToken من المحفظة إلى صديق",
-  "No hidden fees or direct charges - it's all free!": "لا توجد رسوم مخفية أو رسوم مباشرة - كل هذا مجاني!",
-  "No transactions found": "لم يتم العثور على أي معاملات",
-  "Best Sellers": "أفضل البائعين",
-  "Introducing Our Newest Selections": "نقدّم لك أحدث اختياراتنا",
-  "type and press enter": "اكتب واضغط على إدخال",
-  "Followed Shops": "المحلات التجارية المتابعه",
-  "Select District": "اختر المنطقة",
-  "Addresses": "عناوين",
-  "Help": "يساعد",
-  "Log out": "تسجيل خروج",
-  "My Reviews": "تعليقاتي",
-  "My Order": "طلبي",
-  "My Account": "حسابي",
-  "Purchase protections": "حماية الشراء",
-  "Secure logistics": "الخدمات اللوجستية الآمنة",
-  "Secure privacy": "تأمين الخصوصية",
-  "Safe Payment Options": "خيارات الدفع الآمنة",
-  "Shopping security": "أمن التسوق",
-  "1. Payment methods": "1. طرق الدفع",
-  " Nile is committed to protecting your payment information. We follow PCI DSS standards, use strong encryption, and perform regular reviews of its system to protect your privacy.": " تلتزم شركة النيل بحماية معلومات الدفع الخاصة بك. نحن نتبع معايير PCI DSS ونستخدم تشفيرًا قويًا ونجري مراجعات منتظمة لنظامها لحماية خصوصيتك.",
-  "Learn more": "يتعلم أكثر",
-  "2. Security certification": "2. شهادة الأمان",
-  "Free shipping on all orders": "الشحن مجانا على جميع أوامر",
-  "Time-Limited Offer": "عرض لفترة محدودة",
-  "View Cart": "عرض العربة",
-  "Add to Cart": "أضف إلى السلة",
-  "Delivery guaranteed": "التسليم مضمون",
-  "Accurate and precise order tracking": "تتبع الطلب بدقة ودقة",
-  "Check your order": "تحقق من طلبك",
-  "Secure Privacy": "الخصوصية الآمنة",
-  "Protecting your privacy is important to us! Please be assured that your information will be kept secured and uncompromised. We do not sell your personal information for money and will only use your information in accordance with our privacy and cookie policy to provide and improve our services to you.": "حماية خصوصيتك هو مهم بالنسبة لنا! يرجى التأكد من أن معلوماتك سيتم الحفاظ عليها آمنة وغير قابلة للمساس بها. نحن لا نبيع معلوماتك الشخصية مقابل المال ولن نستخدم معلوماتك إلا وفقًا لسياسة الخصوصية وملفات تعريف الارتباط الخاصة بنا لتوفير خدماتنا لك وتحسينها.",
-  "Purchase Protection": "حماية المشتريات",
-  "Shop confidently on Nile knowing that if something goes wrong, we've always got your back.": "تسوق بثقة على النيل واعلم أنه إذا حدث خطأ ما، فنحن دائمًا ندعمك.",
-  "Customer Service": "خدمة الزبائن",
-  "Our customer service team is always here if you need help.": "فريق خدمة العملاء لدينا موجود دائمًا إذا كنت بحاجة إلى المساعدة.",
-  "Live chat": "دردشة مباشرة",
-  "FAQs": "الأسئلة الشائعة",
-  "Get The Nile App": "احصل على تطبيق النيل",
-  "Refund for any issues": "استرداد أي مشاكل",
-  "Delivery Guarantee": "ضمان التسليم",
-  "Time-limited offer": "عرض لفترة محدودة",
-  "Free Shipping on all Orders": "الشحن مجانا على جميع أوامر",
-  "Sign in with Facebook": "قم بتسجيل الدخول باستخدام الفيسبوك",
-  "Sign in with Google": "الدخول مع جوجل",
-  "Login ": "تسجيل الدخول",
-  "Forgot password?": "هل نسيت كلمة السر؟",
-  "Create a free account": "إنشاء حساب مجاني",
-  "Don't have an account?": "ليس لديك حساب؟",
-  "Sign in": "تسجيل الدخول",
-  "Nile keeps you safe": "النيل يحفظك",
-  "Purchase protection": "حماية المشتريات",
-  "Safe payments": "المدفوعات الآمنة",
-  "EXPLORE YOUR INTEREST": "اكتشف اهتماماتك",
-  "Best selling of the month": "الأكثر مبيعا لهذا الشهر",
-  "Download Our App": "قم بتنزيل تطبيقنا",
-  "How to track": "كيفية تتبع",
-  "Sell on Nile": "البيع على النيل",
-  "Shipping info": "معلومات الشحن",
-  "Privacy policy": "سياسة الخصوصية",
-  "Terms & conditions": "البنود و الظروف",
-  "Return and refund policy": "سياسة الإرجاع والاسترداد",
-  "About Nile": "عن النيل",
-  "Please follow these steps to change your password:": "يرجى اتباع الخطوات التالية لتغيير كلمة المرور الخاصة بك:",
-  "1. Sign in to Nile Market Place app or Nile Market Place.com and go to your account page.": "1. قم بتسجيل الدخول إلى تطبيق Nile Market Place أو Nile Market Place.com وانتقل إلى صفحة حسابك.",
-  "2. Go to 'Settings'": "2. انتقل إلى \"الإعدادات\"",
-  "Account security": "أمن الحساب",
-  "3. Find 'Password' and click 'Edit' to change your password.": "3. ابحث عن \"كلمة المرور\" وانقر فوق \"تحرير\" لتغيير كلمة المرور الخاصة بك.",
-  "4. Enter your 'Old password' and 'New password' (Minimum 6 characters required).": "4. أدخل \"كلمة المرور القديمة\" و\"كلمة المرور الجديدة\" (مطلوب 6 أحرف على الأقل).",
-  "5. Click 'Submit' and you're done.": "5. انقر فوق \"إرسال\" وبذلك تكون قد انتهيت.",
-  "If you used your Google, Facebook, Apple, or Twitter account details to log in to Nile Market Place, then you will need to change your password details there.": "إذا استخدمت تفاصيل حسابك على Google أو Facebook أو Apple أو Twitter لتسجيل الدخول إلى Nile Market Place، فستحتاج إلى تغيير تفاصيل كلمة المرور الخاصة بك هناك.",
-  "How to change my address": "كيفية تغيير عنواني",
-  "Please follow these steps to change your address:": "يرجى اتباع الخطوات التالية لتغيير عنوانك:",
-  "2. Go to 'Addresses'": "2. انتقل إلى \"العناوين\"",
-  "3. From here, you can change your address by clicking 'Edit' next to the address you want to change.": "3. من هنا، يمكنك تغيير عنوانك بالنقر فوق \"تعديل\" بجوار العنوان الذي تريد تغييره.",
-  "4. Update your address details and then click 'Save'.": "4. قم بتحديث تفاصيل عنوانك ثم انقر فوق \"حفظ\".",
-  "If desired, you can also change your default address, delete addresses, or add a new address from this screen as well.": "إذا رغبت في ذلك، يمكنك أيضًا تغيير عنوانك الافتراضي أو حذف العناوين أو إضافة عنوان جديد من هذه الشاشة أيضًا.",
-  "Please follow these steps to change your email address:": "يرجى اتباع الخطوات التالية لتغيير عنوان بريدك الإلكتروني:",
-  "'Account security'": "'أمن الحساب'",
-  "3. Click 'Edit' next to the 'Email' line to make changes to your information. For security purposes, you may be prompted to enter your password or verify your original email address before you can edit. Enter your password or verification code to proceed.": "3. انقر فوق \"تحرير\" بجوار سطر \"البريد الإلكتروني\" لإجراء تغييرات على معلوماتك. لأغراض أمنية، قد يُطلب منك إدخال كلمة المرور الخاصة بك أو التحقق من عنوان بريدك الإلكتروني الأصلي قبل أن تتمكن من التعديل. أدخل كلمة المرور أو رمز التحقق للمتابعة.",
-  "4. Enter your new email address and click 'Continue' to update your email address.": "4. أدخل عنوان بريدك الإلكتروني الجديد وانقر على \"متابعة\" لتحديث عنوان بريدك الإلكتروني.",
-  "Please follow these steps to change your phone number:": "يرجى اتباع الخطوات التالية لتغيير رقم هاتفك:",
-  "3. Click 'Edit' next to the 'Mobile phone number' line to make changes to your information. For security purposes, you may be prompted to enter your password or verify your original phone number before you can edit. Enter your password or verification code to proceed.": "3. انقر فوق \"تحرير\" بجوار سطر \"رقم الهاتف المحمول\" لإجراء تغييرات على معلوماتك. لأغراض أمنية، قد تتم مطالبتك بإدخال كلمة المرور الخاصة بك أو التحقق من رقم هاتفك الأصلي قبل أن تتمكن من التعديل. أدخل كلمة المرور أو رمز التحقق للمتابعة.",
-  "4. Enter your new mobile phone number and click 'Continue' to update your number.": "4. أدخل رقم هاتفك المحمول الجديد وانقر على \"متابعة\" لتحديث رقمك.",
-  "On the Nile Market Place app, go to the user avatar at the bottom of your screen. Click your username {'>'} select 'Name' {'>'} delete your old name and enter your new name. Click save and you're done!": "في تطبيق Nile Market Place، انتقل إلى الصورة الرمزية للمستخدم الموجودة أسفل الشاشة. انقر فوق اسم المستخدم الخاص بك {'>'} وحدد \"الاسم\" {'>'} واحذف اسمك القديم وأدخل اسمك الجديد. انقر فوق حفظ وانتهيت!",
-  "On Nile Market Place.com, click your username in the top right corner of your screen. Click 'Your profile' {'>'} delete your old name and enter your new name. Click save and you're done!": "على موقع Nile Market Place.com، انقر فوق اسم المستخدم الخاص بك في الزاوية اليمنى العليا من شاشتك. انقر فوق \"ملفك الشخصي\" {'>'} واحذف اسمك القديم وأدخل اسمك الجديد. انقر فوق حفظ وانتهيت!",
-  "1. Go to your accounts tab by clicking your user avatar in the top right corner": "1. انتقل إلى علامة التبويب \"حساباتك\" بالنقر فوق الصورة الرمزية للمستخدم الخاص بك في الزاوية اليمنى العليا",
-  "2. Choose 'Your payment methods' in the lefthand menu": "2. اختر \"طرق الدفع الخاصة بك\" في القائمة اليمنى",
-  "3. Click '+ Add a new card' to add a new payment method, or click 'Edit' or 'Remove' to update any existing payment methods attached to your account.": "3. انقر فوق \"+ إضافة بطاقة جديدة\" لإضافة طريقة دفع جديدة، أو انقر فوق \"تعديل\" أو \"إزالة\" لتحديث أي طرق دفع حالية مرتبطة بحسابك.",
-  "How do I update my payment methods?": "كيف أقوم بتحديث طرق الدفع الخاصة بي؟",
-  "How to update my username": "كيفية تحديث اسم المستخدم الخاص بي",
-  "How to change my mobile phone number": "كيفية تغيير رقم هاتفي المحمول",
-  "How to change my email address": "كيفية تغيير عنوان البريد الإلكتروني الخاص بي",
-  "How to change my password": "كيفية تغيير كلمة المرور الخاصة بي",
-  "You can click the link below to select your notification preferences:": "يمكنك النقر على الرابط أدناه لتحديد تفضيلات الإشعارات:",
-  "You can also go to Nile Market Place.com and click your username in the top right comer of your screen. Click 'Notifications' on the left sidebar and then choose 'Edit' to set your preferences.": "يمكنك أيضًا الانتقال إلى موقع Nile Market Place.com والنقر على اسم المستخدم الخاص بك في الجزء العلوي الأيمن من شاشتك. انقر فوق \"الإشعارات\" على الشريط الجانبي الأيسر ثم اختر \"تحرير\" لتعيين تفضيلاتك.",
-  "If you don't want to receive email, push, or SMS-related notifications, you can open the Nile Market Place app, go to 'You' {'>'} 'Settings' {'>'} 'Notifications' and choose 'Edit' to set your preferences.": "إذا كنت لا ترغب في تلقي إشعارات البريد الإلكتروني أو الدفع أو الرسائل النصية القصيرة، يمكنك فتح تطبيق Nile Market Place، انتقل إلى \"أنت\" {'>'} \"الإعدادات\" {'>'} \"الإشعارات\" واختر \"تحرير\" لتعيين تفضيلاتك.",
-  "How to set notification preferences?": "كيفية ضبط تفضيلات الإشعارات؟",
-  "If you need some extra support, our Customer Service team is always happy to help. Please make sure that you have your order number, starting with 'PO,' ready so that they can best assist you.": "إذا كنت بحاجة إلى بعض الدعم الإضافي، فإن فريق خدمة العملاء لدينا سيكون دائمًا سعيدًا بمساعدتك. يرجى التأكد من أن رقم طلبك، الذي يبدأ بـ \"PO\"، جاهز حتى يتمكنوا من مساعدتك بشكل أفضل.",
-  "If you need help with a specific request, we recommend that you explore our Support Center, which has the answers to our customers' most common questions. We try to keep this as updated as possible so you'll always have the answers you need available at your fingertips.": "إذا كنت بحاجة إلى مساعدة بخصوص طلب محدد، فنوصيك باستكشاف مركز الدعم الخاص بنا، والذي يحتوي على إجابات لأسئلة عملائنا الأكثر شيوعًا. نحن نحاول أن نبقي هذا محدثًا قدر الإمكان حتى تكون الإجابات التي تحتاجها متاحة دائمًا في متناول يدك.",
-  "And a lot more!": "والكثير!",
-  "Review your items''Request a return, refund, or exchange'": "قم بمراجعة العناصر الخاصة بك''اطلب إرجاع أو استرداد أموال أو استبدال'",
-  "Report wrong/missing/damaged items": "الإبلاغ عن العناصر الخاطئة/المفقودة/التالفة",
-  "Add/cancel items in your order": "إضافة/إلغاء العناصر في طلبك",
-  "Track your latest order status": "تتبع حالة طلبك الأخيرة",
-  "Confirm your shipping address": "قم بتأكيد عنوان الشحن الخاص بك",
-  "View your orders": "عرض طلباتك",
-  "If you have already placed an order, the best way for you to get help is through the Nile Market Place app or Nile Market Place.com. From your accounts page, you will be able to do things like:": "إذا كنت قد قدمت طلبًا بالفعل، فإن أفضل طريقة للحصول على المساعدة هي من خلال تطبيق Nile Market Place أو Nile Market Place.com. من صفحة حساباتك، ستتمكن من القيام بأشياء مثل:",
-  "How to get help with an order": "كيفية الحصول على المساعدة في الطلب",
-  "Shops": "محلات",
-  "View All Shops": "عرض جميع المحلات التجارية",
-  "Filter by category": "تصفية حسب الفئة",
-  "Overall": "إجمالي",
-  "Within last 30 days": "خلال آخر 30 يومًا",
-  "Within last 7 days": "خلال 7 أيام الماضية",
-  "No item in your cart!": "لا يوجد عنصر في سلة التسوق الخاصة بك!",
-  "Shopping cart": "عربة التسوق",
-  "Subtotal": "المجموع الفرعي",
-  "Shipping and taxes calculated at checkout.": "الشحن والضرائب تحسب عند الخروج.",
-  "View cart": "عرض العربة",
-  "Check out": "الدفع",
-  "Company info": "معلومات الشركة",
-  "Customer service": "خدمة الزبائن",
-  "All help topics": "جميع مواضيع المساعدة",
-  "No matching component found": "لم يتم العثور على مكون مطابق",
-  "Policies": "سياسات",
-  "Policies & others": "السياسات وغيرها",
-  "Security and Privacy": "الأمن والخصوصية",
-  "Your security": "الأمان الخاص بك",
-  "Promos": "العروض الترويجية",
-  "Nile credit": "الائتمان النيلي",
-  "Payments": "المدفوعات",
-  "Payment & promos": "الدفع والعروض الترويجية",
-  "Signing in": "تسجيل الدخول",
-  "Account preferences": "تفضيلات الحساب",
-  "Managing my account": "إدارة حسابي",
-  "Size & fit": "الحجم والملاءمة",
-  "Stock": "مخزون",
-  "Product & stock": "المنتج والمخزون",
-  "Refunds": "المبالغ المستردة",
-  "Returns": "عائدات",
-  "Return & refund": "استرداد عودة",
-  "Delivery": "توصيل",
-  "Shipping": "شحن",
-  "Shipping & delivery": "الشحن و التسليم",
-  "Reviews": "التعليقات",
-  "Order Changes": "تغييرات الطلب",
-  "Find My Order": "ابحث عن طلبي",
-  "Checkout": "الدفع",
-  "Buying on Nile": "الشراء على النيل",
-  "Order issues": "قضايا النظام",
-  "Shopping Cart": "عربة التسوق",
-  "Only Pickup Available": "متاح فقط بيك اب",
-  "Shipping Fee": "رسوم الشحن",
-  "From": "من",
-  "To": "ل",
-  "Choose District": "اختر المنطقة",
-  "Both mogadishudistrict_ship_from and storedDistrict are not present": "كلا mogadishudistrict_ship_from وstoredDistrict غير موجودين",
-  "Continue to Pay": "الاستمرار في الدفع",
-  "Taxes": "الضرائب",
-  "and": "و",
-  "infomation": "معلومات",
-  "Shpping estimate": "تقدير الشحن",
-  "Followers": "متابعون",
-  "Items": "أغراض",
-  "Follow": "يتبع",
-  "Shop all items": "تسوق جميع العناصر",
-  "Details": "تفاصيل",
-  "Report this item": "الإبلاغ عن هذا العنصر",
-  "Seller information": "معلومات البائع",
-  "OK": "نعم",
-  "How to get help before I buy": "كيفية الحصول على المساعدة قبل أن أشتري",
-  "How to search for items on Nile Market-place": "كيفية البحث عن الأصناف في سوق النيل",
-  "How to purchase an item on Nile Market-place?": "كيفية شراء سلعة من Nile Market-place؟",
-  "I received an email about an order I did not place": "تلقيت بريدًا إلكترونيًا بخصوص طلب لم أقم بتقديمه",
-  "How to follow shops/sellers": "كيفية متابعة المحلات التجارية / البائعين",
-  "Tips for buying safely on Nile Market-place": "نصائح للشراء بأمان من سوق النيل",
-  "Does Nile Market-place support drop shipping?": "هل يدعم موقع Nile Market-place إسقاط الشحن؟",
-  "Does Nile Market-place accept tax exemption certificates?": "هل يقبل Nile Market-place شهادات الإعفاء الضريبي؟",
-  "How is Nile Market-place able to offer lower prices than others?": "كيف يمكن لـ Nile Market-place تقديم أسعار أقل من غيرها؟",
-  "Support center & FAQ": "مركز الدعم والأسئلة الشائعة",
-  "How to order": "كيف تطلب",
-  "Hi, how can we help you?": "مرحباً، كيف يمكننا مساعدتك؟",
-  "Select an order to get help with items, shipping, return or refund problems, etc.": "حدد طلبًا للحصول على مساعدة بشأن مشكلات العناصر أو الشحن أو الإرجاع أو استرداد الأموال، وما إلى ذلك.",
-  "Type and press enter": "اكتب واضغط على إدخال",
-  "Something on your mind? We are here to help!": "شئ في عقلك؟ نحن هنا للمساعدة!",
-  "For questions on specific items, you can message us from the Nile app or nilegmp.com.": "للأسئلة حول عناصر محددة، يمكنك مراسلتنا من تطبيق Nile أو nilegmp.com.",
-  "For other questions on our policies or other topics, we recommend that you browse our Support Center where we answer our customers' most common questions. Happy shopping!": "بالنسبة للأسئلة الأخرى حول سياساتنا أو موضوعات أخرى، نوصيك بتصفح مركز الدعم الخاص بنا حيث نجيب على الأسئلة الأكثر شيوعًا لعملائنا. تسوق سعيد!",
-  "You can use the search button at the top of your Nile Market Place app or Nile Market Place.com to look for items.": "يمكنك استخدام زر البحث الموجود أعلى تطبيق Nile Market Place أو Nile Market Place.com للبحث عن العناصر.",
-  "Describe what you're looking for in the search bar to start your search. For example: 'party dress,' or 'white denim shorts.' Please use multiple descriptive terms to narrow down the results. For example, using 'little black dress' as a search term will generally produce more curated results compared to using just 'dress.'": "قم بوصف ما تبحث عنه في شريط البحث لبدء البحث. على سبيل المثال: \"فستان الحفلة\" أو \"شورت الدنيم الأبيض\". الرجاء استخدام مصطلحات وصفية متعددة لتضييق نطاق النتائج. على سبيل المثال، سيؤدي استخدام \"فستان أسود قصير\" كمصطلح بحث بشكل عام إلى نتائج أكثر تنظيمًا مقارنة باستخدام \"فستان\" فقط.",
-  "Search results are ordered by how relevant the items are to your search. You can use the 'Sort by' option to reorder your search results based on your preference.": "يتم ترتيب نتائج البحث حسب مدى صلة العناصر ببحثك. يمكنك استخدام خيار \"الفرز حسب\" لإعادة ترتيب نتائج البحث الخاصة بك بناءً على تفضيلاتك.",
-  "For searches that you would like to track on desktop, you can click the orange 'Save' button to get notified when new items that fit your search are posted.": "بالنسبة لعمليات البحث التي ترغب في تتبعها على سطح المكتب، يمكنك النقر فوق الزر \"حفظ\" البرتقالي ليتم إعلامك عند نشر عناصر جديدة تناسب بحثك.",
-  "When you shop on Nile, if you have any questions about an item, please feel free to message us anytime.": "عندما تتسوق على النيل، إذا كانت لديك أي أسئلة حول منتج ما، فلا تتردد في مراسلتنا في أي وقت.",
-  "Rest assured that you can shop confidently with Nile Market Place's return and refund policy and Nile Market Place Purchase Protection Program.": "كن مطمئنًا أنه يمكنك التسوق بثقة مع سياسة الإرجاع واسترداد الأموال في Nile Market Place وبرنامج حماية المشتريات في Nile Market Place.",
-  "Almost all items you bought on Nile Market Place are eligible for return and refund within 90 days if you are not satisfied with them, with just a few exceptions:": "جميع العناصر التي اشتريتها على Nile Market Place تقريبًا مؤهلة للإرجاع واسترداد الأموال خلال 90 يومًا إذا لم تكن راضيًا عنها، مع بعض الاستثناءات القليلة:",
-  "Clothing items that have been worn, washed, damaged, or have had tags, packaging, or hygiene stickers removed, or are part of an incomplete set.": "عناصر الملابس التي تم ارتداؤها، أو غسلها، أو إتلافها، أو إزالة العلامات أو التغليف أو ملصقات النظافة، أو التي تكون جزءًا من مجموعة غير مكتملة.",
-  "Items specifically labeled as non-returnable.": "العناصر التي تم تصنيفها على وجه التحديد على أنها غير قابلة للإرجاع.",
-  "Customized items.": "عناصر مخصصة.",
-  "Some free gifts.": "بعض الهدايا المجانية.",
-  "In addition, under the Nile Market Place Purchase Protection Program, we offer full refunds for any item(s) that do not arrive, arrive damaged or are not as described.": "بالإضافة إلى ذلك، وبموجب برنامج حماية المشتريات في Nile Market Place، فإننا نقدم استردادًا كاملاً لأي منتج (عناصر) لا تصل أو تصل تالفة أو ليست كما هو موصوف.",
-  "Once you click checkout and complete your payment, congratulations! You've just made a purchase on Nile Market Place. We will send you an email confirming the items in your order. You can also view your order information by going to 'Your orders' on your account page from the Nile Market Place app or Nile Market Place.com.": "بمجرد النقر على الخروج وإكمال الدفع، تهانينا! لقد قمت للتو بعملية شراء على Nile Market Place. سوف نرسل لك بريدًا إلكترونيًا لتأكيد العناصر الموجودة في طلبك. يمكنك أيضًا عرض معلومات طلبك عن طريق الانتقال إلى \"طلباتك\" في صفحة حسابك من تطبيق Nile Market Place أو Nile Market Place.com.",
-  "You may learn more about our policies here:": "يمكنك معرفة المزيد عن سياساتنا هنا:",
-  "Return & Refund Policy": "سياسة الإرجاع والاسترداد",
-  "Provacy & Policy": "Provacy والسياسة",
-  "If you received an email confirmation about an order you did not place, first check with your family and friends to see if they may have accidentally used your account details to place an order. It may also be possible that:": "إذا تلقيت تأكيدًا عبر البريد الإلكتروني بشأن طلب لم تقدمه، فتحقق أولاً من عائلتك وأصدقائك لمعرفة ما إذا كانوا قد استخدموا تفاصيل حسابك عن طريق الخطأ لتقديم طلب. ومن الممكن أيضًا أن:",
-  "Someone may have misspelled their email address when registering for an account on Nile Market Place": "ربما أخطأ شخص ما في كتابة عنوان بريده الإلكتروني عند التسجيل للحصول على حساب على Nile Market Place",
-  "Someone may have created a Nile Market Place account using your email address": "ربما قام شخص ما بإنشاء حساب على Nile Market Place باستخدام عنوان بريدك الإلكتروني",
-  "Someone may have placed an order from a computer where you were signed into Nile Market Place": "ربما قام شخص ما بتقديم طلب من جهاز كمبيوتر حيث قمت بتسجيل الدخول إلى Nile Market Place",
-  "If you suspect fraudulent activity, we recommend that you immediately change your account password to secure your account and prevent future unauthorized orders.": "إذا كنت تشك في وجود نشاط احتيالي، فنوصيك بتغيير كلمة مرور حسابك على الفور لتأمين حسابك ومنع الطلبات غير المصرح بها في المستقبل.",
-  "Keep track of the shops you love by following them on Nile Market Place!": "تابع المتاجر التي تحبها من خلال متابعتها على Nile Market Place!",
-  "All you need to do is go to their individual shop page and click the 'Follow' button.": "كل ما عليك فعله هو الانتقال إلى صفحة المتجر الفردية الخاصة بهم والنقر فوق الزر \"متابعة\".",
-  "You can find the shop that sells the items you love by clicking on their name from the product details page or your order details page.": "يمكنك العثور على المتجر الذي يبيع العناصر التي تحبها من خلال النقر على اسمه من صفحة تفاصيل المنتج أو صفحة تفاصيل الطلب الخاصة بك.",
-  "To view the shops you've followed, go to your account page on the Nile Market Place app or Nile Market Place.com. Click on 'Followed shops' to view the shops you've loved.": "لعرض المتاجر التي قمت بمتابعتها، انتقل إلى صفحة حسابك على تطبيق Nile Market Place أو Nile Market Place.com. انقر على \"المتاجر التي تمت متابعتها\" لعرض المتاجر التي أحببتها.",
-  "Here are some best practices to help ensure safe purchases on Nile Market Place.": "فيما يلي بعض أفضل الممارسات للمساعدة في ضمان عمليات شراء آمنة على Nile Market Place.",
-  "Never give your full credit card number, tax identification number, or password in an email, Nile Market Place Message, or over the phone.": "لا تقم أبدًا بإعطاء رقم بطاقتك الائتمانية بالكامل أو رقم التعريف الضريبي أو كلمة المرور في رسالة بريد إلكتروني أو رسالة Nile Market Place أو عبر الهاتف.",
-  "Check your credit card statement regularly to track your spending and card activity.": "تحقق من كشف حساب بطاقتك الائتمانية بانتظام لتتبع إنفاقك ونشاط بطاقتك.",
-  "If you share your computer or device, sign out of any website accounts before letting others use it.": "إذا كنت تشارك جهاز الكمبيوتر أو الجهاز الخاص بك، فقم بتسجيل الخروج من أي حسابات على موقع الويب قبل السماح للآخرين باستخدامه.",
-  "Change your passwords on a regular basis. The more complex a password is, the better you're protected.": "قم بتغيير كلمات المرور الخاصة بك بشكل منتظم. كلما كانت كلمة المرور أكثر تعقيدًا، كلما كنت محميًا بشكل أفضل.",
-  "Keep track of your credit card: who is authorized to use it, and who has access to it.": "تتبع بطاقتك الائتمانية: من هو المصرح له باستخدامها، ومن لديه حق الوصول إليها.",
-  "Learn how Nile Market Place's return and refund policy can help you get a full refund on your item. Almost all items you bought on Nile Market Place are eligible for return and refund if you are not satisfied with them, with just a few exceptions: (1) Clothing items that have been worn, washed, damaged, or have had tags, packaging, or hygiene stickers removed, or are part of an incomplete set; (2) Items specifically labeled as non-returnable; (3) Customized items; (4) Some free gifts.": "تعرف على كيف يمكن لسياسة الإرجاع واسترداد الأموال الخاصة بـ Nile Market Place أن تساعدك في استرداد أموالك بالكامل مقابل منتجك. جميع العناصر التي اشتريتها على Nile Market Place تقريبًا مؤهلة للإرجاع واسترداد الأموال إذا لم تكن راضيًا عنها، مع بعض الاستثناءات القليلة: (1) عناصر الملابس التي تم ارتداؤها، أو غسلها، أو تلفها، أو التي تحمل علامات، أو تغليف، أو أو إزالة ملصقات النظافة، أو أنها جزء من مجموعة غير مكتملة؛ (2) العناصر التي تم تصنيفها على وجه التحديد على أنها غير قابلة للإرجاع؛ (3) عناصر مخصصة؛ (4) بعض الهدايا المجانية.",
-  "Learn about Nile Market Place's Purchase Protection Program, which offers you full refunds for any item(s) that do not arrive, arrive damaged, or are not as described.": "تعرف على برنامج حماية المشتريات في Nile Market Place، والذي يقدم لك استرداد كامل المبلغ لأي منتج (عناصر) لا تصل، أو تصل تالفة، أو ليست كما هو موصوف.",
-  "Keep your transactions on Nile Market Place. We can't verify or assist with transactions made outside of Nile Market Place.": "احتفظ بمعاملاتك في Nile Market Place. لا يمكننا التحقق أو المساعدة في المعاملات التي تتم خارج Nile Market Place.",
-  "If you receive a suspicious email claiming to be from Nile Market Place, please report it to our customer service.": "إذا تلقيت رسالة بريد إلكتروني مشبوهة تدعي أنها من Nile Market Place، فيرجى الإبلاغ عنها إلى خدمة العملاء لدينا.",
-  "No, we do not support drop shipping on our platform. We connect consumers with millions of sellers, manufacturers, and brands around the world and sell exclusively on our website or Nile Market Place app. We recommend purchasing directly through our platform so that we are able to help you with any after-sale services and you are able to participate in our latest deals and promotions. We hope you enjoy shopping on Nile Market Place!": "لا، نحن لا ندعم انخفاض الشحن على منصتنا. نحن نربط المستهلكين بملايين البائعين والمصنعين والعلامات التجارية حول العالم ونبيع حصريًا على موقعنا الإلكتروني أو تطبيق Nile Market Place. نوصي بالشراء مباشرة من خلال منصتنا حتى نتمكن من مساعدتك في أي خدمات ما بعد البيع وتكون قادرًا على المشاركة في أحدث عروضنا وعروضنا الترويجية. نأمل أن تستمتع بالتسوق في Nile Market Place!",
-  "Yes, we do accept certain tax exempt certificates, including certificates for government bodies, nonprofit organizations, and other qualified entities. However, we currently do not accept resale certificates of any kind. Also, diplomatic tax exemptions such as personal and mission tax exemption cards may be used to obtain exemption status in person at the point-of-sale, but aren't valid for online purchases.": "نعم، نحن نقبل بعض شهادات الإعفاء الضريبي، بما في ذلك شهادات الهيئات الحكومية والمنظمات غير الربحية والكيانات المؤهلة الأخرى. ومع ذلك، فإننا لا نقبل حاليًا شهادات إعادة البيع من أي نوع. كما يمكن استخدام الإعفاءات الضريبية الدبلوماسية مثل بطاقات الإعفاء الضريبي الشخصية وبطاقات المهمة للحصول على حالة الإعفاء شخصيًا في نقطة البيع، ولكنها غير صالحة لعمليات الشراء عبر الإنترنت.",
-  "If you represent government bodies, nonprofit organizations, and other qualified entities, please email the following documentation to tax.exempt@Nile Market Place.com.": "إذا كنت تمثل الهيئات الحكومية والمنظمات غير الربحية وغيرها من الكيانات المؤهلة، يرجى إرسال الوثائق التالية بالبريد الإلكتروني إلى Tax.exempt@Nile Market Place.com.",
-  "Proof of exemption in PDF format for the state(s) where the items will be shipped. Please note, any incomplete information on your exemption document (signature, date, not checking every applicable box) will result in a request for you to resubmit the document with complete information.": "إثبات الإعفاء بتنسيق PDF للولاية (الدول) التي سيتم شحن العناصر فيها. يرجى ملاحظة أن أي معلومات غير كاملة في مستند الإعفاء الخاص بك (التوقيع والتاريخ وعدم تحديد كل مربع معمول به) ستؤدي إلى مطالبتك بإعادة إرسال المستند مع المعلومات الكاملة.",
-  "Organization Name": "اسم المنظمة",
-  "Name (Primary Purchaser)": "الاسم (المشتري الرئيسي)",
-  "Full Address": "العنوان الكامل",
-  "Phone Number": "رقم التليفون",
-  "The Nile Market Place user account email for your organization": "البريد الإلكتروني لحساب مستخدم Nile Market Place الخاص بمؤسستك",
-  "Organization Type: (Charitable / Religious / Educational / Government / Nonprofit Organization / Miscellaneous)": "نوع المنظمة: (خيرية / دينية / تعليمية / حكومية / منظمة غير ربحية / متنوعة)",
-  "Please note we do not accept sales tax permits, articles of incorporation, SSN, tax licenses, IRS determination letter (unless required by state law), W9's, or certificates of registration as proof of exemption.": "يرجى ملاحظة أننا لا نقبل تصاريح ضريبة المبيعات، أو عقد التأسيس، أو الضمان الاجتماعي (SSN)، أو التراخيص الضريبية، أو خطاب تحديد مصلحة الضرائب الأمريكية (ما لم يكن ذلك مطلوبًا بموجب قانون الولاية)، أو W9، أو شهادات التسجيل كدليل على الإعفاء.",
-  "Nile Market Place connects customers directly with cost-efficient producers, allowing for competitively priced goods. By eliminating multiple middlemen and shipping directly from factories to consumers, customers benefit from wholesale prices from the source.": "يربط Nile Market Place العملاء مباشرة بالمنتجين ذوي الكفاءة من حيث التكلفة، مما يسمح بالسلع بأسعار تنافسية. ومن خلال القضاء على الوسطاء المتعددين والشحن مباشرة من المصانع إلى المستهلكين، يستفيد العملاء من أسعار الجملة من المصدر.",
-  "How to remove an item from my cart": "كيفية إزالة عنصر من سلة التسوق الخاصة بي",
-  "Why was my credit card declined during checkout?": "لماذا تم رفض بطاقتي الائتمانية أثناء الخروج؟",
-  "How to check out as a guest on Nile Market-place": "كيفية تسجيل الخروج كضيف على سوق النيل",
-  "Why can't I find my order in my account?": "لماذا لا أستطيع العثور على طلبي في حسابي؟",
-  "Where is my order ID?": "أين هو معرف الطلب الخاص بي؟",
-  "How can I make a change or modify items in my order?": "كيف يمكنني إجراء تغيير أو تعديل العناصر في طلبي؟",
-  "How to cancel my order?": "كيف ألغي طلبي؟",
-  "How to get help with a purchased item": "كيفية الحصول على مساعدة بخصوص منتج تم شراؤه",
-  "How to leave a review?": "كيفية ترك التعليق؟",
-  "Popular Searches": "عمليات البحث الشعبية",
-  "Refund Policy": "سياسة الاسترجاع",
-  "Terms & Conditions": "البنود و الظروف",
-  "Privacy Policy": "سياسة الخصوصية",
-  "About Us": "معلومات عنا",
-  "Support Center": "مركز الدعم",
-  "Our": "ملكنا",
-  "This Privacy Policy outlines how Nile Global Marketplace (NGMP) collects, uses, shares, and protects user information obtained through the NGMP app and website.": "توضح سياسة الخصوصية هذه كيفية قيام Nile Global Marketplace (NGMP) بجمع واستخدام ومشاركة وحماية معلومات المستخدم التي يتم الحصول عليها من خلال تطبيق NGMP وموقعه الإلكتروني.",
-  "Data Collection": "جمع البيانات",
-  "NGMP collects personal details such as first and last names, shipping and billing addresses, payment information (EVC Plus), browsing history, and other information necessary for providing our services.": "تقوم NGMP بجمع التفاصيل الشخصية مثل الاسم الأول والأخير وعناوين الشحن والفوترة ومعلومات الدفع (EVC Plus) وسجل التصفح والمعلومات الأخرى الضرورية لتقديم خدماتنا.",
-  "Data Usage": "استخدام البيانات",
-  "To enhance the user experience and communicate about purchases and services.": "لتعزيز تجربة المستخدم والتواصل بشأن المشتريات والخدمات.",
-  "To improve and personalize the NGMP experience.": "لتحسين وتخصيص تجربة NGMP.",
-  "To comply with legal obligations.": "للامتثال للالتزامات القانونية.",
-  "For displaying interest-based ads for features, products, and services that might be of interest to the user.": "لعرض الإعلانات القائمة على الاهتمامات للميزات والمنتجات والخدمات التي قد تهم المستخدم.",
-  "Use of cookies and other identifiers to recognize browsers or devices.": "استخدام ملفات تعريف الارتباط والمعرفات الأخرى للتعرف على المتصفحات أو الأجهزة.",
-  "User Rights and Choices": "حقوق المستخدم وخياراته",
-  "Users have the option not to provide certain information, which might limit their ability to use some NGMP services.": "لدى المستخدمين خيار عدم تقديم معلومات معينة، مما قد يحد من قدرتهم على استخدام بعض خدمات NGMP.",
-  "Users can add or update certain information on specific pages.": "يمكن للمستخدمين إضافة أو تحديث معلومات معينة على صفحات محددة.",
-  "Users can adjust their Customer Communication Preferences to opt-out of email or other communications from us.": "يمكن للمستخدمين ضبط تفضيلات اتصالات العملاء الخاصة بهم لإلغاء الاشتراك في البريد الإلكتروني أو الاتصالات الأخرى من جانبنا.",
-  "For web browsing without linking to an account, users may log out and block cookies on their browser.": "لتصفح الويب دون الارتباط بحساب، يمكن للمستخدمين تسجيل الخروج وحظر ملفات تعريف الارتباط على متصفحهم.",
-  "Data Sharing and Disclosure": "مشاركة البيانات والإفصاح عنها",
-  "Transactions Involving Third Parties:": "المعاملات التي تشمل أطرافًا ثالثة:",
-  "Customer personal information related to transactions with third parties is shared.": "تتم مشاركة المعلومات الشخصية للعملاء المتعلقة بالمعاملات مع أطراف ثالثة.",
-  "Third-Party Service Providers:": "مقدمو خدمات الطرف الثالث:",
-  "Third parties perform functions on our behalf but are not allowed to use personal information for other purposes.": "تؤدي الأطراف الثالثة وظائف نيابةً عنا ولكن لا يُسمح لها باستخدام المعلومات الشخصية لأغراض أخرى.",
-  "In transactions involving business transfers, customer information is generally one of the transferred assets.": "في المعاملات التي تنطوي على تحويلات تجارية، تكون معلومات العميل بشكل عام أحد الأصول المنقولة.",
-  "Protection of NGMP and Others:": "حماية NGMP وغيرها:",
-  "We release personal information when necessary to comply with the law; enforce agreements; or protect the rights, property, or safety of NGMP, our users, or others.": "نقوم بالكشف عن المعلومات الشخصية عند الضرورة للامتثال للقانون؛ إنفاذ الاتفاقيات؛ أو حماية حقوق أو ملكية أو سلامة NGMP أو مستخدمينا أو الآخرين.",
-  "Data Retention and Security Measures": "الاحتفاظ بالبيانات والتدابير الأمنية",
-  "We design our systems with user security and privacy in mind.": "نحن نصمم أنظمتنا مع أخذ أمان المستخدم وخصوصيته في الاعتبار.",
-  "We use encryption protocols and software to protect personal information during transmission.": "نحن نستخدم بروتوكولات وبرامج التشفير لحماية المعلومات الشخصية أثناء الإرسال.",
-  "We adhere to the Payment Card Industry Data Security Standard (PCI DSS) when handling credit card data.": "نحن نلتزم بمعايير أمان بيانات صناعة بطاقات الدفع (PCI DSS) عند التعامل مع بيانات بطاقة الائتمان.",
-  "We maintain physical, electronic, and procedural safeguards for customer information.": "نحن نحافظ على الضمانات المادية والإلكترونية والإجرائية لمعلومات العملاء.",
-  "Our security procedures may require us to verify your identity before disclosing personal information.": "قد تتطلب منا إجراءاتنا الأمنية التحقق من هويتك قبل الكشف عن المعلومات الشخصية.",
-  "Updates to Our Privacy Policy": "تحديثات لسياسة الخصوصية الخاصة بنا",
-  "This policy may be updated periodically. We will notify you of any significant changes to our Privacy Policy.": "قد يتم تحديث هذه السياسة بشكل دوري. سنخطرك بأي تغييرات مهمة في سياسة الخصوصية الخاصة بنا.",
-  "Contact Information": "معلومات الاتصال",
-  "For any questions about this Privacy Policy, please contact us through our support channels.": "إذا كانت لديك أية أسئلة حول سياسة الخصوصية هذه، يرجى الاتصال بنا عبر قنوات الدعم الخاصة بنا."
-}
