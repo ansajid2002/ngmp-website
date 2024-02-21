@@ -39,8 +39,6 @@ const OrderDetails = () => {
   const { Option } = Select;
   const [fileList, setFileList] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [previewVisible, setPreviewVisible] = useState(false);
   const [additionalDetails, setAdditionalDetails] = useState('');
   const router = useRouter()
   const [activeIndex, setActiveIndex] = useState(null);
@@ -49,17 +47,23 @@ const OrderDetails = () => {
 
 
 
+  const handleFileChange = (files) => {
+    // Check if the number of uploaded files exceeds the maximum allowed
+    const maxFiles = 10; // Set your maximum allowed number of files
+    if (files.length > maxFiles) {
+      setFileList([])
+
+      alert(`You can upload up to ${maxFiles} files. kindly choose again...`);
+      return;
+    }
+
+    setFileList(files)
+    // Handle the uploaded files as needed
+    // For example, you can display previews or store file data
+  };
 
   const handleUpload = async () => {
-
-
-
-    // Check if photos are required for the selected reason
-    //   if (selectedReason.photosRequired && selectedImages.length === 0) {
-    //     console.log("Please provide photos.");
-
-    //     return;
-    // }
+    console.log(fileList, 'fileliSTE');
 
     // Check if details are provided
     if (!additionalDetails.trim()) {
@@ -72,32 +76,26 @@ const OrderDetails = () => {
       return;
     }
 
+    // Convert fileList to an array
+    const filesArray = Array.from(fileList);
+
     // Create a new FormData object
     const formData = new FormData();
-    // Append reason to the form data
     formData.append('reason', reasons.filter((s) => s.id === selectedReason).map((s) => s.reason));
+    // Append order_id and details to the form data
     formData.append('order_id', orderid);
-    // Append details to the form data
     formData.append('details', additionalDetails);
-    // Append images to the form data
-    fileList.forEach((image, index) => {
-      formData.append(`images`, {
-        uri: image,
-        type: 'image/jpeg', // Adjust the type if necessary
-        name: `image${index + 1}.jpg`
-      });
+
+    // Append each file to the form data
+    filesArray.forEach((file, index) => {
+      formData.append(`images[${index}]`, file);
     });
 
-
-
-
     try {
-
       // Send data to the backend
       const response = await fetch(`${AdminUrl}/api/updateReturn`, {
         method: 'POST',
         body: formData,
-
       });
 
       // Check if the request was successful
@@ -114,7 +112,6 @@ const OrderDetails = () => {
           title: 'Return Procedure Initiated',
           text: 'Your return request has been successfully submitted. We will process it shortly.',
         });
-
       } else {
         console.log("Error:", response.statusText);
       }
@@ -123,17 +120,7 @@ const OrderDetails = () => {
     }
   };
 
-  const handlePreview = (file) => {
 
-
-    setPreviewImage(file.url || file.preview);
-    setPreviewVisible(true);
-  };
-
-
-  const handleCancelPreview = () => {
-    setPreviewVisible(false);
-  };
 
   const props = {
     onRemove: (file) => {
@@ -189,6 +176,12 @@ const OrderDetails = () => {
   const data = [
     {
       title: "Ordered",
+      descriptions: [
+
+      ],
+    },
+    {
+      title: "Confirmed",
       descriptions: [
 
       ],
@@ -520,7 +513,7 @@ const OrderDetails = () => {
 
               <div>
                 {
-                  (ispickup && currentProgressIndex === 1 || !ispickup && currentProgressIndex === 3) &&
+                  (ispickup && currentProgressIndex === 2 || !ispickup && currentProgressIndex === 4) &&
                   <div className="flex justify-center">
                     {items.map((item, index) => (
                       <Tab
@@ -570,28 +563,13 @@ const OrderDetails = () => {
                         {selectedReason && reasons.find((r) => r.id === selectedReason).photosRequired && (
                           <div className=" p-2 mt-4 bg-gray-50">
                             <h4 className="mb-1">Upload photos of the issue</h4>
-                            <>
-                              <Upload {...props} accept=".png,.webp,.jpg, .jpeg">
-                                <Button icon={<UploadOutlined />}>Select File</Button>
-                              </Upload>
-
-                              <List
-                                style={{ marginTop: 16 }}
-                                bordered
-                                dataSource={fileList}
-                                renderItem={(file) => (
-                                  <List.Item>
-                                    <img
-                                      src={URL.createObjectURL(file)}
-                                      alt={file.name}
-                                      style={{ maxWidth: 100, maxHeight: 100, cursor: 'pointer' }}
-                                      onClick={() => handlePreview(file)}
-                                    />
-                                    <p>{file.name}</p>
-                                  </List.Item>
-                                )}
-                              />
-                            </>
+                            <input
+                              type="file"
+                              className=""
+                              accept="image/png, image/jpeg, image/jpg"
+                              onChange={(e) => handleFileChange(e.target.files)}
+                              multiple
+                            />
                           </div>
                         )}
                         <h3 className="mt-4 text-base mb-1">Additional Details</h3>
@@ -619,8 +597,8 @@ const OrderDetails = () => {
                 }
               </div>
             </div>
-          </div>
-        </div>
+          </div >
+        </div >
       </>
   );
 };

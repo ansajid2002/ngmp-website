@@ -16,6 +16,7 @@ import {
   Heart,
   History,
   Info,
+  Lock,
   LogOut,
   MapPin,
   MousePointerSquare,
@@ -24,16 +25,20 @@ import {
   User,
   Wallet,
 } from "lucide-react";
-import Skeleton from "react-loading-skeleton";
 import { formatCurrency } from "../AvailableToken";
 import { useTranslation } from "react-i18next";
+import { Form, Input, Modal } from "antd";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 
 export default function AvatarDropdown() {
   const customerData = useAppSelector((state) => state.customerData);
+  const [modalvisible, setModalVisible] = useState(false)
+  const [loader, setLoader] = useState(false)
   const [profileImage, setImage] = useState('/avatarplaceholder.png');
   const { t } = useTranslation()
-  const navigation = useRouter();
+  const [form] = Form.useForm()
   const {
     given_name = "",
     family_name = "",
@@ -41,6 +46,8 @@ export default function AvatarDropdown() {
     country = "",
     picture = "",
     google_id,
+    customer_id,
+    email
   } = customerData?.customerData || {};
 
 
@@ -69,6 +76,68 @@ export default function AvatarDropdown() {
       return '/auth/signIn'
     }
   }
+
+  const handleOk = async () => {
+    try {
+      const values = await form.validateFields();
+
+      // Check if the values are numeric
+      if (!/^\d+$/.test(values.previousPin) || !/^\d+$/.test(values.newPin)) {
+        console.log('Please enter numeric values for the PIN.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Please enter numeric values for the PIN.',
+        });
+        return; // Exit function if values are not numeric
+      }
+
+      setLoader(true)
+      // Assuming you have an API endpoint to update the PIN
+      const response = await axios.post(`/api/Customers/updateCustomerPin`, {
+        previousPin: values.previousPin,
+        newPin: values.newPin,
+        customer_id
+      });
+
+      // console.log('Backend response:', response.data);
+
+      // Show Swal message based on response
+      if (response?.data?.status) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: response.data.message,
+        });
+        setModalVisible(false)
+        form.resetFields()
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: response.data.error || 'Something went wrong!',
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Something went wrong!',
+      });
+    } finally {
+      setLoader(false)
+    }
+  }
+
+  const validateConfirmPin = (_, value) => {
+    if (value && value !== form.getFieldValue('newPin')) {
+      return Promise.reject(new Error('The two pins that you entered do not match!'));
+    }
+    return Promise.resolve();
+  };
+
+
   return (
     <div className="AvatarDropdown">
 
@@ -118,7 +187,7 @@ export default function AvatarDropdown() {
                           <div className="flex-grow">
                             <h4 className="font-semibold">{`${given_name} ${family_name}`}</h4>
                             <p className="text-xs mt-0.5">{`${state && state?.trim() !== "" ? state + "," : ""
-                              } ${country && country?.trim() !== "" ? country : ""
+                              } ${country && country?.trim() !== "" ? country : email
                               }`}</p>
                           </div>
                         </div>
@@ -157,6 +226,25 @@ export default function AvatarDropdown() {
                         <p className="text-sm font-bold text-green-700">{t("Wallet")} {formatCurrency(walletTotal)}</p>
                       </div>
                     </Link>
+
+                    {
+                      customerData?.customerData && <div
+                        className="flex items-center cursor-pointer p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                        onClick={() => {
+                          setModalVisible(true)
+                          close()
+                        }}
+                      >
+                        <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
+                          <Lock size={20} />
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-sm font-medium ">
+                            {t("Update Nile Pin")}
+                          </p>
+                        </div>
+                      </div>
+                    }
                     {/* ------------------ 2 --------------------- */}
                     <Link
                       href={redirectToLogin("/account-order")}
@@ -289,6 +377,52 @@ export default function AvatarDropdown() {
           </>
         )}
       </Popover>
+
+      <Modal
+        visible={modalvisible}
+        title="Change PIN"
+        okText="Change"
+        onOk={handleOk}
+        onCancel={() => setModalVisible(false)}
+        okButtonProps={{ style: { background: 'blue' } }}
+        confirmLoading={loader}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="previousPin"
+            label="Previous 4-digit PIN"
+            rules={[
+              { required: true, message: 'Please input your previous 4-digit PIN!' },
+              { len: 4, message: 'Please input a 4-digit PIN!' },
+            ]}
+          >
+            <Input.Password maxLength={4} type="number" />
+          </Form.Item>
+          <Form.Item
+            name="newPin"
+            label="New 4-digit PIN"
+            rules={[
+              { required: true, message: 'Please input your new 4-digit PIN!' },
+              { len: 4, message: 'Please input a 4-digit PIN!' },
+            ]}
+          >
+            <Input.Password maxLength={4} type="number" />
+          </Form.Item>
+          <Form.Item
+            name="confirmPin"
+            label="Confirm New PIN"
+            dependencies={['newPin']}
+            rules={[
+              { required: true, message: 'Please confirm your new 4-digit PIN!' },
+              { validator: validateConfirmPin },
+            ]}
+          >
+            <Input.Password maxLength={4} type="number" />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+
       {/* <>
           <Link href={"/auth/signIn"}>
             <div className="rounded-full mr-1 lg:px-4 lg:py-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transform hover:scale-105 focus:outline-none flex items-center gap-2 cursor-pointer transition-transform duration-100">

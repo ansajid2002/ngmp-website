@@ -109,14 +109,16 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
           ? (record.picture.startsWith('https') ? record.picture : `${AdminUrl}/uploads/customerProfileImages/${record.picture}`)
           : '/noimage.jpg';
 
+        console.log(record);
+
         return (
           <div className='flex justify-center items-center'>
             <div className='flex justify-center'>
               <Image src={imageUrl} width={50} className='rounded-full' />
             </div>
             <div className='flex flex-col justify-start p-2'>
+              <p className='text-sm font-semibold text-gray-700'>Id-  {record.customer_id}</p>
               <p className='text-sm font-semibold text-gray-700'>{record.given_name} {record.family_name}</p>
-              <p className='text-base font-light'>{record.email}</p>
             </div>
           </div >
         );
@@ -139,7 +141,6 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
       dataIndex: 'amount',
       key: 'amount',
       width: 200,
-      fixed: 'right',
       render: (text: string, record: any) => <p className='text-red-500 font-semibold text-xl'>{(record.amount < 0 ? formatCurrency(record.amount) : '-')}</p>,
     },
     {
@@ -147,7 +148,6 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
       dataIndex: 'amount',
       key: 'amount',
       width: 200,
-      fixed: 'right',
       render: (text: string, record: any) => <p className={`${record.status === 'paid' ? 'text-green-500' : 'text-orange-500'} font-semibold text-xl`}>{(record.amount > 0 ? formatCurrency(record.amount) : '-')}</p>,
     },
     {
@@ -155,7 +155,6 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
       dataIndex: 'closing_balance',
       key: 'closing_balance',
       width: 200,
-      fixed: 'right',
       render: (text: string, record: any) => <p className='text-green-500 font-semibold text-xl'>{(record.closing_balance > 0 ? formatCurrency(record.closing_balance) : '-')}</p>,
     },
 
