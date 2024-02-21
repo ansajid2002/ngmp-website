@@ -5,7 +5,7 @@ const Page = () => {
     <div className="max-w-3xl mx-auto px-4 py-8">
        <h1 className="text-2xl font-bold mb-4">TERMS & CONDITIONS</h1>
   <p className="mb-4">
-    By downloading, browsing, accessing, or using this NGMP Application (“NGMP Mobile Application”), you agree to be bound by these Terms and Conditions of Use. We reserve the right to amend these terms and conditions at any time. If you disagree with any of these Terms and Conditions of Use, you must immediately discontinue your access to the NGMP Mobile Application and your use of the services offered on the NGMP Mobile Application. Continued use of the NGMP Mobile Application will constitute acceptance of these Terms and Conditions of Use, as may be amended from time to time.
+  By downloading, browsing, accessing, or using this NGMP Application (“NGMP Mobile Application”), you agree to be bound by these Terms and Conditions of Use. We reserve the right to amend these terms and conditions at any time. If you disagree with any of these Terms and Conditions of Use, you must immediately discontinue your access to the NGMP Mobile Application and your use of the services offered on the NGMP Mobile Application. Continued use of the NGMP Mobile Application will constitute acceptance of these Terms and Conditions of Use, as may be amended from time to time.
   </p>
   
   <h2 className="text-lg font-bold mt-6 mb-2">TERMS TO USE</h2>
@@ -16,6 +16,20 @@ const Page = () => {
     <li>At some point, we may wish to update the app. The app is available for both Android and iOS– the requirements for the system (and for any additional systems we decide to extend the availability of the app to) may change, and you’ll need to download the updates if you want to keep using the app. It is your responsibility to keep the app version up to date. We do not promise that it will always update the app so that it is relevant to you and/or works with the version that you have installed on your device. However, you promise to always accept updates to the application when offered to you, we may also wish to stop providing the app, and may terminate use of it at any time without giving notice of termination to you.</li>
     <li>We strongly recommend that you only download the NGMP applications from the Play Store or App Store. Doing so will ensure that your apps are legitimate and safe from malicious software.</li>
   </ul>
+  <h1 class="text-lg font-bold mt-6 mb-2">WALLET SYSTEM TERMS AND CONDITIONS</h1>
+
+<ul class="list-disc pl-6 mb-6">
+    <li><strong>Account Creation and Recharging:</strong> Upon creating an account on Nile Global Marketplace (NGMP) mobile application ("the App"), customers agree to adhere to the following terms and conditions regarding the Wallet System. Customers can recharge their NGMP wallet using Electronic Voucher Card (EVC) or EDAHAB.</li>
+    <li><strong>Wallet Usage:</strong> Customers can utilize the funds in their NGMP wallet to make purchases within the App. During the checkout process, customers have the option to use their wallet balance to pay for items ordered on NGMP.</li>
+    <li><strong>Peer-to-Peer Transaction:</strong> NGMP facilitates peer-to-peer transactions for customer-to-customer wallet money transfers. To initiate a transfer, customers must use their designated Personal Identification Number (PIN). Upon transfer initiation, the transferred funds will be received by the NGMP administration.</li>
+    <li><strong>Administration Process:</strong> The NGMP administration oversees all peer-to-peer wallet transfers. Upon receiving transferred funds, the administration will deduct applicable commissions, if any, before transferring the remaining balance to the designated recipient, whether it be another customer or a vendor. Transfer to vendors will be facilitated using EVC or EDAHAB payment methods.</li>
+    <li><strong>Commission Deduction:</strong> NGMP reserves the right to deduct a commission from wallet transfers as specified in the NGMP fee structure. Customers are advised to review the applicable commission rates prior to initiating peer-to-peer transactions.</li>
+    <li><strong>Return Refund Tenure:</strong> In the event of a return or refund request initiated by a customer, NGMP will adhere to the established return refund tenure. Following the conclusion of this tenure, the administration will deduct applicable commissions from the refunded amount before transferring the remaining balance to the vendor.</li>
+    <li><strong>Compliance:</strong> Customers utilizing the NGMP Wallet System agree to comply with all applicable laws, regulations, and NGMP policies. Any misuse, fraudulent activity, or violation of these terms may result in account suspension or legal action.</li>
+    <li><strong>Dispute Resolution:</strong> In the event of any disputes or discrepancies regarding wallet transactions, customers are encouraged to contact NGMP customer support for resolution. NGMP will strive to address and resolve disputes in a fair and timely manner.</li>
+</ul>
+
+<p class="text-sm">By utilizing the NGMP Wallet System, customers acknowledge their acceptance of these terms and conditions. NGMP reserves the right to update or modify these terms at any time without prior notice. Continued use of the NGMP Wallet System constitutes acceptance of any revisions or amendments to these terms.</p>
   <h2 className="text-lg font-bold mt-6 mb-2">GENERAL TERMS</h2>
   <ul className="list-disc ml-8">
     <li>

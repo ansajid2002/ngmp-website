@@ -292,10 +292,10 @@ const NewAccordionTab = () => {
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-bold mb-5">{t("All help topics")}</h2>
+      <h2 className="text-2xl text-center font-bold mb-5">{t("All help topics")}</h2>
       <div className="w-full flex flex-col md:flex-row">
-        <div className="w-full lg:w-[25%] lg:pr-10">
-          {AccordionData?.map((item, index) => (
+        {/* <div className="w-full lg:w-[25%] lg:pr-10"> */}
+          {/* {AccordionData?.map((item, index) => (
             <Accordion
               key={index}
               open={open === item.id}
@@ -331,10 +331,10 @@ const NewAccordionTab = () => {
                 </ul>
               </AccordionBody>
             </Accordion>
-          ))}
-        </div>
+          ))} */}
+        {/* </div> */}
 
-        <div className="w-full lg:w-[70%] px-2">{component}</div>
+        <div className="w-full lg:w-[70%] mx-auto  px-2">{component}</div>
       </div>
     </div>
   );

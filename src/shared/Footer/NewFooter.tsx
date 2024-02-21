@@ -30,6 +30,10 @@ const Footer: React.FC = () => {
       menus: [
         { href: `${HomeUrl}/company/about-us`, label: "About Nile" },
         { href: `${HomeUrl}/company/contact-us`, label: "Contact us" },
+        {
+          href: `${HomeUrl}/company/terms-conditions`,
+          label: "Terms & conditions",
+        },
       ],
     },
     {
@@ -41,15 +45,12 @@ const Footer: React.FC = () => {
           label: "Privacy policy",
         },
         { href: `${HomeUrl}/company/copyright-policy`, label: "Copyright Policy" },
-        {
-          href: `${HomeUrl}/company/terms-conditions`,
-          label: "Terms & conditions",
-        },
+        
+        { href: `${HomeUrl}/company/shipping-info`, label: "Shipping Policy" },
         {
           href: `${HomeUrl}/company/return-refund-policy`,
           label: "Return and refund policy",
         },
-        // { href: `${HomeUrl}/company/shipping-info`, label: "Shipping info" },
       ],
     },
     {

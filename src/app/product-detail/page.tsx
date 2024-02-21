@@ -986,13 +986,13 @@ console.log(responseData,"responsedatra");
           </div>
         </div>
 
-        <div className="pt-5 font-medium text-lg flex items-center justify-between">
+        {/* <div className="pt-5 font-medium text-lg flex items-center justify-between">
           <h2 className="text-xl">{t("Details")}</h2>
           <h2 className="flex text-sm items-center gap-1">
             {t("Report this item")}
             <ChevronRight size={15} />
           </h2>
-        </div>
+        </div> */}
         <div className="mt-2">
           <ul className="space-y-2">
             {/* {Object.entries(responseData?.attributes_specification).map(
