@@ -24,7 +24,7 @@ const SingleVendorsDetails = ({ data }: any) => {
       setLoading(true);
 
       // Fetch all products
-      const response = await fetch(`${AdminUrl}/api/getVendorProductsAR?vendorid=${data?.id}&page=${page}&pageSize=${pageSize}`);
+      const response = await fetch(`${AdminUrl}/api/getVendorProductsAR?vendorid=${data?.id}&page=${page}&pageSize=${pageSize}&status=1`);
 
 
       if (response.ok) {
@@ -108,7 +108,7 @@ const SingleVendorsDetails = ({ data }: any) => {
 
           <div className="flex justify-center mt-10">
             <Pagination
-              // hideOnSinglePage
+              hideOnSinglePage
               current={page}
               responsive
               pageSize={pageSize}

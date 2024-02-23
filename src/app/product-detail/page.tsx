@@ -118,7 +118,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
   const [shippingRate, setShippingrate] = useState(0);
   const { languageCode } = useAppSelector((store => store.languagesReducer))
-console.log(responseData,"responsedatra");
+  console.log(responseData, "responsedatra");
 
 
   const dispatch = useDispatch();

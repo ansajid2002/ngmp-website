@@ -5,7 +5,7 @@ import { Image, Input } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react'
 
-const ChatScreen = ({ vendorData, customerData, onSend,predefinedText="" }) => {
+const ChatScreen = ({ vendorData, customerData, onSend, predefinedText = "" }) => {
     const { brand_logo, brand_name, id } = vendorData || {}
     const customerId = customerData?.customer_id
     const [message, setMessage] = useState(atob(predefinedText));
@@ -14,7 +14,7 @@ const ChatScreen = ({ vendorData, customerData, onSend,predefinedText="" }) => {
     const flatListRef = useRef(null);
     const [inputRows, setInputRows] = useState(1);
 
-console.log(atob(predefinedText),"SAHGIASFDFC ");
+    console.log(atob(predefinedText), "SAHGIASFDFC ");
 
     const fetchConversations = async () => {
         setLoader(true)
@@ -179,7 +179,7 @@ console.log(atob(predefinedText),"SAHGIASFDFC ");
                                             </div>
                                         </div>
                                     ))}
-                                </div> 
+                                </div>
                             ))}
                         </div>
                 }

@@ -197,6 +197,7 @@ const OrderDetails = () => {
     },
   ];
   const returnData = [
+   
 
     {
       title: "Return Pending",
@@ -207,33 +208,8 @@ const OrderDetails = () => {
     {
       title: "Returned"
     }
-
+   
   ];
-  //   {
-  //     label: 'c',
-  //     displayStatus: 'Return Pending',
-  //     descriptions: [],
-  // },
-  // {
-  //     label: 'Return Processed',
-  //     displayStatus: 'Return Processed',
-  //     descriptions: [],
-  // },
-  // {
-  //     label: 'Return Canceled',
-  //     displayStatus: 'Return Canceled',
-  //     descriptions: [],
-  // },
-  // {
-  //     label: 'Returned',
-  //     displayStatus: 'Returned',
-  //     descriptions: [],
-  // },
-  // {
-  //     label: 'Exchanged',
-  //     displayStatus: 'Exchanged',
-  //     descriptions: [],
-  // },
 
   const onStepHover = (index: number) => {
     setCurrent(index);
@@ -289,10 +265,8 @@ const OrderDetails = () => {
     ispickup,
     seller_otp,
     customer_otp,
-    prod_slug, product_uniqueid, returnStatus = {}, ad_title, order_id
-  } = orderData || {};
-  console.log(orderData, "oooooooooooo");
-
+    prod_slug, product_uniqueid,returnStatus={},ad_title,order_id
+  } = orderData || {}; 
 
 
   const filteredProgressData = ispickup
@@ -364,14 +338,14 @@ const OrderDetails = () => {
   let message = '';
 
   if (order_status === 'Ordered') {
-    message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
+      message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
   
   I have recently placed an order for the product "${ad_title}" with the order ID ${order_id}. I would like to inquire about the estimated delivery date. Could you please provide me with more information regarding the shipping status?
   
   Thank you, ${orderData?.customer?.given_name} ${orderData?.customer?.family_name}
  `;
   } else if (order_status === 'Shipped') {
-    message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
+      message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
   
   I am writing to inquire about the status of my order with the ID ${order_id} for the product "${ad_title}". Could you please provide me with the tracking details and expected delivery date?
   
@@ -379,7 +353,7 @@ const OrderDetails = () => {
   Best regards, ${orderData?.customer?.given_name} ${orderData?.customer?.family_name}
  `;
   } else if (order_status === 'Out for Delivery') {
-    message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
+      message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
   
   I hope this message finds you well. My order with the ID ${order_id} for the product "${ad_title}" is currently out for delivery. Could you please ensure a smooth delivery process and confirm the expected arrival time?
   
@@ -387,21 +361,21 @@ const OrderDetails = () => {
   Regards, ${orderData?.customer?.given_name} ${orderData?.customer?.family_name}
  `;
   } else if (order_status === 'Delivered') {
-    message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
+      message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
   
   I wanted to inform you that I have received the product "${ad_title}" as part of order ID ${order_id}. I am pleased with the product and the timely delivery. Thank you for your excellent service.
   
   Best regards, ${orderData?.customer?.given_name} ${orderData?.customer?.family_name}
  `;
   } else if (order_status === 'Picked') {
-    message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
+      message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
   
   I have successfully picked up the product "${ad_title}" from the specified location. I am satisfied with the product and the pickup process. Thank you for your assistance.
   
   Best regards, ${orderData?.customer?.given_name} ${orderData?.customer?.family_name}
  `;
   } else if (order_status.startsWith('Returned')) {
-    message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
+      message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
   
   I am contacting you regarding the return of the product "${ad_title}" from order ID ${order_id}. Could you please provide me with the necessary instructions for the return process?
   
@@ -409,7 +383,7 @@ const OrderDetails = () => {
   Regards, ${orderData?.customer?.given_name} ${orderData?.customer?.family_name}
  `;
   } else if (order_status === 'Canceled') {
-    message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
+      message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
   
   I regret to inform you that I have canceled the order with the ID ${order_id} for the product "${ad_title}". Could you please confirm the cancellation and arrange for the refund as per your policies?
   
@@ -417,7 +391,7 @@ const OrderDetails = () => {
   Best regards, ${orderData?.customer?.given_name} ${orderData?.customer?.family_name}
  `;
   } else if (order_status === 'Exchanged') {
-    message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
+      message = `Hello ${orderData?.vendor?.vendorname}, ${orderData?.brand},
   
   I am reaching out to discuss the exchange of the product "${ad_title}" from order ID ${order_id}. Could you please provide me with the exchange process details and any additional information required?
   
@@ -567,17 +541,17 @@ const OrderDetails = () => {
 
               <div className="w-full md:w-[50%] py-2 text-[#ed642b] space-y-3 text-sm font-medium ">
                 {
-                  returnStatus.return_status !== "Returned" &&
-                  <h2 className="flex items-center gap-1 cursor-pointer" onClick={() => {
-                    setModalVisible(true)
-                    console.log("true");
-
-                  }
-                  }>
-                    <ShoppingCart size={20} />
-                    Return Product
-                  </h2>
+                  returnStatus.return_status !== "Returned" && 
+                <h2 className="flex items-center gap-1 cursor-pointer" onClick={() => {
+                  setModalVisible(true)
+                  console.log("true");
+                  
                 }
+                }>
+                  <ShoppingCart size={20} />
+                  Return Product
+                </h2>
+              }
                 <Modal
                   title="Return Item"
                   visible={modalVisible}
@@ -712,98 +686,20 @@ const OrderDetails = () => {
                 <p className="text-[#ed642b] text-lg">{desc?.content}</p>
               </div>
               {/* ////////////////RETURNS////////////////////// */}
+              
+              
+              {/* Item hasnt arrived */}
+              <div>
+            <h3 className=" cursor-pointer text-red-600  font-bold text-lg tracking-wider">Item Hasn't Arrived</h3>
 
 
               {/* Item hasnt arrived */}
-              <div>
-                {
-                  (ispickup && currentProgressIndex === 2 || !ispickup && currentProgressIndex === 4) &&
-                  <div className="flex justify-center">
-                    {items.map((item, index) => (
-                      <Tab
-                        key={item.key}
-                        label={item.label}
-                        isActive={index === activeIndex}
-                        onClick={() => handleClick(index)}
-                      />
-
-
-                    ))}
-                    <Modal
-                      title="Return Item"
-                      visible={modalVisible && activeIndex === 0}
-                      onCancel={handleCloseModal}
-                      footer={null}
-                    >
-                      <div className="flex gap-2 items-center justify-start">
-                        <img
-                          src={`${ProductImageUrl}/${product_image}` || '/placeholder.png'}
-                          className="h-20 md:h-24 w-20 md:w-24 object-contain"
-                          alt="Product Image"
-                        />
-                        <div>
-                          <h2 className="line-clamp-1">{product_name}</h2>
-                          <p className="text-sm text-gray-700">
-                            {label && label}
-                          </p>
-                          <p className="text-sm text-gray-700">
-                            Seller: <span>{vendorname}</span>
-                          </p>
-                          <div className="flex gap-3 items-center ">
-                            <p className="font-medium">{formattedTotalAmount}</p>
-
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="mt-4 text-base mb-2">Why are you returning this item?</h3>
-                        <Select style={{ width: 200 }} onChange={handleChange} defaultValue={reasons[0].id}>
-                          {reasons.map((reason) => (
-                            <Option key={reason.id} value={reason.id}>
-                              {reason.reason}
-                            </Option>
-                          ))}
-                        </Select>
-                        {selectedReason && reasons.find((r) => r.id === selectedReason).photosRequired && (
-                          <div className=" p-2 mt-4 bg-gray-50">
-                            <h4 className="mb-1">Upload photos of the issue</h4>
-                            <input
-                              type="file"
-                              className=""
-                              accept="image/png, image/jpeg, image/jpg"
-                              onChange={(e) => handleFileChange(e.target.files)}
-                              multiple
-                            />
-                          </div>
-                        )}
-                        <h3 className="mt-4 text-base mb-1">Additional Details</h3>
-                        <Input.TextArea
-                          style={{ marginTop: 2 }}
-                          className="rounded-md h-8 "
-                          placeholder="Give us a little more info"
-                          value={additionalDetails}
-                          onChange={(e) => setAdditionalDetails(e.target.value)}
-                        />
-                        <Button
-
-                          onClick={handleUpload}
-
-                          loading={uploading}
-                          style={{
-                            marginTop: 16,
-                          }}
-                        >
-                          {uploading ? 'Uploading' : 'Start Upload'}
-                        </Button>
-                      </div>
-                    </Modal>
-                  </div>
-                }
-              </div>
+              
 
             </div>
           </div >
-        </div >
+          </div>
+        </div>
       </>
   );
 };

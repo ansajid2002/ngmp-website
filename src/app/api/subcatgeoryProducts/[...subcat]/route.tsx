@@ -3,9 +3,10 @@ import { AdminUrl } from '@/app/layout';
 import { NextResponse } from 'next/server';
 
 
-async function getSubcategoryProducts(subcat: string) {
+async function getSubcategoryProducts(subcat: string, pageNumber: number, pageSize: number) {
     try {
-        const apiUrl = `${AdminUrl}/api/getProductBySubcategories?subcat=${subcat}&currency=USD&pageNumber=1&pageSize=10`;
+        const apiUrl = `${AdminUrl}/api/getProductBySubCat_TabsHomeScreen?subcat=${subcat?.replace(/[^\w\s]/g, "")
+            ?.replace(/\s/g, "")}&pageNumber=${pageNumber}&pageSize=${pageSize}`;
 
         console.log(apiUrl);
 
@@ -29,12 +30,13 @@ async function getSubcategoryProducts(subcat: string) {
 }
 
 
-export async function GET(request: Request, { params }: { params: { subcat: string } }) {
+
+export async function GET(request: Request, { params, query }: { params: { subcat: string }, query?: { page?: any, pageSize?: any } }) {
     const { subcat } = params;
 
-
     // Fetch product variant based on the provided parameters
-    const subcatProducts = await getSubcategoryProducts(subcat);
+    const subcatProducts = await getSubcategoryProducts(subcat?.[0], subcat?.[1], subcat?.[2]);
 
     return NextResponse.json(subcatProducts);
 }
+
