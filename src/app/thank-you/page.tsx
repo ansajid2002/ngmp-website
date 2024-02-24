@@ -115,7 +115,7 @@ const ThankYou = () => {
         <p>
           Thanks for shopping! Your order
           <span className="text-[#ed642b] ml-1">
-            {successOrders[0].ad_title}
+            {successOrders?.[0]?.ad_title}
 
           </span>{" "}
           {adjustedLength > 0 && (

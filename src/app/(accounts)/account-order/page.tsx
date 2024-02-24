@@ -179,7 +179,7 @@ const AccountOrder = () => {
               </div>
               <Prices
                 price={""}
-                sellingprice={(parseFloat(total_amount) * parseInt(quantity)) + parseFloat(shipping_fee || 0) || 0}
+                sellingprice={(parseFloat(total_amount) * parseInt(quantity))}
                 className="mt-0.5 ml-2"
               />
             </div>
