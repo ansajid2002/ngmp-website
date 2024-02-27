@@ -51,7 +51,7 @@ export default function AvatarDropdown() {
     email
   } = customerData?.customerData || {};
 
-
+  // heello 
 
   const { walletTotal } = useAppSelector((store) => store.wallet);
 
