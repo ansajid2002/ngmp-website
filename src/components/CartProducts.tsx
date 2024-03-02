@@ -27,7 +27,7 @@ const CartProducts = ({ removeData = true, canNavigate = true }) => {
 
 
   const renderProduct = (item: Product, index: number) => {
-    const {
+    const { 
       ad_title,
       somali_ad_title,
       mrp,

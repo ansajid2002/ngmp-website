@@ -10,14 +10,14 @@ import { ProductImageUrl } from "@/app/layout";
 import { Product } from "@/data/data";
 import { useTranslation } from "react-i18next";
 
-const CheckoutProducts = ({ removeData = true, canNavigate = true }) => {
+const CheckoutProducts = ({ removeData = true, canNavigate = true,cartItems=[],itemstoPick=[],itemstoShip=[] }) => {
   const customerData = useAppSelector((state) => state.customerData);
   const { languageCode } = useAppSelector((store => store.languagesReducer))
   const { t } = useTranslation()
-  const { cartItems } = useAppSelector((store) => store.cart);
-  const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
-  const itemstoPick = cartItems.filter(item => pickupItems.includes(item.uniquepid))
-  const itemstoShip = cartItems.filter(item => !pickupItems.includes(item.uniquepid))
+
+  // const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
+  // const itemstoPick = cartItems?.filter(item => pickupItems.includes(item.uniquepid))
+  // const itemstoShip = cartItems?.filter(item => !pickupItems.includes(item.uniquepid))
 
   const renderProduct = (item: Product, index: number) => {
     const {
@@ -99,7 +99,7 @@ const CheckoutProducts = ({ removeData = true, canNavigate = true }) => {
     <div className="space-y-2">
       <div className=" p-4">
         {
-          itemstoPick.length !== 0 &&
+          itemstoPick?.length !== 0 &&
           <h1 className="text-xl text-green-600 text-center font-bold tracking-wider font-serif">ITEMS TO PICK</h1>
         }
         {
@@ -111,7 +111,7 @@ const CheckoutProducts = ({ removeData = true, canNavigate = true }) => {
       </div>
       <div className=" p-4">
         {
-          itemstoShip.length !== 0 &&
+          itemstoShip?.length !== 0 &&
           <h1 className="text-xl text-green-600  text-center font-bold tracking-wider font-serif">ITEMS FOR SHIPPING</h1>
         }
         {

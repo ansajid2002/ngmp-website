@@ -13,7 +13,6 @@ export const customerDataSlice = createSlice({
     initialState,
     reducers: {
         updateCustomerData: (state, action: PayloadAction<any>) => {
-            console.log(action.payload, 'PAYLOAD');
             state.customerData = action.payload;
         },
         emptyCustomer: (state) => {

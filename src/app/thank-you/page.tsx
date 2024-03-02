@@ -85,8 +85,6 @@ const ThankYou = () => {
   }, [id, successOrders]);
 
   // const { given_name_address, family_name_address, apt_address, subregion_address, city_address, country_address, region_address, zip_address, phone_address } = defaultAddress || []
-  console.log(successOrders, "succsxx");
-
 
   const adjustedLength = successOrders && successOrders.length - 1;
   const totalSellingPrice = successOrders && successOrders.reduce(
@@ -147,20 +145,7 @@ const ThankYou = () => {
             </Link>
           </div>
           <div className="flex-1 md:ml-4 items-center justify-end md:justify-normal gap-5 text-gray-700 font-medium">
-            {/* <div className="text-right space-y-1">
-              <h2>
-                <span>$</span>
-                {subtotal}
-              </h2>
-              <h3>
-                <span>$</span>
-                {totoalShipping}
-              </h3>
-              <h4 className="font-bold text-black">
-                <span>$</span>
-                {total}
-              </h4>
-            </div> */}
+          
           </div>
         </div>
 

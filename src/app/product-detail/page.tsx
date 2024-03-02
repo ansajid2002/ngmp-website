@@ -6,7 +6,7 @@ import LikeButton from "@/components/LikeButton";
 import { StarIcon } from "@heroicons/react/24/solid";
 import BagIcon from "@/components/BagIcon";
 import NcInputNumber from "@/components/NcInputNumber";
-
+import { GoCircleSlash } from "react-icons/go";
 import payment from "@/images/payment.png";
 import security from "@/images/security.png";
 
@@ -46,6 +46,16 @@ import { Image, Modal, Rate } from "antd";
 import ProductSalebadge from "@/components/ProductSalebadge";
 import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
 import { useTranslation } from "react-i18next";
+
+export const ShopCloseUi = () => {
+  return (
+    <div className="flex justify-center p-4 rounded-full">
+      <h1 className="text-red-500 tracking-wide text-sm font-semibold">
+        The shop is currently closed. You'll be able to purchase products very soon!
+      </h1>
+    </div>
+  );
+}
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -113,7 +123,7 @@ const ProductDetailPage = ({ searchParams }) => {
   const [inFavorite, setinFavorite] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [wishlistLoading, setWishlistLoading] = useState(false);
-
+  const storedDistrict = localStorage.getItem('selectedDistrict');
   const cartItems = useAppSelector((state) => state.cart.cartItems);
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
   const [shippingRate, setShippingrate] = useState(0);
@@ -122,6 +132,23 @@ const ProductDetailPage = ({ searchParams }) => {
 
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    const func = async () => {
+      const res = await fetch(`/api/search/productsearch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uniquepid: responseData?.uniquepid, customer_id: customerId, slug: responseData?.prod_slug, slug_cat: responseData?.slug_cat, slug_subcat: responseData?.slug_subcat, nested_subcat_slug: responseData?.nested_subcat_slug, vendorid: responseData?.vendorid }),
+      });
+      console.log("don--e-------");
+
+    }
+    if (responseData) {
+      func()
+    }
+
+  }, [responseData])
 
   useEffect(() => {
     const handlePutRequest = async () => {
@@ -159,7 +186,7 @@ const ProductDetailPage = ({ searchParams }) => {
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
-    const isFavorite = wishlistItems.some(
+    const isFavorite = wishlistItems?.some(
       (wish) => wish.uniquepid === responseData?.uniquepid
     );
     setinFavorite(isFavorite);
@@ -352,11 +379,11 @@ const ProductDetailPage = ({ searchParams }) => {
   }, [variantsWithArray]);
 
   useEffect(() => {
-    const isUniquepidMatched = cartItems.some((cartItem) => {
+    const isUniquepidMatched = cartItems?.some((cartItem) => {
       return cartItem.uniquepid === responseData?.uniquepid;
     });
 
-    const matchedCartProduct = cartItems.find((cartItem) => {
+    const matchedCartProduct = cartItems?.find((cartItem) => {
       if (cartItem.uniquepid === responseData?.uniquepid) {
         if (cartItem?.label != null && cartItem?.label != undefined) {
           return (
@@ -483,7 +510,8 @@ const ProductDetailPage = ({ searchParams }) => {
     ));
   };
 
-  const storedDistrict = localStorage.getItem('selectedDistrict');
+
+
 
   const renderShippingAvailability = () => {
     return (
@@ -629,9 +657,10 @@ const ProductDetailPage = ({ searchParams }) => {
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
         {renderShippingAvailability()}
-        {isUniquepidMatched ? (
-          <div className="flex space-x-3.5">
-            {/* <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
+        {
+          sellerProfile?.isabondon ? <ShopCloseUi /> : isUniquepidMatched ? (
+            <div className="flex space-x-3.5">
+              {/* <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
               <NcInputNumber
                 defaultValue={
                   IsMatchedCartProduct && IsMatchedCartProduct.added_quantity
@@ -639,32 +668,50 @@ const ProductDetailPage = ({ searchParams }) => {
                 onChange={setQualitySelected}
               />
             </div> */}
-            <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
-              <Link href={"/cart"}>
-                <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-                <span className="ml-3">{t("View Cart")}</span>
-              </Link>
-            </ButtonPrimary>
-          </div>
-        ) : (
-          <div className="flex space-x-3.5">
-            <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
-              <NcInputNumber
-                defaultValue={qualitySelected}
-                onChange={setQualitySelected}
-                max={responseData?.quantity}
-              />
+              <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
+                <Link href={"/cart"}>
+                  <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+                  <span className="ml-3">{t("View Cart")}</span>
+                </Link>
+              </ButtonPrimary>
             </div>
-            <ButtonPrimary
-              className="flex-1 flex-shrink-0 transition-all duration-300"
-              onClick={notifyAddTocart}
-              loading={loader}
-            >
-              <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-              <span className="ml-3">{t("Add to Cart")}</span>
-            </ButtonPrimary>
-          </div>
-        )}
+          ) : (
+            <div className="flex space-x-3.5">
+
+              {
+                responseData?.quantity !== 0 &&
+                <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
+                  <NcInputNumber
+                    defaultValue={qualitySelected}
+                    onChange={setQualitySelected}
+                    max={responseData?.quantity}
+                  />
+                </div>
+              }
+              {
+                responseData?.quantity === 0 ?
+                  <ButtonPrimary
+                    className="flex-1 items-center flex-shrink-0 transition-all duration-300"
+
+                    bgcolor="bg-red-600"
+                    loading={loader}
+                  >
+                    <GoCircleSlash className="font-bold " size={20} />
+                    <span className="ml-3">{t("Out of Stock")}</span>
+                  </ButtonPrimary>
+                  :
+                  <ButtonPrimary
+                    className="flex-1 flex-shrink-0 transition-all duration-300"
+                    onClick={notifyAddTocart}
+                    loading={loader}
+                  >
+                    <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+                    <span className="ml-3">{t("Add to Cart")}</span>
+                  </ButtonPrimary>
+              }
+
+            </div>
+          )}
 
         {/*  */}
         <hr className=" 2xl:!my-10 border-gray-200 dark:border-gray-700"></hr>
@@ -1150,7 +1197,7 @@ const ProductDetailPage = ({ searchParams }) => {
                   <img
                     sizes=""
                     src={`${ProductImageUrl}/${image}`}
-                    className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
+                    className={`w-full rounded-xl  h-full drop-shadow-xl aspect-[0.85] object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
@@ -1168,16 +1215,15 @@ const ProductDetailPage = ({ searchParams }) => {
 
         {/* MAIN IMAGE */}
         <div className="flex-1">
-          <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
+          <div className="relative aspect-w-[100] aspect-h-[85]  overflow-hidden">
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               src={`${selectedImage ? `${ProductImageUrl}/${selectedImage}` : (responseData?.images?.[0] ? `${ProductImageUrl}/${responseData.images[0]}` : "/placeholder.png")}`}
-
               onError={(e) => {
-                e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                e.target.src = "/noimage.jpg";
                 e.target.alt = 'dummyimage';
               }}
-              className="w-full aspect-[0.85] rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               alt="Main Product Image"
               loading="lazy"
             />

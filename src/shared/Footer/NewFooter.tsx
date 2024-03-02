@@ -199,7 +199,7 @@ const Footer: React.FC = () => {
       {footerPathname !== "/auth/signIn" &&
         footerPathname !== "/auth/register" &&
         footerPathname !== "/auth/forgotpassword" && (
-          <div className="nc-Footer  bg-gray-100 top-32 relative px-2 py-10 lg:pt-20 mt-20 lg:pb-5 border-t border-neutral-200 dark:border-neutral-700">
+          <div className="nc-Footer  bg-gray-100 top-32 relative px-2 py-10 lg:pt-10 mt-20 lg:pb-5 border-t border-neutral-200 dark:border-neutral-700">
             <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-4 lg:gap-x-10 ">
               {widgetMenus.map(renderWidgetMenuItem)}
               <div className="">

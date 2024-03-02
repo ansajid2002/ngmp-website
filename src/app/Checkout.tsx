@@ -20,7 +20,8 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
   const [totalShippingCharges, setTotalShippingCharges] = useState(0)
   const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
   const itemstoPick = cartItems.filter(item => pickupItems.includes(item.uniquepid))
-  const itemstoShip = cartItems.filter(item => !pickupItems.includes(item.uniquepid))
+  const itemstoShip = cartItems.filter(item => item.quantity !== 0 && !pickupItems.includes(item.uniquepid));
+
   const storedDistrict = localStorage.getItem('selectedDistrict');
   const renderCost = async (company_district: string, storedDistrict: string) => {
     try {
@@ -103,7 +104,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
   };
 
   // Calculate subtotal for the entire cart
-  const subtotal = calculateCartSubtotal(cartItems);
+  const subtotal = calculateCartSubtotal(cartItems.filter((i) => i.quantity !== 0));
 
   const uniqueProductIds = cartItems
     ?.filter(product => product.vendorInfo?.company_district === null)
@@ -112,7 +113,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
 
   const checkoutData = [
     {
-      orders: cartItems,
+      orders: cartItems.filter((i) => i.quantity !== 0),
       shipping_address: selectedAddress,
       customerData: customerData,
       paymentIntent: [],
@@ -146,7 +147,7 @@ const StripeCheckButton = ({ mothodActive_ACTIVE = 'Stripe', selectedAddress }: 
         localStorage.removeItem('selectedPaymentMode');
 
         const responseData = await response.json();
-        dispatch(addsuccessOrders(cartItems))
+        dispatch(addsuccessOrders(cartItems.filter((i) => i.quantity !== 0)))
         dispatch(getwalletTotal(responseData?.walletamount))
 
         router.push(`/thank-you`)

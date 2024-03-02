@@ -14,44 +14,60 @@ import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import FetchCheckoutPrice from "@/components/FetchCheckoutPrice";
 import CheckoutProducts from "../../components/Checkoutproducts";
+import { addCarts, removeItem } from "@/redux/slices/cartSlice";
+import { useDispatch } from "react-redux";
+import { Button, Modal } from 'antd';
 
 const CheckoutPage = () => {
   const [tabActive, setTabActive] = useState<
     "ContactInfo" | "ShippingAddress" | "PaymentMethod"
   >("ShippingAddress");
-
+  const dispatch = useDispatch()
   const [selectedAddress, setSelectedAddress] = useState(null)
-  const customerData = useAppSelector((state) => state.customerData)
-  const { cartItems } = useAppSelector((state) => state.cart)
+  const { customerData } = useAppSelector((store) => store.customerData)
+  // const { cartItems } = useAppSelector((state) => state.cart)
+  const [cartItems,setCartItems] = useState(null)
+  const [outofstock,setOutofstock] = useState(null)
   const router = useRouter()
-  console.log(selectedAddress, "selectedAddress");
+  
+  const [visible, setVisible] = useState(true);
 
   const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
 
 
-  const remainingItems = cartItems.filter((item) => !pickupItems.includes(item.uniquepid)).map((s) => s.uniquepid);
-
-  console.log(pickupItems, "pickupItems");
-
-
+  const remainingItems = cartItems?.filter((item) => !pickupItems.includes(item.uniquepid)).map((s) => s.uniquepid);
+  const customerId = customerData?.customer_id || null;
 
   useEffect(() => {
-    cartItems && cartItems?.length === 0 && router.push('/')
-  }, [cartItems])
-
-  // const checkoutItems = localStorage.getItem('selectedOptions');
-
-  // let shippingIds = [];
-
-  // // Parse the JSON string
-  // const selectedOptions = JSON.parse(checkoutItems);
-
-  // // Check if the selected option is "pickup" and store the item ID
-  // for (const itemId in selectedOptions) {
-  //   if (selectedOptions[itemId] === 'shipping') {
-  //     shippingIds.push(parseInt(itemId));
-  //   }
-  // }
+    const fetchCart = async (customerId: any) => {
+      try {
+        
+        if (!customerId) {
+          
+          return;
+        }
+        const response = await fetch(`/api/cart/${customerId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          next: { revalidate: 3 },
+        });
+        const data = await response.json();
+        
+        setOutofstock(data.cartData.filter((item) => item.quantity === 0))
+        setCartItems(data.cartData.filter((item) => item.quantity !== 0))
+  
+          dispatch(addCarts(data.cartData.filter((item) => item.quantity !== 0)));
+        
+      } catch (error) {
+        console.error("Error fetching cart data:", error);
+      }
+    };
+    if (customerId) {
+      fetchCart(customerId);
+    }
+  }, [customerId]);
 
 
 
@@ -80,7 +96,7 @@ const CheckoutPage = () => {
 
   const renderLeft = () => {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 ">
         <div id="ContactInfo" className="scroll-mt-24">
           <ContactInfo
             isActive={tabActive === "ContactInfo"}
@@ -95,7 +111,8 @@ const CheckoutPage = () => {
           />
         </div>
         {
-          customerData?.customerData && <>
+          customerData && 
+          <>
             {
               remainingItems?.length > 0 && <div id="ShippingAddress" className="scroll-mt-24">
                 <ShippingAddress
@@ -140,8 +157,47 @@ const CheckoutPage = () => {
   };
 
 
+
+  const handleRemoveClick = (item) => {
+    setOutofstock((prev) => prev.filter((i) => i.uniquepid !== item.uniquepid))
+    setCartItems((prev) => prev.filter((i) => i.uniquepid !== item.uniquepid ) )
+
+    setVisible(false); // Close the modal after removing items
+  };
+
+
+
   return (
-    <div className="nc-CheckoutPage">
+    <div >
+
+
+      {
+         outofstock && outofstock?.length !== 0 ?
+        <Modal
+      title="Items Out of Stock"
+      visible={visible}
+      onCancel={() => setVisible(false)}
+      footer={null}
+    ><div>
+
+      <h1>THERE ARE SOME ITEMS THAT ARE OUT OF STOCK</h1>
+      <div>
+        {
+          outofstock?.map((item,i) => {
+            return (
+              <div>
+              <h1>{`item ${i}`}</h1>
+              <Button onClick={() => handleRemoveClick(item)}>remove </Button>
+                </div>
+            )
+          })
+        }
+      </div>
+    </div>
+    </Modal>
+        :
+        <div className="nc-CheckoutPage">
+
       <main className="px-5 md:px-10 py-16 lg:pb-28 lg:pt-20 ">
         <div className="mb-10">
           <h2 className="block text-2xl sm:text-3xl lg:text-4xl font-semibold ">
@@ -166,7 +222,10 @@ const CheckoutPage = () => {
           <div className="w-full lg:w-[36%] ">
             <h3 className="text-lg font-semibold">Order summary</h3>
             <div className="mt-8 divide-y divide-gray-200/70 dark:divide-gray-700 ">
-              <CheckoutProducts canNavigate={false} removeData={false} />
+              <CheckoutProducts cartItems={cartItems} 
+              itemstoShip={cartItems?.filter(item => !pickupItems.includes(item.uniquepid))} 
+              itemstoPick={cartItems?.filter(item => pickupItems.includes(item.uniquepid))}
+              canNavigate={false} removeData={false} />
             </div>
 
             <div className="mt-10 pt-6 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200/70 dark:border-gray-700 ">
@@ -180,7 +239,10 @@ const CheckoutPage = () => {
                 </div>
               </div> */}
 
-              <FetchCheckoutPrice showTitle={false} showCheckout={false} />
+              <FetchCheckoutPrice cartItems={cartItems} 
+              itemstoShip={cartItems?.filter(item => !pickupItems.includes(item.uniquepid))} 
+              itemstoPick={cartItems?.filter(item => pickupItems.includes(item.uniquepid))}
+               showTitle={false} showCheckout={false} />
             </div>
             {/* <ButtonPrimary className="mt-8 w-full" >Confirm order</ButtonPrimary> */}
 
@@ -239,6 +301,9 @@ const CheckoutPage = () => {
           </div>
         </div>
       </main>
+      </div>
+
+}
     </div>
   );
 };

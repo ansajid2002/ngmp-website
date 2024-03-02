@@ -94,25 +94,11 @@ const {t} = useTranslation()
         });
         const data = await response.json();
 
-        const updatedCartData = await Promise.all(
-          data?.cartData.map(async (item: any) => {
-            let shippingCost = await renderCost(item.vendorInfo?.company_district, storedDistrict);
-            const selectedOption = item.mogadishudistrict_ship_from ? 'shipping' : 'pickup';
-
-            // Retrieve existing selectedOptions from localStorage
-            const existingSelectedOptionsString = localStorage.getItem('selectedOptions');
-            const existingSelectedOptions = existingSelectedOptionsString ? JSON.parse(existingSelectedOptionsString) : {};
-
-            // Update the selectedOption for the current item in the local storage
-            existingSelectedOptions[item.uniquepid] = selectedOption;
-            localStorage.setItem('selectedOptions', JSON.stringify(existingSelectedOptions));
-
-            return { ...item, shippingCost, selectedOption };
-          })
-        );
+       
+console.log(data.cartData,"NAVIGATION PRINTING OF CART DATA COMING FROM BAKCEND");
 
 
-        dispatch(addCarts(updatedCartData));
+        dispatch(addCarts(data.cartData));
       } catch (error) {
         console.error("Error fetching cart data:", error);
       }

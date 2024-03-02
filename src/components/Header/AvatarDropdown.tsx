@@ -25,6 +25,7 @@ import {
   Store,
   User,
   Wallet,
+  StarIcon,
 } from "lucide-react";
 import { formatCurrency } from "../AvailableToken";
 import { useTranslation } from "react-i18next";
@@ -310,20 +311,20 @@ export default function AvatarDropdown() {
                       </div>
                     </Link>
 
-                    {/* <Link
-                      href={(redirectToLogin("/your-address"))}
+                    <Link
+                      href={(redirectToLogin("/producthistory"))}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
                     >
                       <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                        <MapPin size={20} />
+                        <StarIcon  size={20} />
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium ">
-                          {t("Addresses")}
+                          {t("Recently Viewed")}
                         </p>
                       </div>
-                    </Link> */}
+                    </Link>
 
                     {/* <Link
                       href={(redirectToLogin("/notifications"))}
@@ -364,7 +365,7 @@ export default function AvatarDropdown() {
                         <Info size={20} />
                       </div>
                       <div className="ml-4">
-                        <p className="text-sm font-medium ">{t("Help")}</p>
+                        <p className="text-sm font-medium ">{t("FAQs")}</p>
                       </div>
                     </Link>
 

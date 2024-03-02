@@ -105,6 +105,9 @@ const SingleVendors = () => {
                 <h2 className="text-xl md:text-xl tracking-wide pr-2 font-medium">
                   {singleVendors?.brand_name || "NA"}
                 </h2>
+                {
+                  singleVendors?.isabondon && <p className="text-red-500 text-2xl font-semibold tracking-wide animate-pulse">Shop is currently closed for few days.</p>
+                }
                 {singleVendors?.status === 1 && <p className="text-red-500 text-2xl font-semibold tracking-wide animate-pulse">Oops! This shop's on pause by the admin. No orders for now. Check out another spot instead!</p>}
               </div>
             </div>

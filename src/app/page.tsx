@@ -130,7 +130,7 @@ export const getAllProducts = async () => {
   try {
     const response = await fetch(
       `${AdminUrl}/api/recommendedProducts/null`,
-      { next: { revalidate: 30 } }
+      { next: { revalidate: 0 } }
     );
 
     if (!response.ok) {
@@ -150,7 +150,7 @@ export const getnewArrivals = async () => {
   try {
     const response = await fetch(
       `${AdminUrl}/api/newArrivals/null`,
-      { next: { revalidate: 30 } }
+      { next: { revalidate: 0 } }
     );
 
     if (!response.ok) {

@@ -9,13 +9,13 @@ import { useTranslation } from "react-i18next";
 import { AdminUrl } from "@/app/layout";
 
 
-const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true, successOrders }) => {
+const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLink = true,cartItems=[], successOrders,itemstoPick=[],itemstoShip=[]  }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useRouter()
-  const { cartItems } = useAppSelector((store) => store.cart);
+  // const { cartItems } = useAppSelector((store) => store.cart);
   const pickupItems = JSON.parse(localStorage.getItem("pickupitems")) || [];
   // const itemstoPick = cartItems.filter(item => pickupItems.includes(item.uniquepid))
-  const itemstoShip = successOrders ? successOrders.filter(item => !pickupItems.includes(item.uniquepid)) : cartItems.filter(item => !pickupItems.includes(item.uniquepid))
+  // const itemstoShip = successOrders ? successOrders.filter(item => !pickupItems.includes(item.uniquepid)) : cartItems.filter(item => !pickupItems.includes(item.uniquepid))
 
   const [totalShippingCharges, setTotalShippingCharges] = useState(0)
   const renderCost = async (company_district: string, storedDistrict: string) => {
@@ -49,6 +49,10 @@ const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLin
 
   const calculateShippingCharges = async (cartItems) => {
     // Create a Set to keep track of visited vendorIds
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+      return 0; // Return 0 if cartItems is not an array or is empty
+  }
+
     const visitedVendorIds = new Set();
 
     // Initialize total shipping charges
@@ -77,7 +81,7 @@ const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLin
   };
 
   // Call the function with your array of objects
-  calculateShippingCharges(itemstoShip).then((totalShippingCharges) => {
+  calculateShippingCharges( successOrders?.length > 0 ? successOrders.filter(item => !pickupItems.includes(item.uniquepid)) : itemstoShip  ).then((totalShippingCharges) => {
 
     setTotalShippingCharges(totalShippingCharges)
   });
@@ -92,6 +96,10 @@ const FetchCheckoutPrice = ({ showTitle = true, showCheckout = true, checkoutLin
 
   // Function to calculate subtotal for the entire cart
   const calculateCartSubtotal = (cartItems) => {
+
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+      return 0; // Return 0 if cartItems is not an array or is empty
+  }
     let subtotal = 0;
     for (const item of cartItems) {
       subtotal += calculateItemSubtotal(item.sellingprice, item.added_quantity);

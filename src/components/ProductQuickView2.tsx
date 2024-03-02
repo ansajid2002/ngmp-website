@@ -21,6 +21,8 @@ import {
   removeItemFromWishlist,
 } from "@/redux/slices/wishlistSlice";
 import { useTranslation } from "react-i18next";
+import { GoCircleSlash } from "react-icons/go";
+import { ShopCloseUi } from "@/app/product-detail/page";
 
 export interface ProductQuickView2Props {
   className?: string;
@@ -63,10 +65,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     additionaldescription,
     somali_additionaldescription,
     quantity,
-    mogadishudistrict_ship_from,
     vendorInfo = {}
   } = item;
-  const company_district = vendorInfo?.company_district
+  const company_district = vendorInfo?.company_district || item.company_district
+  const isabondonProduct = vendorInfo?.isabondon || item.isabondon
 
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
@@ -542,7 +544,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         {renderShippingAvailability()}
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
-        {isUniquepidMatched ? (
+        {isabondonProduct ? <ShopCloseUi /> : isUniquepidMatched ? (
           <div className="flex space-x-3.5">
             {/* <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
               <NcInputNumber
@@ -552,12 +554,27 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                 onChange={setQualitySelected}
               />
             </div> */}
-            <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
-              <Link href={"/cart"}>
-                <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-                <span className="ml-3">{t("View Cart")}</span>
-              </Link>
-            </ButtonPrimary>
+
+            {
+              quantity === 0 ?
+                <ButtonPrimary
+                  className="flex-1 items-center flex-shrink-0 transition-all duration-300"
+
+                  bgcolor="bg-red-600"
+                  loading={loader}
+                >
+                  <GoCircleSlash className="font-bold " size={20} />
+                  <span className="ml-3">{t("Out of Stock")}</span>
+                </ButtonPrimary>
+                :
+                <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
+                  <Link href={"/cart"}>
+                    <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+                    <span className="ml-3">{t("View Cart")}</span>
+                  </Link>
+                </ButtonPrimary>
+            }
+
           </div>
         ) : (
           <div className="flex space-x-3.5">
