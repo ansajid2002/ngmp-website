@@ -21,6 +21,8 @@ import {
   removeItemFromWishlist,
 } from "@/redux/slices/wishlistSlice";
 import { useTranslation } from "react-i18next";
+import { GoCircleSlash } from "react-icons/go";
+import { ShopCloseUi } from "@/app/product-detail/page";
 
 export interface ProductQuickView2Props {
   className?: string;
@@ -36,6 +38,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   const [inFavorite, setinFavorite] = useState(false);
   const [shippingRate, setShippingrate] = useState(0);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
+  console.log(item, "whole ittem🐱‍🏍");
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
@@ -61,9 +64,11 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     slug_cat,
     additionaldescription,
     somali_additionaldescription,
-    mogadishudistrict_ship_from
+    quantity,
+    vendorInfo = {}
   } = item;
-
+  const company_district = vendorInfo?.company_district || item.company_district
+  const isabondonProduct = vendorInfo?.isabondon || item.isabondon
 
   const [variantActive, setVariantActive] = useState(0);
   // const [sizeSelected, setSizeSelected] = useState(sizes ? sizes[0] : "");
@@ -71,7 +76,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   const [qualitySelected, setQualitySelected] = useState(1);
   const [variantsWithArray, setVariantsWithArray] = useState(null);
   const [variantsData, setVariantsData] = useState(null);
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const [selectedAttributes, setSelectedAttributes] = useState<null>(null); // Replace 'YourAttributeType' with the actual type
   const [selectLabel, setSelectLabel] = useState<string | null>(item?.label);
   const [mrpData, setMrp] = useState<number | null>(mrp);
@@ -84,12 +89,13 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     ((mrp - sellingprice) / mrp) * 100
   );
   const [singleData, setsingleData] = useState(item);
+  const [loader, setLoader] = useState(false);
   const [selectedImage, setSelectedImage] = useState(images?.[0]);
   const [isUniquepidMatched, setisUniquepidMatched] = useState<boolean | null>(
     null
   );
   const cartItems = useAppSelector((state) => state.cart.cartItems);
-  const {languageCode} = useAppSelector((store=> store.languagesReducer))
+  const { languageCode } = useAppSelector((store => store.languagesReducer))
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
 
@@ -292,7 +298,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
   const notifyAddTocart = async () => {
     const { category, subcategory, uniquepid, vendorid, id } = singleData;
-    const shipping = mogadishudistrict_ship_from && storedDistrict ? 'shipping' : 'pickup'
+    const shipping = company_district && storedDistrict ? 'shipping' : 'pickup'
     const updatedSingleData = {
       ...singleData,
       added_quantity: qualitySelected, // This adds the productToAdd object as a property of singleData
@@ -316,7 +322,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
     localStorage.setItem('selectedOptions', JSON.stringify(existingSelectedOptions));
 
 
-
+    setLoader(true)
     if (customerId) {
       try {
         const requestData = {
@@ -348,9 +354,13 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         setisUniquepidMatched(true);
       } catch (error) {
         console.error("Error updating cart:", error);
+      } finally {
+        setLoader(false)
       }
     } else {
       dispatch(addItem(updatedSingleData));
+      setLoader(false)
+
     }
 
     toast.custom(
@@ -371,6 +381,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   };
 
   const renderVariants = () => {
+    console.log(variantsWithArray, "");
+
     if (!variantsWithArray) {
       // Show skeleton skimmer placeholder when variants are not available yet
       return (
@@ -418,16 +430,18 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   };
 
   const storedDistrict = localStorage.getItem('selectedDistrict');
+  console.log(company_district, storedDistrict, "pickup and delivery locations");
+
 
   const renderShippingAvailability = () => {
     return (
       <div>
         {
-          mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
-            {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
+          company_district && storedDistrict ? <div className="flex justify-center">
+
+            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {company_district} {t("To")} {storedDistrict}</h1>
           </div> : (
-            !mogadishudistrict_ship_from ? (
+            !company_district ? (
               <div className="flex justify-center">
                 <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
               </div>
@@ -437,7 +451,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                   <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">{t("Choose District")}</a>
                 </div>
               ) : (
-                <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
+                <p>{t("Both company_district and storedDistrict are not present")}</p>
               )
             )
           )
@@ -449,7 +463,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
 
   const renderCost = async () => {
     try {
-      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${mogadishudistrict_ship_from}&destination=${storedDistrict}`)
+      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${company_district}&destination=${storedDistrict}`)
       if (response.ok) {
         const data = await response.json()
         if (data.rate === 0) {
@@ -469,7 +483,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
   }
 
   useEffect(() => {
-    mogadishudistrict_ship_from && storedDistrict && renderCost()
+    company_district && storedDistrict && renderCost()
   }, [])
 
   const renderSectionContent = () => {
@@ -481,7 +495,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
             <Link
               href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
             >
-             {languageCode === "so" ? somali_additionaldescription === "" ? additionaldescription : somali_additionaldescription : additionaldescription}
+              {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
             </Link>
           </h2>
 
@@ -518,7 +532,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
               dealimg={
                 "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
               }
-              label1={"Free shipping on all orders"}
+              label1={''}
               label2={"Time-Limited Offer"}
             />
           </div>
@@ -530,7 +544,7 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         {renderShippingAvailability()}
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
-        {isUniquepidMatched ? (
+        {isabondonProduct ? <ShopCloseUi /> : isUniquepidMatched ? (
           <div className="flex space-x-3.5">
             {/* <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
               <NcInputNumber
@@ -540,12 +554,27 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                 onChange={setQualitySelected}
               />
             </div> */}
-            <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
-              <Link href={"/cart"}>
-                <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-                <span className="ml-3">{t("View Cart")}</span>
-              </Link>
-            </ButtonPrimary>
+
+            {
+              quantity === 0 ?
+                <ButtonPrimary
+                  className="flex-1 items-center flex-shrink-0 transition-all duration-300"
+
+                  bgcolor="bg-red-600"
+                  loading={loader}
+                >
+                  <GoCircleSlash className="font-bold " size={20} />
+                  <span className="ml-3">{t("Out of Stock")}</span>
+                </ButtonPrimary>
+                :
+                <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
+                  <Link href={"/cart"}>
+                    <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+                    <span className="ml-3">{t("View Cart")}</span>
+                  </Link>
+                </ButtonPrimary>
+            }
+
           </div>
         ) : (
           <div className="flex space-x-3.5">
@@ -553,11 +582,13 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
               <NcInputNumber
                 defaultValue={qualitySelected}
                 onChange={setQualitySelected}
+                max={quantity}
               />
             </div>
             <ButtonPrimary
               className="flex-1 flex-shrink-0 transition-all duration-300"
               onClick={notifyAddTocart}
+              loading={loader}
             >
               <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
               <span className="ml-3">{t("Add to Cart")}</span>
@@ -572,8 +603,8 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
         <div>
           <h2 className="text-[1rem] font-medium">{t("Description")}</h2>
           <p className=" text-[0.9rem] line-clamp-2">
-            
-            {languageCode === "so" ? somali_additionaldescription === "" ? additionaldescription : somali_additionaldescription : additionaldescription}
+
+            {languageCode === "so" ? somali_additionaldescription === null ? additionaldescription : somali_additionaldescription : additionaldescription}
           </p>
         </div>
 
@@ -688,6 +719,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
                     src={`${ProductImageUrl}/${image}`}
                     className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
+                    onError={(e) => {
+                      e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                      e.target.alt = 'dummyimage';
+                    }}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
                   />
@@ -700,7 +735,10 @@ const ProductQuickView2: FC<ProductQuickView2Props> = ({
           <div className="flex-1 relative w-full h-[500px] rounded-2xl overflow-hidden">
             <Image
               // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-
+              onError={(e) => {
+                e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                e.target.alt = 'dummyimage';
+              }}
               src={`${ProductImageUrl}/${selectedImage || images?.[0]
                 }`}
               className="w-full h-full object-cover"

@@ -19,6 +19,8 @@ export async function POST(request: Request) {
         );
 
         const responseData = await response.json();
+        console.log(responseData,"dddd");
+        
 
         return new Response(JSON.stringify(responseData), {
             headers: { "Content-Type": "application/json" },

@@ -29,6 +29,7 @@ import ProductOfferBadge from "./ProductOfferBadge";
 import { useTranslation } from "react-i18next";
 
 
+
 export interface ProductCardProps {
   className?: string;
   data?: Product;
@@ -42,8 +43,8 @@ const ProductCard: FC<ProductCardProps> = ({
 }) => {
 
   const [wishlistLoading, setWishlistLoading] = useState(false);
-
   const { ad_title, mrp, sellingprice, images, uniquepid, prod_slug ,somali_ad_title} = data;
+  const [src, setSrc] = React.useState(`${ProductImageUrl}/${images?.[0]}`);
   const [inFavorite, setinFavorite] = useState(false);
   const { wishlistItems } = useAppSelector((store) => store.wishlist);
 
@@ -158,7 +159,7 @@ const ProductCard: FC<ProductCardProps> = ({
           onClick={() => setShowModalQuickView(true)}
         >
           <ArrowsPointingOutIcon className="w-3.5 h-3.5" />
-          <span className="ms-1 pl-1.5 text-[14px]">Quick view</span>
+          <span className="ms-1 pl-1.5 text-[14px]">{t("Quick view")}</span>
         </ButtonPrimary>
       </div>
     );
@@ -302,7 +303,10 @@ const ProductCard: FC<ProductCardProps> = ({
             <div className="relative group-hover:scale-105 transition-transform duration-300">
               <NcImage
                 containerClassName="flex aspect-w-3 aspect-h-3 w-full h-0"
-                src={`${ProductImageUrl}/${images?.[0]}`}
+                src={src}
+                placeholder="blur"
+                blurDataURL="/noimage.jpg"
+                onError={() => setSrc('/noimage.jpg')}
                 className="object-cover w-full h-full drop-shadow-xl aspect-[0.85]"
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 40vw"
@@ -357,8 +361,8 @@ const ProductCard: FC<ProductCardProps> = ({
           {/* {renderVariants()} */}
           {/* <div> */}
           {showTitle && (
-            <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-1">
-             {languageCode === "so" ? somali_ad_title === "" ? ad_title : somali_ad_title : ad_title}
+            <h2 className="nc-ProductCard__title  text-sm mb-1.5 font-medium transition-colors line-clamp-2">
+             {languageCode === "so" ? somali_ad_title === null ? ad_title : somali_ad_title : ad_title}
             </h2>
           )}
           {/* <p className={`text-sm text-gray-500 dark:text-gray-400 mt-1 `}>
@@ -374,7 +378,7 @@ const ProductCard: FC<ProductCardProps> = ({
                   allowHalf
                   disabled
                   value={(ratingData?.[0]?.averageRating)?.toFixed(2) || 2}
-                  className="text-sm text-green-800"
+                  className="text-[10px] sm:text-sm text-green-800"
                 />
                 <span className="text-sm ml-2 font-medium text-green-800">({(ratingData?.[0]?.averageRating)?.toFixed(2) || 2})</span>
               </div>

@@ -1,11 +1,8 @@
 "use client";
 
 import React, { useEffect, useId, useRef, useState } from "react";
-import Heading from "./Heading/Heading";
-import CardCategory3 from "./CardCategories/CardCategory3";
 // @ts-ignore
 import Glide from "@glidejs/glide/dist/glide.esm";
-import { CATS_DISCOVER } from "./CardCategories/data";
 
 import SingleVendorsCard from "./Vendors/SingleVendorsCard";
 import Link from "next/link";
@@ -18,7 +15,7 @@ const DiscoverMoreSlider = ({ data }) => {
   // console.log(data, "PRODUCTTS");
 
   const [isShow, setIsShow] = useState(false);
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   useEffect(() => {
     const OPTIONS: Partial<Glide.Options> = {
       // direction: document.querySelector("html")?.getAttribute("dir") || "ltr",
@@ -65,7 +62,7 @@ const DiscoverMoreSlider = ({ data }) => {
     >
       <div className="md:flex  items-center justify-between pb-5">
         <h2 className="text-[2rem] md:text-[2.3rem] text-left tracking-tight leading-none uppercase font-bold mb-2">
-        <span className="text-[#ED642B]">{t('Recommended')}</span> {t('Shops')}
+          <span className="text-[#ED642B]">{t('Recommended')}</span> {t('Shops')}
         </h2>
         <Link href={"/Channel/Shops"}>
           <span className="flex items-end justify-end gap-1 font-medium text-base">

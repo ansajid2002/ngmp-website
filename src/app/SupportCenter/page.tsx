@@ -14,11 +14,11 @@ const Page = () => {
   };
 const {t} = useTranslation()
   return (
-    <div className="">
+    <div className=" ">
       <BreadCrumb label1={"Home"} label2={"Support Center"} />
       <div style={styling} className="px-5 py-10 md:p-16">
-        <div className="space-y-2">
-          <h1 className="text-[2.8rem] leading-none md:text-5xl font-medium">
+        <div className="space-y-2 text-center">
+          <h1 className="text-[2.8rem]  leading-none md:text-5xl font-medium">
             {t("Hi, how can we help you?")}
           </h1>
           <p className="text-[1rem] leading-tight md:leading-normal md:text-xl">

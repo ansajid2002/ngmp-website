@@ -17,35 +17,55 @@ import NcInputNumber from "./NcInputNumber";
 import Divider from "./divider/Divider";
 import { useTranslation } from "react-i18next";
 
-const CartProducts = ({ removeData = true }) => {
+const CartProducts = ({ removeData = true, canNavigate = true }) => {
   const { cartItems } = useAppSelector((store) => store.cart);
   const dispatch = useDispatch();
   const customerData = useAppSelector((state) => state.customerData);
   const customerId = customerData?.customerData?.customer_id || null;
-  const {languageCode} = useAppSelector((store=> store.languagesReducer))
-const {t} =  useTranslation()
+  const { languageCode } = useAppSelector((store => store.languagesReducer))
+  const { t } = useTranslation()
+
+
   const renderProduct = (item: Product, index: number) => {
-    const {
+    const { 
       ad_title,
       somali_ad_title,
       mrp,
       sellingprice,
+      quantity,
       images,
       label,
       added_quantity,
       prod_slug,
       uniquepid,
-      mogadishudistrict_ship_from,
+     
       shippingCost,
-      selectedOption,
+     
       vendorInfo
     } = item;
 
-    const { brand_name = "", vendorname="" } = vendorInfo || []
+    const { brand_name = "", vendorname = "" } = vendorInfo || []
 
     const handleRemove = async (item: any) => {
       try {
+
         dispatch(removeItem(item));
+
+        const pickupitemsString = localStorage.getItem('pickupitems');
+
+        // Parse the string array into an actual array
+        const pickupitemsArray = JSON.parse(pickupitemsString) || [];
+
+        // Filter the array based on the matching condition with item.uniquepid
+        const matchingItems = pickupitemsArray?.filter(pickupitem => pickupitem === item.uniquepid);
+
+        // Check if there are matching items
+        if (matchingItems.length > 0) {
+          // Stringify the matching items array
+          const matchingItemsString = JSON.stringify(matchingItems);
+          // Set the stringified array back to localStorage under the 'pickupitems' key
+          localStorage.setItem('pickupitems', matchingItemsString);
+        }
 
         if (customerId) {
           const { category, subcategory, uniquepid, label } = item;
@@ -189,35 +209,42 @@ const {t} =  useTranslation()
 
     const storedDistrict = localStorage.getItem('selectedDistrict');
 
+
     const renderShippingAvailability = () => {
       return (
         <div>
           {
-            selectedOption === 'pickup' ? <div className="flex">
-              <h1 className="text-red-600 font-semibold text-sm md:text-xl">{t("Only Pickup Available")}</h1>
-            </div> :
-              mogadishudistrict_ship_from && storedDistrict ? <div className="flex">
-                {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-                <h1 className="text-green-600 font-semibold text-sm md:text-xl">{t("Shipping Fee")} : ${shippingCost}, {t("From")} {mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
-              </div> : (
-                !mogadishudistrict_ship_from ? (
+
+            vendorInfo?.company_district && storedDistrict ? <div className="flex">
+
+              <h1 className="text-green-600 font-semibold text-sm md:text-lg">{t("Shipping Fee")} : ${shippingCost}, {t("From")} {vendorInfo?.company_district} {t("To")} {storedDistrict}</h1>
+            </div> : (
+              !vendorInfo?.company_district ? (
+                <div className="flex">
+                  <h1 className="text-red-600 font-semibold text-sm md:text-xl">{t("Only Pickup Available")}</h1>
+                </div>
+              ) : (
+                !storedDistrict ? (
                   <div className="flex">
-                    <h1 className="text-red-600 font-semibold text-sm md:text-xl">{t("Only Pickup Available")}</h1>
+                    <a className="text-blue-600 font-semibold text-sm md:text-xl" href="/select-district" target="_blank">{t("Choose District")}</a>
                   </div>
                 ) : (
-                  !storedDistrict ? (
-                    <div className="flex">
-                      <a className="text-blue-600 font-semibold text-sm md:text-xl" href="/select-district" target="_blank">{t("Choose District")}</a>
-                    </div>
-                  ) : (
-                    <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
-                  )
+                  <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
                 )
               )
+            )
           }
 
         </div>
       )
+    }
+    function getTitle() {
+      const title = languageCode === "so" ? (somali_ad_title || ad_title) : ad_title;
+      return canNavigate ? (
+        <Link href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}>
+          {title}
+        </Link>
+      ) : title;
     }
 
     return (
@@ -233,13 +260,16 @@ const {t} =  useTranslation()
             sizes="300px"
             className="h-full w-full object-contain object-center"
           />
-          <Link
-            href={{
-              pathname: "/product-detail",
-              query: { product: ad_title, uniqueid: uniquepid },
-            }}
-            className="absolute inset-0"
-          ></Link>
+          {
+            canNavigate &&
+            <Link
+              href={{
+                pathname: "/product-detail",
+                query: { product: ad_title, uniqueid: uniquepid },
+              }}
+              className="absolute inset-0"
+            ></Link>
+          }
         </div>
 
         <div className="ml-3 sm:ml-6 flex flex-1 flex-col">
@@ -247,12 +277,7 @@ const {t} =  useTranslation()
             <div className="flex justify-between ">
               <div className="flex-[1.5] ">
                 <h3 className="text-base font-semibold line-clamp-2 w-11/12">
-                  <Link
-                    href={`/product-detail?product=${prod_slug}&uniqueid=${uniquepid}`}
-                  >
-                    
-                    {languageCode === "so" ? somali_ad_title === "" ? ad_title : somali_ad_title : ad_title}
-                  </Link>
+                  {getTitle()}
                 </h3>
                 <div className="mt-1.5 sm:mt-2.5 flex flex-col text-sm text-gray-600 dark:text-gray-300">
                   {/* <span className="mx-4 border-l border-gray-200 dark:border-gray-700 "></span> */}
@@ -279,6 +304,7 @@ const {t} =  useTranslation()
                   className="relative z-10"
                   onChange={getvalueData}
                   item={item}
+                  max={quantity}
                 />
               </div>
 

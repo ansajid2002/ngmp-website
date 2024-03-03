@@ -18,7 +18,7 @@ const NcInputNumber: FC<NcInputNumberProps> = ({
   className = "w-full",
   defaultValue = 1,
   min = 1,
-  max = 99,
+  max,
   onChange,
   label,
   desc,

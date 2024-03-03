@@ -3,12 +3,19 @@
 import { useAppSelector } from '@/redux/store';
 import { Avatar, Image, Input } from 'antd';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { AdminUrl } from '../layout';
 import ChatScreen from './ChatScreen/[vendorId]/page';
 import axios from 'axios';
+import { useRouter, useSearchParams } from 'next/navigation'
+
 
 const ChatwithSeller = () => {
+    const searchParams = useSearchParams()
+    const router = useRouter()
+    const vendorIdFromUrl = searchParams.get("vendorId")
+
+
     const { customerData } = useAppSelector((store) => store.customerData)
     const [conversations, setConversations] = useState(null);
     const [error, setError] = useState('');
@@ -16,11 +23,22 @@ const ChatwithSeller = () => {
     const [lastMessages, setLastMessage] = useState('')
     const [updateCVendoriId, setVendorId] = useState(null)
     const [vendorList, setVendorList] = useState(null)
+    console.log(vendorData, "vendorData");
+
 
 
     const customerId = customerData?.customer_id || null
 
-
+    const createQueryString = useCallback(
+        (name: string, value: string) => {
+            const params = new URLSearchParams(searchParams.toString())
+            params.set(name, value)
+            console.log(params.toString());
+            router.push(`/ChatwithSeller?${params.toString()}`)
+            //   return params.toString()
+        },
+        [searchParams]
+    )
     // Fetch conversations from the backend
     const fetchConversations = async () => {
         try {
@@ -36,6 +54,8 @@ const ChatwithSeller = () => {
                 throw new Error('Failed to fetch conversations');
             }
             const data = await response.json();
+            console.log(data, "conversation");
+
             setConversations(data)
 
             if (data?.error) {
@@ -51,8 +71,41 @@ const ChatwithSeller = () => {
         customerId && fetchConversations();
     }, [customerId]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`/api/Vendors/getProfile`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ vendorid: vendorIdFromUrl }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setVendorData(data)
+                }
+
+                // setSingleVendors(...filteredVendors);
+
+            } catch (error) {
+                console.error("Error fetching vendors:", error);
+            }
+        };
+        if (vendorIdFromUrl) {
+            fetchData()
+        }
+
+        // ;
+        // If you want to perform some action when singleVendors changes, do it here
+    }, []);
+
     const handleVendorDATA = (vendor: any) => {
+
         setVendorData(vendor)
+        // searchParams.set('vendorId',String(vendor.id))
+        createQueryString('vendorId', String(vendor.id))
     }
 
     const renderSkeleton = (index) => {
@@ -83,6 +136,7 @@ const ChatwithSeller = () => {
                 // Send the search value to the backend
                 const response = await axios.post('/api/Customers/SearchVendorsforChat', { searchValue });
                 setVendorList(response.data)
+                console.log(response.data, "all vendors list response daata");
                 // Handle the response from the backend if needed
                 console.log('Response from backend:', response.data);
             } catch (error) {
@@ -91,7 +145,6 @@ const ChatwithSeller = () => {
             }
         }
     }
-
 
 
     return (
@@ -121,6 +174,7 @@ const ChatwithSeller = () => {
                                     ? (
                                         vendorList && vendorList.map((item, index) => {
                                             const { brand_logo, brand_name, id } = item
+
                                             return <div key={index} onClick={() => handleVendorDATA(item)} className={`flex gap-3 overflow-hidden  items-center cursor-pointer hover:bg-gray-300 px-2 py-2 transition-all duration-150 ease-in-out ${id === vendorData?.id && 'bg-gray-200'}`}>
                                                 <Image width={50} height={50} className='rounded-full' src={`${AdminUrl}/uploads/vendorBrandLogo/${brand_logo?.images?.[0]}`} />
                                                 <div className='flex-1 w-full'>
@@ -145,6 +199,8 @@ const ChatwithSeller = () => {
                                         conversations?.length > 0
                                             ? (
                                                 conversations && conversations.map((item, index) => {
+
+
                                                     const { brand_logo, brand_name, id } = item?.vendorDetails || {}
                                                     const { content = '', timestamp = '' } = item?.lastMessage || {}
 
@@ -169,7 +225,7 @@ const ChatwithSeller = () => {
                 </div>
                 <div className='flex-1 '>
                     {
-                        vendorData && customerId ? <ChatScreen vendorData={vendorData} customerData={customerData} onSend={handleLastMessage} /> :
+                        vendorData && customerId ? <ChatScreen predefinedText={searchParams.get("Chat") || ''} vendorData={vendorData} customerData={customerData} onSend={handleLastMessage} /> :
                             <div className='flex justify-center items-center h-screen'>
                                 <p>Choose Vendor to Start Conversation</p>
                             </div>

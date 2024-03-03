@@ -7,11 +7,14 @@ interface CartItem {
 }
 
 interface CartState {
-    cartItems: CartItem[];
+    cartItems: CartItem[]
+    successOrders:any
 }
 
 const initialState: CartState = {
     cartItems: [],
+    successOrders:[],
+
 };
 
 export const cartSlice = createSlice({
@@ -89,6 +92,9 @@ export const cartSlice = createSlice({
             });
 
             state.cartItems = [...state.cartItems, ...filteredNewItems];
+        },
+        addsuccessOrders(state, action: PayloadAction<CartItem[]>) {
+            state.successOrders = action.payload
         }
     },
 });
@@ -101,6 +107,7 @@ export const {
     updateProductsListCart,
     emptyCart,
     addCarts,
+    addsuccessOrders
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

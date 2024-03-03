@@ -130,7 +130,7 @@ export const getAllProducts = async () => {
   try {
     const response = await fetch(
       `${AdminUrl}/api/recommendedProducts/null`,
-      { next: { revalidate: 30 } }
+      { next: { revalidate: 0 } }
     );
 
     if (!response.ok) {
@@ -150,7 +150,7 @@ export const getnewArrivals = async () => {
   try {
     const response = await fetch(
       `${AdminUrl}/api/newArrivals/null`,
-      { next: { revalidate: 30 } }
+      { next: { revalidate: 0 } }
     );
 
     if (!response.ok) {
@@ -253,14 +253,20 @@ async function PageHome() {
       </div> */}
 
       <div className=" px-5 md:px-10 relative space-y-24 my-8 md:my-16">
-        <SectionSliderProductCard
-          heading="Recommended"
-          data={getAllProductsData_Recommended}
-        />
+        {
 
-        <div className="mt-24 lg:mt-32">
-          <DiscoverMoreSlider data={vendors} />
-        </div>
+          getAllProductsData_Recommended && getAllProductsData_Recommended?.length > 0 &&
+          <SectionSliderProductCard
+            heading="Recommended"
+            data={getAllProductsData_Recommended}
+          />
+        }
+
+        {
+          vendors && vendors?.length > 0 && <div className="mt-24 lg:mt-32">
+            <DiscoverMoreSlider data={vendors} />
+          </div>
+        }
 
         {/* <div className="space-y-10 mt-4">
           <CategoriesSlider categoriesdata={fetchCategoriesAndSubcategoriesdata} />
@@ -276,12 +282,15 @@ async function PageHome() {
           <ItemsInCart label1={"Items"} label2={"In Your Cart"} />
         </div>
 
-        <SectionSliderProductCard
-          ShowProduct={false}
-          heading="New Arrivals"
-          subHeading={t("Introducing Our Newest Selections")}
-          data={getAllProductsData_newArrivals}
-        />
+        {
+          getAllProductsData_newArrivals && getAllProductsData_newArrivals?.length > 0 && <SectionSliderProductCard
+            ShowProduct={false}
+            heading="New Arrivals"
+            subHeading={t("Introducing Our Newest Selections")}
+            data={getAllProductsData_newArrivals}
+          />
+
+        }
 
         <div className=" my-5 lg:my-32">
           <Heading title="EXPLORE YOUR INTEREST" />

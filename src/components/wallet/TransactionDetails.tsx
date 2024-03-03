@@ -28,7 +28,7 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
     setIsOpen(!isOpen);
   };
 
-  const checkPaidStatus = async (invoiceId: any) => {
+  const checkPaidStatus = async (invoiceId: any, type_added: string, cid: number) => {
     try {
       setLoading(true)
       // Make an API request to check the paid status based on invoiceId
@@ -37,23 +37,33 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ invoiceId }),
+        body: JSON.stringify({ invoiceId, type_added, cid }),
       });
 
       // Dismiss the loading message after a short delay
       const data = await response.json();
 
-      console.log(data);
+      if (type_added === 'Evc') {
+        if (data.status) {
+          onPageChange(1, 10, '');
+          alert('The payment has been received. Your transaction is now paid.');
 
-      // Check if the response indicates a successful status
-      if (data?.eDahabData?.StatusCode === 0 && data?.eDahabData?.InvoiceStatus === 'Paid') {
-        onPageChange(1, 10, '');
-        // Show an alert indicating that the payment has been received
-        alert('The payment has been received. Your transaction is now paid.');
+        } else {
+          // Handle cases where the payment is not successful or other errors
+          alert('The payment is not successful or there was an error.');
+        }
       } else {
-        // Handle cases where the payment is not successful or other errors
-        alert(data?.error);
+        if (response.ok && data.eDahabData.StatusCode === 0 && data.eDahabData.InvoiceStatus === 'Paid') {
+          onPageChange(1, 10, '');
+
+          // Show an alert indicating that the payment has been received
+          alert('The payment has been received. Your transaction is now paid.');
+        } else {
+          // Handle cases where the payment is not successful or other errors
+          alert('The payment is not successful or there was an error.');
+        }
       }
+
     } catch (error) {
       // Handle errors
       console.error('Error checking paid status:', error);
@@ -83,7 +93,7 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
             <LucideArrowUp color="green" />
           )
         ) : (
-          <div className='flex flex-col justify-center items-center' onClick={() => checkPaidStatus(record.invoiceid)}>
+          <div className='flex flex-col justify-center items-center' onClick={() => checkPaidStatus(record.invoiceid, record.type_added, customer_id)}>
             <Pause color='orange' />
             <p className='text-sm text-blue-600 cursor-pointer text-center'>Check Paid Status</p>
           </div>
@@ -100,6 +110,34 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
       )
     },
     {
+      title: 'Added By',
+      dataIndex: 'type_added',
+      key: 'type_added',
+      width: 200,
+      render: (type_added: any) => {
+        let iconComponent = null;
+
+        // Determine which icon to display based on the value of type_added
+        switch (type_added) {
+          case 'Evc':
+            iconComponent = <img width={150} height={50} loading='lazy' src='https://hormuud.com/Svg/Hormuud.svg' />;
+            break;
+          case 'eDahab':
+            iconComponent = <img width={150} height={50} loading='lazy' src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmtt2QFjq2GvCnhU5gAqUt39lII13y6-a4Z9t8LKS4AlakyfImu0qPj_s-S-xLKm4fVE0&usqp=CAU' />;
+            break;
+          default:
+            iconComponent = '';
+            break;
+        }
+
+        return (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {iconComponent}
+          </div>
+        );
+      }
+    },
+    {
       title: 'Sender',
       dataIndex: '_',
       key: '_',
@@ -109,14 +147,16 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
           ? (record.picture.startsWith('https') ? record.picture : `${AdminUrl}/uploads/customerProfileImages/${record.picture}`)
           : '/noimage.jpg';
 
+        console.log(record);
+
         return (
           <div className='flex justify-center items-center'>
             <div className='flex justify-center'>
               <Image src={imageUrl} width={50} className='rounded-full' />
             </div>
             <div className='flex flex-col justify-start p-2'>
+              <p className='text-sm font-semibold text-gray-700'>Id-  {record.customer_id}</p>
               <p className='text-sm font-semibold text-gray-700'>{record.given_name} {record.family_name}</p>
-              <p className='text-base font-light'>{record.email}</p>
             </div>
           </div >
         );
@@ -139,7 +179,6 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
       dataIndex: 'amount',
       key: 'amount',
       width: 200,
-      fixed: 'right',
       render: (text: string, record: any) => <p className='text-red-500 font-semibold text-xl'>{(record.amount < 0 ? formatCurrency(record.amount) : '-')}</p>,
     },
     {
@@ -147,7 +186,6 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
       dataIndex: 'amount',
       key: 'amount',
       width: 200,
-      fixed: 'right',
       render: (text: string, record: any) => <p className={`${record.status === 'paid' ? 'text-green-500' : 'text-orange-500'} font-semibold text-xl`}>{(record.amount > 0 ? formatCurrency(record.amount) : '-')}</p>,
     },
     {
@@ -155,7 +193,6 @@ const TransactionDetails = ({ customer_id, transactions, total, current, onPageC
       dataIndex: 'closing_balance',
       key: 'closing_balance',
       width: 200,
-      fixed: 'right',
       render: (text: string, record: any) => <p className='text-green-500 font-semibold text-xl'>{(record.closing_balance > 0 ? formatCurrency(record.closing_balance) : '-')}</p>,
     },
 

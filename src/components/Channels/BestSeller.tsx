@@ -30,7 +30,7 @@ const BestSeller = () => {
   const [filteredCategories, setFilteredCategories] = React.useState(null); // For filtered categories
   const [selectedCatgory, setSelectedCatgeory] = React.useState("");
   const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(50);
+  const [pageSize, setPageSize] = React.useState(20);
   const [totalCount, setTotalCount] = React.useState(0);
   // Define an onClick function to bind the value on tab click
 

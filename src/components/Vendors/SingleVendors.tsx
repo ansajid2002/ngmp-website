@@ -7,11 +7,12 @@ import { AdminUrl } from "@/app/layout";
 import SingleVendorsDetails from "./SingleVendorsDetails";
 import Skeleton from "react-loading-skeleton";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 const SingleVendors = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [singleVendors, setSingleVendors] = useState(null);
-
+  const { t } = useTranslation()
   const params = useSearchParams();
   const vendorid = params.get("vendorid");
 
@@ -104,6 +105,9 @@ const SingleVendors = () => {
                 <h2 className="text-xl md:text-xl tracking-wide pr-2 font-medium">
                   {singleVendors?.brand_name || "NA"}
                 </h2>
+                {
+                  singleVendors?.isabondon && <p className="text-red-500 text-2xl font-semibold tracking-wide animate-pulse">Shop is currently closed for few days.</p>
+                }
                 {singleVendors?.status === 1 && <p className="text-red-500 text-2xl font-semibold tracking-wide animate-pulse">Oops! This shop's on pause by the admin. No orders for now. Check out another spot instead!</p>}
               </div>
             </div>
@@ -132,10 +136,10 @@ const SingleVendors = () => {
                     <p className="font-medium">Follow</p>
                   </h2>
                 </div> */}
-                <Link href={'/ChatwithSeller'}>
+                <Link href={`/ChatwithSeller?vendorId=${vendorid}`}>
                   <div className="flex flex-col  items-center transition-all ease-in-out hover:bg-gray-200 rounded-xl p-2">
                     <MessageCircle size={32} className="text-gray-700" />
-                    <h2 className="text-sm tracking-wide text-gray-700 font-semibold">Connect with Vendor</h2>
+                    <h2 className="text-sm tracking-wide text-gray-700 font-semibold">{t("Connect with Vendor")}</h2>
                   </div>
                 </Link>
               </div>

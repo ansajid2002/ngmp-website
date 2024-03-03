@@ -25,6 +25,9 @@ const Prices: FC<PricesProps> = ({
 
   return (
     <div className={`${className}`}>
+      {isFinite(discountPercentage) && discountPercentage !== 0 &&
+              <p className="text-green-600 mx-1 block sm:hidden"> -{discountPercentage.toFixed(2)}%</p>
+            }
       <div className={` ${contentClass}`}>
         {sellingprice && sellingprice > 0 && (
           <span
@@ -32,7 +35,7 @@ const Prices: FC<PricesProps> = ({
           >
             <p className="tracking-wide ">Price :</p>
             {isFinite(discountPercentage) && discountPercentage !== 0 &&
-              <p className="text-green-600 mx-1"> -{discountPercentage.toFixed(2)}%</p>
+              <p className="text-green-600 mx-1 hidden sm:block"> -{discountPercentage.toFixed(2)}%</p>
             }
             <p className="ml-1 ">{` $${String(sellingprice)}`}</p>
           </span>

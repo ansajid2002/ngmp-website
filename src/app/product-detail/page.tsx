@@ -6,31 +6,23 @@ import LikeButton from "@/components/LikeButton";
 import { StarIcon } from "@heroicons/react/24/solid";
 import BagIcon from "@/components/BagIcon";
 import NcInputNumber from "@/components/NcInputNumber";
-import { PRODUCTS } from "@/data/data";
+import { GoCircleSlash } from "react-icons/go";
 import payment from "@/images/payment.png";
 import security from "@/images/security.png";
-import {
-  NoSymbolIcon,
-  ClockIcon,
-  SparklesIcon,
-} from "@heroicons/react/24/outline";
-import IconDiscount from "@/components/IconDiscount";
+
 import Prices from "@/components/Prices";
 import toast from "react-hot-toast";
-import SectionSliderProductCard from "@/components/SectionSliderProductCard";
 import ReviewItem from "@/components/ReviewItem";
 import ButtonSecondary from "@/shared/Button/ButtonSecondary";
 import ModalViewAllReviews from "./ModalViewAllReviews";
 import NotifyAddTocart from "@/components/NotifyAddTocart";
-// import Image from "next/image";
-import AccordionInfo from "@/components/AccordionInfo";
+
 import { AdminUrl, HomeUrl, ProductImageUrl } from "../layout";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
 import { addItem } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
 import Link from "next/link";
-import AddToCartButton from "@/components/AddtoCart";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   addItemToWishlist,
@@ -52,16 +44,26 @@ import {
 } from "lucide-react";
 import { Image, Modal, Rate } from "antd";
 import ProductSalebadge from "@/components/ProductSalebadge";
-import SellerProfileProductPage from "@/components/SellerProfileProductPage";
 import Reviewcomponent from "@/components/reviewsandrating/Reviewcomponent";
 import { useTranslation } from "react-i18next";
 
+export const ShopCloseUi = () => {
+  return (
+    <div className="flex justify-center p-4 rounded-full">
+      <h1 className="text-red-500 tracking-wide text-sm font-semibold">
+        The shop is currently closed. You'll be able to purchase products very soon!
+      </h1>
+    </div>
+  );
+}
 
 const ProductDetailPage = ({ searchParams }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sellerProfile, setSellerProfile] = useState(null);
-  const {t} = useTranslation()
+  const [loader, setLoader] = useState(false);
+
+  const { t } = useTranslation()
   const showDetailModal = () => {
     setIsDetailModalOpen(true);
   };
@@ -73,7 +75,6 @@ const ProductDetailPage = ({ searchParams }) => {
   const detailhandleCancel = () => {
     setIsDetailModalOpen(false);
   };
-  // console.log(isDetailModalOpen, "isDetailModalOpen");
 
   const [seeMore, setSeeMore] = useState(false);
 
@@ -122,14 +123,32 @@ const ProductDetailPage = ({ searchParams }) => {
   const [inFavorite, setinFavorite] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [wishlistLoading, setWishlistLoading] = useState(false);
-
+  const storedDistrict = localStorage.getItem('selectedDistrict');
   const cartItems = useAppSelector((state) => state.cart.cartItems);
   const wishlistItems = useAppSelector((state) => state.wishlist.wishlistItems);
   const [shippingRate, setShippingrate] = useState(0);
-  const {languageCode} = useAppSelector((store=> store.languagesReducer))
+  const { languageCode } = useAppSelector((store => store.languagesReducer))
+  console.log(responseData, "responsedatra");
 
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    const func = async () => {
+      const res = await fetch(`/api/search/productsearch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uniquepid: responseData?.uniquepid, customer_id: customerId, slug: responseData?.prod_slug, slug_cat: responseData?.slug_cat, slug_subcat: responseData?.slug_subcat, nested_subcat_slug: responseData?.nested_subcat_slug, vendorid: responseData?.vendorid }),
+      });
+      console.log("don--e-------");
+
+    }
+    if (responseData) {
+      func()
+    }
+
+  }, [responseData])
 
   useEffect(() => {
     const handlePutRequest = async () => {
@@ -151,11 +170,10 @@ const ProductDetailPage = ({ searchParams }) => {
         const responseDataProduct = await response.json();
 
         setResponseData(responseDataProduct?.product);
+        setSellerProfile(responseDataProduct?.product?.vendorInfo)
+        responseDataProduct?.product?.vendorInfo?.company_district && renderCost(responseDataProduct?.product?.vendorInfo?.company_district)
 
-        responseDataProduct?.product?.mogadishudistrict_ship_from && renderCost(responseDataProduct?.product?.mogadishudistrict_ship_from)
-
-        setSellerId(responseDataProduct.product.vendorid);
-        // console.log(sellerId, "SELLLERDATATATATATATAT");
+        setSellerId(responseDataProduct?.vendorid);
       } catch (error) {
         console.error("Error processing request:", error);
         // Handle error gracefully
@@ -165,42 +183,10 @@ const ProductDetailPage = ({ searchParams }) => {
     handlePutRequest();
   }, [searchParams]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Assuming getAllVendors accepts an ID parameter
-
-        const response = await fetch(`/api/Vendors/getProfile`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ vendorid: sellerId }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data, "SSSSSSSSSSSSSDATAA");
-          setSellerProfile(data);
-          // console.log(sellerProfile);
-
-          // setIsLoading(false);
-        } else {
-          console.error(`HTTP error! Status: ${response.status}`);
-        }
-      } catch (error) {
-        console.error("Error fetching vendors:", error);
-      }
-    };
-
-    sellerId && fetchData();
-    // If you want to perform some action when singleVendors changes, do it here
-  }, [sellerId]);
-
 
   useEffect(() => {
     // Check if there's an item in wishlistItems with a matching uniquepid
-    const isFavorite = wishlistItems.some(
+    const isFavorite = wishlistItems?.some(
       (wish) => wish.uniquepid === responseData?.uniquepid
     );
     setinFavorite(isFavorite);
@@ -393,11 +379,11 @@ const ProductDetailPage = ({ searchParams }) => {
   }, [variantsWithArray]);
 
   useEffect(() => {
-    const isUniquepidMatched = cartItems.some((cartItem) => {
+    const isUniquepidMatched = cartItems?.some((cartItem) => {
       return cartItem.uniquepid === responseData?.uniquepid;
     });
 
-    const matchedCartProduct = cartItems.find((cartItem) => {
+    const matchedCartProduct = cartItems?.find((cartItem) => {
       if (cartItem.uniquepid === responseData?.uniquepid) {
         if (cartItem?.label != null && cartItem?.label != undefined) {
           return (
@@ -524,19 +510,28 @@ const ProductDetailPage = ({ searchParams }) => {
     ));
   };
 
-  const storedDistrict = localStorage.getItem('selectedDistrict');
+
+
 
   const renderShippingAvailability = () => {
     return (
       <div>
         {
-          responseData?.mogadishudistrict_ship_from && storedDistrict ? <div className="flex justify-center">
-            {/* <h1>{`${mogadishudistrict_ship_from} `}</h1> */}
-            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {responseData?.mogadishudistrict_ship_from} {t("To")} {storedDistrict}</h1>
+          responseData?.vendorInfo?.company_district && storedDistrict ? <div className="flex justify-center">
+
+            <h1 className="text-green-600 font-semibold">{t("Shipping Fee")} : ${shippingRate}, {t("From")} {responseData?.vendorInfo?.company_district} {t("To")} {storedDistrict}</h1>
           </div> : (
-            !responseData?.mogadishudistrict_ship_from ? (
-              <div className="flex justify-center">
+            !responseData?.vendorInfo?.company_district ? (
+              <div className="flex flex-col justify-center w-full">
                 <h1 className="text-red-600 font-semibold">{t("Only Pickup Available")}</h1>
+                <div className="mt-2">
+                  <h2 className="text-xl font-semibold text-gray-800">Pickup From: </h2>
+                  <address>
+                    <b>{sellerProfile?.company_name}</b>
+                    <p>{sellerProfile?.shipping_address} ,  <span>{sellerProfile?.company_city}</span></p>
+                    <p>{sellerProfile?.company_district}, {sellerProfile?.company_country}</p>
+                  </address>
+                </div>
               </div>
             ) : (
               !storedDistrict ? (
@@ -544,7 +539,7 @@ const ProductDetailPage = ({ searchParams }) => {
                   <a className="text-blue-600 font-semibold" href="/select-district" target="_blank">{t("Choose District")}</a>
                 </div>
               ) : (
-                <p>{t("Both mogadishudistrict_ship_from and storedDistrict are not present")}</p>
+                <p>{t("Both company_district and storedDistrict are not present")}</p>
               )
             )
           )
@@ -554,13 +549,12 @@ const ProductDetailPage = ({ searchParams }) => {
     )
   }
 
-  const renderCost = async (origin) => {
+  const renderCost = async (district: any) => {
+    if (!district) return
     try {
-      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${origin}&destination=${storedDistrict}`)
+      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${district}&destination=${storedDistrict}`)
       if (response.ok) {
         const data = await response.json()
-        console.log(data, 'data');
-
         if (data.rate === 0) {
           setShippingrate(0)
         }
@@ -576,6 +570,10 @@ const ProductDetailPage = ({ searchParams }) => {
     }
     // return <h1>Hello</h1>
   }
+
+  useEffect(() => {
+    !responseData?.vendorInfo?.company_district && storedDistrict && renderCost(responseData?.vendorInfo?.company_district)
+  }, [])
 
 
   const renderSectionContent = () => {
@@ -602,8 +600,8 @@ const ProductDetailPage = ({ searchParams }) => {
         {/* ---------- 1 HEADING ----------  */}
         <div>
           <h2 className="text-[1.2rem] tracking-normal">
-            
-            {languageCode === "so" ? responseData?.somali_ad_title === "" ? responseData?.ad_title : responseData?.somali_ad_title : responseData?.ad_title}
+
+            {languageCode === "so" ? responseData?.somali_ad_title === null ? responseData?.ad_title : responseData?.somali_ad_title : responseData?.ad_title}
           </h2>
 
           <div className="flex items-center text-or mt-5 space-x-4 sm:space-x-5">
@@ -614,7 +612,7 @@ const ProductDetailPage = ({ searchParams }) => {
               sellingprice={sellingPriceData || responseData?.sellingprice}
             />
 
-            <div className="h-7 border-l border-gray-300 dark:border-gray-700"></div>
+            {/* <div className="h-7 border-l border-gray-300 dark:border-gray-700"></div>
 
             <div className="flex items-center">
               <a
@@ -633,9 +631,9 @@ const ProductDetailPage = ({ searchParams }) => {
               <span className="hidden sm:block mx-2.5">·</span>
               <div className="hidden sm:flex items-center text-sm">
                 <SparklesIcon className="w-3.5 h-3.5" />
-                {/* <span className="ml-1 leading-none">{status}</span> */}
+                <span className="ml-1 leading-none">{status}</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -647,7 +645,7 @@ const ProductDetailPage = ({ searchParams }) => {
             dealimg={
               "https://aimg.kwcdn.com/upload_aimg/commodity/f8b09403-3868-4abf-9924-5eae97456cef.png?imageView2/2/w/800/q/70/format/webp"
             }
-            label1={t("Free shipping on all orders")}
+
             label2={t("Time-Limited Offer")}
           />
         </div>
@@ -659,9 +657,10 @@ const ProductDetailPage = ({ searchParams }) => {
 
         {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
         {renderShippingAvailability()}
-        {isUniquepidMatched ? (
-          <div className="flex space-x-3.5">
-            {/* <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
+        {
+          sellerProfile?.isabondon ? <ShopCloseUi /> : isUniquepidMatched ? (
+            <div className="flex space-x-3.5">
+              {/* <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full">
               <NcInputNumber
                 defaultValue={
                   IsMatchedCartProduct && IsMatchedCartProduct.added_quantity
@@ -669,30 +668,50 @@ const ProductDetailPage = ({ searchParams }) => {
                 onChange={setQualitySelected}
               />
             </div> */}
-            <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
-              <Link href={"/cart"}>
-                <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-                <span className="ml-3">{t("View Cart")}</span>
-              </Link>
-            </ButtonPrimary>
-          </div>
-        ) : (
-          <div className="flex space-x-3.5">
-            <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
-              <NcInputNumber
-                defaultValue={qualitySelected}
-                onChange={setQualitySelected}
-              />
+              <ButtonPrimary className="flex-1 flex-shrink-0 bg-orange-600 hover:bg-orange-500">
+                <Link href={"/cart"}>
+                  <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+                  <span className="ml-3">{t("View Cart")}</span>
+                </Link>
+              </ButtonPrimary>
             </div>
-            <ButtonPrimary
-              className="flex-1 flex-shrink-0 transition-all duration-300"
-              onClick={notifyAddTocart}
-            >
-              <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
-              <span className="ml-3">{t("Add to Cart")}</span>
-            </ButtonPrimary>
-          </div>
-        )}
+          ) : (
+            <div className="flex space-x-3.5">
+
+              {
+                responseData?.quantity !== 0 &&
+                <div className="flex items-center justify-center bg-gray-100/70 dark:bg-gray-800/70 px-2 py-3 sm:p-3.5 rounded-full transition-all duration-300">
+                  <NcInputNumber
+                    defaultValue={qualitySelected}
+                    onChange={setQualitySelected}
+                    max={responseData?.quantity}
+                  />
+                </div>
+              }
+              {
+                responseData?.quantity === 0 ?
+                  <ButtonPrimary
+                    className="flex-1 items-center flex-shrink-0 transition-all duration-300"
+
+                    bgcolor="bg-red-600"
+                    loading={loader}
+                  >
+                    <GoCircleSlash className="font-bold " size={20} />
+                    <span className="ml-3">{t("Out of Stock")}</span>
+                  </ButtonPrimary>
+                  :
+                  <ButtonPrimary
+                    className="flex-1 flex-shrink-0 transition-all duration-300"
+                    onClick={notifyAddTocart}
+                    loading={loader}
+                  >
+                    <BagIcon className="hidden sm:inline-block w-5 h-5 mb-0.5" />
+                    <span className="ml-3">{t("Add to Cart")}</span>
+                  </ButtonPrimary>
+              }
+
+            </div>
+          )}
 
         {/*  */}
         <hr className=" 2xl:!my-10 border-gray-200 dark:border-gray-700"></hr>
@@ -732,7 +751,7 @@ const ProductDetailPage = ({ searchParams }) => {
         <div>
           <h2 className="text-[1.3rem] font-medium">{t("Description")}</h2>
           <p className="leading-normal mt-3 text-[1rem]">
-        
+
             {languageCode === "so" ? responseData?.somali_additionaldescription === "" ? responseData?.additionaldescription : responseData?.somali_additionaldescription : responseData?.additionaldescription}
           </p>
         </div>
@@ -757,11 +776,11 @@ const ProductDetailPage = ({ searchParams }) => {
           <div className="text-left flex flex-col gap-2">
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <ShieldCheck size={20} className="mr-1" />
-             {t("Safe Payment Options")}
+              {t("Safe Payment Options")}
             </span>
             <div className="md:px-5 flex flex-col gap-2 md:gap-2">
               <li className="list-disc">
-               {t(` Nile is committed to protecting your payment information. We
+                {t(` Nile is committed to protecting your payment information. We
                 follow PCI DSS standards, use strong encryption, and perform
                 regular reviews of its system to protect your privacy.`)}
               </li>
@@ -793,11 +812,11 @@ const ProductDetailPage = ({ searchParams }) => {
 
             <span className="flex items-center text-[1rem] text-green-700 font-medium">
               <LockKeyhole size={20} className="mr-1" />
-             {t("Secure Privacy")}
+              {t("Secure Privacy")}
             </span>
             <div className="md:px-5 flex flex-col gap-1 md:gap-2">
               <li className="list-disc">
-               {t(` Protecting your privacy is important to us! Please be assured
+                {t(` Protecting your privacy is important to us! Please be assured
                 that your information will be kept secured and uncompromised. We
                 do not sell your personal information for money and will only
                 use your information in accordance with our privacy and cookie
@@ -961,7 +980,7 @@ const ProductDetailPage = ({ searchParams }) => {
                   {sellerProfile?.brand_name || "NA"}
                 </h2>
               </Link>
-              <span
+              {/* <span
                 onClick={() => setIsOpenModalViewAllReviews(true)}
                 className="cursor-pointer p-1"
               >
@@ -972,18 +991,18 @@ const ProductDetailPage = ({ searchParams }) => {
                   defaultValue={4.9}
                   className="text-gray-900 text-sm md:text-lg ml-2"
                 />
-              </span>
+              </span> */}
             </div>
 
             <div className="flex items-center justify-start">
-              <div className="flex gap-1 items-center">
+              {/* <div className="flex gap-1 items-center">
                 <h2 className="font-medium">
                   {sellerProfile?.followers || "NA"}
                 </h2>
                 <h3 className="text-gray-600 text-xs">{t("Followers")}</h3>
               </div>
 
-              <Minus className="rotate-90 text-gray-400" />
+              <Minus className="rotate-90 text-gray-400" /> */}
 
               {/* <div className="flex gap-1 items-center">
                 <h2 className="font-medium">
@@ -996,13 +1015,13 @@ const ProductDetailPage = ({ searchParams }) => {
 
               <div className="flex items-center gap-1">
                 <h2 className="font-medium">
-                  {sellerProfile?.total_products || "NA"}
+                  {responseData?.vendorCount || "0"}
                 </h2>
                 <h3 className="text-gray-600 text-xs">{t("Items")}</h3>
               </div>
             </div>
 
-            <div className="flex gap-2 items-center ">
+            {/* <div className="flex gap-2 items-center ">
               <h2 className="w-[50%] flex gap-1 md:gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
                 <Heart className="" size={16} />
                 <p className="text-sm font-medium">{t("Follow")}</p>
@@ -1010,17 +1029,17 @@ const ProductDetailPage = ({ searchParams }) => {
               <h2 className="w-[50%] flex gap-2 items-center justify-center hover:text-red-600 transition-all ease-in-out border p-2 hover:border-red-900 border-gray-800 rounded-3xl">
                 <p className="text-sm font-medium">{t("Shop all items")}</p>
               </h2>
-            </div>
+            </div> */}
           </div>
         </div>
 
-        <div className="pt-5 font-medium text-lg flex items-center justify-between">
+        {/* <div className="pt-5 font-medium text-lg flex items-center justify-between">
           <h2 className="text-xl">{t("Details")}</h2>
           <h2 className="flex text-sm items-center gap-1">
             {t("Report this item")}
             <ChevronRight size={15} />
           </h2>
-        </div>
+        </div> */}
         <div className="mt-2">
           <ul className="space-y-2">
             {/* {Object.entries(responseData?.attributes_specification).map(
@@ -1051,7 +1070,13 @@ const ProductDetailPage = ({ searchParams }) => {
                 </h1>,
               ]}
             >
-              <div>{sellerProfile?.vendorname}</div>
+              <div><b>Name:</b> {sellerProfile?.vendorname}</div>
+              <div><b>Brand Name:</b> {sellerProfile?.brand_name}</div>
+              <div><b>Company name:</b> {sellerProfile?.company_name}</div>
+              <div><b>District:</b> {sellerProfile?.company_district}</div>
+              <div><b>Business Type:</b> {sellerProfile?.business_type}</div>
+              <div><b>Website:</b> {sellerProfile?.business_website}</div>
+              <div><b>About Business:</b> {sellerProfile?.business_description}</div>
             </Modal>
           </ul>
         </div>
@@ -1060,7 +1085,7 @@ const ProductDetailPage = ({ searchParams }) => {
   };
 
   const notifyAddTocart = async () => {
-    const shipping = responseData?.mogadishudistrict_ship_from && storedDistrict ? 'shipping' : 'pickup'
+    const shipping = responseData?.vendorInfo?.company_district && storedDistrict ? 'shipping' : 'pickup'
 
     const updatedSingleData = {
       ...responseData,
@@ -1078,6 +1103,8 @@ const ProductDetailPage = ({ searchParams }) => {
     const replacesubcategory = responseData?.subcategory
       .replace(/[^\w\s]/g, "")
       .replace(/\s/g, "");
+
+    setLoader(true)
 
     if (customerId) {
       try {
@@ -1108,11 +1135,17 @@ const ProductDetailPage = ({ searchParams }) => {
         const responseDataResponse = await response.json();
         dispatch(addItem(updatedSingleData));
         setisUniquepidMatched(true);
+        setLoader(false)
+
       } catch (error) {
         console.error("Error updating cart:", error);
+        setLoader(false)
+
       }
     } else {
       dispatch(addItem(updatedSingleData));
+      setLoader(false)
+
     }
 
     toast.custom(
@@ -1164,10 +1197,15 @@ const ProductDetailPage = ({ searchParams }) => {
                   <img
                     sizes=""
                     src={`${ProductImageUrl}/${image}`}
-                    className={`w-full rounded-xl object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
+                    className={`w-full rounded-xl  h-full drop-shadow-xl aspect-[0.85] object-contain transition duration-300 ${selectedImage === image ? "ring-2 ring-primary" : ""
                       }`}
                     alt={`Product Detail ${index + 1}`}
                     loading="lazy" // Add the lazy loading attribute here
+
+                    onError={(e) => {
+                      e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                      e.target.alt = 'dummyimage';
+                    }}
                   />
                 </div>
               </div>
@@ -1177,11 +1215,15 @@ const ProductDetailPage = ({ searchParams }) => {
 
         {/* MAIN IMAGE */}
         <div className="flex-1">
-          <div className="relative aspect-w-2 aspect-h-2 overflow-hidden">
+          <div className="relative aspect-w-[100] aspect-h-[85]  overflow-hidden">
             <Image
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               src={`${selectedImage ? `${ProductImageUrl}/${selectedImage}` : (responseData?.images?.[0] ? `${ProductImageUrl}/${responseData.images[0]}` : "/placeholder.png")}`}
-              className="w-full rounded-xl object-contain transition-transform duration-300 transform-gpu hover:scale-200 hover:transform-origin-center"
+              onError={(e) => {
+                e.target.src = "/noimage.jpg";
+                e.target.alt = 'dummyimage';
+              }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               alt="Main Product Image"
               loading="lazy"
             />
@@ -1211,6 +1253,7 @@ const ProductDetailPage = ({ searchParams }) => {
       </>
     );
   };
+
   return (
     <div className={`nc-ProductDetailPage `}>
       {/* MAIn */}

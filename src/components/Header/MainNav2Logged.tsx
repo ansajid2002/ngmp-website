@@ -24,6 +24,7 @@ import PopularSearches from "./Search/PopularSearches";
 import SearchList from "./Search/SearchList";
 import MobileSearch from "./Search/MobileSearch";
 import { useTranslation } from "react-i18next";
+import { useAppSelector } from "@/redux/store";
 
 const MainNav2Logged = () => {
   const inputRef = createRef<HTMLInputElement>();
@@ -35,7 +36,14 @@ const MainNav2Logged = () => {
   const [searchText, setSearchText] = useState(decryptedText || "");
   const [MatchingKeyword, setMatchingKeyword] = useState(null);
   const [focusInput, setFocusInput] = useState(false);
-const {t} = useTranslation()
+
+  const { t } = useTranslation()
+
+  useEffect(() => {
+    console.log("calllllllllled");
+
+    setSearchText(atob(searchEncrypt))
+  }, [searchEncrypt])
   useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (searchNode.current && !searchNode.current?.contains(event.target)) {
@@ -56,6 +64,8 @@ const {t} = useTranslation()
     setSearchText(text);
     try {
       if (text.trim() === "") return;
+
+
       const response = await fetch(
         `${AdminUrl}/api/searchProducts?searchTerm=${text}&currency=USD`
       );
@@ -97,6 +107,10 @@ const {t} = useTranslation()
     );
   };
 
+  const changefocusinputfromchild = () => {
+    setFocusInput(false)
+  }
+
   const handleSearhForm = (status: boolean, searchTextprop: string) => {
     setSearchText(searchTextprop);
   };
@@ -113,7 +127,7 @@ const {t} = useTranslation()
             setFocusInput(false);
           }}
         >
-          <div className="bg-gray-100  w-full dark:bg-gray-800 flex items-center space-x-1.5 px-5 h-full rounded-lg">
+          <div className="bg-gray-100  w-[90%] dark:bg-gray-800 flex items-center space-x-1.5 px-5 h-full rounded-lg">
             {renderMagnifyingGlassIcon()}
             <input
               ref={inputRef}
@@ -141,12 +155,21 @@ const {t} = useTranslation()
               className=" p-4 bg-white rounded-lg shadow-lg  h-96 overflow-hidden overflow-y-auto w-full z-[99999999]"
             >
               {searchText.trim() === "" ? (
-                <PopularSearches />
+                <div
+                  onClick={() => setFocusInput(false)}
+                >
+
+                  <PopularSearches />
+                </div>
               ) : (
-                <SearchList
-                  closeSearch={handleSearhForm}
-                  searchKeywords={MatchingKeyword}
-                />
+                <div
+                  onClick={() => setFocusInput(false)}
+                ><SearchList
+                    closeSearch={handleSearhForm}
+                    searchKeywords={MatchingKeyword}
+                  // setFocusInput={changefocusinputfromchild}
+                  />   </div>
+
               )}
             </div>
           </>
@@ -172,11 +195,11 @@ const {t} = useTranslation()
           </Link>
         </div>
 
-        <div className="hidden  md:flex justify-start ld:justify-center mx-4 w-[65%]">
+        <div className="hidden  md:flex justify-between mx-4 w-[70%]">
           <div className="w-1/2">
             <Navigation />
           </div>
-          <div className="hidden lg:block w-1/2 mt-2">{renderSearchForm()}</div>
+          <div className="hidden lg:block w-[40%] mt-2">{renderSearchForm()}</div>
         </div>
 
         <div className="w-[35%] lg:w-[25%]  flex items-center gap-1 justify-center text-gray-700 dark:text-gray-100">
@@ -216,7 +239,7 @@ const {t} = useTranslation()
           /> */}
           <Truck strokeWidth={1} className="text-[#ADFFA2]" size={35} />
           <h1 className="text-[15px] leading-tight md:text-[16px] text-[#ADFFA2] font-semibold">
-           {t("Free Shipping on all Orders")}
+            {t("Great Deals on all Orders")}
             <br />
             {t("Time-limited offer")}
           </h1>

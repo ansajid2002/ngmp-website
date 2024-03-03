@@ -90,11 +90,15 @@ const ItemsInCart = ({ label1, label2 }) => {
                           ? `${ProductImageUrl}/${item?.images?.[0]}`
                           : "/placeholder.png"
                       }
+                      onError={(e) => {
+                        e.target.src = "/noimage.jpg"; // Replace '/path/to/dummy_image.jpg' with the actual URL of your dummy image.
+                        e.target.alt = 'dummyimage';
+                      }}
                       alt=""
                     />
                   </div>
                   <div className="pt-3">
-                    <h2 className="line-clamp-1">{languageCode === "so" ? item.somali_ad_title === "" ? item?.ad_title : item?.somali_ad_title : item?.ad_title}</h2>
+                    <h2 className="line-clamp-1">{languageCode === "so" ? item.somali_ad_title === null ? item?.ad_title : item?.somali_ad_title : item?.ad_title}</h2>
                     <Prices price={item?.mrp} sellingprice={item?.sellingprice} />
                   </div>
                 </div>

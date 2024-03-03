@@ -2,29 +2,32 @@
 
 import { HomeUrl } from "@/app/layout";
 import { ArrowUpRight, SearchIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-const SearchList = ({ searchKeywords, closeSearch, func }: any) => {
+const SearchList = ({ searchKeywords, closeSearch, focusInput  }: any) => {
   const router = useRouter();
-
-  console.log(searchKeywords, "se");
 
   if (searchKeywords?.status === 400) {
     return <p>Searching</p>;
   } else if (searchKeywords?.status === 404) {
     return <p>No Search Found...</p>;
   }
+  const handleClick = () => {
+    focusInput(false); // Call the focusInput function passed from the parent
+  };
 
   return (
     <div className="grid grid-cols-1 mb-2">
       {searchKeywords &&
         searchKeywords?.map((item: any, index: number) => (
           <div key={index}>
-            <a
+            <Link
+            
               href={`/Channel/search?query=${btoa(item)}`}
               // target="blank"
-              onClick={func}
+              // onClick={handleClick}
               className="flex flex-warp items-end gap-1 hover:bg-gray-200 p-2 rounded-lg transition-all ease-in-out hover:text-[#ed642b]"
             >
               <div className="col-span-1 text-center">
@@ -34,7 +37,7 @@ const SearchList = ({ searchKeywords, closeSearch, func }: any) => {
               <div className="col-span-4 flex-1 pl-2">
                 <h1 className="text-[1rem] line-clamp-1">{item}</h1>
               </div>
-            </a>
+            </Link>
           </div>
         ))}
     </div>

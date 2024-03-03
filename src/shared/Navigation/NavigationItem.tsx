@@ -60,7 +60,7 @@ const {t} = useTranslation()
 
   const storedDistrict = localStorage.getItem('selectedDistrict') || '';
 
-  console.log(storedDistrict,"storedDistrict");
+
 
   useEffect(() => {
     const ChangeLanguageIcon = () => {
@@ -94,25 +94,11 @@ const {t} = useTranslation()
         });
         const data = await response.json();
 
-        const updatedCartData = await Promise.all(
-          data?.cartData.map(async (item: any) => {
-            let shippingCost = await renderCost(item.mogadishudistrict_ship_from, storedDistrict);
-            const selectedOption = item.mogadishudistrict_ship_from ? 'shipping' : 'pickup';
-
-            // Retrieve existing selectedOptions from localStorage
-            const existingSelectedOptionsString = localStorage.getItem('selectedOptions');
-            const existingSelectedOptions = existingSelectedOptionsString ? JSON.parse(existingSelectedOptionsString) : {};
-
-            // Update the selectedOption for the current item in the local storage
-            existingSelectedOptions[item.uniquepid] = selectedOption;
-            localStorage.setItem('selectedOptions', JSON.stringify(existingSelectedOptions));
-
-            return { ...item, shippingCost, selectedOption };
-          })
-        );
+       
+console.log(data.cartData,"NAVIGATION PRINTING OF CART DATA COMING FROM BAKCEND");
 
 
-        dispatch(addCarts(updatedCartData));
+        dispatch(addCarts(data.cartData));
       } catch (error) {
         console.error("Error fetching cart data:", error);
       }
@@ -121,23 +107,26 @@ const {t} = useTranslation()
     fetchCart(customerId);
   }, [customerId, dispatch]);
 
-  const renderCost = async (mogadishudistrict_ship_from: string, storedDistrict: string) => {
+  const renderCost = async (company_district: string, storedDistrict: string) => {
     try {
-      if (!mogadishudistrict_ship_from) return
-      const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${mogadishudistrict_ship_from}&destination=${storedDistrict}`)
-      if (response.ok) {
-        const data = await response.json()
-        if (data.rate === 0) {
-          return 0
+      if (company_district) {
+
+        const response = await fetch(`${AdminUrl}/api/getShippingRate?origin=${company_district}&destination=${storedDistrict}`)
+        if (response.ok) {
+          const data = await response.json()
+
+          
+          if (data.rate === 0) {
+            return 0
+          }
+          else {
+            // setShippingrate(data.rate)
+            return data.rate
+          }
         }
         else {
-          // setShippingrate(data.rate)
-          return data.rate
-
+          console.log("fetching failed ");
         }
-      }
-      else {
-        console.log("fetching failed ");
       }
     } catch (error) {
       console.log(error, "ERROR FETCHING RATES");
@@ -174,8 +163,8 @@ const {t} = useTranslation()
         onMouseLeave={() => onMouseLeaveMenu(menu.id)}
       >
         {renderMainItem(menu)}
-        <div className="flex justify-center invisible bg-black/50 h-[100vh]  sub-menu absolute top-full inset-x-0 transform z-50">
-          <div></div>
+        <div className="flex justify-center invisible bg-black/10   sub-menu absolute top-full inset-x-0 transform z-50">
+     
           <div className=" bg-white  flex mx-24 border h-[60vh] w-[80%] dark:bg-neutral-900 shadow-lg">
             <div className="w-[25%] bg-gray-100 border border-l-0 py-4 border-b-0 border-t-0 border-r-2  overflow-y-auto ">
               <div className="text-sm border-none border-gray-200 dark:border-gray-700">
@@ -192,7 +181,7 @@ const {t} = useTranslation()
                     {/* <Image
                         className="rounded-full mr-3"
                         width={50} height={50} src={`${AdminUrl}/uploads/CatgeoryImages/${item.category_image_url}`} alt={item.category_name} /> */}
-                    <p className="font-medium text-black/70 dark:text-neutral-200 text-base ">
+                    <p className="font-medium text-black/70 dark:text-neutral-200 text-sm lg:text-base ">
                       {t("Featured")}
                     </p>
                     <ChevronRightIcon
