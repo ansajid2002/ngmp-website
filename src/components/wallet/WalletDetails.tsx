@@ -62,6 +62,7 @@ const WalletDetails = ({ showRecent = true }) => {
   useEffect(() => {
     customer_id && fetchData(1, 10, '')
   }, [customer_id])
+  
   return (
     <div className="m-3 bg-white px-4 py-5 md:p-10 rounded-t-3xl">
       <div className="flex gap-2 items-center justify-start mb-4">
