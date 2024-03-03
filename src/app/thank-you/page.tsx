@@ -145,7 +145,7 @@ const ThankYou = () => {
             </Link>
           </div>
           <div className="flex-1 md:ml-4 items-center justify-end md:justify-normal gap-5 text-gray-700 font-medium">
-          
+
           </div>
         </div>
 
@@ -179,14 +179,14 @@ const ThankYou = () => {
                   ${item.sellingprice} x {item.added_quantity} = ${(item.sellingprice * item.added_quantity)?.toFixed(2)}
                 </h2>
               </div>
-            </div >
+            </div>
           ))}
-        </div >
+        </div>
 
         <FetchCheckoutPrice successOrders={successOrders} showCheckout={false} />
 
-      </div >
-    </div > : "Loading..."
+      </div>
+    </div> : "Loading..."
   );
 };
 
